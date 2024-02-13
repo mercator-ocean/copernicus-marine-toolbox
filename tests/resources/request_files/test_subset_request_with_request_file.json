@@ -1,0 +1,15 @@
+{
+  "dataset_id": "METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2",
+  "dataset_version": "default",
+  "end_datetime": "2021-01-02",
+  "force_download": false,
+  "maximum_latitude": 0.1,
+  "maximum_longitude": 0.1,
+  "minimum_latitude": 0.0,
+  "minimum_longitude": 0.0,
+  "service": "opendap",
+  "start_datetime": "2021-01-01",
+  "variables": [
+    "analysed_sst"
+  ]
+}

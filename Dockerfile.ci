@@ -1,0 +1,18 @@
+ARG REGISTRY
+
+FROM ${REGISTRY}mambaorg/micromamba:1.4.1-kinetic
+
+COPY --chown=$MAMBA_USER:$MAMBA_USER Makefile /tmp/Makefile
+COPY --chown=$MAMBA_USER:$MAMBA_USER .condarc /tmp/.condarc
+COPY --chown=$MAMBA_USER:$MAMBA_USER conda_environment.yaml /tmp/conda_environment.yaml
+COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml /tmp/pyproject.toml
+COPY --chown=$MAMBA_USER:$MAMBA_USER copernicusmarine /tmp/copernicusmarine
+COPY --chown=$MAMBA_USER:$MAMBA_USER README.md /tmp/README.md
+RUN CONDARC=.condarc micromamba install -y -n base make
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
+COPY --chown=$MAMBA_USER:$MAMBA_USER pip.conf /tmp/pip.conf
+RUN /usr/local/bin/_entrypoint.sh make create-environment
+RUN ENV_NAME=copernicusmarine /usr/local/bin/_entrypoint.sh git init
+COPY --chown=$MAMBA_USER:$MAMBA_USER .pre-commit-config.yaml /tmp/.pre-commit-config.yaml
+RUN ENV_NAME=copernicusmarine /usr/local/bin/_entrypoint.sh git config --global --add safe.directory /tmp
+RUN ENV_NAME=copernicusmarine /usr/local/bin/_entrypoint.sh pre-commit install --install-hooks

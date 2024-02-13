@@ -1,0 +1,7 @@
+dependencies:
+  - python==3.9
+  - pytest==7.4.0
+  - pip
+  - xarray==2023.9.0
+  - pystac==1.8.3
+  - tox==4.11.4

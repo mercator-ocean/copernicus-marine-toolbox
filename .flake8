@@ -1,0 +1,18 @@
+[flake8]
+max-line-length = 88
+ignore =
+    # Import not on top of file
+    # E402, N813, E501
+    # Import with star
+    # F4 03, F405
+    # Correct but cannnot commit (flake or black error)
+    E203
+    # Upper cases in var names
+    N806, N803, N816
+    # deprecated warning binary break
+    W503
+    # Docstrings warnings
+    D100, D101,D102,D103,D107, D108, D400, D401, D200, D201, D202, D205
+
+    # Unused imports - pb with import_and_args.py
+    # F401

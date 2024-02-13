@@ -1,0 +1,6 @@
+{
+  "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+  "force_download": true,
+  "regex": "toto",
+  "service": "files"
+}

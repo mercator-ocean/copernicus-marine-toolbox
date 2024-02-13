@@ -1,0 +1,24 @@
+ARG REGISTRY
+
+FROM ubuntu:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt update
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt upgrade -y
+
+RUN apt-get install -y python3.12 python3.11 python3.10 python3.9
+RUN apt-get install -y python3.11-dev python3.10-dev python3.9-dev
+RUN apt-get install -y python3.11-distutils python3.10-distutils python3.9-distutils
+RUN apt-get install -y python3-pip
+
+RUN python3.11 -m pip install --upgrade pip
+RUN python3.11 -m pip install tox
+
+WORKDIR /tmp
+
+COPY Makefile /tmp/Makefile
+COPY tox.ini /tmp/tox.ini
+COPY copernicusmarine /tmp/copernicusmarine

@@ -1,0 +1,77 @@
+import copernicusmarine
+from tests.test_utils import execute_in_terminal
+
+
+class TestDatasetPartSelection:
+    def test_get_when_force_files_no_part_raises_error(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            "--service",
+            "files",
+        ]
+
+        output = execute_in_terminal(command)
+
+        assert (
+            b"When dataset has multiple parts and using 'files' service"
+            in output.stdout
+        )
+
+    def test_get_when_dataset_part_is_specified(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            "--dataset-part",
+            "history",
+            "--service",
+            "files",
+        ]
+
+        output = execute_in_terminal(command)
+
+        assert (
+            b'You forced selection of dataset part "history"' in output.stdout
+        )
+        assert (
+            b"Dataset part was not specified, the first one was selected:"
+            not in output.stdout
+        )
+
+    def test_get_when_dataset_specified_part_does_not_exist(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            "--dataset-part",
+            "default",
+            "--service",
+            "files",
+        ]
+
+        output = execute_in_terminal(command)
+
+        assert (
+            b'You forced selection of dataset part "default"' in output.stdout
+        )
+        assert b'No part "default" found' not in output.stdout
+
+    def test_dataset_part_is_specifiable_in_python_with_get(self, caplog):
+        try:
+            copernicusmarine.get(
+                dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+                dataset_part="history",
+                service="files",
+            )
+        except OSError:
+            pass
+        assert 'You forced selection of dataset part "history"' in caplog.text
+        assert (
+            "Dataset part was not specified, the first one was selected:"
+            not in caplog.text
+        )

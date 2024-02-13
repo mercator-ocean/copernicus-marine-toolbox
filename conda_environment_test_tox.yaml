@@ -1,0 +1,5 @@
+dependencies:
+  - python=3.11
+  - pytest==7.4.0
+  - pip
+  - tox==4.11.4

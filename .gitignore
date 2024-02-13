@@ -1,0 +1,8 @@
+settings.json
+tests*/__pycache__/
+tests/downloads
+.vscode/
+copernicusmarine/**/__pycache__/
+**/.aliases
+**/.DS_Store
+__debug.py
