@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
@@ -13,7 +14,9 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
 
 import nest_asyncio
 import pystac
-from cachier import cachier
+from aiohttp import ContentTypeError
+from aioretry import RetryInfo, RetryPolicyStrategy, retry
+from cachier.core import cachier
 from tqdm import tqdm
 
 from copernicusmarine.command_line_interface.exception_handler import (
@@ -26,8 +29,10 @@ from copernicusmarine.core_functions.sessions import (
 from copernicusmarine.core_functions.utils import (
     CACHE_BASE_DIRECTORY,
     construct_query_params_for_marine_data_store_monitoring,
+    datetime_parser,
     map_reject_none,
     next_or_raise_exception,
+    rolling_batch_gather,
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
@@ -73,6 +78,10 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"
 )
 
+MAX_CONCURRENT_REQUESTS = int(
+    os.getenv("COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS", "15")
+)
+
 
 @dataclass(frozen=True)
 class _Service:
@@ -107,6 +116,11 @@ class CopernicusMarineDatasetServiceType(_Service, Enum):
     WMTS = _ServiceName.WMTS, _ServiceShortName.WMTS
     OMI_ARCO = _ServiceName.OMI_ARCO, _ServiceShortName.OMI_ARCO
     STATIC_ARCO = _ServiceName.STATIC_ARCO, _ServiceShortName.STATIC_ARCO
+
+
+class CopernicusMarineServiceFormat(str, Enum):
+    ZARR = "zarr"
+    SQLITE = "sqlite"
 
 
 def _service_type_from_web_api_string(
@@ -163,6 +177,10 @@ class CopernicusMarineCoordinates:
     maximum_value: Optional[float]
     step: Optional[float]
     values: Optional[str]
+    chunking_length: Optional[int]
+    chunk_type: Optional[str]
+    chunk_reference_coordinate: Optional[int]
+    chunk_geometric_factor: Optional[int]
 
 
 @dataclass
@@ -177,6 +195,7 @@ class CopernicusMarineVariable:
 @dataclass
 class CopernicusMarineService:
     service_type: CopernicusMarineDatasetServiceType
+    service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
     variables: list[CopernicusMarineVariable]
 
@@ -431,7 +450,10 @@ class CatalogParserConnection:
     def __init__(self, proxy: Optional[str] = None) -> None:
         self.proxy = proxy
         self.session = get_configured_aiohttp_session()
+        self.__max_retries = 5
+        self.__sleep_time = 1
 
+    @retry("_retry_policy")
     async def get_json_file(self, url: str) -> dict[str, Any]:
         logger.debug(f"Fetching json file at this url: {url}")
         async with self.session.get(
@@ -443,6 +465,24 @@ class CatalogParserConnection:
     async def close(self) -> None:
         await self.session.close()
 
+    def _retry_policy(self, info: RetryInfo) -> RetryPolicyStrategy:
+        if not isinstance(
+            info.exception,
+            (
+                TimeoutError,
+                ConnectionResetError,
+                ContentTypeError,
+            ),
+        ):
+            logger.error(
+                f"Unexpected error while downloading: {info.exception}"
+            )
+            return True, 0
+        logger.debug(
+            f"Retrying {info.fails} times after error: {info.exception}"
+        )
+        return info.fails >= self.__max_retries, info.fails * self.__sleep_time
+
 
 def _construct_copernicus_marine_service(
     stac_service_name, stac_asset, datacube
@@ -450,17 +490,18 @@ def _construct_copernicus_marine_service(
     try:
         service_uri = stac_asset.get_absolute_href()
         service_type = _service_type_from_web_api_string(stac_service_name)
-        if service_type in (
-            CopernicusMarineDatasetServiceType.GEOSERIES,
-            CopernicusMarineDatasetServiceType.TIMESERIES,
-        ):
-            if not service_uri.endswith(".zarr"):
-                return None
+        service_format = None
+        if stac_asset.media_type and "zarr" in stac_asset.media_type:
+            service_format = CopernicusMarineServiceFormat.ZARR
+        elif stac_asset.media_type and "sqlite3" in stac_asset.media_type:
+            service_format = CopernicusMarineServiceFormat.SQLITE
+
         if not service_uri.endswith("/"):
             return CopernicusMarineService(
                 service_type=service_type,
-                uri=stac_asset.get_absolute_href(),
-                variables=_get_variables(datacube),
+                uri=service_uri,
+                variables=_get_variables(datacube, stac_asset),
+                service_format=service_format,
             )
         return None
     except ServiceNotHandled as service_not_handled:
@@ -531,78 +572,93 @@ def _get_services(
     ]
 
 
-def _get_coordinates(
-    dimensions_cube: dict,
-    arco_data_metadata_producer_valid_start_date: Optional[str],
-) -> dict[str, CopernicusMarineCoordinates]:
-    def _create_coordinate(
-        key: str,
-        value: dict,
-        arco_data_metadata_producer_valid_start_date: Optional[str],
-    ) -> CopernicusMarineCoordinates:
-        if arco_data_metadata_producer_valid_start_date:
-            minimum_value = (
-                _format_arco_data_metadata_producer_valid_start_date(
-                    arco_data_metadata_producer_valid_start_date
-                )
-            )
-        else:
-            minimum_value = value["extent"][0] if "extent" in value else None
-        return CopernicusMarineCoordinates(
-            coordinates_id="depth" if key == "elevation" else key,
-            units=value.get("unit") or "",
-            minimum_value=minimum_value,  # type: ignore
-            maximum_value=value["extent"][1] if "extent" in value else None,
-            step=value.get("step"),
-            values=value.get("values"),
-        )
-
-    coordinates_dict = {}
-    for key, value in dimensions_cube.items():
-        coordinates_dict[key] = _create_coordinate(
-            key,
-            value,
-            (
-                arco_data_metadata_producer_valid_start_date
-                if key == "time"
-                else None
-            ),
-        )
-    return coordinates_dict
-
-
 def _format_arco_data_metadata_producer_valid_start_date(
     arco_data_metadata_producer_valid_start_date: str,
-) -> str:
+    to_timestamp: bool = False,
+) -> Union[str, int]:
+    if to_timestamp:
+        return int(
+            datetime_parser(
+                arco_data_metadata_producer_valid_start_date.split(".")[0]
+            ).timestamp()
+            * 1000
+        )
     return arco_data_metadata_producer_valid_start_date.split(".")[0]
 
 
 def _get_variables(
     stac_dataset: pystac.Item,
+    stac_asset: pystac.Asset,
 ) -> list[CopernicusMarineVariable]:
-    def _create_variable(
-        variable_cube: dict[str, Any],
-        bbox: tuple[float, float, float, float],
-        coordinates_dict: dict[str, CopernicusMarineCoordinates],
-    ) -> Union[CopernicusMarineVariable, None]:
-        coordinates = variable_cube["dimensions"]
-        return CopernicusMarineVariable(
-            short_name=variable_cube["id"],
-            standard_name=variable_cube["standardName"],
-            units=variable_cube.get("unit") or "",
-            bbox=bbox,
-            coordinates=[coordinates_dict[key] for key in coordinates],
-        )
-
-    coordinates_dict = _get_coordinates(
-        stac_dataset.properties["cube:dimensions"],
-        stac_dataset.properties.get("admp_valid_start_date"),
-    )
     bbox = stac_dataset.bbox
-    variables: list[Optional[CopernicusMarineVariable]] = []
-    for var_cube in stac_dataset.properties["cube:variables"].values():
-        variables += [_create_variable(var_cube, bbox, coordinates_dict)]
-    return [var for var in variables if var]
+    return [
+        CopernicusMarineVariable(
+            short_name=var_cube["id"],
+            standard_name=var_cube["standardName"],
+            units=var_cube.get("unit") or "",
+            bbox=bbox,
+            coordinates=_get_coordinates(
+                var_cube["id"],
+                stac_asset,
+                stac_dataset.properties.get("admp_valid_start_date"),
+            )
+            or [],
+        )
+        for var_cube in stac_dataset.properties["cube:variables"].values()
+    ]
+
+
+def _get_coordinates(
+    variable_id: str,
+    stac_asset: pystac.Asset,
+    arco_data_metadata_producer_valid_start_date: Optional[str],
+) -> Optional[list[CopernicusMarineCoordinates]]:
+    extra_fields_asset = stac_asset.extra_fields
+    dimensions = extra_fields_asset.get("viewDims")
+    if dimensions:
+        coordinates = []
+        for dimension, dimension_metadata in dimensions.items():
+            coordinates_info = dimension_metadata.get("coords", {})
+            if (
+                arco_data_metadata_producer_valid_start_date
+                and dimension == "time"
+            ):
+                minimum_value = (
+                    _format_arco_data_metadata_producer_valid_start_date(
+                        arco_data_metadata_producer_valid_start_date,
+                        to_timestamp=isinstance(
+                            coordinates_info.get("min"), int
+                        ),
+                    )
+                )
+            else:
+                minimum_value = coordinates_info.get("min")
+            chunking_length = dimension_metadata.get("chunkLen")
+            if isinstance(chunking_length, dict):
+                chunking_length = chunking_length.get(variable_id)
+            coordinates.append(
+                CopernicusMarineCoordinates(
+                    coordinates_id=(
+                        "depth" if dimension == "elevation" else dimension
+                    ),
+                    units=dimension_metadata.get("units") or "",
+                    minimum_value=minimum_value,  # type: ignore
+                    maximum_value=coordinates_info.get("max"),
+                    step=coordinates_info.get("step"),
+                    values=coordinates_info.get("values"),
+                    chunking_length=chunking_length,
+                    chunk_type=dimension_metadata.get("chunkType"),
+                    chunk_reference_coordinate=dimension_metadata.get(
+                        "chunkRefCoord"
+                    ),
+                    chunk_geometric_factor=dimension_metadata.get(
+                        "chunkGeometricFactor", {}
+                    ).get(variable_id),
+                )
+            )
+        return coordinates
+    else:
+        return None
 
 
 def _construct_marine_data_store_dataset(
@@ -735,19 +791,18 @@ async def async_fetch_childs(
     tasks = []
     for link in child_links:
         tasks.append(
-            asyncio.ensure_future(
-                async_fetch_collection(
-                    root_url, connection, link.absolute_href
-                )
-            )
+            async_fetch_collection(root_url, connection, link.absolute_href)
         )
-    return filter(lambda x: x is not None, await asyncio.gather(*tasks))
+    return filter(
+        lambda x: x is not None,
+        await rolling_batch_gather(tasks, MAX_CONCURRENT_REQUESTS),
+    )
 
 
 async def async_fetch_catalog(
     connection: CatalogParserConnection,
     staging: bool = False,
-) -> Tuple[pystac.Catalog, Iterator[pystac.Collection]]:
+) -> Iterator[pystac.Collection]:
     catalog_root_url = (
         MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL
         if not staging
@@ -762,7 +817,7 @@ async def async_fetch_catalog(
         else (MARINE_DATA_STORE_STAC_BASE_URL_STAGING)
     )
     childs = await async_fetch_childs(root_url, connection, child_links)
-    return catalog, childs
+    return childs
 
 
 def _retrieve_marine_data_store_products(
@@ -771,7 +826,7 @@ def _retrieve_marine_data_store_products(
 ) -> list[ProductFromMarineDataStore]:
     nest_asyncio.apply()
     loop = asyncio.get_event_loop()
-    _, marine_data_store_root_collections = loop.run_until_complete(
+    marine_data_store_root_collections = loop.run_until_complete(
         async_fetch_catalog(connection=connection, staging=staging)
     )
 
@@ -789,12 +844,20 @@ def parse_catalogue(
     staging: bool = False,
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
-    catalog = _parse_catalogue(
-        ignore_cache=no_metadata_cache,
-        _version=package_version("copernicusmarine"),
-        disable_progress_bar=disable_progress_bar,
-        staging=staging,
-    )
+    try:
+        catalog = _parse_catalogue(
+            ignore_cache=no_metadata_cache,
+            _versions=package_version("copernicusmarine"),
+            disable_progress_bar=disable_progress_bar,
+            staging=staging,
+        )
+    except ValueError:
+        catalog = _parse_catalogue(
+            ignore_cache=True,
+            _versions=package_version("copernicusmarine"),
+            disable_progress_bar=disable_progress_bar,
+            staging=staging,
+        )
     logger.debug("Catalogue parsed")
     return catalog
 
@@ -803,11 +866,10 @@ def merge_products(
     products_from_marine_data_store: List[ProductFromMarineDataStore],
     products_from_portal: List[ProductFromPortal],
 ) -> List[CopernicusMarineProduct]:
-    merged_products: List[CopernicusMarineProduct] = []
-    for marine_data_store_product in products_from_marine_data_store:
-        merged_products.append(
-            marine_data_store_product.to_copernicus_marine_product()
-        )
+    merged_products: List[CopernicusMarineProduct] = [
+        marine_data_store_product.to_copernicus_marine_product()
+        for marine_data_store_product in products_from_marine_data_store
+    ]
 
     for portal_product in products_from_portal:
         maybe_merged_product = list(
@@ -894,7 +956,7 @@ def merge_products(
 
 @cachier(cache_dir=CACHE_BASE_DIRECTORY, stale_after=timedelta(hours=24))
 def _parse_catalogue(
-    _version: str,  # force cachier to overwrite cache in case of version update
+    _versions: str,  # force cachier to overwrite cache in case of version update
     disable_progress_bar: bool,
     staging: bool = False,
 ) -> CopernicusMarineCatalogue:
@@ -942,13 +1004,9 @@ async def _async_fetch_raw_products(
 ):
     tasks = []
     for product_id in product_ids:
-        tasks.append(
-            asyncio.ensure_future(
-                connection.get_json_file(product_url(product_id))
-            )
-        )
+        tasks.append(connection.get_json_file(product_url(product_id)))
 
-    return await asyncio.gather(*tasks)
+    return await rolling_batch_gather(tasks, MAX_CONCURRENT_REQUESTS)
 
 
 def product_url(product_id: str) -> str:
@@ -969,23 +1027,29 @@ def variable_to_pick(layer: dict[str, Any]) -> bool:
 
 
 def _to_service(
-    service_name: str, service_url: str, layer_elements
+    service_name: str,
+    stac_asset: dict,
+    layer_elements,
 ) -> Optional[CopernicusMarineService]:
+    service_format_asset = stac_asset.get("type")
+    service_url = stac_asset.get("href")
     try:
         service_type = _service_type_from_web_api_string(service_name)
-        if service_type in (
-            CopernicusMarineDatasetServiceType.GEOSERIES,
-            CopernicusMarineDatasetServiceType.TIMESERIES,
-        ):
-            if not service_url.endswith(".zarr"):
-                return None
-        if not service_url.endswith("thredds/dodsC/"):
+        service_format = None
+        if service_format_asset and "zarr" in service_format_asset:
+            service_format = CopernicusMarineServiceFormat.ZARR
+        elif service_format_asset and "sqlite3" in service_format_asset:
+            service_format = CopernicusMarineServiceFormat.SQLITE
+        if service_url and not service_url.endswith("thredds/dodsC/"):
             return CopernicusMarineService(
                 service_type=service_type,
                 uri=service_url,
-                variables=list(
-                    map(to_variable, filter(variable_to_pick, layer_elements))
-                ),
+                service_format=service_format,
+                variables=[
+                    to_variable(layer, stac_asset)
+                    for layer in layer_elements
+                    if variable_to_pick(layer)
+                ],
             )
         else:
             return None
@@ -995,7 +1059,9 @@ def _to_service(
 
 
 def to_coordinates(
-    subset_attributes: Tuple[str, dict[str, Any]], layer: dict[str, Any]
+    subset_attributes: Tuple[str, dict[str, Any]],
+    layer: dict[str, Any],
+    asset: dict,
 ) -> CopernicusMarineCoordinates:
     coordinate_name = subset_attributes[0]
     values: Optional[str]
@@ -1005,25 +1071,38 @@ def to_coordinates(
         values = layer.get("tValues")
     else:
         values = None
+    view_dim = asset.get("viewDims", {}).get(coordinate_name, {})
+    chunking_length = view_dim.get("chunkLen")
+    if isinstance(chunking_length, dict):
+        chunking_length = chunking_length.get(layer["variableId"])
     return CopernicusMarineCoordinates(
         coordinates_id=subset_attributes[0],
-        units=subset_attributes[1]["units"],
-        minimum_value=subset_attributes[1]["min"],
-        maximum_value=subset_attributes[1]["max"],
-        step=subset_attributes[1].get("step"),
+        units=view_dim.get("units", ""),
+        minimum_value=view_dim.get("min") or view_dim.get(values, [None])[0],
+        maximum_value=view_dim.get("max") or view_dim.get(values, [None])[0],
+        step=view_dim.get("step"),
         values=values,
+        chunking_length=chunking_length,
+        chunk_type=view_dim.get("chunkType"),
+        chunk_reference_coordinate=view_dim.get("chunkRefCoord"),
+        chunk_geometric_factor=view_dim.get("chunkGeometricFactor", {})
+        .get("chunkGeometricFactor", {})
+        .get(layer["variableId"]),
     )
 
 
-def to_variable(layer: dict[str, Any]) -> CopernicusMarineVariable:
+def to_variable(
+    layer: dict[str, Any], asset: dict
+) -> CopernicusMarineVariable:
     return CopernicusMarineVariable(
         short_name=layer["variableId"],
         standard_name=variable_title_to_standard_name(layer["variableTitle"]),
         units=layer["units"],
         bbox=layer["bbox"],
-        coordinates=list(
-            map(to_coordinates, layer["subsetAttrs"].items(), repeat(layer))
-        ),
+        coordinates=[
+            to_coordinates(subset_attr, layer, asset)
+            for subset_attr in layer["subsetAttrs"].items()
+        ],
     )
 
 
@@ -1053,7 +1132,7 @@ def mds_stac_to_services(
         ) in stac_assets.items():
             service = _to_service(
                 service_name,
-                service_url["href"],
+                service_url,
                 distinct_dataset_version.layer_elements,
             )
             if service:
@@ -1074,7 +1153,7 @@ def portal_services_to_services(
         copernicus_marine_services.append(
             _to_service(
                 service_name,
-                service_url,
+                {"href": service_url},
                 layer_elements,
             )
         )

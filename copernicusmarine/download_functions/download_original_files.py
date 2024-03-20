@@ -45,43 +45,62 @@ def download_original_files(
     password: str,
     get_request: GetRequest,
     disable_progress_bar: bool,
+    download_file_list: bool,
 ) -> list[pathlib.Path]:
-    message, locator, filenames_in, total_size = _download_header(
+    (
+        message,
+        locator,
+        filenames_in,
+        total_size,
+        filenames_in_sync_ignored,
+    ) = _download_header(
         str(get_request.dataset_url),
         get_request.regex,
         username,
         password,
         get_request.sync,
+        download_file_list,
         pathlib.Path(get_request.output_directory),
+        only_list_root_path=get_request.index_parts,
     )
     filenames_out = create_filenames_out(
         filenames_in=filenames_in,
         output_directory=pathlib.Path(get_request.output_directory),
         no_directories=get_request.no_directories,
-        overwrite=get_request.overwrite_output_data
-        if not get_request.sync
-        else False,
+        overwrite=(
+            get_request.overwrite_output_data
+            if not get_request.sync
+            else False
+        ),
     )
     if not get_request.force_download:
         logger.info(message)
-    if not total_size:
-        logger.info("No data to download")
-        exit(1)
     if get_request.show_outputnames:
         logger.info("Output filenames:")
         for filename_out in filenames_out:
             logger.info(filename_out)
     files_to_delete = []
     if get_request.sync_delete:
-        files_to_delete = _get_files_to_delete_with_sync(
-            filenames_in=filenames_in,
+        filenames_out_sync_ignored = create_filenames_out(
+            filenames_in=filenames_in_sync_ignored,
             output_directory=pathlib.Path(get_request.output_directory),
-            filenames_out=filenames_out,
+            no_directories=get_request.no_directories,
+            overwrite=False,
+            unique_names_compared_to_local_files=False,
+        )
+        files_to_delete = _get_files_to_delete_with_sync(
+            filenames_in=filenames_in_sync_ignored,
+            output_directory=pathlib.Path(get_request.output_directory),
+            filenames_out=filenames_out_sync_ignored,
         )
         if files_to_delete:
             logger.info("Some files will be deleted due to sync delete:")
             for file_to_delete in files_to_delete:
                 logger.info(file_to_delete)
+    if not total_size:
+        logger.info("No data to download")
+        if not files_to_delete:
+            exit(1)
     if not get_request.force_download:
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE, default=True, abort=True
@@ -174,38 +193,42 @@ def _download_header(
     username: str,
     _password: str,
     sync: bool,
+    download_file_list: bool,
     directory_out: pathlib.Path,
-    sync_delete: bool = False,
-) -> Tuple[str, Tuple[str, str], list[str], float]:
-    (endpoint_url, bucket, path) = parse_original_files_dataset_url(data_path)
+    only_list_root_path: bool = False,
+) -> Tuple[str, Tuple[str, str], list[str], float, list[str]]:
+    (endpoint_url, bucket, path) = parse_original_files_dataset_url(
+        data_path, only_list_root_path
+    )
+
     filenames, sizes, total_size = [], [], 0.0
     raw_filenames = _list_files_on_marine_data_lake_s3(
-        username, endpoint_url, bucket, path
+        username, endpoint_url, bucket, path, not only_list_root_path
     )
     filename_filtered = []
+    filenames_without_sync = []
     for filename, size, last_modified_datetime in raw_filenames:
-        if not regex or re.match(regex, filename):
+        if not regex or re.search(regex, filename):
+            filenames_without_sync.append(filename)
             if not sync or _check_needs_to_be_synced(
                 filename, size, last_modified_datetime, directory_out
             ):
-                filenames += [filename]
-                sizes += [float(size)]
+                filenames.append(filename)
+                sizes.append(float(size))
                 total_size += float(size)
                 filename_filtered.append(
                     (filename, size, last_modified_datetime)
                 )
 
-    if sync_delete:
-        files_to_delete = list(directory_out.glob("**/*"))
-        for file_to_delete in files_to_delete:
-            if not any(
-                [
-                    _local_path_from_s3_url(filename, directory_out)
-                    == file_to_delete
-                    for filename, _, _ in filename_filtered
-                ]
-            ):
-                file_to_delete.unlink()
+    if download_file_list:
+        download_filename = get_unique_filename(
+            directory_out / "files_to_download.txt", False
+        )
+        logger.info(f"The file list is written at {download_filename}")
+        with open(download_filename, "w") as file_out:
+            for filename, _, _ in filename_filtered:
+                file_out.write(f"{filename}\n")
+        exit(0)
 
     message = "You requested the download of the following files:\n"
     for filename, size, last_modified_datetime in filename_filtered[:20]:
@@ -224,7 +247,7 @@ def _download_header(
         f"\nTotal size of the download: {format_file_size(total_size)}\n\n"
     )
     locator = (endpoint_url, bucket)
-    return (message, locator, filenames, total_size)
+    return (message, locator, filenames, total_size, filenames_without_sync)
 
 
 def _check_needs_to_be_synced(
@@ -258,6 +281,7 @@ def _list_files_on_marine_data_lake_s3(
     endpoint_url: str,
     bucket: str,
     prefix: str,
+    recursive: bool,
 ) -> list[tuple[str, int, datetime.datetime]]:
     def _add_custom_query_param(params, context, **kwargs):
         """
@@ -293,9 +317,15 @@ def _list_files_on_marine_data_lake_s3(
     )
 
     paginator = s3_client.get_paginator("list_objects")
-    page_iterator = paginator.paginate(Bucket=bucket, Prefix=prefix)
+    page_iterator = paginator.paginate(
+        Bucket=bucket,
+        Prefix=prefix,
+        Delimiter="/" if not recursive else "",
+    )
 
-    s3_objects = chain(*map(lambda page: page["Contents"], page_iterator))
+    s3_objects = chain(
+        *map(lambda page: page.get("Contents", []), page_iterator)
+    )
 
     files_already_found = []
     for s3_object in s3_objects:
@@ -384,7 +414,9 @@ def _download_files(
 
 # Example data_path
 # https://s3.waw3-1.cloudferro.com/mdl-native-01/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105
-def parse_original_files_dataset_url(data_path: str) -> Tuple[str, str, str]:
+def parse_original_files_dataset_url(
+    data_path: str, only_dataset_root_path: bool
+) -> Tuple[str, str, str]:
     match = re.search(
         r"^(http|https):\/\/([\w\-\.]+)(:[\d]+)?(\/.*)", data_path
     )
@@ -393,7 +425,11 @@ def parse_original_files_dataset_url(data_path: str) -> Tuple[str, str, str]:
         full_path = match.group(4)
         segments = full_path.split("/")
         bucket = segments[1]
-        path = "/".join(segments[2:])
+        path = (
+            "/".join(segments[2:])
+            if not only_dataset_root_path
+            else "/".join(segments[2:5]) + "/"
+        )
         return endpoint_url, bucket, path
     else:
         raise Exception(f"Invalid data path: {data_path}")
@@ -404,6 +440,7 @@ def create_filenames_out(
     overwrite: bool,
     output_directory: pathlib.Path = pathlib.Path("."),
     no_directories=False,
+    unique_names_compared_to_local_files=True,
 ) -> list[pathlib.Path]:
     filenames_out = []
     for filename_in in filenames_in:
@@ -416,10 +453,10 @@ def create_filenames_out(
             filename_out = _local_path_from_s3_url(
                 filename_in, output_directory
             )
-
-        filename_out = get_unique_filename(
-            filepath=filename_out, overwrite_option=overwrite
-        )
+        if unique_names_compared_to_local_files:
+            filename_out = get_unique_filename(
+                filepath=filename_out, overwrite_option=overwrite
+            )
 
         filenames_out.append(filename_out)
     return filenames_out

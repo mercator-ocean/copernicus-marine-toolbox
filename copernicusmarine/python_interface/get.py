@@ -32,6 +32,9 @@ def get(
     no_metadata_cache: bool = False,
     filter: Optional[str] = None,
     regex: Optional[str] = None,
+    file_list: Optional[Union[pathlib.Path, str]] = None,
+    download_file_list: bool = False,
+    index_parts: bool = False,
     sync: bool = False,
     sync_delete: bool = False,
     disable_progress_bar: bool = False,
@@ -59,6 +62,9 @@ def get(
         no_metadata_cache (bool, optional): If True, do not use the metadata cache.
         filter (str, optional): Apply a filter to the downloaded data.
         regex (str, optional): Apply a regular expression filter to the downloaded data.
+        file_list (Union[pathlib.Path, str], optional): A path to a text file that list filenames line by line. Filenames must match the absolute paths of the files to download.
+        download_file_list (bool, optional): Option to only create a file files_to_download.txt containing the names of the the targeted files instead of downloading them. It writes the file in the directory specified with the --output-directory option (default to current directory). If specified, no other action will be performed.
+        index_parts (bool, optional): If True, download index files. Only for INSITU datasets. Temporary option.
         sync (bool, optional): If True, synchronize the local directory with the remote directory.
         sync_delete (bool, optional): If True, delete local files that are not present on the remote server while applying sync.
 
@@ -71,28 +77,32 @@ def get(
     credentials_file = (
         pathlib.Path(credentials_file) if credentials_file else None
     )
+    file_list = pathlib.Path(file_list) if file_list else None
     request_file = pathlib.Path(request_file) if request_file else None
     return get_function(
-        dataset_url,
-        dataset_id,
-        dataset_version,
-        dataset_part,
-        username,
-        password,
-        no_directories,
-        show_outputnames,
-        output_directory,
-        credentials_file,
-        force_download,
-        overwrite_output_data,
-        request_file,
-        service,
-        overwrite_metadata_cache,
-        no_metadata_cache,
-        filter,
-        regex,
-        sync,
-        sync_delete,
-        disable_progress_bar,
+        dataset_url=dataset_url,
+        dataset_id=dataset_id,
+        force_dataset_version=dataset_version,
+        force_dataset_part=dataset_part,
+        username=username,
+        password=password,
+        no_directories=no_directories,
+        show_outputnames=show_outputnames,
+        output_directory=output_directory,
+        credentials_file=credentials_file,
+        force_download=force_download,
+        overwrite_output_data=overwrite_output_data,
+        request_file=request_file,
+        force_service=service,
+        overwrite_metadata_cache=overwrite_metadata_cache,
+        no_metadata_cache=no_metadata_cache,
+        filter=filter,
+        regex=regex,
+        file_list_path=file_list,
+        download_file_list=download_file_list,
+        index_parts=index_parts,
+        sync=sync,
+        sync_delete=sync_delete,
+        disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

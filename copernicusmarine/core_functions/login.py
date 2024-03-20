@@ -3,6 +3,8 @@ import pathlib
 from typing import Optional
 
 from copernicusmarine.core_functions.credentials_utils import (
+    copernicusmarine_configuration_file_exists,
+    copernicusmarine_configuration_file_is_valid,
     credentials_file_builder,
 )
 
@@ -14,7 +16,19 @@ def login_function(
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
     overwrite_configuration_file: bool,
+    skip_if_user_logged_in: bool,
 ) -> bool:
+    if (
+        skip_if_user_logged_in
+        and copernicusmarine_configuration_file_exists(
+            configuration_file_directory
+        )
+        and copernicusmarine_configuration_file_is_valid(
+            configuration_file_directory
+        )
+    ):
+        logger.info("You are already logged in. Skipping login.")
+        return True
     credentials_file = credentials_file_builder(
         username=username,
         password=password,

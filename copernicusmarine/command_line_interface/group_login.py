@@ -43,7 +43,6 @@ def cli_group_login() -> None:
 )
 @click.option(
     "--username",
-    prompt="username",
     hide_input=False,
     help="If not set, search for environment variable"
     + " COPERNICUS_MARINE_SERVICE_USERNAME"
@@ -51,7 +50,6 @@ def cli_group_login() -> None:
 )
 @click.option(
     "--password",
-    prompt="password",
     hide_input=True,
     help="If not set, search for environment variable"
     + " COPERNICUS_MARINE_SERVICE_PASSWORD"
@@ -71,6 +69,12 @@ def cli_group_login() -> None:
     help="Flag to skip confirmation before overwriting configuration file.",
 )
 @click.option(
+    "--skip-if-user-logged-in",
+    is_flag=True,
+    default=False,
+    help="Flag to skip the logging process if the user is already logged in.",
+)
+@click.option(
     "--log-level",
     type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
     default="INFO",
@@ -85,6 +89,7 @@ def login(
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
     overwrite_configuration_file: bool,
+    skip_if_user_logged_in: bool,
     log_level: str = "INFO",
 ) -> None:
     if log_level == "QUIET":
@@ -97,4 +102,5 @@ def login(
         password=password,
         configuration_file_directory=configuration_file_directory,
         overwrite_configuration_file=overwrite_configuration_file,
+        skip_if_user_logged_in=skip_if_user_logged_in,
     )

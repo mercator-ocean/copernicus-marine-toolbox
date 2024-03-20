@@ -1,4 +1,3 @@
-import fnmatch
 import json
 import logging
 import pathlib
@@ -10,7 +9,10 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
+    file_list_to_regex,
+    filter_to_regex,
     get_request_from_file,
+    overload_regex_with_additionnal_filter,
 )
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
@@ -53,8 +55,11 @@ def get_function(
     no_metadata_cache: bool,
     filter: Optional[str],
     regex: Optional[str],
+    file_list_path: Optional[pathlib.Path],
+    download_file_list: bool,
     sync: bool,
     sync_delete: bool,
+    index_parts: bool,
     disable_progress_bar: bool,
     staging: bool,
 ) -> List[pathlib.Path]:
@@ -101,9 +106,16 @@ def get_function(
     if force_service:
         get_request.force_service = force_service
     if filter:
-        get_request.regex = _filter_to_regex(filter)
+        get_request.regex = filter_to_regex(filter)
+    if file_list_path:
+        file_list_regex = file_list_to_regex(file_list_path)
+        get_request.regex = overload_regex_with_additionnal_filter(
+            file_list_regex, get_request.regex
+        )
     if regex:
-        get_request.regex = _overload_regex_with_filter(regex, filter)
+        get_request.regex = overload_regex_with_additionnal_filter(
+            regex, get_request.regex
+        )
     if sync or sync_delete:
         get_request.sync = True
         if not get_request.force_dataset_version:
@@ -113,25 +125,27 @@ def get_function(
             )
     if sync_delete:
         get_request.sync_delete = sync_delete
+    if index_parts:
+        if force_service == "ftp":
+            raise ValueError(
+                "Index part flag is not supported for FTP services. "
+                "Please use '--force-service files' option."
+            )
+        get_request.index_parts = index_parts
+        get_request.force_service = "files"
+        get_request.regex = overload_regex_with_additionnal_filter(
+            filter_to_regex("*index_*"), get_request.regex
+        )
 
     return _run_get_request(
-        username,
-        password,
-        get_request,
-        credentials_file,
-        no_metadata_cache,
-        disable_progress_bar,
+        username=username,
+        password=password,
+        get_request=get_request,
+        download_file_list=download_file_list,
+        credentials_file=credentials_file,
+        no_metadata_cache=no_metadata_cache,
+        disable_progress_bar=disable_progress_bar,
         staging=staging,
-    )
-
-
-def _filter_to_regex(filter: str) -> str:
-    return fnmatch.translate(filter)
-
-
-def _overload_regex_with_filter(regex: str, filter: Optional[str]) -> str:
-    return (
-        "(" + regex + "|" + _filter_to_regex(filter) + ")" if filter else regex
     )
 
 
@@ -139,6 +153,7 @@ def _run_get_request(
     username: Optional[str],
     password: Optional[str],
     get_request: GetRequest,
+    download_file_list: bool,
     credentials_file: Optional[pathlib.Path],
     no_metadata_cache: bool,
     disable_progress_bar: bool,
@@ -163,6 +178,7 @@ def _run_get_request(
         get_request.force_dataset_part,
         get_request.force_service,
         CommandType.GET,
+        get_request.index_parts,
         dataset_sync=get_request.sync,
     )
     get_request.dataset_url = retrieval_service.uri
@@ -182,11 +198,16 @@ def _run_get_request(
             password,
             get_request,
             disable_progress_bar,
+            download_file_list,
         )
         if retrieval_service.service_type
         == CopernicusMarineDatasetServiceType.FTP
         else download_original_files(
-            username, password, get_request, disable_progress_bar
+            username,
+            password,
+            get_request,
+            disable_progress_bar,
+            download_file_list,
         )
     )
     logger.debug(downloaded_files)
@@ -200,21 +221,27 @@ def create_get_template() -> None:
     with open(filename, "w") as output_file:
         json.dump(
             {
-                "dataset_url": (
-                    "ftp://my.cmems-du.eu/Core/"
-                    "IBI_MULTIYEAR_PHY_005_002/"
-                    "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-                ),
+                "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+                "dataset_version": None,
+                "dataset_part": None,
+                "username": None,
+                "password": None,
+                "no_directories": False,
                 "filter": "*01yav_200[0-2]*",
-                "regex": False,
+                "regex": None,
                 "output_directory": "copernicusmarine_data",
                 "show_outputnames": True,
-                "force_service": "files",
+                "service": "files",
                 "force_download": False,
-                "request_file": False,
+                "file_list": None,
+                "sync": False,
+                "sync_delete": False,
+                "index_parts": False,
+                "disable_progress_bar": False,
                 "overwrite_output_data": False,
                 "overwrite_metadata_cache": False,
                 "no_metadata_cache": False,
+                "log_level": "INFO",
             },
             output_file,
             indent=4,

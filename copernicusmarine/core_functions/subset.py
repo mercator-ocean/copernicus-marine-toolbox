@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     CopernicusMarineDatasetServiceType,
+    CopernicusMarineServiceFormat,
     parse_catalogue,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
@@ -204,7 +205,7 @@ def subset_function(
         subset_request.force_dataset_part,
         subset_request.force_service,
         CommandType.SUBSET,
-        subset_request.get_time_and_geographical_subset(),
+        dataset_subset=subset_request.get_time_and_geographical_subset(),
     )
     subset_request.dataset_url = retrieval_service.uri
     if (
@@ -230,18 +231,26 @@ def subset_function(
         CopernicusMarineDatasetServiceType.OMI_ARCO,
         CopernicusMarineDatasetServiceType.STATIC_ARCO,
     ]:
-        output_path = download_zarr(
-            username,
-            password,
-            subset_request,
-            retrieval_service.dataset_id,
-            disable_progress_bar,
-            retrieval_service.dataset_valid_start_date,
-        )
+        if (
+            retrieval_service.service_format
+            == CopernicusMarineServiceFormat.ZARR
+        ):
+            output_path = download_zarr(
+                username,
+                password,
+                subset_request,
+                retrieval_service.dataset_id,
+                disable_progress_bar,
+                retrieval_service.dataset_valid_start_date,
+            )
     elif (
         retrieval_service.service_type
         == CopernicusMarineDatasetServiceType.OPENDAP
     ):
+        logger.warning(
+            "The OPeNDAP service is deprecated, please use one of "
+            "'arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco' instead."
+        )
         output_path = download_opendap(
             username,
             password,
@@ -253,6 +262,10 @@ def subset_function(
         retrieval_service.service_type
         == CopernicusMarineDatasetServiceType.MOTU
     ):
+        logger.warning(
+            "The MOTU service is deprecated, please use one of "
+            "'arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco' instead."
+        )
         output_path = download_motu(
             username,
             password,

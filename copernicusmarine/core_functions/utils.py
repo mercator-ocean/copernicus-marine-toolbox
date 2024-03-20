@@ -1,9 +1,21 @@
+import asyncio
 import logging
 import os
 import pathlib
 from datetime import datetime
 from importlib.metadata import version
-from typing import Callable, Iterable, Iterator, Optional, TypeVar
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Coroutine,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 import xarray
 from requests import PreparedRequest
@@ -60,6 +72,13 @@ def get_unique_filename(
 class ServiceNotSupported(Exception):
     def __init__(self, service_type):
         super().__init__(f"Service type {service_type} not supported.")
+
+
+class FormatNotSupported(Exception):
+    def __init__(self, format_type):
+        super().__init__(
+            f"Subsetting format type {format_type} not supported yet."
+        )
 
 
 _T = TypeVar("_T")
@@ -135,3 +154,22 @@ def delete_cache_folder(quiet: bool = False):
     except Exception as exc:
         logger.warning("Error occurred while deleting old cache files")
         raise exc
+
+
+async def rolling_batch_gather(
+    promises: Union[List[Coroutine[Any, Any, Any]], List[Awaitable[Any]]],
+    per_batch: int,
+) -> List[Any]:
+    tasks: asyncio.Queue = asyncio.Queue()
+    for promise in promises:
+        tasks.put_nowait(promise)
+
+    async def worker():
+        res = []
+        while not tasks.empty():
+            res.append(await tasks.get_nowait())
+
+        return res
+
+    results = await asyncio.gather(*[worker() for _ in range(per_batch)])
+    return [s for r in results for s in r]

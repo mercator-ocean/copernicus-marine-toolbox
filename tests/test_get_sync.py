@@ -11,6 +11,7 @@ class TestGetSync:
         self.then_same_command_with_sync_should_download_only_one_file()
 
     def test_get_sync_delete(self):
+        self.when_I_get_some_native_files_with_sync()
         self.when_I_add_a_file_locally()
         self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it()
 

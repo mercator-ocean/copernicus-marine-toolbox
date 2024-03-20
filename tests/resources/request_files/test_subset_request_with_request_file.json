@@ -7,7 +7,7 @@
   "maximum_longitude": 0.1,
   "minimum_latitude": 0.0,
   "minimum_longitude": 0.0,
-  "service": "opendap",
+  "service": "arco-geo-series",
   "start_datetime": "2021-01-01",
   "variables": [
     "analysed_sst"

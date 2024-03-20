@@ -165,23 +165,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
         assert min_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
         assert max_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
 
-    def test_subset_same_depth_opendap(self, tmp_path):
-        output_filename = "test_subset_same_depth_opendap.nc"
-
-        command = self._nearest_layer_subset(
-            tmp_path, output_filename, "opendap", same_depth=True
-        )
-        output = subprocess.run(command)
-
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
-        min_depth = dataset.depth.values.min()
-        max_depth = dataset.depth.values.max()
-
-        assert output.returncode == 0
-        assert dataset.depth.size == 1
-        assert min_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
-        assert max_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
-
     def test_subset_same_depth_with_vertical_dimension_as_originally_produced(
         self, tmp_path
     ):
@@ -257,27 +240,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
             max_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
         )
 
-    def test_subset_same_datetime_opendap(self, tmp_path):
-        output_filename = "test_subset_same_datetime_opendap.nc"
-
-        command = self._nearest_layer_subset(
-            tmp_path, output_filename, "opendap", same_datetime=True
-        )
-        output = subprocess.run(command)
-
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
-        min_datetime = dataset.time.values.min()
-        max_datetime = dataset.time.values.max()
-
-        assert output.returncode == 0
-        assert dataset.time.size == 1
-        assert min_datetime == numpy.datetime64(
-            "2023-04-26 12:00:00"
-        )  # SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
-        assert max_datetime == numpy.datetime64(
-            "2023-04-26 12:00:00"
-        )  # SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
-
     # -----------------------#
     # Test on same longitude #
     # -----------------------#
@@ -305,27 +267,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
             max_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
         )
 
-    def test_subset_same_longitude_opendap(self, tmp_path):
-        output_filename = "test_subset_same_longitude_opendap.nc"
-
-        command = self._nearest_layer_subset(
-            tmp_path, output_filename, "opendap", same_longitude=True
-        )
-        output = subprocess.run(command)
-
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
-        min_longitude = dataset.longitude.values.min()
-        max_longitude = dataset.longitude.values.max()
-
-        assert output.returncode == 0
-        assert dataset.longitude.size == 1
-        assert (
-            min_longitude == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
-        )
-        assert (
-            max_longitude == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
-        )
-
     # ----------------------#
     # Test on same latitude #
     # ----------------------#
@@ -351,27 +292,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         assert (
             max_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
-        )
-
-    def test_subset_same_latitude_opendap(self, tmp_path):
-        output_filename = "test_subset_same_latitude_opendap.nc"
-
-        command = self._nearest_layer_subset(
-            tmp_path, output_filename, "opendap", same_latitude=True
-        )
-        output = subprocess.run(command)
-
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
-        min_latitude = dataset.latitude.values.min()
-        max_latitude = dataset.latitude.values.max()
-
-        assert output.returncode == 0
-        assert dataset.latitude.size == 1
-        assert (
-            min_latitude == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
-        )
-        assert (
-            max_latitude == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
         )
 
     def test_subset_with_coordinates_range_falling_between_two_values(

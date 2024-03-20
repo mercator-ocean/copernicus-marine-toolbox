@@ -72,7 +72,7 @@ pytest tests --log-level -vv tests --durations=0 --log-level=info
 
 If you have the [`moi`](https://gitlab.mercator-ocean.fr/internal/shell-utils) command installed:
 ```sh
-VERSION=<VERSION> PYPI_TOKEN=`moi read-secret --name PYPI_TOKEN` make release
+VERSION=<VERSION> DOCKER_HUB_USERNAME=`moi read-secret --name DOCKER_HUB_USERNAME` DOCKER_HUB_PUSH_TOKEN=`moi read-secret --name DOCKER_HUB_PUSH_TOKEN` PYPI_TOKEN=`moi read-secret --name PYPI_TOKEN` make release
 ```
 
 Otherwise:
@@ -83,3 +83,18 @@ poetry publish --build --username __token__ --password $PYPI_TOKEN
 ```
 
 Then tag the appropriate persons and add the changelog the Jira issue, before merging the branch.
+
+## Build the Docker image
+
+If you have the [`moi`](https://gitlab.mercator-ocean.fr/internal/shell-utils) command installed:
+```sh
+VERSION=<VERSION> DOCKER_HUB_USERNAME=`moi read-secret --name DOCKER_HUB_USERNAME` DOCKER_HUB_PUSH_TOKEN=`moi read-secret --name DOCKER_HUB_PUSH_TOKEN` make build-and-publish-dockerhub-image
+```
+
+## Update the conda-forge feedstock repository
+
+First, here is the link to the conda-forge feedstock repository: [https://github.com/conda-forge/copernicusmarine-feedstock](https://github.com/conda-forge/copernicusmarine-feedstock).
+
+All the conda-forge informations about this repository are available [here in the README](https://github.com/orgs/conda-forge/teams/copernicusmarine). To update it (new version, new maintainer...), please follow the indicated procedure.
+
+Please also take a look at [this conda-forge documentation](https://conda-forge.org/docs/maintainer/updating_pkgs/#example-workflow-for-updating-a-package) for more information about the update procedure.

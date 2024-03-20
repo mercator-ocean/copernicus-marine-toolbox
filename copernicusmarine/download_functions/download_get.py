@@ -17,6 +17,7 @@ def download_get(
     username: str,
     password: str,
     get_request: GetRequest,
+    download_file_list: bool,
     download_header: Callable,
     create_filenames_out: Callable,
 ) -> Tuple[List[str], List[pathlib.Path], Any]:
@@ -26,6 +27,8 @@ def download_get(
         get_request.regex,
         username,
         password,
+        pathlib.Path(get_request.output_directory),
+        download_file_list,
     )
     filenames_out = create_filenames_out(
         filenames_in=filenames_in,

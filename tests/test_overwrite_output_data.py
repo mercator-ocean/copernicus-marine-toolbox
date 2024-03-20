@@ -18,16 +18,6 @@ class TestOverwriteOutputData:
             extension = self.expected_downloaded_filepath.suffix
             return parent / (filename + "_(" + str(counter) + ")" + extension)
 
-    def test_download_ftp(self, tmp_path):
-        self.service = "ftp"
-        self.filename = "data.nc"
-        self.tmp_path = tmp_path
-        self.expected_downloaded_filepath = pathlib.Path(
-            "IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc"  # noqa
-        )
-        self._test_download_with_overwrite_option()
-        self._test_download_without_overwrite_option()
-
     def test_download_original_files(self, tmp_path):
         self.service = "original-files"
         self.filename = "data.nc"
@@ -35,14 +25,6 @@ class TestOverwriteOutputData:
         self.expected_downloaded_filepath = pathlib.Path(
             "IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc"  # noqa
         )
-        self._test_download_with_overwrite_option()
-        self._test_download_without_overwrite_option()
-
-    def test_download_opendap(self, tmp_path):
-        self.service = "opendap"
-        self.filename = "data.nc"
-        self.tmp_path = tmp_path
-        self.expected_downloaded_filepath = pathlib.Path(self.filename)
         self._test_download_with_overwrite_option()
         self._test_download_without_overwrite_option()
 
@@ -207,12 +189,6 @@ class TestOverwriteOutputData:
                     .stat()
                     .st_mtime
                 )
-            elif service == "ftp":
-                last_modification_time = (
-                    pathlib.Path(folder, self.expected_downloaded_filepath)
-                    .stat()
-                    .st_mtime
-                )
         elif command == "subset":
             if service == "arco-time-series":
                 last_modification_time = (
@@ -221,12 +197,6 @@ class TestOverwriteOutputData:
                     .st_mtime
                 )
             elif service == "arco-geo-series":
-                last_modification_time = (
-                    pathlib.Path(folder, self.expected_downloaded_filepath)
-                    .stat()
-                    .st_mtime
-                )
-            elif service == "opendap":
                 last_modification_time = (
                     pathlib.Path(folder, self.expected_downloaded_filepath)
                     .stat()
@@ -267,13 +237,11 @@ class TestOverwriteOutputData:
 
 
 def command_from_service(service: str) -> Optional[str]:
-    if service in ["ftp", "original-files"]:
+    if service in ["original-files"]:
         return "get"
     elif service in [
-        "opendap",
         "arco-time-series",
         "arco-geo-series",
-        "motu",
     ]:
         return "subset"
     return None

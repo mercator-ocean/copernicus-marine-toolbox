@@ -1,6 +1,7 @@
 import fnmatch
 import logging
 import pathlib
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from json import load
@@ -208,8 +209,10 @@ class GetRequest:
     force_service: Optional[str] = None
     filter: Optional[str] = None
     regex: Optional[str] = None
+    file_list: Optional[pathlib.Path] = None
     sync: bool = False
     sync_delete: bool = False
+    index_parts: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in GetRequest object.
@@ -253,17 +256,19 @@ def get_request_from_file(filepath: pathlib.Path) -> GetRequest:
     get_request = GetRequest()
     get_request.__dict__.update(json_with_mapped_options)
     get_request.enforce_types()
+    full_regex = get_request.regex
     if get_request.filter:
-        if get_request.regex:
-            get_request.regex = (
-                "("
-                + get_request.regex
-                + "|"
-                + fnmatch.translate(get_request.filter)
-                + ")"
-            )
-        else:
-            get_request.regex = fnmatch.translate(get_request.filter)
+        filter_regex = filter_to_regex(get_request.filter)
+        full_regex = overload_regex_with_additionnal_filter(
+            filter_regex, full_regex
+        )
+    if get_request.file_list:
+        file_list_regex = file_list_to_regex(get_request.file_list)
+        full_regex = overload_regex_with_additionnal_filter(
+            file_list_regex, full_regex
+        )
+    get_request.regex = full_regex
+
     return get_request
 
 
@@ -300,3 +305,20 @@ class LoadRequest:
             start_datetime=self.temporal_parameters.start_datetime,
             end_datetime=self.temporal_parameters.end_datetime,
         )
+
+
+def filter_to_regex(filter: str) -> str:
+    return fnmatch.translate(filter)
+
+
+def file_list_to_regex(file_list_path: pathlib.Path) -> str:
+    pattern = ""
+    with open(file_list_path) as file_list:
+        pattern = "|".join(map(re.escape, file_list.read().splitlines()))
+    return pattern
+
+
+def overload_regex_with_additionnal_filter(
+    regex: str, filter: Optional[str]
+) -> str:
+    return "(" + regex + "|" + filter + ")" if filter else regex
