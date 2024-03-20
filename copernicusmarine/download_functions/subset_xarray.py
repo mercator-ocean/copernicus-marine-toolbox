@@ -418,15 +418,15 @@ def check_dataset_subset_bounds(
         if coordinate_label in dataset.dims:
             times = dataset_coordinates[coordinate_label].values
             if dataset_valid_date:
-                times_min = dataset_valid_date.replace("Z", "")
+                times_min = (
+                    dataset_valid_date.replace("Z", "")
+                    if isinstance(dataset_valid_date, str)
+                    else dataset_valid_date
+                )
             else:
                 times_min = times.min()
-            dataset_minimum_coordinate_value = Timestamp(
-                times_min
-            ).to_pydatetime()
-            dataset_maximum_coordinate_value = Timestamp(
-                times.max()
-            ).to_pydatetime()
+            dataset_minimum_coordinate_value = _date_to_datetime(times_min)
+            dataset_maximum_coordinate_value = _date_to_datetime(times.max())
             user_minimum_coordinate_value = (
                 dataset_subset.start_datetime
                 if dataset_subset.start_datetime is not None
@@ -445,6 +445,13 @@ def check_dataset_subset_bounds(
                 dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
                 is_strict=subset_method == "strict",
             )
+
+
+def _date_to_datetime(date: Union[str, int]) -> datetime:
+    if isinstance(date, int):
+        return Timestamp(date * 1e6).to_pydatetime()
+    else:
+        return Timestamp(date).to_pydatetime()
 
 
 @typing.no_type_check

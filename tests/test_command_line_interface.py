@@ -184,7 +184,6 @@ class TestCommandLineInterface:
     def then_all_dataset_parts_are_filled(self):
         expected_product_id = "BALTICSEA_ANALYSISFORECAST_BGC_003_007"
         expected_dataset_id = "cmems_mod_bal_bgc_anfc_static"
-        default_part_uri = "ftp://nrt.cmems-du.eu/Core/BALTICSEA_ANALYSISFORECAST_BGC_003_007/cmems_mod_bal_bgc_anfc_static"  # noqa
 
         json_result = loads(self.output)
         expected_product = list(
@@ -217,9 +216,9 @@ class TestCommandLineInterface:
 
         version_ordered = sorted(
             dataset["versions"],
-            key=lambda x: x["label"]
-            if x["label"] != VERSION_DEFAULT
-            else "110001",
+            key=lambda x: (
+                x["label"] if x["label"] != VERSION_DEFAULT else "110001"
+            ),
             reverse=True,
         )
 
@@ -231,23 +230,6 @@ class TestCommandLineInterface:
             )
         )
         assert len(maybe_default_part) == 0
-
-        parts = list(
-            filter(
-                lambda part: part["name"] != PART_DEFAULT,
-                latest_version["parts"],
-            )
-        )
-        for part in parts:
-            maybe_ftp_service = list(
-                filter(
-                    lambda x: x["service_type"]["service_name"] == "ftp",
-                    part["services"],
-                )
-            )
-            assert len(maybe_ftp_service) == 1
-            ftp_service = maybe_ftp_service[0]
-            assert ftp_service["uri"] == default_part_uri
 
     def when_I_run_copernicus_marine_describe_with_contains_option(self):
         filter_token = "OMI_HEALTH_CHL_GLOBAL_OCEANCOLOUR_oligo_n"
@@ -400,14 +382,6 @@ class TestCommandLineInterface:
                                 CopernicusMarineDatasetServiceType.STATIC_ARCO.service_name.value  # noqa
                                 not in service_names
                             )
-                        for service in services:
-                            service_uri = service["uri"]
-                            assert isinstance(service_uri, str)
-                            if service["service_type"]["service_name"] in (
-                                CopernicusMarineDatasetServiceType.GEOSERIES.service_name.value,  # noqa
-                                CopernicusMarineDatasetServiceType.TIMESERIES.service_name.value,  # noqa
-                            ):
-                                assert service_uri.endswith(".zarr")
 
     def when_I_use_staging_environment_in_debug_logging_level(self):
         command = [
@@ -433,14 +407,6 @@ class TestCommandLineInterface:
         subpath: str
         dataset_url: str
 
-    OPENDAP = SubsetServiceToTest(
-        "opendap",
-        "download_opendap",
-        (
-            "https://nrt.cmems-du.eu/thredds/dodsC/"
-            "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m"
-        ),
-    )
     GEOSERIES = SubsetServiceToTest(
         "geoseries",
         "download_zarr",
@@ -460,9 +426,6 @@ class TestCommandLineInterface:
             "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/geoChunked.zarr"
         ),
     )
-
-    def test_subset_opendap_functionnality(self, tmp_path):
-        self._test_subset_functionnalities(self.OPENDAP, tmp_path)
 
     def flatten_request_dict(
         self, request_dict: dict[str, Optional[Union[str, Path]]]
@@ -571,42 +534,6 @@ class TestCommandLineInterface:
             b"copernicusmarine get --dataset-id " + bytes(dataset_id, "utf-8")
         ) in output.stdout
 
-    def test_subset_request_input_hierarchy(self, tmp_path):
-        filepath = (
-            "./tests/resources/request_files/"
-            "test_subset_request_with_request_file.json"
-        )
-        motu_api_request = (
-            "python -m motuclient --motu https://nrt.cmems-du.eu/motu-web/Motu "
-            "--service-id SST_GLO_SST_L4_NRT_OBSERVATIONS_010_001-TDS "
-            "--product-id METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 "
-            "--longitude-min -1.8080337053571427 "
-            "--longitude-max 17.07587388392857 "
-            "--latitude-min 32.670164592633924 "
-            "--latitude-max 47.53621950334821 "
-            "--variable analysis_error "
-            "--variable mask "
-            "--out-dir <OUTPUT_DIRECTORY> "
-            "--out-name <OUTPUT_FILENAME> "
-            "--user <USERNAME> --pwd <PASSWORD>"
-        )
-
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--force-download",
-            "--output-directory",
-            f"{tmp_path}",
-            "--minimum-latitude",
-            "30.",
-            "--request-file",
-            f"{filepath}",
-            "--motu-api-request",
-            f"'{motu_api_request}'",
-        ]
-        output = subprocess.run(command)
-        assert output.returncode == 0
-
     def test_if_dataset_coordinate_valid_minmax_attributes_are_setted(
         self, tmp_path
     ):
@@ -625,7 +552,7 @@ class TestCommandLineInterface:
             "--output-directory": tmp_path,
         }
 
-        self.check_default_subset_request(self.OPENDAP.subpath, tmp_path)
+        self.check_default_subset_request(self.GEOSERIES.subpath, tmp_path)
 
         dataset_path = pathlib.Path(tmp_path) / "output.nc"
         dataset = xarray.open_dataset(dataset_path)
@@ -651,11 +578,7 @@ class TestCommandLineInterface:
     class GetServiceToTest:
         name: str
 
-    FTP = GetServiceToTest("ftp")
     FILES = GetServiceToTest("files")
-
-    def test_get_ftp_functionnality(self, tmp_path):
-        self._test_get_functionalities(self.FTP, tmp_path)
 
     def test_get_original_files_functionnality(self, tmp_path):
         self._test_get_functionalities(self.FILES, tmp_path)
@@ -717,7 +640,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--service",
-            f"{self.FTP.name}",
+            f"{self.FILES.name}",
             "--regex",
             f"{regex}",
             "--force-download",
@@ -742,7 +665,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--service",
-            f"{self.FTP.name}",
+            f"{self.FILES.name}",
             "--regex",
             f"{regex}",
             "--output-directory",
@@ -766,7 +689,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--service",
-            f"{self.FTP.name}",
+            f"{self.FILES.name}",
             "--regex",
             f"{regex}",
             "--force-download",
@@ -817,7 +740,7 @@ class TestCommandLineInterface:
         assert output.returncode == 0
         assert is_file
 
-    def test_process_is_stopped_when_credentials_are_invalid(self):
+    def test_process_is_not_stopped_when_credentials_are_invalid(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
 
         command = [
@@ -831,12 +754,13 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--variable",
             "thetao",
+            "--force-download",
         ]
 
         output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 1
-        assert b"Invalid username or password" in output.stdout
+        assert output.returncode == 0
+        assert b"Invalid username or password" not in output.stdout
 
     def test_login_is_prompt_when_configuration_file_doest_not_exist(
         self, tmp_path
@@ -1016,6 +940,16 @@ class TestCommandLineInterface:
         output = subprocess.run(command)
         assert output.returncode == 0
         assert non_existing_directory.is_dir()
+
+        command_with_skip = [
+            "copernicusmarine",
+            "login",
+            "--configuration-file-directory",
+            f"{non_existing_directory}",
+            "--skip-if-user-logged-in",
+        ]
+        output_with_skip = subprocess.run(command_with_skip)
+        assert output_with_skip.returncode == 0
 
     def test_subset_error_when_forced_service_does_not_exist(self):
         self.when_I_run_copernicus_marine_subset_forcing_a_service_not_available()
@@ -1207,18 +1141,6 @@ class TestCommandLineInterface:
 
         assert set(expected_files).issubset(downloaded_files)
 
-    def test_no_directories_option_ftp(self, tmp_path):
-        self.when_I_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path, force_service=self.FTP
-        )
-        self.then_files_are_created_without_tree_folder(tmp_path)
-        self.when_I_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path, force_service=self.FTP, output_directory="test"
-        )
-        self.then_files_are_created_without_tree_folder(
-            tmp_path, output_directory="test"
-        )
-
     def test_no_directories_option_original_files(self, tmp_path):
         self.when_I_run_copernicus_marine_command_using_no_directories_option(
             tmp_path, force_service=self.FILES
@@ -1230,44 +1152,6 @@ class TestCommandLineInterface:
         self.then_files_are_created_without_tree_folder(
             tmp_path, output_directory="test"
         )
-
-    def test_motu_subset_with_non_existing_directory(self, tmp_path):
-        non_existing_directory = Path(tmp_path, "i_dont_exist")
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            "cmems_obs-ins_glo_phy-temp-sal_nrt_oa_P1M",
-            "-v",
-            "TEMP",
-            "-t",
-            "2022-12-15T00:00:00",
-            "-T",
-            "2022-12-15T00:00:00",
-            "-x",
-            "20",
-            "-X",
-            "21",
-            "-y",
-            "30",
-            "-Y",
-            "31",
-            "-z",
-            "0",
-            "-Z",
-            "5",
-            "-o",
-            f"{non_existing_directory}",
-            "-f",
-            "data.nc",
-            "--service",
-            "motu",
-            "--force-download",
-        ]
-        output = subprocess.run(command)
-
-        assert output.returncode == 0, output.stderr
-        assert (non_existing_directory / "data.nc").is_file()
 
     def test_default_prompt_for_get_command(self, tmp_path):
         command = [
@@ -1365,7 +1249,8 @@ class TestCommandLineInterface:
             "copernicusmarine",
             "get",
             "--dataset-url",
-            "ftp://nrt.cmems-du.eu/Core/GLOBAL_ANALYSISFORECAST_PHY_001_024_XXXXX/"
+            "https://s3.waw3-1.cloudferro.com/mdl-arco-time-013/arco/"
+            "GLOBAL_ANALYSISFORECAST_PHY_XXXXXXX/"
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m/2023",
         ]
 
@@ -1426,13 +1311,14 @@ class TestCommandLineInterface:
             "copernicusmarine",
             "get",
             "--dataset-url",
-            "ftp://nrt.cmems-du.eu/Core/GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m/2023/08",
+            "https://s3.waw3-1.cloudferro.com/mdl-native-14/native/"
+            "GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202211/2023/11",
         ]
 
         output = subprocess.run(command, capture_output=True)
 
-        assert b"Printed 20 out of 31 files" in output.stdout
+        assert b"Printed 20 out of 30 files" in output.stdout
 
     def test_short_option_for_copernicus_marine_command_helper(self):
         short_option_command = [
@@ -1546,43 +1432,6 @@ class TestCommandLineInterface:
 
         assert b"Service ft does not exist for command subset" in output.stdout
 
-    def when_I_request_subset_dataset_with_opendap_service(self, output_path):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-            "-t",
-            "2023-05-10",
-            "-T",
-            "2023-05-12",
-            "-x",
-            "-18",
-            "-X",
-            "-10",
-            "-y",
-            "35",
-            "-Y",
-            "40",
-            "-z",
-            "0",
-            "-Z",
-            "10",
-            "-v",
-            "thetao",
-            "--service",
-            "opendap",
-            "-o",
-            f"{output_path}",
-            "-f",
-            "data.nc",
-            "--force-download",
-        ]
-
-        self.run_output = subprocess.run(
-            command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
-        )
-
     def then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
         self, filepath
     ):
@@ -1595,14 +1444,6 @@ class TestCommandLineInterface:
         self.when_I_request_subset_dataset_with_zarr_service(tmp_path, True)
         self.then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
             tmp_path / "data.zarr"
-        )
-
-    def test_copernicusmarine_version_in_dataset_attributes_with_opendap(
-        self, tmp_path
-    ):
-        self.when_I_request_subset_dataset_with_opendap_service(tmp_path)
-        self.then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
-            tmp_path / "data.nc"
         )
 
     def test_subset_filter_by_standard_name(self, tmp_path):
@@ -1774,12 +1615,6 @@ class TestCommandLineInterface:
         self.when_I_request_subset_dataset_with_zarr_service(tmp_path, True)
         self.then_I_can_read_dataset_size()
 
-    def test_dataset_size_is_displayed_when_downloading_with_opendap_service(
-        self, tmp_path
-    ):
-        self.when_I_request_subset_dataset_with_opendap_service(tmp_path)
-        self.then_I_can_read_dataset_size()
-
     def test_dataset_has_always_every_dimensions(self, tmp_path):
         output_filename = "data.nc"
         command = [
@@ -1824,20 +1659,6 @@ class TestCommandLineInterface:
             )
             == 4
         )
-
-    def test_i_can_get_ftp_url_subpath(self, tmp_path):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-url",
-            "ftp://nrt.cmems-du.eu/Core/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr/index_latest.txt",  # noqa
-            "--force-download",
-            "-o",
-            f"{tmp_path}",
-        ]
-
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 0
 
     def when_I_request_a_dataset_with_subset_method_option(
         self, subset_method
@@ -1891,18 +1712,6 @@ class TestCommandLineInterface:
     def test_subset_nearest_method(self):
         self.when_I_request_a_dataset_with_subset_method_option("nearest")
         self.then_I_can_read_a_warning_in_stdout()
-
-    def test_request_file_over_ftp_is_quick(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-url",
-            "ftp://nrt.cmems-du.eu/Core/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr/index_latest.txt",  # noqa
-            "-s",
-            "ftp",
-        ]
-        output = execute_in_terminal(command=command, timeout_second=20)
-        assert b"Total size of the download:" in output.stdout
 
     def test_netcdf_compression_option(self, tmp_path):
         filename_without_option = "without_option.nc"
@@ -2171,3 +1980,74 @@ class TestCommandLineInterface:
         assert cache_path.is_dir() is True
 
         del os.environ["COPERNICUSMARINE_CACHE_DIRECTORY"]
+
+    def test_file_list_filter(self, tmp_path):
+        dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--service",
+            f"{self.FILES.name}",
+            "--file-list",
+            "./tests/resources/file_list_example.txt",
+            "--force-download",
+            "--output-directory",
+            f"{tmp_path}",
+        ]
+
+        output = subprocess.run(command)
+        downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
+        assert output.returncode == 0
+        assert len(downloaded_files) == 2
+
+        for filename in downloaded_files:
+            assert (
+                re.search(
+                    (
+                        r"nrt_global_allsat_phy_l4_20220119_20220125\.nc|"
+                        r"nrt_global_allsat_phy_l4_20220120_20220126\.nc"
+                    ),
+                    filename,
+                )
+                is not None
+            )
+
+    def test_get_download_file_list(self, tmp_path):
+        regex = ".*_(2001|2002|2003).*.nc"
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--service",
+            "files",
+            "--regex",
+            f"{regex}",
+            "--download-file-list",
+            "--output-directory",
+            f"{tmp_path}",
+        ]
+
+        output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
+
+        output = subprocess.run(command)
+        assert output.returncode == 0
+        assert output_filename.is_file()
+        with open(output_filename) as file:
+            lines = file.read().splitlines()
+            assert len(lines) == 3
+            assert (
+                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc"
+                in lines[0]
+            )
+            assert (
+                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc"
+                in lines[1]
+            )
+            assert (
+                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20030101_20031231_R20221101_RE01.nc"
+                in lines[2]
+            )

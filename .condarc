@@ -1,4 +1,2 @@
-channel_alias: https://nexus.mercator-ocean.fr/repository
 channels:
-  - conda-proxy
   - conda-forge

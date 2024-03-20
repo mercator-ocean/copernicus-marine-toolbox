@@ -1,0 +1,30 @@
+name: Run tests
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  tests:
+    runs-on: self-hosted
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment_test.yaml
+          environment-name: copernicusmarine_test
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Run tests
+        env:
+          COPERNICUS_MARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_MARINE_SERVICE_USERNAME }}
+          COPERNICUS_MARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_MARINE_SERVICE_PASSWORD }}
+        run: make run-tests
+        shell: micromamba-shell {0}

@@ -192,6 +192,25 @@ def cli_group_get() -> None:
     "the files to download.",
 )
 @click.option(
+    "--file-list",
+    type=pathlib.Path,
+    default=None,
+    help="A path to a text file that list filenames line by line. "
+    "Filenames must match the absolute paths of "
+    "the files to download.",
+)
+@click.option(
+    "--download-file-list",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Option to only create a file files_to_download.txt containing "
+    "the names of the targeted files instead of downloading them. "
+    "It writes the file in the directory specified with the "
+    "--output-directory option (default to current directory). "
+    "If specified, no other action will be performed.",
+)
+@click.option(
     "--sync",
     cls=MutuallyExclusiveOption,
     is_flag=True,
@@ -208,6 +227,13 @@ def cli_group_get() -> None:
     help="Option to delete local files that are not present on "
     "the remote server while applying sync.",
     mutually_exclusive=["no-directories"],
+)
+@click.option(
+    "--index-parts",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Option to get the index files of an INSITU dataset. Temporary option.",
 )
 @tqdm_disable_option
 @click.option(
@@ -247,8 +273,11 @@ def get(
     no_metadata_cache: bool,
     filter: Optional[str],
     regex: Optional[str],
+    file_list: Optional[pathlib.Path],
+    download_file_list: bool,
     sync: bool,
     sync_delete: bool,
+    index_parts: bool,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
@@ -270,26 +299,29 @@ def get(
         return
 
     return get_function(
-        dataset_url,
-        dataset_id,
-        dataset_version,
-        dataset_part,
-        username,
-        password,
-        no_directories,
-        show_outputnames,
-        output_directory,
-        credentials_file,
-        force_download,
-        overwrite_output_data,
-        request_file,
-        service,
-        overwrite_metadata_cache,
-        no_metadata_cache,
-        filter,
-        regex,
-        sync,
-        sync_delete,
-        disable_progress_bar,
-        staging,
+        dataset_url=dataset_url,
+        dataset_id=dataset_id,
+        force_dataset_version=dataset_version,
+        force_dataset_part=dataset_part,
+        username=username,
+        password=password,
+        no_directories=no_directories,
+        show_outputnames=show_outputnames,
+        output_directory=output_directory,
+        credentials_file=credentials_file,
+        force_download=force_download,
+        overwrite_output_data=overwrite_output_data,
+        request_file=request_file,
+        force_service=service,
+        overwrite_metadata_cache=overwrite_metadata_cache,
+        no_metadata_cache=no_metadata_cache,
+        filter=filter,
+        regex=regex,
+        file_list_path=file_list,
+        download_file_list=download_file_list,
+        sync=sync,
+        sync_delete=sync_delete,
+        index_parts=index_parts,
+        disable_progress_bar=disable_progress_bar,
+        staging=staging,
     )

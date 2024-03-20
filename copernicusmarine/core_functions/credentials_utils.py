@@ -167,6 +167,34 @@ def _retrieve_credential_from_configuration_files(
     return credential
 
 
+def copernicusmarine_configuration_file_exists(
+    configuration_file_directory: pathlib.Path,
+) -> bool:
+    configuration_filename = pathlib.Path(
+        configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
+    )
+    return configuration_filename.exists()
+
+
+def copernicusmarine_configuration_file_is_valid(
+    configuration_file_directory: pathlib.Path,
+) -> bool:
+    configuration_filename = pathlib.Path(
+        configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
+    )
+    username = _retrieve_credential_from_configuration_files(
+        "username", configuration_filename
+    )
+    password = _retrieve_credential_from_configuration_files(
+        "password", configuration_filename
+    )
+    return (
+        username is not None
+        and password is not None
+        and _check_credentials_with_cas(username, password)
+    )
+
+
 def create_copernicusmarine_configuration_file(
     username: str,
     password: str,
@@ -198,7 +226,6 @@ def create_copernicusmarine_configuration_file(
 
 def _check_credentials_with_cas(username: str, password: str) -> bool:
     logger.debug("Checking user credentials...")
-    user_is_active = False
     service = "copernicus-marine-client"
     cmems_cas_login_url = (
         f"https://cmems-cas.cls.fr/cas/login?service={service}"
@@ -226,10 +253,8 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
             .replace("login?", f"serviceValidate?service={service}&")
         )
         logger.debug(f"Getting profile to {get_profile_url}...")
-        profile_response = conn_session.get(get_profile_url)
-        user_is_active = '"status" value="active"' in profile_response.text
     logger.debug("User credentials checked")
-    return user_is_active
+    return True
 
 
 @cachier(stale_after=timedelta(hours=48), cache_dir=CACHE_BASE_DIRECTORY)

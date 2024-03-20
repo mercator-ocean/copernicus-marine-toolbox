@@ -65,11 +65,16 @@ def download_ftp(
     password: str,
     get_request: GetRequest,
     disable_progress_bar: bool,
+    download_file_list: bool,
 ) -> list[pathlib.Path]:
+    logger.warning(
+        "The FTP service is deprecated, please use 'original-files' instead."
+    )
     filenames_in, filenames_out, host = download_get(
         username,
         password,
         get_request,
+        download_file_list,
         download_header,
         create_filenames_out,
     )
@@ -127,7 +132,12 @@ def download_files(
 
 
 def download_header(
-    data_path: str, regex: Optional[str], username: str, password: str
+    data_path: str,
+    regex: Optional[str],
+    username: str,
+    password: str,
+    output_directory: pathlib.Path,
+    download_file_list: bool,
 ) -> Tuple[str, str, list[str], float]:
     (host, path) = parse_ftp_dataset_url(data_path)
     logger.debug(f"Downloading header via FTP on {host + path}")
@@ -137,9 +147,20 @@ def download_header(
         raw_filenames = get_filenames_recursively(ftp, path)
         if regex:
             regex_compiled = re.compile(regex)
-            filenames = list(filter(regex_compiled.match, raw_filenames))
+            filenames = list(filter(regex_compiled.search, raw_filenames))
         else:
             filenames = raw_filenames
+
+    if download_file_list:
+        download_filename = get_unique_filename(
+            output_directory / "files_to_download.txt", False
+        )
+        logger.info(f"The file list is written at {download_filename}")
+        with open(download_filename, "w") as file_out:
+            for filename in filenames:
+                file_out.write(f"{filename}\n")
+        exit(0)
+
     pool = ThreadPool()
     nfilenames_per_process, nfilenames = 100, len(filenames)
     indexes = append(

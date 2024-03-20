@@ -1,0 +1,2 @@
+2022/01/nrt_global_allsat_phy_l4_20220119_20220125.nc
+2022/01/nrt_global_allsat_phy_l4_20220120_20220126.nc

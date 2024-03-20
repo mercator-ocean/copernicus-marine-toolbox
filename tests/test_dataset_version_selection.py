@@ -90,7 +90,7 @@ class TestDatasetVersionSelection:
             "--dataset-version",
             "default",
             "--service",
-            "ftp",
+            "files",
         ]
 
         output = execute_in_terminal(command)
