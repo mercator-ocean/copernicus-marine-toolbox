@@ -97,17 +97,6 @@ yarl = ">=1.0,<2.0"
 speedups = ["Brotli", "aiodns", "brotlicffi"]
 
 [[package]]
-name = "aioretry"
-version = "5.0.2"
-description = "Asyncio retry utility for Python 3.7+"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "aioretry-5.0.2-py3-none-any.whl", hash = "sha256:ae0970f4079b91ef647fc342b4b24c3108c57c31ec64a9ec682daeb9936db302"},
-    {file = "aioretry-5.0.2.tar.gz", hash = "sha256:fdfe11ab0a54b762e206f5485b2240e56c631f4dc6594f2d005af4c37e10511b"},
-]
-
-[[package]]
 name = "aiosignal"
 version = "1.3.1"
 description = "aiosignal: a list of registered asynchronous callbacks"
