@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import pathlib
+import re
 from datetime import datetime
 from importlib.metadata import version
 from typing import (
@@ -13,6 +14,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    Tuple,
     TypeVar,
     Union,
 )
@@ -173,3 +175,29 @@ async def rolling_batch_gather(
 
     results = await asyncio.gather(*[worker() for _ in range(per_batch)])
     return [s for r in results for s in r]
+
+
+# Example data_path
+# https://s3.waw3-1.cloudferro.com/mdl-native-01/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105
+# https://s3.region.cloudferro.com/bucket/arco/product/dataset/geoChunked.zarr
+# https://s3.region.cloudferro.com:443/bucket/arco/product/dataset/geoChunked.zarr
+def parse_access_dataset_url(
+    data_path: str, only_dataset_root_path: bool = False
+) -> Tuple[str, str, str]:
+
+    match = re.search(
+        r"^(http|https):\/\/([\w\-\.]+)(:[\d]+)?(\/.*)", data_path
+    )
+    if match:
+        endpoint_url = match.group(1) + "://" + match.group(2)
+        full_path = match.group(4)
+        segments = full_path.split("/")
+        bucket = segments[1]
+        path = (
+            "/".join(segments[2:])
+            if not only_dataset_root_path
+            else "/".join(segments[2:5]) + "/"
+        )
+        return endpoint_url, bucket, path
+    else:
+        raise Exception(f"Invalid data path: {data_path}")

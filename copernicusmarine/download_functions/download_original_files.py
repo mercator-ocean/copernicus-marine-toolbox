@@ -20,6 +20,7 @@ from copernicusmarine.core_functions.utils import (
     construct_url_with_query_params,
     flatten,
     get_unique_filename,
+    parse_access_dataset_url,
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
@@ -197,8 +198,8 @@ def _download_header(
     directory_out: pathlib.Path,
     only_list_root_path: bool = False,
 ) -> Tuple[str, Tuple[str, str], list[str], float, list[str]]:
-    (endpoint_url, bucket, path) = parse_original_files_dataset_url(
-        data_path, only_list_root_path
+    (endpoint_url, bucket, path) = parse_access_dataset_url(
+        data_path, only_dataset_root_path=only_list_root_path
     )
 
     filenames, sizes, total_size = [], [], 0.0
@@ -410,29 +411,6 @@ def _download_files(
 # /////////////////////////////
 # --- Tools
 # /////////////////////////////
-
-
-# Example data_path
-# https://s3.waw3-1.cloudferro.com/mdl-native-01/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105
-def parse_original_files_dataset_url(
-    data_path: str, only_dataset_root_path: bool
-) -> Tuple[str, str, str]:
-    match = re.search(
-        r"^(http|https):\/\/([\w\-\.]+)(:[\d]+)?(\/.*)", data_path
-    )
-    if match:
-        endpoint_url = match.group(1) + "://" + match.group(2)
-        full_path = match.group(4)
-        segments = full_path.split("/")
-        bucket = segments[1]
-        path = (
-            "/".join(segments[2:])
-            if not only_dataset_root_path
-            else "/".join(segments[2:5]) + "/"
-        )
-        return endpoint_url, bucket, path
-    else:
-        raise Exception(f"Invalid data path: {data_path}")
 
 
 def create_filenames_out(

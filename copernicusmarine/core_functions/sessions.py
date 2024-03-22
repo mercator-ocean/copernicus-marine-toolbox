@@ -7,8 +7,10 @@ import certifi
 import requests
 import xarray
 
+from copernicusmarine.core_functions.custom_zarr_store import CustomS3Store
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
+    parse_access_dataset_url,
 )
 
 TRUST_ENV = True
@@ -33,8 +35,18 @@ def get_configured_request_session() -> requests.Session:
 
 
 def open_zarr(
-    *args, copernicus_marine_username: Optional[str] = None, **kwargs
+    dataset_url: str,
+    copernicus_marine_username: Optional[str] = None,
+    **kwargs,
 ) -> xarray.Dataset:
+    (
+        endpoint,
+        bucket,
+        root_path,
+    ) = parse_access_dataset_url(dataset_url)
+    store = CustomS3Store(
+        endpoint=endpoint, bucket=bucket, root_path=root_path
+    )
     kwargs.update(
         {
             "storage_options": {
@@ -46,4 +58,4 @@ def open_zarr(
             }
         }
     )
-    return xarray.open_zarr(*args, **kwargs)
+    return xarray.open_zarr(store, **kwargs)
