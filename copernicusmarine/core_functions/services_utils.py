@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from itertools import chain
-from typing import List, Literal, Optional, Tuple
+from typing import List, Literal, Optional, Tuple, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     PART_DEFAULT,
@@ -69,25 +69,34 @@ class Command:
 
 
 class CommandType(Command, Enum):
-    SUBSET = _Command.SUBSET, [
-        CopernicusMarineDatasetServiceType.GEOSERIES,
-        CopernicusMarineDatasetServiceType.TIMESERIES,
-        CopernicusMarineDatasetServiceType.OMI_ARCO,
-        CopernicusMarineDatasetServiceType.STATIC_ARCO,
-        CopernicusMarineDatasetServiceType.OPENDAP,
-        CopernicusMarineDatasetServiceType.MOTU,
-    ]
-    GET = _Command.GET, [
-        CopernicusMarineDatasetServiceType.FILES,
-        CopernicusMarineDatasetServiceType.FTP,
-    ]
-    LOAD = _Command.LOAD, [
-        CopernicusMarineDatasetServiceType.GEOSERIES,
-        CopernicusMarineDatasetServiceType.TIMESERIES,
-        CopernicusMarineDatasetServiceType.OMI_ARCO,
-        CopernicusMarineDatasetServiceType.STATIC_ARCO,
-        CopernicusMarineDatasetServiceType.OPENDAP,
-    ]
+    SUBSET = (
+        _Command.SUBSET,
+        [
+            CopernicusMarineDatasetServiceType.GEOSERIES,
+            CopernicusMarineDatasetServiceType.TIMESERIES,
+            CopernicusMarineDatasetServiceType.OMI_ARCO,
+            CopernicusMarineDatasetServiceType.STATIC_ARCO,
+            CopernicusMarineDatasetServiceType.OPENDAP,
+            CopernicusMarineDatasetServiceType.MOTU,
+        ],
+    )
+    GET = (
+        _Command.GET,
+        [
+            CopernicusMarineDatasetServiceType.FILES,
+            CopernicusMarineDatasetServiceType.FTP,
+        ],
+    )
+    LOAD = (
+        _Command.LOAD,
+        [
+            CopernicusMarineDatasetServiceType.GEOSERIES,
+            CopernicusMarineDatasetServiceType.TIMESERIES,
+            CopernicusMarineDatasetServiceType.OMI_ARCO,
+            CopernicusMarineDatasetServiceType.STATIC_ARCO,
+            CopernicusMarineDatasetServiceType.OPENDAP,
+        ],
+    )
 
 
 def assert_service_type_for_command(
@@ -308,7 +317,7 @@ class RetrievalService:
     service_type: CopernicusMarineDatasetServiceType
     service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
-    dataset_valid_start_date: Optional[str]
+    dataset_valid_start_date: Optional[Union[str, int]]
 
 
 def get_retrieval_service(
@@ -518,13 +527,16 @@ def _get_retrieval_service_from_dataset_version(
 
 def _get_dataset_start_date_from_service(
     service: CopernicusMarineService,
-) -> Optional[str]:
+) -> Optional[Union[str, int]]:
     for variable in service.variables:
         for coordinate in variable.coordinates:
-            if coordinate.coordinates_id == "time" and isinstance(
-                coordinate.minimum_value, str
+            if (
+                coordinate.coordinates_id == "time"
+                and coordinate.minimum_value
             ):
-                return coordinate.minimum_value
+                if isinstance(coordinate.minimum_value, str):
+                    return coordinate.minimum_value.replace("Z", "")
+                return int(coordinate.minimum_value)
     return None
 
 

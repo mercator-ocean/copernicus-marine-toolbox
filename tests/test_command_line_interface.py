@@ -570,6 +570,32 @@ class TestCommandLineInterface:
             dataset.time.attrs["valid_max"] == "2021-01-02T00:00:00.000000000"
         )
 
+    def test_retention_period_works(self):
+        self.command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
+            "--dataset-version",
+            "202311",
+            "--variable",
+            "CHL",
+            "--minimum-longitude",
+            "-36.29005445972566",
+            "--maximum-longitude",
+            "-35.14832052107781",
+            "--minimum-latitude",
+            "47.122926204435295",
+            "--maximum-latitude",
+            "48.13780081656672",
+            "--force-download",
+        ]
+
+        self.output = execute_in_terminal(self.command)
+        assert (
+            b"time       (time) datetime64[ns] 2023" not in self.output.stdout
+        )
+
     # -------------------------#
     # Test on get requests #
     # -------------------------#
