@@ -204,6 +204,7 @@ class CopernicusMarineService:
 class CopernicusMarineVersionPart:
     name: str
     services: list[CopernicusMarineService]
+    retired_date: Optional[str]
 
     def get_service_by_service_type(
         self, service_type: CopernicusMarineDatasetServiceType
@@ -296,7 +297,9 @@ class CopernicusMarineProductDataset:
                     label=VERSION_DEFAULT,
                     parts=[
                         CopernicusMarineVersionPart(
-                            name=PART_DEFAULT, services=portal_services
+                            name=PART_DEFAULT,
+                            services=portal_services,
+                            retired_date=None,
                         )
                     ],
                 )
@@ -540,13 +543,21 @@ def _get_parts(
     parts: List[CopernicusMarineVersionPart] = []
 
     for datacube in datacubes:
+        retired_date = datacube.properties.get("admp_retired_date")
+        if retired_date and datetime_parser(retired_date) < datetime_parser(
+            "now"
+        ):
+            continue
+
         services = _get_services(datacube)
         _, _, part = get_version_and_part_from_full_dataset_id(datacube.id)
 
         if services:
             parts.append(
                 CopernicusMarineVersionPart(
-                    name=part, services=_get_services(datacube)
+                    name=part,
+                    services=_get_services(datacube),
+                    retired_date=retired_date,
                 )
             )
 
@@ -671,11 +682,12 @@ def _construct_marine_data_store_dataset(
     )
     if datacubes:
         versions = _get_versions_from_marine_datastore(datacubes)
-        return ProductDatasetFromMarineDataStore(
-            dataset_id=dataset_id,
-            dataset_name=dataset_name,
-            versions=versions,
-        )
+        if versions:
+            return ProductDatasetFromMarineDataStore(
+                dataset_id=dataset_id,
+                dataset_name=dataset_name,
+                versions=versions,
+            )
     return None
 
 
@@ -1177,14 +1189,15 @@ def to_dataset(
             distinct_dataset_versions, key=lambda x: x.dataset_version
         )
         versions = list(chain(map_reject_none(to_version, dataset_by_version)))
-        product = ProductDatasetFromPortal(
-            dataset_id=dataset_id,
-            dataset_name=sub_dataset_title,
-            versions=versions,
-            raw_services=first_distinct_dataset_version.raw_services,
-            layer_elements=first_distinct_dataset_version.layer_elements,
-        )
-        return product
+        if versions:
+            dataset = ProductDatasetFromPortal(
+                dataset_id=dataset_id,
+                dataset_name=sub_dataset_title,
+                versions=versions,
+                raw_services=first_distinct_dataset_version.raw_services,
+                layer_elements=first_distinct_dataset_version.layer_elements,
+            )
+            return dataset
     return None
 
 
@@ -1192,11 +1205,22 @@ def to_part(
     distinct_dataset_version: DistinctDatasetVersionPart,
 ) -> List[CopernicusMarineVersionPart]:
     mds_stac_services = mds_stac_to_services(distinct_dataset_version)
-    if mds_stac_services:
+    retired_date = (
+        distinct_dataset_version.stac_items_values.get("properties", {}).get(
+            "admp_retired_date"
+        )
+        if distinct_dataset_version.stac_items_values
+        else None
+    )
+    if mds_stac_services and (
+        not retired_date
+        or datetime_parser(retired_date) > datetime_parser("now")
+    ):
         return [
             CopernicusMarineVersionPart(
                 name=distinct_dataset_version.dataset_part,
                 services=mds_stac_services,
+                retired_date=retired_date,
             )
         ]
     else:
