@@ -26,7 +26,6 @@ semver = ">=3.0.2"
 nest-asyncio = ">=1.5.8"
 pystac = ">=1.8.3"
 lxml = ">=4.9.0"
-aioretry = "^5.0.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"

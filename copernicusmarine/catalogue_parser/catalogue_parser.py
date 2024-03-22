@@ -15,10 +15,10 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
 import nest_asyncio
 import pystac
 from aiohttp import ContentTypeError
-from aioretry import RetryInfo, RetryPolicyStrategy, retry
 from cachier.core import cachier
 from tqdm import tqdm
 
+from copernicusmarine.aioretry import RetryInfo, RetryPolicyStrategy, retry
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_debug,
 )
@@ -702,7 +702,8 @@ def _construct_marine_data_store_product(
     )
 
     datasets = map(
-        _construct_marine_data_store_dataset, datacubes_by_id  # type: ignore
+        _construct_marine_data_store_dataset,  # type: ignore
+        datacubes_by_id,  # type: ignore
     )
 
     production_center = [
