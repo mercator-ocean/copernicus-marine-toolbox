@@ -22,6 +22,7 @@ from copernicusmarine.core_functions.utils import (
 )
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
+    date_to_datetime,
 )
 
 
@@ -69,6 +70,18 @@ def load_data_object_from_load_request(
         CopernicusMarineDatasetServiceType.OMI_ARCO,
         CopernicusMarineDatasetServiceType.STATIC_ARCO,
     ]:
+        if retrieval_service.dataset_valid_start_date:
+            parsed_start_datetime = date_to_datetime(
+                retrieval_service.dataset_valid_start_date
+            )
+            if (
+                not load_request.temporal_parameters.start_datetime
+                or load_request.temporal_parameters.start_datetime
+                < parsed_start_datetime
+            ):
+                load_request.temporal_parameters.start_datetime = (
+                    parsed_start_datetime
+                )
         dataset = arco_series_load_function(
             username=username,
             password=password,

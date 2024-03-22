@@ -190,3 +190,11 @@ class TestPythonInterface:
         )
 
         assert dataframe is not None
+
+    def test_open_dataset_with_retention_date(self):
+        dataset = open_dataset(
+            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            dataset_id="cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
+        )
+        assert dataset.time.valid_min > "2024-01-01T00:00:00.000000000"

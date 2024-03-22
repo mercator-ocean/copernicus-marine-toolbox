@@ -355,9 +355,8 @@ def check_dataset_subset_bounds(
     service_type: CopernicusMarineDatasetServiceType,
     dataset_subset: DatasetTimeAndGeographicalSubset,
     subset_method: SubsetMethod,
-    dataset_valid_date: Optional[str],
+    dataset_valid_date: Optional[Union[str, int]],
 ) -> None:
-
     if service_type in [
         CopernicusMarineDatasetServiceType.GEOSERIES,
         CopernicusMarineDatasetServiceType.TIMESERIES,
@@ -418,15 +417,11 @@ def check_dataset_subset_bounds(
         if coordinate_label in dataset.dims:
             times = dataset_coordinates[coordinate_label].values
             if dataset_valid_date:
-                times_min = (
-                    dataset_valid_date.replace("Z", "")
-                    if isinstance(dataset_valid_date, str)
-                    else dataset_valid_date
-                )
+                times_min = dataset_valid_date
             else:
                 times_min = times.min()
-            dataset_minimum_coordinate_value = _date_to_datetime(times_min)
-            dataset_maximum_coordinate_value = _date_to_datetime(times.max())
+            dataset_minimum_coordinate_value = date_to_datetime(times_min)
+            dataset_maximum_coordinate_value = date_to_datetime(times.max())
             user_minimum_coordinate_value = (
                 dataset_subset.start_datetime
                 if dataset_subset.start_datetime is not None
@@ -447,7 +442,7 @@ def check_dataset_subset_bounds(
             )
 
 
-def _date_to_datetime(date: Union[str, int]) -> datetime:
+def date_to_datetime(date: Union[str, int]) -> datetime:
     if isinstance(date, int):
         return Timestamp(date * 1e6).to_pydatetime()
     else:

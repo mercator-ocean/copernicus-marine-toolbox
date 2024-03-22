@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from typing import Hashable, Iterable, Literal, Optional
+from typing import Hashable, Iterable, Literal, Optional, Union
 
 import click
 import pandas
@@ -11,7 +11,6 @@ from copernicusmarine.core_functions import sessions
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     add_copernicusmarine_version_in_dataset_attributes,
-    datetime_parser,
     get_unique_filename,
 )
 from copernicusmarine.download_functions.common_download import (
@@ -25,7 +24,10 @@ from copernicusmarine.download_functions.subset_parameters import (
     LongitudeParameters,
     TemporalParameters,
 )
-from copernicusmarine.download_functions.subset_xarray import subset
+from copernicusmarine.download_functions.subset_xarray import (
+    date_to_datetime,
+    subset,
+)
 from copernicusmarine.download_functions.utils import (
     FileFormat,
     get_filename,
@@ -133,7 +135,7 @@ def download_zarr(
     subset_request: SubsetRequest,
     dataset_id: str,
     disable_progress_bar: bool,
-    dataset_valid_start_date: Optional[str],
+    dataset_valid_start_date: Optional[Union[str, int]],
 ):
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
@@ -147,9 +149,7 @@ def download_zarr(
     )
     start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
-        minimum_start_date = datetime_parser(
-            dataset_valid_start_date.replace("Z", "")
-        )
+        minimum_start_date = date_to_datetime(dataset_valid_start_date)
         if (
             not subset_request.start_datetime
             or subset_request.start_datetime < minimum_start_date
