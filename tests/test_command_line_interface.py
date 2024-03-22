@@ -330,7 +330,7 @@ class TestCommandLineInterface:
                         assert part["name"] is not None
                         assert part["name"] != ""
                         services = part["services"]
-                        assert len(services) != 0
+                        assert len(services) != 0, dataset["dataset_id"]
                         service_names = list(
                             map(
                                 lambda x: x["service_type"]["service_name"],

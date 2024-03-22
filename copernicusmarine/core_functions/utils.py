@@ -126,6 +126,8 @@ class WrongDatetimeFormat(Exception):
 
 
 def datetime_parser(string: str):
+    if string == "now":
+        return datetime.now()
     for format in DATETIME_SUPPORTED_FORMATS:
         try:
             return datetime.strptime(string, format)
