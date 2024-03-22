@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Semantic version for the release (vX.Y.Z)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: self-hosted
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment.yaml
+          environment-name: copernicusmarine
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Run tests
+        env:
+          VERSION: ${{ inputs.version }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
+        run: make release
+        shell: micromamba-shell {0}
