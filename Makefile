@@ -57,7 +57,16 @@ run-tests-dependencie-versions:
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
 	${ACTIVATE_ENVIRONMENT}
-	PYPI_TOKEN=$${PYPI_TOKEN} VERSION=$${VERSION} ./release.sh
+	BUMP_TYPE=${BUMP_TYPE} ./release.sh
+
+release-patch: BUMP_TYPE = patch
+release-patch: release
+
+release-minor: BUMP_TYPE = minor
+release-minor: release
+
+release-major: BUMP_TYPE = major
+release-major: release
 
 build-and-publish-dockerhub-image:
 	docker login --username $${DOCKER_HUB_USERNAME} --password $${DOCKER_HUB_PUSH_TOKEN}

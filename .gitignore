@@ -6,3 +6,4 @@ copernicusmarine/**/__pycache__/
 **/.aliases
 **/.DS_Store
 __debug.py
+dist/
