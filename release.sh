@@ -4,26 +4,17 @@ set -eufo pipefail
 
 git switch main
 git pull
-if [ -z `git status --porcelain` ] && [ ! -z "${VERSION}" ] && [ ! -z "${PYPI_TOKEN}" ] ; then
+if [ -z `git status --porcelain` ] && [ ! -z "${BUMP_TYPE}" ] ; then
   RELEASE_BRANCH_NAME="New-copernicusmarine-package-release-${VERSION}"
-  echo "Starting release..."
   git checkout -b $RELEASE_BRANCH_NAME
-  poetry version ${VERSION}
-  git commit -am "New copernicusmarine package release ${VERSION}"
-  poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
-  git switch main
-  git merge $RELEASE_BRANCH_NAME
-  rm -rf dist/
-  echo "Release ${VERSION} done."
+  poetry version ${BUMP_TYPE}
+  VERSION=$(poetry version --short)
+  RELEASE_TITLE="Copernicus Marine Release ${VERSION}"
+  git commit -am $RELEASE_TITLE
+  git push --set-upstream origin $RELEASE_BRANCH_NAME
+  PR_LINK=$(gh pr create --title $RELEASE_TITLE --body "")
+  gh pr view $PR_LINK --web
 else
   git status
-  echo "Release ${VERSION} aborted. Clean your repository and specify VERSION and PYPI_TOKEN."
+  echo "Release aborted. Clean your repository and use make release-[BUMP_TYPE]."
 fi
-
-while [[ $(poetry search copernicusmarine | grep copernicusmarine | awk '{print $2}') != "($VERSION)" ]]
-do
-  echo "Waiting for version $VERSION to be available on Pypi..."
-  sleep 10
-done
-
-make build-and-publish-dockerhub-image
