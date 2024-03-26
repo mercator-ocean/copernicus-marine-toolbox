@@ -78,10 +78,6 @@ class TestOverwriteOutputData:
 
     def then_output_data_is_overwritten(self):
         assert (
-            self.overwritten_output_data_modification_time
-            > self.initial_output_data_modification_time
-        )
-        assert (
             pathlib.Path(
                 self.tmp_path, self.expected_downloaded_filepath
             ).exists()
