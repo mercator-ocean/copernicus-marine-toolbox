@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 import pathlib
 import re
 from itertools import chain
@@ -401,6 +402,15 @@ def _download_files(
             ),
             endpoint_url=endpoint_url,
         )
+        s3_resource = boto3.resource(
+            "s3",
+            config=botocore.config.Config(
+                # Configures to use subdomain/virtual calling format.
+                s3={"addressing_style": "virtual"},
+                signature_version=botocore.UNSIGNED,
+            ),
+            endpoint_url=endpoint_url,
+        )
 
         # Register the botocore event handler for adding custom query params
         # to S3 HEAD and GET requests
@@ -411,10 +421,18 @@ def _download_files(
             "before-call.s3.GetObject", _add_custom_query_param
         )
 
+        last_modified_date_epoch = s3_resource.Object(
+            bucket, file_in.replace(f"s3://{bucket}/", "")
+        ).last_modified.timestamp()
+
         s3_client.download_file(
             bucket,
             file_in.replace(f"s3://{bucket}/", ""),
             file_out,
+        )
+
+        os.utime(
+            file_out, (last_modified_date_epoch, last_modified_date_epoch)
         )
 
         return file_out
