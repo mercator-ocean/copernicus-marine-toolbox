@@ -31,7 +31,7 @@ You can install it using conda though the conda-forge channel with the following
 
 A docker image is also available here: [https://hub.docker.com/r/copernicusmarine/copernicusmarine](https://hub.docker.com/r/copernicusmarine/copernicusmarine)
 
-Here is a basic command to run it: `docker run -it --rm copernicusmarine/copernicusmarine:1.0.5 --version`
+Here is a basic command to run it: `docker run -it --rm copernicusmarine/copernicusmarine --version`
 
 ### Pip
 Otherwise, if you already have an environment (safer to clone it), the package can be installed using the `pip` command:
@@ -388,4 +388,4 @@ Get in touch!
 - Watch [our videos](https://www.youtube.com/channel/UC71ceOVy7WtVC7F04BKoEew)
 
 ## Licence
-Licensed under the (EUPL)[https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12]
+Licensed under the [EUPL](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
