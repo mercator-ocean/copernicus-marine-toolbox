@@ -26,12 +26,12 @@ jobs:
           cache-environment: true
           post-cleanup: 'all'
 
-      # - name: Build and publish Pypi package
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      #   run: |
-      #     poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
+      - name: Build and publish Pypi package
+        shell: micromamba-shell {0}
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
 
       - name: Build and publish Docker image
         shell: micromamba-shell {0}
@@ -47,17 +47,17 @@ jobs:
           done
           make build-and-publish-dockerhub-image
 
-      # - name: Create tag
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     git tag v$(poetry version --short)
-      #     git push origin --tags
+      - name: Create tag
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag v$(poetry version --short)
+          git push origin --tags
 
-      # - name: Create Github release
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     gh release create v$(poetry version --short)
+      - name: Create Github release
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v$(poetry version --short) --generate-notes

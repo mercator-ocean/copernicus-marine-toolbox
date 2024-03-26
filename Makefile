@@ -69,4 +69,7 @@ release-major: BUMP_TYPE = major
 release-major: release
 
 build-and-publish-dockerhub-image:
-	echo $${VERSION}
+	docker login --username $${DOCKER_HUB_USERNAME} --password $${DOCKER_HUB_PUSH_TOKEN}
+	docker build --ulimit nofile=65536:65536 --tag copernicusmarine/copernicusmarine:$${VERSION} --tag copernicusmarine/copernicusmarine:latest -f Dockerfile.dockerhub --build-arg VERSION="$${VERSION}" .
+	docker push copernicusmarine/copernicusmarine:$${VERSION}
+	docker push copernicusmarine/copernicusmarine:latest
