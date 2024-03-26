@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "copernicusmarine"
-version = "1.0.8"
+version = "1.0.9"
 description = ""
 authors = ["Copernicus Marine User Support <servicedesk.cmems@mercator-ocean.eu>"]
 readme = "README.md"
