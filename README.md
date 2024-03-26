@@ -199,7 +199,24 @@ By default:
 
 Option `--show-outputnames` displays the full paths of the output files, if required.
 
-Option `--download-file-list` only creates a file `files_to_download.txt` containing the names of the targeted files instead of downloading them. If specified, no other action will be performed.
+Option `--download-file-list` only creates a file containing the names of the targeted files instead of downloading them. If nothing is specified and is used as a flag, the file will be named `files_to_download.txt`.
+You can also input a file name: `--download-file-list my_files.txt`. The possible output formats are `.txt` and `.csv`:
+- if the user inputs a file name that ends in `.txt` then this file contains only the full s3 path to the targeted files. See example of `my_files.txt`:
+```
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930101_19930131_R20201201_RE01.nc
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930201_19930228_R20201201_RE01.nc
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930301_19930331_R20201201_RE01.nc
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930401_19930430_R20201201_RE01.nc
+```
+- if the user inputs a file name that ends in `.csv` then this file contains the following columns: filename, size (in B), last_modified_datetime, etag. See example of `my_files.csv`:
+```
+filename,size,last_modified_datetime,etag
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930101_19930131_R20201201_RE01.nc,12623497,2023-11-12 23:46:45.009000+00:00,"247c5bb6013ddf71ebe707f7eab810de"
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930201_19930228_R20201201_RE01.nc,12608349,2023-11-12 23:46:45.122000+00:00,"5ed77080ddce9500223610952bcc61a2"
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930301_19930331_R20201201_RE01.nc,12497110,2023-11-12 23:46:45.178000+00:00,"c49e3d575688946a2d36341b4d3d8a80"
+s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/1993/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_19930401_19930430_R20201201_RE01.nc,12481867,2023-11-12 23:46:45.336000+00:00,"bf0b937af7bc8b43e35694323ddce099"
+```
+If specified, no other action will be performed.
 
 #### Note about sync option
 

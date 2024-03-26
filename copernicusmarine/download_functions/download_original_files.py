@@ -46,7 +46,7 @@ def download_original_files(
     password: str,
     get_request: GetRequest,
     disable_progress_bar: bool,
-    download_file_list: bool,
+    download_file_list: Optional[str],
 ) -> list[pathlib.Path]:
     result = _download_header(
         str(get_request.dataset_url),
@@ -197,7 +197,7 @@ def _download_header(
     username: str,
     _password: str,
     sync: bool,
-    download_file_list: bool,
+    download_file_list: Optional[str],
     directory_out: pathlib.Path,
     only_list_root_path: bool = False,
 ) -> Optional[Tuple[str, Tuple[str, str], list[str], float, list[str]]]:
@@ -211,7 +211,7 @@ def _download_header(
     )
     filename_filtered = []
     filenames_without_sync = []
-    for filename, size, last_modified_datetime in raw_filenames:
+    for filename, size, last_modified_datetime, etag in raw_filenames:
         if not regex or re.search(regex, filename):
             filenames_without_sync.append(filename)
             if not sync or _check_needs_to_be_synced(
@@ -221,21 +221,38 @@ def _download_header(
                 sizes.append(float(size))
                 total_size += float(size)
                 filename_filtered.append(
-                    (filename, size, last_modified_datetime)
+                    (filename, size, last_modified_datetime, etag)
                 )
 
-    if download_file_list:
+    if download_file_list and download_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            directory_out / "files_to_download.txt", False
+            directory_out / download_file_list, False
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
-            for filename, _, _ in filename_filtered:
+            for filename, _, _, _ in filename_filtered:
                 file_out.write(f"{filename}\n")
+        return None
+    elif download_file_list and download_file_list.endswith(".csv"):
+        download_filename = get_unique_filename(
+            directory_out / download_file_list, False
+        )
+        logger.info(f"The file list is written at {download_filename}")
+        with open(download_filename, "w") as file_out:
+            file_out.write("filename,size,last_modified_datetime,etag\n")
+            for (
+                filename,
+                size,
+                last_modified_datetime,
+                etag,
+            ) in filename_filtered:
+                file_out.write(
+                    f"{filename},{size},{last_modified_datetime},{etag}\n"
+                )
         return None
 
     message = "You requested the download of the following files:\n"
-    for filename, size, last_modified_datetime in filename_filtered[:20]:
+    for filename, size, last_modified_datetime, _ in filename_filtered[:20]:
         message += str(filename)
         datetime_iso = re.sub(
             r"\+00:00$",
@@ -286,7 +303,7 @@ def _list_files_on_marine_data_lake_s3(
     bucket: str,
     prefix: str,
     recursive: bool,
-) -> list[tuple[str, int, datetime.datetime]]:
+) -> list[tuple[str, int, datetime.datetime, str]]:
     def _add_custom_query_param(params, context, **kwargs):
         """
         Add custom query params for MDS's Monitoring
@@ -331,16 +348,15 @@ def _list_files_on_marine_data_lake_s3(
         *map(lambda page: page.get("Contents", []), page_iterator)
     )
 
-    files_already_found = []
+    files_already_found: list[tuple[str, int, datetime.datetime, str]] = []
     for s3_object in s3_objects:
-        files_already_found.extend(
-            [
-                (
-                    f"s3://{original_bucket}/" + s3_object["Key"],
-                    s3_object["Size"],
-                    s3_object["LastModified"],
-                )
-            ]
+        files_already_found.append(
+            (
+                f"s3://{original_bucket}/" + s3_object["Key"],
+                s3_object["Size"],
+                s3_object["LastModified"],
+                s3_object["ETag"],
+            )
         )
     return files_already_found
 

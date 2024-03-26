@@ -16,7 +16,7 @@ def download_get(
     username: str,
     password: str,
     get_request: GetRequest,
-    download_file_list: bool,
+    download_file_list: Optional[str],
     download_header: Callable,
     create_filenames_out: Callable,
 ) -> Optional[Tuple[List[str], List[pathlib.Path], Any]]:

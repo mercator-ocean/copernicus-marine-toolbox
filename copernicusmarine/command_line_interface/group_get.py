@@ -201,14 +201,18 @@ def cli_group_get() -> None:
 )
 @click.option(
     "--download-file-list",
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Option to only create a file files_to_download.txt containing "
+    type=str,
+    is_flag=False,
+    flag_value="files_to_download.txt",
+    default=None,
+    help="Option to only create a file containing "
     "the names of the targeted files instead of downloading them. "
     "It writes the file in the directory specified with the "
     "--output-directory option (default to current directory). "
-    "If specified, no other action will be performed.",
+    "The file name specified should end with '.txt' or '.csv' "
+    "else it will be name 'files_to_download.txt'. "
+    "If specified, no other action will be performed. "
+    "Please find more information in the README.",
 )
 @click.option(
     "--sync",
@@ -274,7 +278,7 @@ def get(
     filter: Optional[str],
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
-    download_file_list: bool,
+    download_file_list: Optional[str],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,

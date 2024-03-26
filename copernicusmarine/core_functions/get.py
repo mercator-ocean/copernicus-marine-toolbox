@@ -56,7 +56,7 @@ def get_function(
     filter: Optional[str],
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
-    download_file_list: bool,
+    download_file_list: Optional[str],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -136,6 +136,13 @@ def get_function(
         get_request.regex = overload_regex_with_additionnal_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
+    if download_file_list:
+        assert download_file_list.endswith(
+            ".txt"
+        ) or download_file_list.endswith(
+            ".csv"
+        ), "Download file list must be a .txt or .csv file. "
+        f"Got '{download_file_list}' instead."
 
     return _run_get_request(
         username=username,
@@ -153,7 +160,7 @@ def _run_get_request(
     username: Optional[str],
     password: Optional[str],
     get_request: GetRequest,
-    download_file_list: bool,
+    download_file_list: Optional[str],
     credentials_file: Optional[pathlib.Path],
     no_metadata_cache: bool,
     disable_progress_bar: bool,
