@@ -210,7 +210,6 @@ def cli_group_get() -> None:
     "It writes the file in the directory specified with the "
     "--output-directory option (default to current directory). "
     "The file name specified should end with '.txt' or '.csv' "
-    "else it will be name 'files_to_download.txt'. "
     "If specified, no other action will be performed. "
     "Please find more information in the README.",
 )
