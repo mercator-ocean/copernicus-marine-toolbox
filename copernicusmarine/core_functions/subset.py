@@ -1,7 +1,6 @@
 import json
 import logging
 import pathlib
-import sys
 from datetime import datetime
 from typing import List, Optional
 
@@ -177,14 +176,13 @@ def subset_function(
                 raise syntax_error
         else:
             dataset_id = subset_request.dataset_id
-        logger.error(
-            "Missing subset option. Try 'copernicusmarine subset --help'."
-        )
         logger.info(
             "To retrieve a complete dataset, please use instead: "
             f"copernicusmarine get --dataset-id {dataset_id}"
         )
-        sys.exit(1)
+        ValueError(
+            "Missing subset option. Try 'copernicusmarine subset --help'."
+        )
     # Specific treatment for default values:
     # In order to not overload arguments with default values
     if force_download:

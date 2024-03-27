@@ -1,7 +1,6 @@
 import logging
 import pathlib
-from sys import exit
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 import click
 
@@ -20,7 +19,7 @@ def download_get(
     download_file_list: bool,
     download_header: Callable,
     create_filenames_out: Callable,
-) -> Tuple[List[str], List[pathlib.Path], Any]:
+) -> Optional[Tuple[List[str], List[pathlib.Path], Any]]:
     # locator can be a hostname, a tuple with endpoint + bucket, etc.
     message, locator, filenames_in, total_size = download_header(
         str(get_request.dataset_url),
@@ -40,7 +39,7 @@ def download_get(
         logger.info(message)
     if not total_size:
         logger.info("No data to download")
-        exit(1)
+        return None
     if get_request.show_outputnames:
         logger.info("Output filenames:")
         for filename_out in filenames_out:

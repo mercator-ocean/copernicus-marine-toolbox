@@ -70,7 +70,7 @@ def download_ftp(
     logger.warning(
         "The FTP service is deprecated, please use 'original-files' instead."
     )
-    filenames_in, filenames_out, host = download_get(
+    result = download_get(
         username,
         password,
         get_request,
@@ -78,6 +78,9 @@ def download_ftp(
         download_header,
         create_filenames_out,
     )
+    if result is None:
+        return []
+    filenames_in, filenames_out, host = result
     return download_files(
         host,
         username,
@@ -159,7 +162,7 @@ def download_header(
         with open(download_filename, "w") as file_out:
             for filename in filenames:
                 file_out.write(f"{filename}\n")
-        exit(0)
+        return ("Nothing downloaded", "", [], 0)
 
     pool = ThreadPool()
     nfilenames_per_process, nfilenames = 100, len(filenames)
