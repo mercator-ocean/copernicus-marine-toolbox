@@ -200,10 +200,8 @@ def cli_group_get() -> None:
     "the files to download.",
 )
 @click.option(
-    "--download-file-list",
+    "--list-files",
     type=str,
-    is_flag=False,
-    flag_value="files_to_download.txt",
     default=None,
     help="Option to only create a file containing "
     "the names of the targeted files instead of downloading them. "
@@ -212,6 +210,14 @@ def cli_group_get() -> None:
     "The file name specified should end with '.txt' or '.csv' "
     "If specified, no other action will be performed. "
     "Please find more information in the README.",
+)
+@click.option(
+    "--download-file-list",
+    type=bool,
+    is_flag=True,
+    cls=DeprecatedClickOption,
+    deprecated=["--download-file-list"],
+    preferred="--list-files",
 )
 @click.option(
     "--sync",
@@ -277,7 +283,8 @@ def get(
     filter: Optional[str],
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
-    download_file_list: Optional[str],
+    list_files: Optional[str],
+    download_file_list: bool,
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -321,6 +328,7 @@ def get(
         filter=filter,
         regex=regex,
         file_list_path=file_list,
+        list_files=list_files,
         download_file_list=download_file_list,
         sync=sync,
         sync_delete=sync_delete,

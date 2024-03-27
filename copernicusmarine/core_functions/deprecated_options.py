@@ -58,5 +58,6 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
             old_name="force_dataset_part", new_name="dataset_part"
         ),
         DeprecatedOption(old_name="force_service", new_name="service"),
+        DeprecatedOption(old_name="download_file_list", new_name="list_files"),
     ]
 )
