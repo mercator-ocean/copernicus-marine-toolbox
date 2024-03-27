@@ -180,7 +180,7 @@ def subset_function(
             "To retrieve a complete dataset, please use instead: "
             f"copernicusmarine get --dataset-id {dataset_id}"
         )
-        ValueError(
+        raise ValueError(
             "Missing subset option. Try 'copernicusmarine subset --help'."
         )
     # Specific treatment for default values:

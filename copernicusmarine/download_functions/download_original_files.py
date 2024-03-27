@@ -77,7 +77,7 @@ def download_original_files(
             else False
         ),
     )
-    if not get_request.force_download:
+    if not get_request.force_download and total_size:
         logger.info(message)
     if get_request.show_outputnames:
         logger.info("Output filenames:")

@@ -946,8 +946,9 @@ class TestCommandLineInterface:
             f"{regex}",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 1
+        output = subprocess.run(command, stdout=subprocess.PIPE)
+        assert b"No data to download" in output.stdout
+        assert output.returncode == 0
 
     def test_login(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")

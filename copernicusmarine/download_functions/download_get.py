@@ -35,11 +35,11 @@ def download_get(
         no_directories=get_request.no_directories,
         overwrite=get_request.overwrite_output_data,
     )
-    if not get_request.force_download:
-        logger.info(message)
     if not total_size:
         logger.info("No data to download")
         return None
+    if not get_request.force_download:
+        logger.info(message)
     if get_request.show_outputnames:
         logger.info("Output filenames:")
         for filename_out in filenames_out:
