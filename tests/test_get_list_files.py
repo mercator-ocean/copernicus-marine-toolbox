@@ -6,19 +6,18 @@ from tests.test_utils import execute_in_terminal
 
 class TestGetListFiles:
     def test_get_download_file_list_is_deprecated(self):
-        # self.command = [
-        #     "copernicusmarine",
-        #     "get",
-        #     "--dataset-id",
-        #     "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
-        #     "--downlaod-file-list",
-        # ]
-        # self.output = execute_in_terminal(self.command)
-        # assert (
-        #     b"DeprecationWarning: The option download_file_list is deprecated."
-        #     in self.output.stderr
-        # )
-        pass
+        self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
+            "--download-file-list",
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert (
+            b"'--download-file-list' has been deprecated, use '--list-files' instead"
+            in self.output.stdout
+        )
 
     def test_get_list_files_without_extension_raises(self):
         self.command = [

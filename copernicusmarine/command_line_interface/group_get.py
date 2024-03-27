@@ -14,7 +14,10 @@ from copernicusmarine.command_line_interface.utils import (
     force_dataset_version_option,
     tqdm_disable_option,
 )
-from copernicusmarine.core_functions.deprecated import DeprecatedClickOption
+from copernicusmarine.core_functions.deprecated import (
+    DeprecatedClickOption,
+    DeprecatedClickOptionsCommand,
+)
 from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
@@ -36,6 +39,7 @@ def cli_group_get() -> None:
 
 @cli_group_get.command(
     "get",
+    cls=DeprecatedClickOptionsCommand,
     short_help="Download originally produced data files.",
     help="""
     Download originally produced data files.
