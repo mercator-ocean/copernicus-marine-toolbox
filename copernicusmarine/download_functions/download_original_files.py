@@ -48,13 +48,7 @@ def download_original_files(
     disable_progress_bar: bool,
     download_file_list: bool,
 ) -> list[pathlib.Path]:
-    (
-        message,
-        locator,
-        filenames_in,
-        total_size,
-        filenames_in_sync_ignored,
-    ) = _download_header(
+    result = _download_header(
         str(get_request.dataset_url),
         get_request.regex,
         username,
@@ -64,6 +58,15 @@ def download_original_files(
         pathlib.Path(get_request.output_directory),
         only_list_root_path=get_request.index_parts,
     )
+    if result is None:
+        return []
+    (
+        message,
+        locator,
+        filenames_in,
+        total_size,
+        filenames_in_sync_ignored,
+    ) = result
     filenames_out = create_filenames_out(
         filenames_in=filenames_in,
         output_directory=pathlib.Path(get_request.output_directory),
@@ -74,7 +77,7 @@ def download_original_files(
             else False
         ),
     )
-    if not get_request.force_download:
+    if not get_request.force_download and total_size:
         logger.info(message)
     if get_request.show_outputnames:
         logger.info("Output filenames:")
@@ -101,7 +104,7 @@ def download_original_files(
     if not total_size:
         logger.info("No data to download")
         if not files_to_delete:
-            exit(1)
+            return []
     if not get_request.force_download:
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE, default=True, abort=True
@@ -197,7 +200,7 @@ def _download_header(
     download_file_list: bool,
     directory_out: pathlib.Path,
     only_list_root_path: bool = False,
-) -> Tuple[str, Tuple[str, str], list[str], float, list[str]]:
+) -> Optional[Tuple[str, Tuple[str, str], list[str], float, list[str]]]:
     (endpoint_url, bucket, path) = parse_access_dataset_url(
         data_path, only_dataset_root_path=only_list_root_path
     )
@@ -229,7 +232,7 @@ def _download_header(
         with open(download_filename, "w") as file_out:
             for filename, _, _ in filename_filtered:
                 file_out.write(f"{filename}\n")
-        exit(0)
+        return None
 
     message = "You requested the download of the following files:\n"
     for filename, size, last_modified_datetime in filename_filtered[:20]:
