@@ -121,8 +121,9 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 1
+        output = subprocess.run(command, stdout=subprocess.PIPE)
+        assert b"No data to download" in output.stdout
+        assert output.returncode == 0
 
     def test_get_request_with_request_file(self, tmp_path):
         filepath = get_path_to_request_file(
