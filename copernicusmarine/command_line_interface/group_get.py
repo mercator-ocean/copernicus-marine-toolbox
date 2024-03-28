@@ -14,7 +14,10 @@ from copernicusmarine.command_line_interface.utils import (
     force_dataset_version_option,
     tqdm_disable_option,
 )
-from copernicusmarine.core_functions.deprecated import DeprecatedClickOption
+from copernicusmarine.core_functions.deprecated import (
+    DeprecatedClickOption,
+    DeprecatedClickOptionsCommand,
+)
 from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
@@ -36,6 +39,7 @@ def cli_group_get() -> None:
 
 @cli_group_get.command(
     "get",
+    cls=DeprecatedClickOptionsCommand,
     short_help="Download originally produced data files.",
     help="""
     Download originally produced data files.
@@ -200,15 +204,24 @@ def cli_group_get() -> None:
     "the files to download.",
 )
 @click.option(
-    "--download-file-list",
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Option to only create a file files_to_download.txt containing "
+    "--create-file-list",
+    type=str,
+    default=None,
+    help="Option to only create a file containing "
     "the names of the targeted files instead of downloading them. "
     "It writes the file in the directory specified with the "
     "--output-directory option (default to current directory). "
-    "If specified, no other action will be performed.",
+    "The file name specified should end with '.txt' or '.csv' "
+    "If specified, no other action will be performed. "
+    "Please find more information in the README.",
+)
+@click.option(
+    "--download-file-list",
+    type=bool,
+    is_flag=True,
+    cls=DeprecatedClickOption,
+    deprecated=["--download-file-list"],
+    preferred="--create-file-list",
 )
 @click.option(
     "--sync",
@@ -274,6 +287,7 @@ def get(
     filter: Optional[str],
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
+    create_file_list: Optional[str],
     download_file_list: bool,
     sync: bool,
     sync_delete: bool,
@@ -318,6 +332,7 @@ def get(
         filter=filter,
         regex=regex,
         file_list_path=file_list,
+        create_file_list=create_file_list,
         download_file_list=download_file_list,
         sync=sync,
         sync_delete=sync_delete,

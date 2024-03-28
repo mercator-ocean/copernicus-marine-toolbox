@@ -33,6 +33,7 @@ def get(
     filter: Optional[str] = None,
     regex: Optional[str] = None,
     file_list: Optional[Union[pathlib.Path, str]] = None,
+    create_file_list: Optional[str] = None,
     download_file_list: bool = False,
     index_parts: bool = False,
     sync: bool = False,
@@ -63,7 +64,7 @@ def get(
         filter (str, optional): Apply a filter to the downloaded data.
         regex (str, optional): Apply a regular expression filter to the downloaded data.
         file_list (Union[pathlib.Path, str], optional): A path to a text file that list filenames line by line. Filenames must match the absolute paths of the files to download.
-        download_file_list (bool, optional): Option to only create a file files_to_download.txt containing the names of the the targeted files instead of downloading them. It writes the file in the directory specified with the --output-directory option (default to current directory). If specified, no other action will be performed.
+        create_file_list (str, optional): Option to only create a file containing the names of the the targeted files instead of downloading them. It writes the file in the directory specified with the --output-directory option (default to current directory). If specified, no other action will be performed.
         index_parts (bool, optional): If True, download index files. Only for INSITU datasets. Temporary option.
         sync (bool, optional): If True, synchronize the local directory with the remote directory.
         sync_delete (bool, optional): If True, delete local files that are not present on the remote server while applying sync.
@@ -99,6 +100,7 @@ def get(
         filter=filter,
         regex=regex,
         file_list_path=file_list,
+        create_file_list=create_file_list,
         download_file_list=download_file_list,
         index_parts=index_parts,
         sync=sync,

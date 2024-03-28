@@ -65,7 +65,7 @@ def download_ftp(
     password: str,
     get_request: GetRequest,
     disable_progress_bar: bool,
-    download_file_list: bool,
+    download_file_list: Optional[str],
 ) -> list[pathlib.Path]:
     logger.warning(
         "The FTP service is deprecated, please use 'original-files' instead."
@@ -140,7 +140,8 @@ def download_header(
     username: str,
     password: str,
     output_directory: pathlib.Path,
-    download_file_list: bool,
+    download_file_list: Optional[str],
+    overwrite: bool = False,
 ) -> Tuple[str, str, list[str], float]:
     (host, path) = parse_ftp_dataset_url(data_path)
     logger.debug(f"Downloading header via FTP on {host + path}")
@@ -154,15 +155,20 @@ def download_header(
         else:
             filenames = raw_filenames
 
-    if download_file_list:
+    if download_file_list and download_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            output_directory / "files_to_download.txt", False
+            output_directory / download_file_list, overwrite
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
             for filename in filenames:
                 file_out.write(f"{filename}\n")
         return ("Nothing downloaded", "", [], 0)
+    elif download_file_list and download_file_list.endswith(".csv"):
+        ValueError(
+            "CSV file format is not supported with FTP services. "
+            "Please use '.txt' format or use 'original-files' service instead."
+        )
 
     pool = ThreadPool()
     nfilenames_per_process, nfilenames = 100, len(filenames)

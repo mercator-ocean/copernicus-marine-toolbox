@@ -46,7 +46,7 @@ def download_original_files(
     password: str,
     get_request: GetRequest,
     disable_progress_bar: bool,
-    download_file_list: bool,
+    create_file_list: Optional[str],
 ) -> list[pathlib.Path]:
     result = _download_header(
         str(get_request.dataset_url),
@@ -54,9 +54,10 @@ def download_original_files(
         username,
         password,
         get_request.sync,
-        download_file_list,
+        create_file_list,
         pathlib.Path(get_request.output_directory),
         only_list_root_path=get_request.index_parts,
+        overwrite=get_request.overwrite_output_data,
     )
     if result is None:
         return []
@@ -197,9 +198,10 @@ def _download_header(
     username: str,
     _password: str,
     sync: bool,
-    download_file_list: bool,
+    create_file_list: Optional[str],
     directory_out: pathlib.Path,
     only_list_root_path: bool = False,
+    overwrite: bool = False,
 ) -> Optional[Tuple[str, Tuple[str, str], list[str], float, list[str]]]:
     (endpoint_url, bucket, path) = parse_access_dataset_url(
         data_path, only_dataset_root_path=only_list_root_path
@@ -211,7 +213,7 @@ def _download_header(
     )
     filename_filtered = []
     filenames_without_sync = []
-    for filename, size, last_modified_datetime in raw_filenames:
+    for filename, size, last_modified_datetime, etag in raw_filenames:
         if not regex or re.search(regex, filename):
             filenames_without_sync.append(filename)
             if not sync or _check_needs_to_be_synced(
@@ -221,21 +223,38 @@ def _download_header(
                 sizes.append(float(size))
                 total_size += float(size)
                 filename_filtered.append(
-                    (filename, size, last_modified_datetime)
+                    (filename, size, last_modified_datetime, etag)
                 )
 
-    if download_file_list:
+    if create_file_list and create_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            directory_out / "files_to_download.txt", False
+            directory_out / create_file_list, overwrite
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
-            for filename, _, _ in filename_filtered:
+            for filename, _, _, _ in filename_filtered:
                 file_out.write(f"{filename}\n")
+        return None
+    elif create_file_list and create_file_list.endswith(".csv"):
+        download_filename = get_unique_filename(
+            directory_out / create_file_list, overwrite
+        )
+        logger.info(f"The file list is written at {download_filename}")
+        with open(download_filename, "w") as file_out:
+            file_out.write("filename,size,last_modified_datetime,etag\n")
+            for (
+                filename,
+                size,
+                last_modified_datetime,
+                etag,
+            ) in filename_filtered:
+                file_out.write(
+                    f"{filename},{size},{last_modified_datetime},{etag}\n"
+                )
         return None
 
     message = "You requested the download of the following files:\n"
-    for filename, size, last_modified_datetime in filename_filtered[:20]:
+    for filename, size, last_modified_datetime, _ in filename_filtered[:20]:
         message += str(filename)
         datetime_iso = re.sub(
             r"\+00:00$",
@@ -286,7 +305,7 @@ def _list_files_on_marine_data_lake_s3(
     bucket: str,
     prefix: str,
     recursive: bool,
-) -> list[tuple[str, int, datetime.datetime]]:
+) -> list[tuple[str, int, datetime.datetime, str]]:
     def _add_custom_query_param(params, context, **kwargs):
         """
         Add custom query params for MDS's Monitoring
@@ -331,16 +350,15 @@ def _list_files_on_marine_data_lake_s3(
         *map(lambda page: page.get("Contents", []), page_iterator)
     )
 
-    files_already_found = []
+    files_already_found: list[tuple[str, int, datetime.datetime, str]] = []
     for s3_object in s3_objects:
-        files_already_found.extend(
-            [
-                (
-                    f"s3://{original_bucket}/" + s3_object["Key"],
-                    s3_object["Size"],
-                    s3_object["LastModified"],
-                )
-            ]
+        files_already_found.append(
+            (
+                f"s3://{original_bucket}/" + s3_object["Key"],
+                s3_object["Size"],
+                s3_object["LastModified"],
+                s3_object["ETag"],
+            )
         )
     return files_already_found
 
