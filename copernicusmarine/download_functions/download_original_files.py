@@ -46,7 +46,7 @@ def download_original_files(
     password: str,
     get_request: GetRequest,
     disable_progress_bar: bool,
-    list_files: Optional[str],
+    create_file_list: Optional[str],
 ) -> list[pathlib.Path]:
     result = _download_header(
         str(get_request.dataset_url),
@@ -54,7 +54,7 @@ def download_original_files(
         username,
         password,
         get_request.sync,
-        list_files,
+        create_file_list,
         pathlib.Path(get_request.output_directory),
         only_list_root_path=get_request.index_parts,
     )
@@ -197,7 +197,7 @@ def _download_header(
     username: str,
     _password: str,
     sync: bool,
-    list_files: Optional[str],
+    create_file_list: Optional[str],
     directory_out: pathlib.Path,
     only_list_root_path: bool = False,
 ) -> Optional[Tuple[str, Tuple[str, str], list[str], float, list[str]]]:
@@ -224,18 +224,18 @@ def _download_header(
                     (filename, size, last_modified_datetime, etag)
                 )
 
-    if list_files and list_files.endswith(".txt"):
+    if create_file_list and create_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            directory_out / list_files, False
+            directory_out / create_file_list, False
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
             for filename, _, _, _ in filename_filtered:
                 file_out.write(f"{filename}\n")
         return None
-    elif list_files and list_files.endswith(".csv"):
+    elif create_file_list and create_file_list.endswith(".csv"):
         download_filename = get_unique_filename(
-            directory_out / list_files, False
+            directory_out / create_file_list, False
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:

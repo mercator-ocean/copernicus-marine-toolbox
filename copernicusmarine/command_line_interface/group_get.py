@@ -204,7 +204,7 @@ def cli_group_get() -> None:
     "the files to download.",
 )
 @click.option(
-    "--list-files",
+    "--create-file-list",
     type=str,
     default=None,
     help="Option to only create a file containing "
@@ -221,7 +221,7 @@ def cli_group_get() -> None:
     is_flag=True,
     cls=DeprecatedClickOption,
     deprecated=["--download-file-list"],
-    preferred="--list-files",
+    preferred="--create-file-list",
 )
 @click.option(
     "--sync",
@@ -287,7 +287,7 @@ def get(
     filter: Optional[str],
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
-    list_files: Optional[str],
+    create_file_list: Optional[str],
     download_file_list: bool,
     sync: bool,
     sync_delete: bool,
@@ -332,7 +332,7 @@ def get(
         filter=filter,
         regex=regex,
         file_list_path=file_list,
-        list_files=list_files,
+        create_file_list=create_file_list,
         download_file_list=download_file_list,
         sync=sync,
         sync_delete=sync_delete,

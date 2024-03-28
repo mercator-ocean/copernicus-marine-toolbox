@@ -56,7 +56,7 @@ def get_function(
     filter: Optional[str],
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
-    list_files: Optional[str],
+    create_file_list: Optional[str],
     download_file_list: bool,
     sync: bool,
     sync_delete: bool,
@@ -137,19 +137,19 @@ def get_function(
         get_request.regex = overload_regex_with_additionnal_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
-    if download_file_list and not list_files:
-        list_files = "files_to_download.txt"
-    if list_files:
-        assert list_files.endswith(".txt") or list_files.endswith(
+    if download_file_list and not create_file_list:
+        create_file_list = "files_to_download.txt"
+    if create_file_list:
+        assert create_file_list.endswith(".txt") or create_file_list.endswith(
             ".csv"
         ), "Download file list must be a .txt or .csv file. "
-        f"Got '{list_files}' instead."
+        f"Got '{create_file_list}' instead."
 
     return _run_get_request(
         username=username,
         password=password,
         get_request=get_request,
-        list_files=list_files,
+        create_file_list=create_file_list,
         credentials_file=credentials_file,
         no_metadata_cache=no_metadata_cache,
         disable_progress_bar=disable_progress_bar,
@@ -161,7 +161,7 @@ def _run_get_request(
     username: Optional[str],
     password: Optional[str],
     get_request: GetRequest,
-    list_files: Optional[str],
+    create_file_list: Optional[str],
     credentials_file: Optional[pathlib.Path],
     no_metadata_cache: bool,
     disable_progress_bar: bool,
@@ -206,7 +206,7 @@ def _run_get_request(
             password,
             get_request,
             disable_progress_bar,
-            list_files,
+            create_file_list,
         )
         if retrieval_service.service_type
         == CopernicusMarineDatasetServiceType.FTP
@@ -215,7 +215,7 @@ def _run_get_request(
             password,
             get_request,
             disable_progress_bar,
-            list_files,
+            create_file_list,
         )
     )
     logger.debug(downloaded_files)

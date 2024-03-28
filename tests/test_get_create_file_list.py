@@ -4,7 +4,7 @@ from copernicusmarine import get
 from tests.test_utils import execute_in_terminal
 
 
-class TestGetListFiles:
+class TestGetCreateFileList:
     def test_get_download_file_list_is_deprecated(self):
         self.command = [
             "copernicusmarine",
@@ -15,17 +15,17 @@ class TestGetListFiles:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"'--download-file-list' has been deprecated, use '--list-files' instead"
-            in self.output.stdout
+            b"'--download-file-list' has been deprecated, "
+            b"use '--create-file-list' instead" in self.output.stdout
         )
 
-    def test_get_list_files_without_extension_raises(self):
+    def test_get_create_file_list_without_extension_raises(self):
         self.command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
             "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-            "--list-files",
+            "--create-file-list",
             "hello",
         ]
         self.output = execute_in_terminal(self.command)
@@ -34,13 +34,13 @@ class TestGetListFiles:
             in self.output.stdout
         )
 
-    def test_get_list_files(self):
+    def test_get_create_file_list(self):
         self.command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
             "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-            "--list-files",
+            "--create-file-list",
             "hello.txt",
         ]
         self.output = execute_in_terminal(self.command)
@@ -48,13 +48,13 @@ class TestGetListFiles:
         with open("hello.txt") as file:
             assert file.read() != ""
 
-    def test_get_list_files_csv(self):
+    def test_get_create_file_list_csv(self):
         self.command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
             "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-            "--list-files",
+            "--create-file-list",
             "hello.csv",
         ]
         self.output = execute_in_terminal(self.command)
@@ -65,36 +65,30 @@ class TestGetListFiles:
                 == "filename,size,last_modified_datetime,etag\n"
             )
 
-    def test_get_list_files_without_extension_raises_python(self):
+    def test_get_create_file_list_without_extension_raises_python(self):
         try:
             get(
                 dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-                list_files="hello",
+                create_file_list="hello",
             )
         except AssertionError as e:
             assert str(e) == "Download file list must be a .txt or .csv file. "
 
-    def test_get_list_files_python(self):
-        try:
-            get(
-                dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-                list_files="hello_python.txt",
-            )
-        except SystemExit:
-            pass
+    def test_get_create_file_list_python(self):
+        get(
+            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            create_file_list="hello_python.txt",
+        )
         assert os.path.isfile("hello_python.txt")
         with open("hello_python.txt") as file:
             assert file.read() != ""
 
-    def test_get_list_files_csv_python(self):
-        try:
-            get(
-                dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-                list_files="hello_python.csv",
-            )
-            assert os.path.isfile("hello_python.csv")
-        except SystemExit:
-            pass
+    def test_get_create_file_list_csv_python(self):
+        get(
+            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            create_file_list="hello_python.csv",
+        )
+        assert os.path.isfile("hello_python.csv")
         with open("hello_python.csv") as file:
             assert (
                 file.readline()
