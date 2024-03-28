@@ -28,6 +28,7 @@ def download_get(
         password,
         pathlib.Path(get_request.output_directory),
         download_file_list,
+        overwrite=get_request.overwrite_output_data,
     )
     filenames_out = create_filenames_out(
         filenames_in=filenames_in,

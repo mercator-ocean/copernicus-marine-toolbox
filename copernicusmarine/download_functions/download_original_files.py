@@ -57,6 +57,7 @@ def download_original_files(
         create_file_list,
         pathlib.Path(get_request.output_directory),
         only_list_root_path=get_request.index_parts,
+        overwrite=get_request.overwrite_output_data,
     )
     if result is None:
         return []
@@ -200,6 +201,7 @@ def _download_header(
     create_file_list: Optional[str],
     directory_out: pathlib.Path,
     only_list_root_path: bool = False,
+    overwrite: bool = False,
 ) -> Optional[Tuple[str, Tuple[str, str], list[str], float, list[str]]]:
     (endpoint_url, bucket, path) = parse_access_dataset_url(
         data_path, only_dataset_root_path=only_list_root_path
@@ -226,7 +228,7 @@ def _download_header(
 
     if create_file_list and create_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            directory_out / create_file_list, False
+            directory_out / create_file_list, overwrite
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
@@ -235,7 +237,7 @@ def _download_header(
         return None
     elif create_file_list and create_file_list.endswith(".csv"):
         download_filename = get_unique_filename(
-            directory_out / create_file_list, False
+            directory_out / create_file_list, overwrite
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:

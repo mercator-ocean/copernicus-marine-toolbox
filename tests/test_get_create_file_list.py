@@ -94,3 +94,22 @@ class TestGetCreateFileList:
                 file.readline()
                 == "filename,size,last_modified_datetime,etag\n"
             )
+
+    def test_get_create_file_with_overwrite_option(self):
+        get(
+            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            create_file_list="hello_python_overwrite.txt",
+        )
+        get(
+            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            create_file_list="hello_python_overwrite.txt",
+            overwrite_output_data=True,
+        )
+        assert not os.path.isfile("hello_python_overwrite_(1).txt")
+
+        get(
+            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            create_file_list="hello_python_overwrite.txt",
+        )
+
+        assert os.path.isfile("hello_python_overwrite_(1).txt")

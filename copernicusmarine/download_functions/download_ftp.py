@@ -141,6 +141,7 @@ def download_header(
     password: str,
     output_directory: pathlib.Path,
     download_file_list: Optional[str],
+    overwrite: bool = False,
 ) -> Tuple[str, str, list[str], float]:
     (host, path) = parse_ftp_dataset_url(data_path)
     logger.debug(f"Downloading header via FTP on {host + path}")
@@ -156,7 +157,7 @@ def download_header(
 
     if download_file_list and download_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            output_directory / download_file_list, False
+            output_directory / download_file_list, overwrite
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
