@@ -4,6 +4,7 @@ from typing import Optional
 
 import aiohttp
 import certifi
+import nest_asyncio
 import requests
 import xarray
 
@@ -23,6 +24,7 @@ def _get_ssl_context() -> Optional[ssl.SSLContext]:
 
 
 def get_configured_aiohttp_session() -> aiohttp.ClientSession:
+    nest_asyncio.apply()
     connector = aiohttp.TCPConnector(ssl=_get_ssl_context())
     return aiohttp.ClientSession(connector=connector, trust_env=TRUST_ENV)
 
