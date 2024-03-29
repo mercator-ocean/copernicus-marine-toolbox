@@ -1,3 +1,4 @@
+import datetime
 import fnmatch
 import itertools
 import logging
@@ -2078,3 +2079,32 @@ class TestCommandLineInterface:
                 "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20030101_20031231_R20221101_RE01.nc"
                 in lines[2]
             )
+
+    def test_last_modified_date_is_set_with_s3(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            "METOFFICE-GLO-SST-L4-REP-OBS-SST",
+            "--force-download",
+            "--filter",
+            "*2022053112000*",
+            "--force-service",
+            "original-files",
+            "--output-directory",
+            f"{tmp_path}",
+            "--no-directories",
+        ]
+        output = subprocess.run(command)
+        output_file = pathlib.Path(
+            tmp_path,
+            "20220531120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.nc",
+        )
+        five_minutes_ago = datetime.datetime.now() - datetime.timedelta(
+            minutes=5
+        )
+
+        assert output.returncode == 0
+        assert datetime.datetime.fromtimestamp(
+            os.path.getmtime(output_file)
+        ) < (five_minutes_ago)
