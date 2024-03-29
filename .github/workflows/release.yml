@@ -37,14 +37,6 @@ jobs:
         shell: micromamba-shell {0}
         run: echo "VERSION=$(poetry version --short)" >> $GITHUB_ENV
 
-      - name: Wait for Pypi version to be available
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'https://pypi.org/project/copernicusmarine/$VERSION/'
-          responseCode: '200'
-          timeout: 2000
-          interval: 5000
-
       - name: Build and publish Docker image
         shell: micromamba-shell {0}
         env:
