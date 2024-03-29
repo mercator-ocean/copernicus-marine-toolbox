@@ -139,7 +139,7 @@ def get_function(
         )
     if download_file_list and not create_file_list:
         create_file_list = "files_to_download.txt"
-    if create_file_list:
+    if create_file_list is not None:
         assert create_file_list.endswith(".txt") or create_file_list.endswith(
             ".csv"
         ), "Download file list must be a .txt or .csv file. "
