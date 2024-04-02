@@ -245,16 +245,8 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     logger.debug(f"POSTing credentials to {cmems_cas_login_url}...")
     login_response = conn_session.post(cmems_cas_login_url, data=playload)
     login_success = 'class="success"' in login_response.text
-
-    if login_success:
-        get_profile_url = (
-            login_response.history[-1]
-            .headers["Location"]
-            .replace("login?", f"serviceValidate?service={service}&")
-        )
-        logger.debug(f"Getting profile to {get_profile_url}...")
     logger.debug("User credentials checked")
-    return True
+    return login_success
 
 
 @cachier(stale_after=timedelta(hours=48), cache_dir=CACHE_BASE_DIRECTORY)

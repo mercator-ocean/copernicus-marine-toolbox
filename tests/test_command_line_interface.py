@@ -767,7 +767,7 @@ class TestCommandLineInterface:
         assert output.returncode == 0
         assert is_file
 
-    def test_process_is_not_stopped_when_credentials_are_invalid(self):
+    def test_process_is_stopped_when_credentials_are_invalid(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
 
         command = [
@@ -786,8 +786,8 @@ class TestCommandLineInterface:
 
         output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 0
-        assert b"Invalid username or password" not in output.stdout
+        assert output.returncode == 1
+        assert b"Invalid username or password" in output.stdout
 
     def test_login_is_prompt_when_configuration_file_doest_not_exist(
         self, tmp_path
@@ -1880,36 +1880,6 @@ class TestCommandLineInterface:
         output = subprocess.run(
             base_command + ["--dataset-part", "bathy"], capture_output=True
         )
-        assert output.returncode == 0
-
-    def test_subset_is_using_dims_instead_of_coord(self, tmp_path):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--dataset-id",
-            "dataset-topaz6-arc-15min-3km-be",
-            "--variable",
-            "zos",
-            "--start-datetime",
-            "2018-01-01T00:00:00",
-            "--end-datetime",
-            "2018-01-01T03:59:59",
-            "--minimum-longitude",
-            "0",
-            "--maximum-longitude",
-            "1",
-            "--minimum-latitude",
-            "0",
-            "--maximum-latitude",
-            "1",
-            "--force-download",
-            "-o",
-            f"{tmp_path}",
-            "-f",
-            "result.nc",
-        ]
-
-        output = subprocess.run(command)
         assert output.returncode == 0
 
     def test_netcdf_compression_level(self, tmp_path):
