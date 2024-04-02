@@ -34,8 +34,31 @@ jobs:
           poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
 
       - name: Set VERSION environment variable
+        id: set-version
         shell: micromamba-shell {0}
-        run: echo "VERSION=$(poetry version --short)" >> $GITHUB_ENV
+        run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag v${{ steps.set-version.outputs.VERSION }}
+          git push origin --tags
+
+      - name: Create Github release
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create v${{ steps.set-version.outputs.VERSION }} --generate-notes
+
+      - name: Wait for Pypi version to be available
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'https://pypi.org/project/copernicusmarine/${{ steps.set-version.outputs.VERSION }}/'
+          responseCode: '200'
+          timeout: 600000
+          interval: 5000
 
       - name: Build and publish Docker image
         shell: micromamba-shell {0}
@@ -43,17 +66,3 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
         run: make build-and-publish-dockerhub-image
-
-      - name: Create tag
-        shell: micromamba-shell {0}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git tag v$VERSION
-          git push origin --tags
-
-      - name: Create Github release
-        shell: micromamba-shell {0}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create v$VERSION --generate-notes
