@@ -2078,3 +2078,43 @@ class TestCommandLineInterface:
         assert datetime.datetime.fromtimestamp(
             os.path.getmtime(output_file)
         ) < (five_minutes_ago)
+
+    def test_netcdf3_option(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i",
+            "-v",
+            "thetao",
+            "-t",
+            "2022-01-01T00:00:00",
+            "-T",
+            "2022-12-31T23:59:59",
+            "-x",
+            "-6.17",
+            "-X",
+            "-5.08",
+            "-y",
+            "35.75",
+            "-Y",
+            "36.30",
+            "-z",
+            "0.0",
+            "-Z",
+            "5.0",
+            "-f",
+            "dataset.nc",
+            "-o",
+            f"{tmp_path}",
+            "--netcdf3-compatible",
+            "--force-download",
+        ]
+        output = subprocess.run(command)
+        assert output.returncode == 0
+
+        output_netcdf_format = subprocess.run(
+            ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"], capture_output=True
+        )
+        assert output_netcdf_format.returncode == 0
+        assert output_netcdf_format.stdout == b"classic\n"

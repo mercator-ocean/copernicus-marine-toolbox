@@ -68,6 +68,7 @@ class SubsetRequest:
     overwrite_output_data: bool = False
     netcdf_compression_enabled: bool = False
     netcdf_compression_level: Optional[int] = None
+    netcdf3_compatible: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in SubsetRequest object.

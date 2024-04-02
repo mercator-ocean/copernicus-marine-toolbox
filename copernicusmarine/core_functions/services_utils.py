@@ -266,7 +266,9 @@ def _select_service_by_priority(
             first_available_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
-            raise FormatNotSupported(first_available_service.service_format)
+            raise FormatNotSupported(
+                first_available_service.service_format.value
+            )
         best_arco_service_type: CopernicusMarineDatasetServiceType = (
             _get_best_arco_service_type(
                 dataset_subset, first_available_service.uri
@@ -503,7 +505,7 @@ def _get_retrieval_service_from_dataset_version(
             command_type=command_type,
         )
         if service.service_format == CopernicusMarineServiceFormat.SQLITE:
-            raise FormatNotSupported(service.service_format)
+            raise FormatNotSupported(service.service_format.value)
     else:
         service = _select_service_by_priority(
             dataset_version_part=dataset_part,
