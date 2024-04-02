@@ -19,9 +19,6 @@ from copernicusmarine.core_functions.models import (
 from copernicusmarine.download_functions.download_arco_series import (
     read_dataframe_from_arco_series,
 )
-from copernicusmarine.download_functions.download_opendap import (
-    read_dataframe_from_opendap,
-)
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -144,6 +141,5 @@ def read_dataframe(
         load_request,
         disable_progress_bar,
         read_dataframe_from_arco_series,
-        read_dataframe_from_opendap,
     )
     return dataset

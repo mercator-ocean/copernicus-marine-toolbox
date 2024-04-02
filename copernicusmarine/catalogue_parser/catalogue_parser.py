@@ -3,13 +3,11 @@ import logging
 import os
 import re
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import timedelta
 from enum import Enum
 from importlib.metadata import version as package_version
-from itertools import chain, groupby, repeat
-from json import loads
+from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
 
 import nest_asyncio
@@ -24,7 +22,6 @@ from copernicusmarine.command_line_interface.exception_handler import (
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_aiohttp_session,
-    get_configured_request_session,
 )
 from copernicusmarine.core_functions.utils import (
     CACHE_BASE_DIRECTORY,
@@ -42,26 +39,18 @@ _T = TypeVar("_T")
 
 
 class _ServiceName(str, Enum):
-    MOTU = "motu"
-    OPENDAP = "opendap"
     GEOSERIES = "arco-geo-series"
     TIMESERIES = "arco-time-series"
     FILES = "original-files"
-    FTP = "ftp"
-    WMS = "wms"
     WMTS = "wmts"
     OMI_ARCO = "omi-arco"
     STATIC_ARCO = "static-arco"
 
 
 class _ServiceShortName(str, Enum):
-    MOTU = "motu"
-    OPENDAP = "opendap"
     GEOSERIES = "geoseries"
     TIMESERIES = "timeseries"
     FILES = "files"
-    FTP = "ftp"
-    WMS = "wms"
     WMTS = "wmts"
     OMI_ARCO = "omi-arco"
     STATIC_ARCO = "static-arco"
@@ -103,16 +92,12 @@ class _Service:
 
 
 class CopernicusMarineDatasetServiceType(_Service, Enum):
-    MOTU = _ServiceName.MOTU, _ServiceShortName.MOTU
-    OPENDAP = _ServiceName.OPENDAP, _ServiceShortName.OPENDAP
     GEOSERIES = _ServiceName.GEOSERIES, _ServiceShortName.GEOSERIES
     TIMESERIES = (
         _ServiceName.TIMESERIES,
         _ServiceShortName.TIMESERIES,
     )
     FILES = _ServiceName.FILES, _ServiceShortName.FILES
-    FTP = _ServiceName.FTP, _ServiceShortName.FTP
-    WMS = _ServiceName.WMS, _ServiceShortName.WMS
     WMTS = _ServiceName.WMTS, _ServiceShortName.WMTS
     OMI_ARCO = _ServiceName.OMI_ARCO, _ServiceShortName.OMI_ARCO
     STATIC_ARCO = _ServiceName.STATIC_ARCO, _ServiceShortName.STATIC_ARCO
@@ -127,25 +112,18 @@ def _service_type_from_web_api_string(
     name: str,
 ) -> CopernicusMarineDatasetServiceType:
     class WebApi(Enum):
-        MOTU = "motu"
-        OPENDAP = "opendap"
         GEOSERIES = "timeChunked"
         TIMESERIES = "geoChunked"
         FILES = "native"
-        FTP = "ftp"
         WMS = "wms"
         WMTS = "wmts"
         OMI_ARCO = "omi"
         STATIC_ARCO = "static"
 
     web_api_mapping = {
-        WebApi.MOTU: CopernicusMarineDatasetServiceType.MOTU,
-        WebApi.OPENDAP: CopernicusMarineDatasetServiceType.OPENDAP,
         WebApi.GEOSERIES: CopernicusMarineDatasetServiceType.GEOSERIES,
         WebApi.TIMESERIES: CopernicusMarineDatasetServiceType.TIMESERIES,
         WebApi.FILES: CopernicusMarineDatasetServiceType.FILES,
-        WebApi.FTP: CopernicusMarineDatasetServiceType.FTP,
-        WebApi.WMS: CopernicusMarineDatasetServiceType.WMS,
         WebApi.WMTS: CopernicusMarineDatasetServiceType.WMTS,
         WebApi.OMI_ARCO: CopernicusMarineDatasetServiceType.OMI_ARCO,
         WebApi.STATIC_ARCO: CopernicusMarineDatasetServiceType.STATIC_ARCO,
@@ -279,32 +257,6 @@ class CopernicusMarineProductDataset:
         except DatasetVersionNotFound:
             return None
 
-    def add_raw_services(
-        self, raw_services: Dict, layer_elements: List
-    ) -> None:
-        latest_version = self.get_latest_version()
-
-        portal_services = portal_services_to_services(
-            raw_services,
-            layer_elements,
-        )
-        if latest_version:
-            for part in latest_version.parts:
-                part.services += portal_services
-        elif portal_services:
-            self.versions.append(
-                CopernicusMarineDatasetVersion(
-                    label=VERSION_DEFAULT,
-                    parts=[
-                        CopernicusMarineVersionPart(
-                            name=PART_DEFAULT,
-                            services=portal_services,
-                            retired_date=None,
-                        )
-                    ],
-                )
-            )
-
 
 def dataset_version_part_not_found_exception(
     version: CopernicusMarineDatasetVersion,
@@ -368,45 +320,6 @@ class ProductParser(ABC):
     processing_level: Optional[str]
     production_center: str
     keywords: dict[str, str]
-
-
-@dataclass
-class ProductDatasetFromPortal(ProductDatasetParser):
-    raw_services: Dict
-    layer_elements: List
-
-    def to_copernicus_marine_dataset(self) -> CopernicusMarineProductDataset:
-        copernicus_marine_dataset = CopernicusMarineProductDataset(
-            dataset_id=self.dataset_id,
-            dataset_name=self.dataset_name,
-            versions=self.versions,
-        )
-        copernicus_marine_dataset.add_raw_services(
-            self.raw_services, self.layer_elements
-        )
-        return copernicus_marine_dataset
-
-
-@dataclass
-class ProductFromPortal(ProductParser):
-    datasets: list[ProductDatasetFromPortal]
-
-    def to_copernicus_marine_product(self) -> CopernicusMarineProduct:
-        return CopernicusMarineProduct(
-            title=self.title,
-            product_id=self.product_id,
-            thumbnail_url=self.thumbnail_url,
-            description=self.description,
-            digital_object_identifier=self.digital_object_identifier,
-            sources=self.sources,
-            processing_level=self.processing_level,
-            production_center=self.production_center,
-            keywords=self.keywords,
-            datasets=[
-                dataset.to_copernicus_marine_dataset()
-                for dataset in self.datasets
-            ],
-        )
 
 
 @dataclass
@@ -875,98 +788,6 @@ def parse_catalogue(
     return catalog
 
 
-def merge_products(
-    products_from_marine_data_store: List[ProductFromMarineDataStore],
-    products_from_portal: List[ProductFromPortal],
-) -> List[CopernicusMarineProduct]:
-    merged_products: List[CopernicusMarineProduct] = [
-        marine_data_store_product.to_copernicus_marine_product()
-        for marine_data_store_product in products_from_marine_data_store
-    ]
-
-    for portal_product in products_from_portal:
-        maybe_merged_product = list(
-            filter(
-                lambda x: x.product_id == portal_product.product_id,
-                merged_products,
-            )
-        )
-        if not maybe_merged_product:
-            merged_product = portal_product.to_copernicus_marine_product()
-            merged_products.append(merged_product)
-
-        else:
-            merged_product = maybe_merged_product[0]
-            for portal_dataset in portal_product.datasets:
-                maybe_merged_dataset = list(
-                    filter(
-                        lambda x: x.dataset_id == portal_dataset.dataset_id,
-                        merged_product.datasets,
-                    )
-                )
-                if not maybe_merged_dataset:
-                    merged_product.datasets.append(
-                        portal_dataset.to_copernicus_marine_dataset()
-                    )
-                else:
-                    merged_dataset = maybe_merged_dataset[0]
-                    for portal_version in portal_dataset.versions:
-                        maybe_merged_version = list(
-                            filter(
-                                lambda x: x.label == portal_version.label,
-                                merged_dataset.versions,
-                            )
-                        )
-                        if not maybe_merged_version:
-                            merged_dataset.versions.append(portal_version)
-                        else:
-                            merged_version = maybe_merged_version[0]
-                            for portal_part in portal_version.parts:
-                                maybe_merged_part = list(
-                                    filter(
-                                        lambda x: x.name == portal_part.name,
-                                        merged_version.parts,
-                                    )
-                                )
-                                if not maybe_merged_part:
-                                    merged_version.parts.append(portal_part)
-                                else:
-                                    merged_part = maybe_merged_part[0]
-                                    for portal_service in portal_part.services:
-                                        maybe_merged_service = list(
-                                            filter(
-                                                lambda x: x.service_type
-                                                == portal_service.service_type,
-                                                merged_part.services,
-                                            )
-                                        )
-                                        if not maybe_merged_service:
-                                            merged_part.services.append(
-                                                portal_service
-                                            )
-                                        else:
-                                            continue
-                                    merged_part.services.sort(
-                                        key=lambda x: x.service_type.service_name.value
-                                    )
-                            merged_version.parts.sort(key=lambda x: x.name)
-
-                    merged_dataset.versions.sort(
-                        key=lambda x: (
-                            x.label if x.label != VERSION_DEFAULT else "110001"
-                        ),
-                        reverse=True,
-                    )
-
-                    merged_dataset.add_raw_services(
-                        portal_dataset.raw_services,
-                        portal_dataset.layer_elements,
-                    )
-            merged_product.datasets.sort(key=lambda x: x.dataset_id)
-
-    return merged_products
-
-
 @cachier(cache_dir=CACHE_BASE_DIRECTORY, stale_after=timedelta(hours=24))
 def _parse_catalogue(
     _versions: str,  # force cachier to overwrite cache in case of version update
@@ -974,33 +795,19 @@ def _parse_catalogue(
     staging: bool = False,
 ) -> CopernicusMarineCatalogue:
     progress_bar = tqdm(
-        total=4, desc="Fetching catalog", disable=disable_progress_bar
+        total=3, desc="Fetching catalog", disable=disable_progress_bar
     )
     connection = CatalogParserConnection()
-    if not staging:
-        logger.debug("Parsing portal catalogue...")
-        try:
-            portal_products = _parse_portal_backend_products(connection)
-            progress_bar.update()
-            logger.debug("Portal catalogue parsed")
-        except Exception as e:
-            logger.warning(
-                f"Failed to parse portal catalogue: {e}. Only using stac catalogue."
-            )
-            progress_bar.update()
-            portal_products = []
-    else:
-        # because of data misalignment we don't want to use data-be endpoint
-        portal_products = []
 
     marine_data_store_products = _retrieve_marine_data_store_products(
         connection=connection, staging=staging
     )
     progress_bar.update()
 
-    products_merged = merge_products(
-        marine_data_store_products, portal_products
-    )
+    products_merged: List[CopernicusMarineProduct] = [
+        marine_data_store_product.to_copernicus_marine_product()
+        for marine_data_store_product in marine_data_store_products
+    ]
     products_merged.sort(key=lambda x: x.product_id)
     progress_bar.update()
 
@@ -1010,16 +817,6 @@ def _parse_catalogue(
     asyncio.run(connection.close())
 
     return full_catalog
-
-
-async def _async_fetch_raw_products(
-    product_ids: List[str], connection: CatalogParserConnection
-):
-    tasks = []
-    for product_id in product_ids:
-        tasks.append(connection.get_json_file(product_url(product_id)))
-
-    return await rolling_batch_gather(tasks, MAX_CONCURRENT_REQUESTS)
 
 
 def product_url(product_id: str) -> str:
@@ -1154,105 +951,6 @@ def mds_stac_to_services(
     return copernicus_marine_services
 
 
-def portal_services_to_services(
-    raw_services: Dict, layer_elements: List
-) -> list[CopernicusMarineService]:
-    copernicus_marine_services = []
-
-    for (
-        service_name,
-        service_url,
-    ) in raw_services.items():
-        copernicus_marine_services.append(
-            _to_service(
-                service_name,
-                {"href": service_url},
-                layer_elements,
-            )
-        )
-
-    return [service for service in copernicus_marine_services if service]
-
-
-def to_dataset(
-    distinct_dataset_versions: List[DistinctDatasetVersionPart],
-) -> Optional[ProductDatasetFromPortal]:
-    if distinct_dataset_versions:
-        first_distinct_dataset_version = distinct_dataset_versions[0]
-        dataset_id = first_distinct_dataset_version.dataset_id
-        layer_elements = list(first_distinct_dataset_version.layer_elements)
-        sub_dataset_title = (
-            layer_elements[0]["subdatasetTitle"]
-            if layer_elements and len(layer_elements) == 1
-            else dataset_id
-        )
-        dataset_by_version = groupby(
-            distinct_dataset_versions, key=lambda x: x.dataset_version
-        )
-        versions = list(chain(map_reject_none(to_version, dataset_by_version)))
-        if versions:
-            dataset = ProductDatasetFromPortal(
-                dataset_id=dataset_id,
-                dataset_name=sub_dataset_title,
-                versions=versions,
-                raw_services=first_distinct_dataset_version.raw_services,
-                layer_elements=first_distinct_dataset_version.layer_elements,
-            )
-            return dataset
-    return None
-
-
-def to_part(
-    distinct_dataset_version: DistinctDatasetVersionPart,
-) -> List[CopernicusMarineVersionPart]:
-    mds_stac_services = mds_stac_to_services(distinct_dataset_version)
-    retired_date = (
-        distinct_dataset_version.stac_items_values.get("properties", {}).get(
-            "admp_retired_date"
-        )
-        if distinct_dataset_version.stac_items_values
-        else None
-    )
-    if mds_stac_services and (
-        not retired_date
-        or datetime_parser(retired_date) > datetime_parser("now")
-    ):
-        return [
-            CopernicusMarineVersionPart(
-                name=distinct_dataset_version.dataset_part,
-                services=mds_stac_services,
-                retired_date=retired_date,
-            )
-        ]
-    else:
-        return []
-
-
-def to_version(
-    datasets_by_version,
-) -> Optional[CopernicusMarineDatasetVersion]:
-    distinct_dataset_versions = list(datasets_by_version[1])
-
-    if distinct_dataset_versions:
-        parts = list(chain(*map(to_part, distinct_dataset_versions)))
-        unique_parts: List[CopernicusMarineVersionPart] = []
-        for part in parts:
-            if part.name not in list(map(lambda x: x.name, unique_parts)):
-                unique_parts.append(part)
-        if len(parts) != len(unique_parts):
-            dataset_id = distinct_dataset_versions[0].dataset_id
-            logger.debug(
-                f"WARNING: The dataset id '{dataset_id}' has many parts "
-                f"with the same name. Only the first one has been chosen."
-            )
-        if parts:
-            return CopernicusMarineDatasetVersion(
-                label=distinct_dataset_versions[0].dataset_version,
-                parts=unique_parts,
-            )
-    return None
-
-
 REGEX_PATTERN_DATE_YYYYMM = r"[12]\d{3}(0[1-9]|1[0-2])"
 PART_SEPARATOR = "--ext--"
 
@@ -1273,122 +971,6 @@ def get_version_and_part_from_full_dataset_id(
     else:
         raise Exception(f"Could not parse dataset id: {full_dataset_id}")
     return dataset_name, version, part
-
-
-def construct_unique_dataset(
-    raw_service, groups_layers, stac_items
-) -> List[DistinctDatasetVersionPart]:
-    dataset_id_from_raw_service = raw_service[0]
-    groups_layer = [
-        group_layer
-        for group_layer in groups_layers.items()
-        if group_layer[0] == dataset_id_from_raw_service
-    ]
-    dataset_layer_elements = groups_layer[0][1] if groups_layer else []
-    dataset_raw_services = raw_service[1]
-
-    dataset_versions = []
-
-    for stac_dataset_id, stac_items_values in stac_items.items():
-        if stac_dataset_id.startswith(dataset_id_from_raw_service):
-            (
-                _,
-                dataset_version,
-                part,
-            ) = get_version_and_part_from_full_dataset_id(stac_dataset_id)
-            dataset_versions.append(
-                DistinctDatasetVersionPart(
-                    dataset_id=dataset_id_from_raw_service,
-                    dataset_version=dataset_version,
-                    dataset_part=part,
-                    layer_elements=dataset_layer_elements,
-                    raw_services=dataset_raw_services,
-                    stac_items_values=stac_items_values,
-                )
-            )
-    else:
-        _, dataset_version, part = get_version_and_part_from_full_dataset_id(
-            dataset_id_from_raw_service
-        )
-        dataset_versions.append(
-            DistinctDatasetVersionPart(
-                dataset_id=dataset_id_from_raw_service,
-                dataset_version=dataset_version,
-                dataset_part=part,
-                layer_elements=dataset_layer_elements,
-                raw_services=dataset_raw_services,
-                stac_items_values=None,
-            )
-        )
-
-    return dataset_versions
-
-
-def to_datasets(
-    raw_services: dict[str, dict[str, str]],
-    layers: dict[str, dict[str, Any]],
-    stac_items: dict,
-) -> list[ProductDatasetFromPortal]:
-    groups_layers = defaultdict(list)
-    for layer in layers.values():
-        subdataset_id = layer["subdatasetId"]
-        groups_layers[subdataset_id].append(layer)
-
-    distinct_dataset_versions = map(
-        construct_unique_dataset,
-        raw_services.items(),
-        repeat(groups_layers),
-        repeat(stac_items),
-    )
-
-    return sorted(
-        map_reject_none(to_dataset, distinct_dataset_versions),
-        key=lambda distinct_dataset: distinct_dataset.dataset_id,
-    )
-
-
-def _parse_portal_product(raw_product: dict[str, Any]) -> ProductFromPortal:
-    return ProductFromPortal(
-        title=raw_product["title"],
-        product_id=raw_product["id"],
-        thumbnail_url=raw_product["thumbnailUrl"],
-        description=raw_product["abstract"],
-        digital_object_identifier=raw_product["doi"],
-        sources=raw_product["sources"],
-        processing_level=(
-            raw_product["processingLevel"]
-            if "processingLevel" in raw_product
-            else None
-        ),
-        production_center=raw_product["originatingCenter"],
-        keywords=raw_product["keywords"],
-        datasets=to_datasets(
-            raw_product["services"],
-            raw_product["layers"],
-            raw_product["stacItems"],
-        ),
-    )
-
-
-def _parse_portal_backend_products(
-    connection: CatalogParserConnection,
-) -> List[ProductFromPortal]:
-    base_url = "https://data-be-prd.marine.copernicus.eu/api/datasets"
-    session = get_configured_request_session()
-    response = session.post(
-        base_url,
-        json={"size": 1000, "includeOmis": True},
-    )
-    assert response.ok, response.text
-    raw_catalogue: dict[str, Any] = loads(response.text)
-
-    nest_asyncio.apply()
-    loop = asyncio.get_event_loop()
-
-    results = loop.run_until_complete(
-        _async_fetch_raw_products(raw_catalogue["datasets"].keys(), connection)
-    )
-    return list(map(_parse_portal_product, results))
 
 
 # ---------------------------------------

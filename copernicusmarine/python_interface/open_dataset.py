@@ -19,9 +19,6 @@ from copernicusmarine.core_functions.models import (
 from copernicusmarine.download_functions.download_arco_series import (
     open_dataset_from_arco_series,
 )
-from copernicusmarine.download_functions.download_opendap import (
-    open_dataset_from_opendap,
-)
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -74,7 +71,7 @@ def open_dataset(
     disable_progress_bar: bool = False,
 ) -> xarray.Dataset:
     """
-    Load an xarray dataset using "lazy-loading" mode from a Copernicus Marine data source using either the ARCO series or OpenDAP protocol.
+    Load an xarray dataset using "lazy-loading" mode from a Copernicus Marine data source using either the ARCO series protocol.
     This means that data is only loaded into memory when a computation is called, optimizing RAM usage by avoiding immediate loading.
     It supports various parameters for customization, such as specifying ge ographical bounds, temporal range, depth range, and more.
 
@@ -95,7 +92,7 @@ def open_dataset(
         vertical_dimension_as_originally_produced (bool, optional): If True, use the vertical dimension as originally produced.
         start_datetime (datetime, optional): The start datetime for temporal subsetting.
         end_datetime (datetime, optional): The end datetime for temporal subsetting.
-        service (str, optional): Force the use of a specific service (ARCO or OpenDAP).
+        service (str, optional): Force the use of a specific service (ARCO geo series or time series).
         credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
         overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
         no_metadata_cache (bool, optional): If True, do not use the metadata cache.
@@ -145,6 +142,5 @@ def open_dataset(
         load_request,
         disable_progress_bar,
         open_dataset_from_arco_series,
-        open_dataset_from_opendap,
     )
     return dataset

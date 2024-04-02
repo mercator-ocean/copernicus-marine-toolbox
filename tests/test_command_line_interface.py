@@ -151,7 +151,6 @@ class TestCommandLineInterface:
             "original-files",
             "arco-geo-series",
             "arco-time-series",
-            "ftp",
         ]
 
         json_result = loads(self.output)
@@ -994,7 +993,7 @@ class TestCommandLineInterface:
             "--variable",
             "thetao",
             "--service",
-            "arco-time-series",
+            "opendap",
         ]
 
         self.run_output = subprocess.run(
@@ -1002,10 +1001,10 @@ class TestCommandLineInterface:
         )
 
     def then_I_got_a_clear_output_with_available_service_for_subset(self):
-        assert self.run_output.stderr == b""
         assert (
-            b"Service not available: Available services for dataset: "
-            b"['motu', 'opendap']"
+            b"Service opendap does not exist for command subset. "
+            b"Possible services: ['arco-geo-series', 'geoseries', "
+            b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco']"
         ) in self.run_output.stdout
 
     def test_mutual_exclusivity_of_cache_options_for_describe(self):

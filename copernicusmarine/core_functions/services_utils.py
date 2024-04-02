@@ -76,15 +76,12 @@ class CommandType(Command, Enum):
             CopernicusMarineDatasetServiceType.TIMESERIES,
             CopernicusMarineDatasetServiceType.OMI_ARCO,
             CopernicusMarineDatasetServiceType.STATIC_ARCO,
-            CopernicusMarineDatasetServiceType.OPENDAP,
-            CopernicusMarineDatasetServiceType.MOTU,
         ],
     )
     GET = (
         _Command.GET,
         [
             CopernicusMarineDatasetServiceType.FILES,
-            CopernicusMarineDatasetServiceType.FTP,
         ],
     )
     LOAD = (
@@ -94,7 +91,6 @@ class CommandType(Command, Enum):
             CopernicusMarineDatasetServiceType.TIMESERIES,
             CopernicusMarineDatasetServiceType.OMI_ARCO,
             CopernicusMarineDatasetServiceType.STATIC_ARCO,
-            CopernicusMarineDatasetServiceType.OPENDAP,
         ],
     )
 
@@ -214,15 +210,8 @@ def _get_first_available_service_type(
         and dataset_version_part.name != PART_DEFAULT
         and command_type == CommandType.GET
     ):
-        logger.warning(
-            "This dataset contain parts and no one has been provided, "
-            "forcing using FTP service"
-        )
-        available_service_types = list(
-            filter(
-                lambda s: s == CopernicusMarineDatasetServiceType.FTP,
-                command_type.service_types_by_priority,
-            )
+        raise ValueError(
+            "Please provide a dataset part via the --dataset-part option"
         )
     else:
         available_service_types = command_type.service_types_by_priority

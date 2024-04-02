@@ -34,10 +34,6 @@ from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_arco_series import (
     download_zarr,
 )
-from copernicusmarine.download_functions.download_motu import download_motu
-from copernicusmarine.download_functions.download_opendap import (
-    download_opendap,
-)
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
 )
@@ -208,19 +204,15 @@ def subset_function(
         dataset_subset=subset_request.get_time_and_geographical_subset(),
     )
     subset_request.dataset_url = retrieval_service.uri
-    if (
-        retrieval_service.service_type
-        != CopernicusMarineDatasetServiceType.MOTU
-    ):
-        check_dataset_subset_bounds(
-            username=username,
-            password=password,
-            dataset_url=subset_request.dataset_url,
-            service_type=retrieval_service.service_type,
-            dataset_subset=subset_request.get_time_and_geographical_subset(),
-            subset_method=subset_request.subset_method,
-            dataset_valid_date=retrieval_service.dataset_valid_start_date,
-        )
+    check_dataset_subset_bounds(
+        username=username,
+        password=password,
+        dataset_url=subset_request.dataset_url,
+        service_type=retrieval_service.service_type,
+        dataset_subset=subset_request.get_time_and_geographical_subset(),
+        subset_method=subset_request.subset_method,
+        dataset_valid_date=retrieval_service.dataset_valid_start_date,
+    )
     logger.info(
         "Downloading using service "
         f"{retrieval_service.service_type.service_name.value}..."
@@ -243,35 +235,6 @@ def subset_function(
                 disable_progress_bar,
                 retrieval_service.dataset_valid_start_date,
             )
-    elif (
-        retrieval_service.service_type
-        == CopernicusMarineDatasetServiceType.OPENDAP
-    ):
-        logger.warning(
-            "The OPeNDAP service is deprecated, please use one of "
-            "'arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco' instead."
-        )
-        output_path = download_opendap(
-            username,
-            password,
-            subset_request,
-            retrieval_service.dataset_id,
-            disable_progress_bar,
-        )
-    elif (
-        retrieval_service.service_type
-        == CopernicusMarineDatasetServiceType.MOTU
-    ):
-        logger.warning(
-            "The MOTU service is deprecated, please use one of "
-            "'arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco' instead."
-        )
-        output_path = download_motu(
-            username,
-            password,
-            subset_request,
-            catalogue=catalogue,
-        )
     else:
         raise ServiceNotSupported(retrieval_service.service_type)
     return output_path

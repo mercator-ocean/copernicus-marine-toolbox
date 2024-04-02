@@ -195,7 +195,7 @@ class TestDatasetVersionSelection:
             "--dataset-version",
             "default",
             "--service",
-            "motu",
+            "geoseries",
         ]
 
         output = execute_in_terminal(command)
