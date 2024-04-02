@@ -1,5 +1,5 @@
 
-<h1 align="center">Copernicus Marine Service toolbox (CLI & Python)</h1>
+<h1 align="center">Copernicus Marine Service Toolbox (CLI & Python)</h1>
 <div align="center">
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/v/copernicusmarine.svg?style=flat-square" alt="PyPI" /></a>
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg?style=flat-square" alt="PyPI Supported Versions" /></a>
@@ -57,7 +57,7 @@ python -m pip install copernicusmarine --upgrade
 ```
 
 ## User Guide
-For more comprehensive details on how to use the `copernicusmarine`, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9054839-copernicus-marine-toolbox-guide). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
+For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9054839-copernicus-marine-toolbox-guide). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
 
 ### General configuration
 
@@ -123,7 +123,7 @@ If `.copernicusmarine-credentials` already exists, the user is asked for confirm
 You can use the `--skip-if-user-logged-in` option to skip the configuration file overwrite if the user is already logged in.
 
 #### Access points migration and evolution
-If you already have a configuration for current services (e.g. `~/motuclient/motuclient-python.ini`, `~/.netrc` or `~/_netrc`) in your home directory, it will automatically be taken into account with commands `get` and `subset` without the need for running the `login` command.
+If you still have a configuration for legacy services (e.g. `~/motuclient/motuclient-python.ini`, `~/.netrc` or `~/_netrc`) in your home directory, it will automatically be taken into account with commands `get` and `subset` without the need for running the `login` command.
 If the configuration files are already available in another directory, when running commands `subset` or `get`, you can use the `--credentials-file` option to point to the files.
 
 ### Command `subset`
@@ -158,20 +158,20 @@ Do you want to proceed with download? [Y/n]:
 
 By default, after the display of the summary of the dataset subset, a download confirmation is asked. To skip this confirmation, use the option `--force-download`.
 
-#### Note about `subset_method`
-By default, the `subset` feature uses the `nearest` method of xarray. By specifying `--subset-method strict`, you can only request dimension strictly inside the dataset, useful for **opertarional use-case**.
+#### Note about `--subset-method` option
+By default, the `subset` feature uses the `nearest` method of xarray. By specifying `--subset-method strict`, you can only request dimension strictly inside the dataset, useful for **operational use-case**.
 
 #### Note about longitude range
 Options `--minimum-longitude` and `--maximum-longitude` work as follows:
 - If the result of the substraction ( `--maximum-longitude` minus `--minimum-longitude` ) is superior or equal to 360, then return the full dataset.
 - If the requested longitude range:
-  - **does not cross** the antemeridian, then return the dataset between range -180° and 180°.
-  - **does cross** the antemeridian, then return the dataset between range 0° and 360°.
+  - **does not cross** the antemeridian, then return the dataset between range -180 and 180.
+  - **does cross** the antemeridian, then return the dataset between range 0 and 360.
 
-Note that you can request any longitudes you want. A modulus is applied to bring the result between -180° and 360°. For example, if you request [530°, 560°], the result dataset will be in [170°, 200°].
+Note that you can request any longitudes you want. A modulus is applied to bring the result between -180° and 360°. For example, if you request [530, 560], the result dataset will be in [170, 200].
 
 
-#### Note about `netcdf-compression-enabled` and `--netcdf-compression-level` options
+#### Note about `--netcdf-compression-enabled` and `--netcdf-compression-level` options
 When subsetting data, if you decide to write your data as a NetCDF file (which is the default behavior), then you can provide the extra option `--netcdf-compression-enabled`. The downloaded file will be lighter but it will take more time to write it (because of the compression task). If you don't provide it, the task will be faster, but the file heavier.
 Otherwise, if you decide to write your data in Zarr format (`.zarr` extension), the original compression used in the Copernicus Marine Data Store will be applied, which means that the download task will be fast **and** the file compressed. In that case, you cannot use the `--netcdf-compression-enabled`.
 
