@@ -75,7 +75,7 @@ def subset(
         vertical_dimension_as_originally_produced (bool, optional): Use original vertical dimension.
         start_datetime (datetime, optional): Start datetime for temporal subset.
         end_datetime (datetime, optional): End datetime for temporal subset.
-        subset_method (str, optional): Method for the subset ('nearest' or 'strict').
+        subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
         output_filename (str, optional): Output filename for the subsetted data.
         file_format (str, optional): Extension format for the filename.
         service (str, optional): Force use of specified data service.
