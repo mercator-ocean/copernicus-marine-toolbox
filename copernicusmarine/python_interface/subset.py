@@ -54,6 +54,7 @@ def subset(
     staging: bool = False,
     netcdf_compression_enabled: bool = False,
     netcdf_compression_level: Optional[int] = None,
+    netcdf3_compatible: bool = False,
 ) -> pathlib.Path:
     """
     Extracts a subset of data from a specified dataset using given parameters.
@@ -89,6 +90,7 @@ def subset(
         no_metadata_cache (bool, optional): Disable metadata caching if True.
         netcdf_compression_enabled (bool, optional): Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the compression level.
         netcdf_compression_level (int, optional): Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
+        netcdf3_compatible (bool, optional): Enable downloading the dataset in a netCDF 3 compatible format.
     Returns:
         pathlib.Path: Path to the generated subsetted data file.
     """  # noqa
@@ -136,4 +138,5 @@ def subset(
         staging=staging,
         netcdf_compression_enabled=netcdf_compression_enabled,
         netcdf_compression_level=netcdf_compression_level,
+        netcdf3_compatible=netcdf3_compatible,
     )

@@ -161,13 +161,16 @@ However, the output directory and filename can be specified using `-o`/`--output
 
 You can force the use of a specific data access service with option `--service`.
 
-#### Note about netcdf-compression-enabled and --netcdf-compression-enabled options
+#### Note about `--netcdf-compression-enabled` and `--netcdf-compression-enabled` options
 When subseting data, if you decide to write your data as a NetCDF file (which is the default behavior), then you can provide the extra option "--netcdf-compression-enabled". The downloaded file will be lighter but it will take you more time to write it (because of the compression task). If you don't provide it, the task will be faster, but the file heavier.
 Finally, if you decide to write your data in ZARR format (.zarr extension), then the original compression that is used in the Marine Data Store will be apply, which mean that the download task will be fast AND the file compressed. In that case, you cannot use the "netcdf-compression-enabled" as it has no sense.
 
 Here is the default options added to xarray in the background when using the option: {'zlib': True, 'complevel': 1, 'contiguous': False, 'shuffle': True}
 
 In addition to this option, you can also provide the `--netcdf-compression-enabled` option and customize the NetCDF compression level between 0 (no compression) and 9.
+
+#### Note about `--netcdf3-compatible` option
+The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
 
 ### Command `get`
 Download the dataset file(s) as originally produced, based on the datasetID or the path to files.

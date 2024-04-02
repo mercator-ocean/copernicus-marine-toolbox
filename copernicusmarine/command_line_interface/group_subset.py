@@ -351,6 +351,13 @@ def cli_group_subset() -> None:
         "compression available"
     ),
 )
+@click.option(
+    "--netcdf3-compatible",
+    type=bool,
+    default=False,
+    is_flag=True,
+    help=("Enable downloading the dataset in a netCDF 3 compatible format."),
+)
 @log_exception_and_exit
 def subset(
     dataset_url: Optional[str],
@@ -374,6 +381,7 @@ def subset(
     file_format: FileFormat,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
+    netcdf3_compatible: bool,
     service: Optional[str],
     create_template: bool,
     request_file: Optional[pathlib.Path],
@@ -437,4 +445,5 @@ def subset(
         staging,
         netcdf_compression_enabled,
         netcdf_compression_level,
+        netcdf3_compatible=netcdf3_compatible,
     )

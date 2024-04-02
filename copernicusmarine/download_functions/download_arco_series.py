@@ -74,6 +74,7 @@ def download_dataset(
     disable_progress_bar: bool,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
+    netcdf3_compatible: bool,
     force_download: bool = False,
     overwrite_output_data: bool = False,
 ):
@@ -122,6 +123,7 @@ def download_dataset(
         output_path,
         netcdf_compression_enabled,
         netcdf_compression_level,
+        netcdf3_compatible,
     )
     download_delayed_dataset(delayed, disable_progress_bar)
     logger.info(f"Successfully downloaded to {output_path}")
@@ -191,6 +193,7 @@ def download_zarr(
         overwrite_output_data=subset_request.overwrite_output_data,
         netcdf_compression_enabled=subset_request.netcdf_compression_enabled,
         netcdf_compression_level=subset_request.netcdf_compression_level,
+        netcdf3_compatible=subset_request.netcdf3_compatible,
     )
     return output_path
 

@@ -19,6 +19,7 @@ def get_delayed_download(
     output_path: pathlib.Path,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
+    netcdf3_compatible: bool,
 ):
     if output_path.suffix == ".zarr":
         if netcdf_compression_enabled:
@@ -33,6 +34,7 @@ def get_delayed_download(
             output_path,
             netcdf_compression_enabled,
             netcdf_compression_level,
+            netcdf3_compatible,
         )
     return delayed
 
@@ -52,6 +54,7 @@ def _prepare_download_dataset_as_netcdf(
     output_path: pathlib.Path,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
+    netcdf3_compatible: bool,
 ):
     logger.debug("Writing dataset to NetCDF")
     if netcdf_compression_enabled:
@@ -65,8 +68,13 @@ def _prepare_download_dataset_as_netcdf(
         encoding = {var: comp for var in dataset.data_vars}
     else:
         encoding = None
+    xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
     return dataset.to_netcdf(
-        output_path, mode="w", compute=False, encoding=encoding
+        output_path,
+        mode="w",
+        compute=False,
+        encoding=encoding,
+        format=xarray_download_format,
     )
 
 

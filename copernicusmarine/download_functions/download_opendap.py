@@ -89,6 +89,7 @@ def chunked_download(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
+    netcdf3_compatible: bool,
 ):
     filepath = output_directory / output_filename
     if filepath.is_file():
@@ -135,8 +136,13 @@ def chunked_download(
 
         if output_filename is not None:
             logger.info(f"Concatenating files into {output_filename}...")
+            xarray_download_format = (
+                "NETCDF3_CLASSIC" if netcdf3_compatible else None
+            )
             dataset = xarray.open_mfdataset(slice_paths)
-            delayed = dataset.to_netcdf(filepath, compute=False)
+            delayed = dataset.to_netcdf(
+                filepath, compute=False, format=xarray_download_format
+            )
             with ProgressBar():
                 delayed.compute()
             logger.info("Files concatenated")
@@ -171,6 +177,7 @@ def download_dataset(
     disable_progress_bar: bool,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
+    netcdf3_compatible: bool,
 ):
     dataset, store = open_dataset_from_opendap(
         username=username,
@@ -216,6 +223,7 @@ def download_dataset(
             output_path,
             netcdf_compression_enabled,
             netcdf_compression_level,
+            netcdf3_compatible,
         )
         download_delayed_dataset(delayed, disable_progress_bar)
         logger.info(f"Successfully downloaded to {output_path}")
@@ -231,6 +239,7 @@ def download_dataset(
             geographical_parameters=geographical_parameters,
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
+            netcdf3_compatible=netcdf3_compatible,
         )
     return output_path
 
@@ -292,6 +301,7 @@ def download_opendap(
         disable_progress_bar=disable_progress_bar,
         netcdf_compression_enabled=subset_request.netcdf_compression_enabled,
         netcdf_compression_level=subset_request.netcdf_compression_level,
+        netcdf3_compatible=subset_request.netcdf3_compatible,
     )
     return output_path
 

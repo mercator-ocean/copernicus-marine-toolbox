@@ -79,6 +79,7 @@ def subset_function(
     staging: bool,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
+    netcdf3_compatible: bool,
 ) -> pathlib.Path:
     VersionVerifier.check_version_subset(staging)
     if staging:
@@ -132,6 +133,7 @@ def subset_function(
         "output_directory": output_directory,
         "netcdf_compression_enabled": netcdf_compression_enabled,
         "netcdf_compression_level": netcdf_compression_level,
+        "netcdf3_compatible": netcdf3_compatible,
     }
     subset_request.update(request_update_dict)
     username, password = get_and_check_username_password(
