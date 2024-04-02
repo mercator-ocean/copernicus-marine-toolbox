@@ -103,7 +103,7 @@ class TestPythonInterface:
         )
         assert is_valid_with_skip is True
 
-    def test_login_ok_with_wrong_credentials(self, tmp_path):
+    def test_login_not_ok_with_wrong_credentials(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         is_valid = login(
             username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
@@ -112,8 +112,8 @@ class TestPythonInterface:
             overwrite_configuration_file=True,
         )
 
-        assert is_valid is True
-        assert non_existing_directory.is_dir() is True
+        assert is_valid is False
+        assert non_existing_directory.is_dir() is False
 
     def test_signature_inspection_is_working(self):
         assert inspect.signature(describe).parameters[
