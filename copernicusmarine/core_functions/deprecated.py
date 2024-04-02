@@ -18,6 +18,13 @@ def log_deprecated_message(old_value, preferred_value):
     logger.warning(get_deprecated_message(old_value, preferred_value))
 
 
+def raise_both_old_and_new_value_error(old_value, new_value):
+    raise TypeError(
+        f"Received both {old_value} and {new_value} as arguments! "
+        f"{get_deprecated_message(old_value, new_value)}"
+    )
+
+
 class DeprecatedClickOption(click.Option):
     def __init__(self, *args, **kwargs):
         self.deprecated = kwargs.pop("deprecated", ())
@@ -80,9 +87,6 @@ def rename_kwargs(
     for alias, new in aliases.items():
         if alias in kwargs:
             if new in kwargs:
-                raise TypeError(
-                    f"{func_name} received both {alias} and {new} as arguments!"
-                    f"{get_deprecated_message(alias, new)}"
-                )
+                raise_both_old_and_new_value_error(alias, new)
             log_deprecated_message(alias, new)
             kwargs[new] = kwargs.pop(alias)
