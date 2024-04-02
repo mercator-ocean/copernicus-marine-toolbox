@@ -3,9 +3,10 @@ from typing import Dict, List
 
 
 class DeprecatedOption:
-    def __init__(self, old_name, new_name) -> None:
+    def __init__(self, old_name, new_name, replace=True) -> None:
         self.old_name = old_name
         self.new_name = new_name
+        self.replace = replace
 
 
 class DeprecatedOptionMapping(Mapping):
@@ -31,7 +32,8 @@ class DeprecatedOptionMapping(Mapping):
             old_name,
             deprecated_option,
         ) in self.deprecated_options_by_old_names.items():
-            result_dict[old_name] = deprecated_option.new_name
+            if deprecated_option.replace:
+                result_dict[old_name] = deprecated_option.new_name
         return result_dict
 
 
@@ -59,7 +61,9 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         ),
         DeprecatedOption(old_name="force_service", new_name="service"),
         DeprecatedOption(
-            old_name="download_file_list", new_name="create_file_list"
+            old_name="download_file_list",
+            new_name="create_file_list",
+            replace=False,
         ),
     ]
 )

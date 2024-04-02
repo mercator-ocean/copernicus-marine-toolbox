@@ -1,7 +1,11 @@
 import pathlib
 from typing import List, Optional, Union
 
-from copernicusmarine.core_functions.deprecated import deprecated_python_option
+from copernicusmarine.core_functions.deprecated import (
+    deprecated_python_option,
+    log_deprecated_message,
+    raise_both_old_and_new_value_error,
+)
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
@@ -80,6 +84,12 @@ def get(
     )
     file_list = pathlib.Path(file_list) if file_list else None
     request_file = pathlib.Path(request_file) if request_file else None
+    if download_file_list and create_file_list:
+        raise_both_old_and_new_value_error(
+            "download_file_list", "create_file_list"
+        )
+    elif download_file_list:
+        log_deprecated_message("download_file_list", "create_file_list")
     return get_function(
         dataset_url=dataset_url,
         dataset_id=dataset_id,
