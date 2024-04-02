@@ -212,7 +212,7 @@ def cli_group_subset() -> None:
     default=DEFAULT_SUBSET_METHOD,
     help=(
         "The subset method when requesting the dataset. If strict, you can only "
-        "request dimension stricly inside the dataset."
+        "request dimension strictly inside the dataset."
     ),
 )
 @click.option(
