@@ -115,7 +115,6 @@ def _service_type_from_web_api_string(
         GEOSERIES = "timeChunked"
         TIMESERIES = "geoChunked"
         FILES = "native"
-        WMS = "wms"
         WMTS = "wmts"
         OMI_ARCO = "omi"
         STATIC_ARCO = "static"

@@ -5,7 +5,6 @@ from itertools import chain
 from typing import List, Literal, Optional, Tuple, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
-    PART_DEFAULT,
     CopernicusMarineCatalogue,
     CopernicusMarineDatasetServiceType,
     CopernicusMarineDatasetVersion,
@@ -200,21 +199,10 @@ def _get_best_arco_service_type(
 
 
 def _get_first_available_service_type(
-    dataset_version_part: CopernicusMarineVersionPart,
     command_type: CommandType,
     dataset_available_service_types: list[CopernicusMarineDatasetServiceType],
-    part_forced_by_user: bool,
 ) -> CopernicusMarineDatasetServiceType:
-    if (
-        part_forced_by_user is False
-        and dataset_version_part.name != PART_DEFAULT
-        and command_type == CommandType.GET
-    ):
-        raise ValueError(
-            "Please provide a dataset part via the --dataset-part option"
-        )
-    else:
-        available_service_types = command_type.service_types_by_priority
+    available_service_types = command_type.service_types_by_priority
     return next_or_raise_exception(
         (
             service_type
@@ -229,16 +217,13 @@ def _select_service_by_priority(
     dataset_version_part: CopernicusMarineVersionPart,
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
-    part_forced_by_user: bool,
 ) -> CopernicusMarineService:
     dataset_available_service_types = [
         service.service_type for service in dataset_version_part.services
     ]
     first_available_service_type = _get_first_available_service_type(
-        dataset_version_part=dataset_version_part,
         command_type=command_type,
         dataset_available_service_types=dataset_available_service_types,
-        part_forced_by_user=part_forced_by_user,
     )
     first_available_service = dataset_version_part.get_service_by_service_type(
         service_type=first_available_service_type
@@ -500,7 +485,6 @@ def _get_retrieval_service_from_dataset_version(
             dataset_version_part=dataset_part,
             command_type=command_type,
             dataset_subset=dataset_subset,
-            part_forced_by_user=force_dataset_part_label is not None,
         )
         logger.info(
             "Service was not specified, the default one was "

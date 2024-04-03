@@ -70,7 +70,6 @@ class TestCommandLineInterface:
         self.then_I_can_read_it_does_not_contain_weird_symbols()
         self.then_I_can_read_the_json_including_datasets()
         self.then_omi_services_are_not_in_the_catalog()
-        self.then_wms_services_are_in_the_catalog()
         self.then_products_from_marine_data_store_catalog_are_available()
         self.then_all_dataset_parts_are_filled()
 
@@ -127,22 +126,6 @@ class TestCommandLineInterface:
                                 part["services"],
                             )
                         )
-
-    def then_wms_services_are_in_the_catalog(self):
-        json_result = loads(self.output)
-        assert any(
-            "wms"
-            in list(
-                map(
-                    lambda x: x["service_type"]["service_name"],
-                    part["services"],
-                )
-            )
-            for product in json_result["products"]
-            for dataset in product["datasets"]
-            for version in dataset["versions"]
-            for part in version["parts"]
-        )
 
     def then_products_from_marine_data_store_catalog_are_available(self):
         expected_product_id = "NWSHELF_ANALYSISFORECAST_PHY_004_013"
