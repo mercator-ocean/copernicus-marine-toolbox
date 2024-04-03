@@ -1010,16 +1010,6 @@ files = [
 traitlets = "*"
 
 [[package]]
-name = "motuclient"
-version = "1.8.8"
-description = "Extract and download gridded data through a python command line from Motu web server. Used in CMEMS context http://marine.copernicus.eu/"
-optional = false
-python-versions = ">=2.7"
-files = [
-    {file = "motuclient-1.8.8.tar.gz", hash = "sha256:c89f8dcb348ce8232b7fa5b37d531623fa8dca0263841a09c044e19777202c5d"},
-]
-
-[[package]]
 name = "multidict"
 version = "6.0.4"
 description = "multidict implementation"
