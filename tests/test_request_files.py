@@ -72,23 +72,22 @@ class TestRequestFiles:
         output = subprocess.run(command, capture_output=True)
         assert output.returncode == 1
 
-    # def test_subset_error_when_forced_service_does_not_exist(self):
-    #     filepath = get_path_to_request_file(
-    #         "test_subset_error_when_forced_service_does_not_exist"
-    #     )
+    def test_subset_error_when_forced_service_does_not_exist(self):
+        filepath = get_path_to_request_file(
+            "test_subset_error_when_forced_service_does_not_exist"
+        )
 
-    #     command = build_command(filepath, "subset")
+        command = build_command(filepath, "subset")
 
-    #     output = subprocess.run(command, capture_output=True)
-    #     assert output.returncode == 1
-    #     assert (
-    #         b"You forced selection of service: arco-time-series\n"
-    #         in output.stdout
-    #     )
-    #     assert (
-    #         b"Service not available: Available services for"
-    #         b" dataset: ['motu', 'opendap']"
-    #     ) in output.stdout
+        output = subprocess.run(command, capture_output=True)
+        assert output.returncode == 1
+        assert (
+            b"You forced selection of service: arco-time-series\n"
+            in output.stdout
+        )
+        assert (
+            b"Service not available: Available services for" b" dataset: []"
+        ) in output.stdout
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
         filepath = get_path_to_request_file(
