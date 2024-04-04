@@ -806,6 +806,7 @@ def _parse_catalogue(
     products_merged: List[CopernicusMarineProduct] = [
         marine_data_store_product.to_copernicus_marine_product()
         for marine_data_store_product in marine_data_store_products
+        if marine_data_store_product.datasets
     ]
     products_merged.sort(key=lambda x: x.product_id)
     progress_bar.update()

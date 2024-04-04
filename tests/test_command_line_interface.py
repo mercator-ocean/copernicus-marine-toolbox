@@ -273,6 +273,9 @@ class TestCommandLineInterface:
             assert "processing_level" in product
             assert product["production_center"] is not None
             assert "datasets" in product
+            assert product[
+                "datasets"
+            ], f"No datasets found for product {product['product_id']}"
             for dataset in product["datasets"]:
                 assert dataset["dataset_id"] is not None
                 assert dataset["dataset_name"] is not None
@@ -985,7 +988,7 @@ class TestCommandLineInterface:
 
     def then_I_got_a_clear_output_with_available_service_for_subset(self):
         assert (
-            b"Service opendap does not exist for command subset. "
+            b"Service unavailable-service does not exist for command subset. "
             b"Possible services: ['arco-geo-series', 'geoseries', "
             b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco']"
         ) in self.run_output.stdout
