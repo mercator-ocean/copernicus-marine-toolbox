@@ -818,11 +818,6 @@ def _parse_catalogue(
     return full_catalog
 
 
-def product_url(product_id: str) -> str:
-    base_url = "https://data-be-prd.marine.copernicus.eu/api/dataset"
-    return f"{base_url}/{product_id}" + "?variant=detailed-v2"
-
-
 def variable_title_to_standard_name(variable_title: str) -> str:
     return variable_title.lower().replace(" ", "_")
 

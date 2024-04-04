@@ -233,12 +233,12 @@ class TestDatasetVersionSelection:
                 maximum_longitude=0,
                 minimum_latitude=40,
                 maximum_latitude=40,
-                dataset_version="default",
+                dataset_version="202311",
             )
         except OSError:
             pass
         assert (
-            'You forced selection of dataset version "default"' in caplog.text
+            'You forced selection of dataset version "202311"' in caplog.text
         )
         assert (
             "Dataset version was not specified, the latest one was selected:"
@@ -249,7 +249,7 @@ class TestDatasetVersionSelection:
         assert isinstance(
             copernicusmarine.open_dataset(
                 dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
-                dataset_version="default",
+                dataset_version="202311",
                 variables=["analysed_sst"],
                 minimum_longitude=0,
                 maximum_longitude=0,
@@ -265,7 +265,7 @@ class TestDatasetVersionSelection:
         assert isinstance(
             copernicusmarine.read_dataframe(
                 dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
-                dataset_version="default",
+                dataset_version="202311",
                 variables=["analysed_sst"],
                 minimum_longitude=0,
                 maximum_longitude=0,

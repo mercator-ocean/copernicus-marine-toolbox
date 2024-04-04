@@ -976,7 +976,7 @@ class TestCommandLineInterface:
             "--variable",
             "thetao",
             "--service",
-            "opendap",
+            "unavailable-service",
         ]
 
         self.run_output = subprocess.run(

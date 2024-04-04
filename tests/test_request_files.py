@@ -86,7 +86,7 @@ class TestRequestFiles:
             in output.stdout
         )
         assert (
-            b"Service not available: Available services for" b" dataset: []"
+            b"Service not available: Available services for dataset: []"
         ) in output.stdout
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
