@@ -30,13 +30,13 @@ def cli_group_login() -> None:
     Examples:
 
     \b
-    COPERNICUS_MARINE_SERVICE_USERNAME=<USERNAME> COPERNICUS_MARINE_SERVICE_PASSWORD=<PASSWORD> copernicus-marine login
+    COPERNICUS_MARINE_SERVICE_USERNAME=<USERNAME> COPERNICUS_MARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
 
     \b
-    copernicus-marine login --username <USERNAME> --password <PASSWORD>
+    copernicusmarine login --username <USERNAME> --password <PASSWORD>
 
     \b
-    copernicus-marine login
+    copernicusmarine login
     > Username: [USER-INPUT]
     > Password: [USER-INPUT]
     """,  # noqa
