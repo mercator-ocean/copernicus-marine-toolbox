@@ -63,6 +63,7 @@ jobs:
       - name: Build and publish Docker image
         shell: micromamba-shell {0}
         env:
+          VERSION: ${{ steps.set-version.outputs.VERSION }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
         run: make build-and-publish-dockerhub-image
