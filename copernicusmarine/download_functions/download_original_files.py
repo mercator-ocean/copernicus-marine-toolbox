@@ -26,21 +26,6 @@ from copernicusmarine.core_functions.utils import (
 
 logger = logging.getLogger("copernicus_marine_root_logger")
 
-# Some buckets do not support listing. While these buckets are being replaced
-# by other ones that are listable, we need to recognise the non-listable ones
-# LIST via CDN.
-MARINE_DATA_LAKE_CDN_LISTING_ENDPOINT = "https://marine.copernicus.eu"
-MARINE_DATA_LAKE_NON_LISTABLE_BUCKETS = {
-    "mdl-native": {
-        "endpoint_url": MARINE_DATA_LAKE_CDN_LISTING_ENDPOINT,
-        "bucket": "mdl-native-list",
-    },
-    "mdl-native-dta": {
-        "endpoint_url": MARINE_DATA_LAKE_CDN_LISTING_ENDPOINT,
-        "bucket": "mdl-native-list-dta",
-    },
-}
-
 
 def download_original_files(
     username: str,
@@ -316,13 +301,6 @@ def _list_files_on_marine_data_lake_s3(
             construct_query_params_for_marine_data_store_monitoring(username),
         )
 
-    # For non-listable buckets, use the alternatives (CDN)
-    original_bucket = bucket
-    if bucket in MARINE_DATA_LAKE_NON_LISTABLE_BUCKETS:
-        alternative = MARINE_DATA_LAKE_NON_LISTABLE_BUCKETS[bucket]
-        bucket = alternative["bucket"]
-        endpoint_url = alternative["endpoint_url"]
-
     s3_session = boto3.Session()
     s3_client = s3_session.client(
         "s3",
@@ -355,7 +333,7 @@ def _list_files_on_marine_data_lake_s3(
     for s3_object in s3_objects:
         files_already_found.append(
             (
-                f"s3://{original_bucket}/" + s3_object["Key"],
+                f"s3://{bucket}/" + s3_object["Key"],
                 s3_object["Size"],
                 s3_object["LastModified"],
                 s3_object["ETag"],

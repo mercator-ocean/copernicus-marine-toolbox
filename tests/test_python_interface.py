@@ -21,9 +21,9 @@ class TestPythonInterface:
 
     def test_describe_function_with_filter_twice_in_a_row(self):
         nwshelf_catalog = describe(contains=["NWSHELF"], include_datasets=True)
-        assert len(nwshelf_catalog["products"]) == 8
+        assert len(nwshelf_catalog["products"]) == 7
         nwshelf_catalog = describe(contains=["NWSHELF"], include_datasets=True)
-        assert len(nwshelf_catalog["products"]) == 8
+        assert len(nwshelf_catalog["products"]) == 7
 
     def test_get_function(self, tmp_path):
         get_result = get(

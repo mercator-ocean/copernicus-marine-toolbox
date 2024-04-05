@@ -157,7 +157,9 @@ class TestArcoServiceSelection:
         )
 
     def test_dataset_has_interdependant_coordinates(self):
-        dataset_id = "dataset-duacs-nrt-europe-merged-allsat-phy-l4"
+        dataset_id = (
+            "cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D"
+        )
 
         command = [
             "copernicusmarine",

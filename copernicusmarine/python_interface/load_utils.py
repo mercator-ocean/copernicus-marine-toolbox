@@ -30,7 +30,6 @@ def load_data_object_from_load_request(
     load_request: LoadRequest,
     disable_progress_bar: bool,
     arco_series_load_function: Callable,
-    opendap_load_function: Callable,
 ) -> Union[xarray.Dataset, pandas.DataFrame]:
     if load_request.overwrite_metadata_cache:
         delete_cache_folder()
@@ -91,19 +90,6 @@ def load_data_object_from_load_request(
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
             chunks=None,
-        )
-    elif (
-        retrieval_service.service_type
-        == CopernicusMarineDatasetServiceType.OPENDAP
-    ):
-        dataset, _ = opendap_load_function(
-            username=username,
-            password=password,
-            dataset_url=load_request.dataset_url,
-            variables=load_request.variables,
-            geographical_parameters=load_request.geographical_parameters,
-            temporal_parameters=load_request.temporal_parameters,
-            depth_parameters=load_request.depth_parameters,
         )
     else:
         raise ServiceNotSupported(retrieval_service.service_type)

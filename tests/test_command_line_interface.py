@@ -70,7 +70,6 @@ class TestCommandLineInterface:
         self.then_I_can_read_it_does_not_contain_weird_symbols()
         self.then_I_can_read_the_json_including_datasets()
         self.then_omi_services_are_not_in_the_catalog()
-        self.then_wms_services_are_in_the_catalog()
         self.then_products_from_marine_data_store_catalog_are_available()
         self.then_all_dataset_parts_are_filled()
 
@@ -128,22 +127,6 @@ class TestCommandLineInterface:
                             )
                         )
 
-    def then_wms_services_are_in_the_catalog(self):
-        json_result = loads(self.output)
-        assert any(
-            "wms"
-            in list(
-                map(
-                    lambda x: x["service_type"]["service_name"],
-                    part["services"],
-                )
-            )
-            for product in json_result["products"]
-            for dataset in product["datasets"]
-            for version in dataset["versions"]
-            for part in version["parts"]
-        )
-
     def then_products_from_marine_data_store_catalog_are_available(self):
         expected_product_id = "NWSHELF_ANALYSISFORECAST_PHY_004_013"
         expected_dataset_id = "cmems_mod_nws_phy_anfc_0.027deg-2D_PT15M-i"
@@ -151,7 +134,6 @@ class TestCommandLineInterface:
             "original-files",
             "arco-geo-series",
             "arco-time-series",
-            "ftp",
         ]
 
         json_result = loads(self.output)
@@ -291,6 +273,9 @@ class TestCommandLineInterface:
             assert "processing_level" in product
             assert product["production_center"] is not None
             assert "datasets" in product
+            assert product[
+                "datasets"
+            ], f"No datasets found for product {product['product_id']}"
             for dataset in product["datasets"]:
                 assert dataset["dataset_id"] is not None
                 assert dataset["dataset_name"] is not None
@@ -994,7 +979,7 @@ class TestCommandLineInterface:
             "--variable",
             "thetao",
             "--service",
-            "arco-time-series",
+            "unavailable-service",
         ]
 
         self.run_output = subprocess.run(
@@ -1002,10 +987,10 @@ class TestCommandLineInterface:
         )
 
     def then_I_got_a_clear_output_with_available_service_for_subset(self):
-        assert self.run_output.stderr == b""
         assert (
-            b"Service not available: Available services for dataset: "
-            b"['motu', 'opendap']"
+            b"Service unavailable-service does not exist for command subset. "
+            b"Possible services: ['arco-geo-series', 'geoseries', "
+            b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco']"
         ) in self.run_output.stdout
 
     def test_mutual_exclusivity_of_cache_options_for_describe(self):

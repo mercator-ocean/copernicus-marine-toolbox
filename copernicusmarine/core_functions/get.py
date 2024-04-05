@@ -3,10 +3,7 @@ import logging
 import pathlib
 from typing import List, Optional
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
-    CopernicusMarineDatasetServiceType,
-    parse_catalogue,
-)
+from copernicusmarine.catalogue_parser.catalogue_parser import parse_catalogue
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     file_list_to_regex,
@@ -28,7 +25,6 @@ from copernicusmarine.core_functions.utils import (
     get_unique_filename,
 )
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
-from copernicusmarine.download_functions.download_ftp import download_ftp
 from copernicusmarine.download_functions.download_original_files import (
     download_original_files,
 )
@@ -127,11 +123,6 @@ def get_function(
     if sync_delete:
         get_request.sync_delete = sync_delete
     if index_parts:
-        if force_service == "ftp":
-            raise ValueError(
-                "Index part flag is not supported for FTP services. "
-                "Please use '--force-service files' option."
-            )
         get_request.index_parts = index_parts
         get_request.force_service = "files"
         get_request.regex = overload_regex_with_additionnal_filter(
@@ -190,33 +181,16 @@ def _run_get_request(
         dataset_sync=get_request.sync,
     )
     get_request.dataset_url = retrieval_service.uri
-    if (
-        get_request.sync
-        and retrieval_service.service_type.service_name.value
-        == CopernicusMarineDatasetServiceType.FTP
-    ):
-        raise ValueError("Synchronization is not supported for FTP services.")
     logger.info(
         "Downloading using service "
         f"{retrieval_service.service_type.service_name.value}..."
     )
-    downloaded_files = (
-        download_ftp(
-            username,
-            password,
-            get_request,
-            disable_progress_bar,
-            create_file_list,
-        )
-        if retrieval_service.service_type
-        == CopernicusMarineDatasetServiceType.FTP
-        else download_original_files(
-            username,
-            password,
-            get_request,
-            disable_progress_bar,
-            create_file_list,
-        )
+    downloaded_files = download_original_files(
+        username,
+        password,
+        get_request,
+        disable_progress_bar,
+        create_file_list,
     )
     logger.debug(downloaded_files)
     return downloaded_files

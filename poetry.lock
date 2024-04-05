@@ -1010,16 +1010,6 @@ files = [
 traitlets = "*"
 
 [[package]]
-name = "motuclient"
-version = "1.8.8"
-description = "Extract and download gridded data through a python command line from Motu web server. Used in CMEMS context http://marine.copernicus.eu/"
-optional = false
-python-versions = ">=2.7"
-files = [
-    {file = "motuclient-1.8.8.tar.gz", hash = "sha256:c89f8dcb348ce8232b7fa5b37d531623fa8dca0263841a09c044e19777202c5d"},
-]
-
-[[package]]
 name = "multidict"
 version = "6.0.4"
 description = "multidict implementation"
@@ -1477,35 +1467,6 @@ files = [
 [package.extras]
 tests = ["pytest"]
 
-[[package]]
-name = "pydap"
-version = "3.4.1"
-description = "An implementation of the Data Access Protocol."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pydap-3.4.1-py3-none-any.whl", hash = "sha256:a24cc3bc8c78089542699382bf650d57a055c82bb72c342fa7caa6618b9e4417"},
-    {file = "pydap-3.4.1.tar.gz", hash = "sha256:17c46087b53c6aec9bc5495a5d52aca19b2aa4b045f370b9f4b3a6058f5d8df7"},
-]
-
-[package.dependencies]
-beautifulsoup4 = "*"
-docopt = "*"
-Jinja2 = "*"
-numpy = "*"
-requests = "*"
-six = ">=1.4.0"
-Webob = "*"
-
-[package.extras]
-cas = ["lxml"]
-docs = ["Pygments", "Sphinx", "sphinx-rtd-theme"]
-functions = ["coards", "gsw (==3.0.6)"]
-handlers-netcdf = ["netCDF4", "ordereddict"]
-netcdf = ["netCDF4", "ordereddict"]
-server = ["PasteDeploy", "gunicorn"]
-testing = ["PasteDeploy", "WebTest", "beautifulsoup4", "coards", "flake8", "gsw (==3.0.6)", "gunicorn", "lxml", "netCDF4", "ordereddict", "pyopenssl", "pytest (>=3.6)", "pytest-attrib", "pytest-cov", "requests-mock", "werkzeug"]
-tests = ["WebTest", "beautifulsoup4", "flake8", "pyopenssl", "pytest (>=3.6)", "pytest-attrib", "pytest-cov", "requests-mock", "werkzeug"]
 
 [[package]]
 name = "pygments"
@@ -2002,7 +1963,7 @@ pandas = ">=1.4"
 [package.extras]
 accel = ["bottleneck", "flox", "numbagg", "opt-einsum", "scipy"]
 complete = ["xarray[accel,io,parallel,viz]"]
-io = ["cftime", "fsspec", "h5netcdf", "netCDF4", "pooch", "pydap", "scipy", "zarr"]
+io = ["cftime", "fsspec", "h5netcdf", "netCDF4", "pooch", "scipy", "zarr"]
 parallel = ["dask[complete]"]
 viz = ["matplotlib", "nc-time-axis", "seaborn"]
 

@@ -39,24 +39,6 @@ class TestGetIndexInsituFiles:
             in self.output.stdout
         )
 
-    def test_get_index_insitu_files_fails_if_ftp_forced(self):
-        self.command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
-            "--index-parts",
-            "--force-service",
-            "ftp",
-        ]
-        self.output = execute_in_terminal(self.command)
-
-        assert (
-            b"Index part flag is not supported for FTP services."
-            b" Please use '--force-service files' option."
-            in self.output.stdout
-        )
-
     def test_get_index_insitu_files_not_an_insitu(self):
         self.command = [
             "copernicusmarine",

@@ -168,7 +168,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
     def test_subset_same_depth_with_vertical_dimension_as_originally_produced(
         self, tmp_path
     ):
-        dataset_id = "cmems_mod_glo_phy_my_0.083_P1D-m"
+        dataset_id = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
         output_filename = (
             "test_subset_same_depth_with_originial_vertical_dimension.nc"
         )

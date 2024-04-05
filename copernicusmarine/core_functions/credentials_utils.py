@@ -11,7 +11,7 @@ from typing import Literal, Optional, Tuple
 import click
 import lxml.html
 import requests
-from cachier import cachier
+from cachier.core import cachier
 
 from copernicusmarine.core_functions.sessions import (
     get_configured_request_session,

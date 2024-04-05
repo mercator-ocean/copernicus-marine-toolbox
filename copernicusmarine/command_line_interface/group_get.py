@@ -53,9 +53,6 @@ def cli_group_get() -> None:
 
     \b
     copernicusmarine get -nd -o data_folder --dataset-id cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
-
-    \b
-    copernicusmarine get -nd -o data_folder --dataset-url ftp://my.cmems-du.eu/Core/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m -s files
     """,  # noqa
 )
 @click.option(
