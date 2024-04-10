@@ -8,7 +8,7 @@ from datetime import timedelta
 from enum import Enum
 from importlib.metadata import version as package_version
 from itertools import groupby
-from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 import nest_asyncio
 import pystac
@@ -33,9 +33,6 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
-
-_S = TypeVar("_S")
-_T = TypeVar("_T")
 
 
 class _ServiceName(str, Enum):
@@ -819,98 +816,6 @@ def _parse_catalogue(
     return full_catalog
 
 
-def variable_title_to_standard_name(variable_title: str) -> str:
-    return variable_title.lower().replace(" ", "_")
-
-
-def variable_to_pick(layer: dict[str, Any]) -> bool:
-    return (
-        layer["variableId"] != "__DEFAULT__"
-        and layer["subsetVariableIds"]
-        and len(layer["subsetVariableIds"]) == 1
-    )
-
-
-def _to_service(
-    service_name: str,
-    stac_asset: dict,
-    layer_elements,
-) -> Optional[CopernicusMarineService]:
-    service_format_asset = stac_asset.get("type")
-    service_url = stac_asset.get("href")
-    try:
-        service_type = _service_type_from_web_api_string(service_name)
-        service_format = None
-        if service_format_asset and "zarr" in service_format_asset:
-            service_format = CopernicusMarineServiceFormat.ZARR
-        elif service_format_asset and "sqlite3" in service_format_asset:
-            service_format = CopernicusMarineServiceFormat.SQLITE
-        if service_url and not service_url.endswith("thredds/dodsC/"):
-            return CopernicusMarineService(
-                service_type=service_type,
-                uri=service_url,
-                service_format=service_format,
-                variables=[
-                    to_variable(layer, stac_asset)
-                    for layer in layer_elements
-                    if variable_to_pick(layer)
-                ],
-            )
-        else:
-            return None
-    except ServiceNotHandled as service_not_handled:
-        log_exception_debug(service_not_handled)
-        return None
-
-
-def to_coordinates(
-    subset_attributes: Tuple[str, dict[str, Any]],
-    layer: dict[str, Any],
-    asset: dict,
-) -> CopernicusMarineCoordinates:
-    coordinate_name = subset_attributes[0]
-    values: Optional[str]
-    if coordinate_name == "depth":
-        values = layer.get("zValues")
-    elif coordinate_name == "time":
-        values = layer.get("tValues")
-    else:
-        values = None
-    view_dim = asset.get("viewDims", {}).get(coordinate_name, {})
-    chunking_length = view_dim.get("chunkLen")
-    if isinstance(chunking_length, dict):
-        chunking_length = chunking_length.get(layer["variableId"])
-    return CopernicusMarineCoordinates(
-        coordinates_id=subset_attributes[0],
-        units=view_dim.get("units", ""),
-        minimum_value=view_dim.get("min") or view_dim.get(values, [None])[0],
-        maximum_value=view_dim.get("max") or view_dim.get(values, [None])[0],
-        step=view_dim.get("step"),
-        values=values,
-        chunking_length=chunking_length,
-        chunk_type=view_dim.get("chunkType"),
-        chunk_reference_coordinate=view_dim.get("chunkRefCoord"),
-        chunk_geometric_factor=view_dim.get("chunkGeometricFactor", {})
-        .get("chunkGeometricFactor", {})
-        .get(layer["variableId"]),
-    )
-
-
-def to_variable(
-    layer: dict[str, Any], asset: dict
-) -> CopernicusMarineVariable:
-    return CopernicusMarineVariable(
-        short_name=layer["variableId"],
-        standard_name=variable_title_to_standard_name(layer["variableTitle"]),
-        units=layer["units"],
-        bbox=layer["bbox"],
-        coordinates=[
-            to_coordinates(subset_attr, layer, asset)
-            for subset_attr in layer["subsetAttrs"].items()
-        ],
-    )
-
-
 @dataclass
 class DistinctDatasetVersionPart:
     dataset_id: str
@@ -919,31 +824,6 @@ class DistinctDatasetVersionPart:
     layer_elements: List
     raw_services: Dict
     stac_items_values: Optional[Dict]
-
-
-def mds_stac_to_services(
-    distinct_dataset_version: DistinctDatasetVersionPart,
-) -> List[CopernicusMarineService]:
-    copernicus_marine_services = []
-
-    stac_assets = (
-        distinct_dataset_version.stac_items_values
-        and distinct_dataset_version.stac_items_values.get("assets", None)
-    )
-    if stac_assets:
-        for (
-            service_name,
-            service_url,
-        ) in stac_assets.items():
-            service = _to_service(
-                service_name,
-                service_url,
-                distinct_dataset_version.layer_elements,
-            )
-            if service:
-                copernicus_marine_services.append(service)
-
-    return copernicus_marine_services
 
 
 REGEX_PATTERN_DATE_YYYYMM = r"[12]\d{3}(0[1-9]|1[0-2])"
