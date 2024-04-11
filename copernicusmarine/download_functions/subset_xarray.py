@@ -115,16 +115,25 @@ def get_size_of_coordinate_subset(
         )
 
 
-def _update_dataset_attributes(dataset: xarray.Dataset):
+def _update_dataset_attributes(
+    dataset: xarray.Dataset,
+    maximum_longitude: float,
+):
     for coord_label in COORDINATES_LABEL["longitude"]:
         if coord_label in dataset.dims:
             attrs = dataset[coord_label].attrs
             if "valid_min" in attrs:
-                attrs["valid_min"] += 180
+                attrs["valid_min"] += maximum_longitude - 180
             if "valid_max" in attrs:
-                attrs["valid_max"] += 180
+                attrs["valid_max"] += maximum_longitude - 180
             dataset = dataset.assign_coords(
-                {coord_label: dataset[coord_label] % 360}
+                {
+                    coord_label: (
+                        (dataset[coord_label] - (maximum_longitude - 360))
+                        % 360
+                    )
+                    + (maximum_longitude - 360)
+                }
             ).sortby(coord_label)
             dataset[coord_label].attrs = attrs
     return dataset
@@ -180,7 +189,9 @@ def _longitude_subset(
                 )
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
-                    dataset = _update_dataset_attributes(dataset)
+                    dataset = _update_dataset_attributes(
+                        dataset, maximum_longitude
+                    )
                 longitude_selection = slice(
                     minimum_longitude_modulus,
                     maximum_longitude_modulus,
@@ -356,8 +367,6 @@ def longitude_modulus(longitude: float) -> float:
     """
     Returns the equivalent longitude between -180 and 180
     """
-    if longitude == 180:
-        return longitude
     # We are using Decimal to avoid issue with rounding
     modulus = float(Decimal(str(longitude + 180)) % 360)
     # Modulus with python return a negative value if the denominator is negative
