@@ -223,12 +223,25 @@ def _depth_subset(
             attrs = dataset["elevation"].attrs
             dataset = dataset.reindex(elevation=dataset.elevation[::-1])
             dataset["elevation"] = dataset.elevation * (-1)
+            attrs["positive"] = "down"
             dataset = dataset.rename({"elevation": "depth"})
             dataset.depth.attrs = attrs
         return dataset
 
+    def update_elevation_attributes(dataset: xarray.Dataset):
+        if "elevation" in dataset.dims:
+            attrs = dataset["elevation"].attrs
+            attrs["positive"] = "up"
+            attrs["standard_name"] = "elevation"
+            attrs["long_name"] = "Elevation"
+            attrs["units"] = "m"
+            dataset["elevation"].attrs = attrs
+        return dataset
+
     if depth_parameters.vertical_dimension_as_originally_produced:
         dataset = convert_elevation_to_depth(dataset)
+    else:
+        dataset = update_elevation_attributes(dataset)
     minimum_depth = depth_parameters.minimum_depth
     maximum_depth = depth_parameters.maximum_depth
     if minimum_depth is not None or maximum_depth is not None:
