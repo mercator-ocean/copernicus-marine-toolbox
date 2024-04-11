@@ -231,8 +231,6 @@ def _depth_subset(
     def update_elevation_attributes(dataset: xarray.Dataset):
         if "elevation" in dataset.dims:
             attrs = dataset["elevation"].attrs
-            attrs["valid_min"] = dataset["elevation"].values.min()
-            attrs["valid_max"] = dataset["elevation"].values.max()
             attrs["positive"] = "up"
             attrs["standard_name"] = "elevation"
             attrs["long_name"] = "Elevation"
