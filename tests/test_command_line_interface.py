@@ -1111,7 +1111,7 @@ class TestCommandLineInterface:
         self.then_I_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "negative"
         )
-        # self.then_I_have_correct_attribute_value(tmp_path, "elevation", "up")
+        self.then_I_have_correct_attribute_value(tmp_path, "elevation", "up")
 
     def when_I_run_copernicus_marine_command_using_no_directories_option(
         self, tmp_path, force_service: GetServiceToTest, output_directory=None
