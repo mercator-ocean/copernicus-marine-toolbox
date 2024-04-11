@@ -117,22 +117,25 @@ def get_size_of_coordinate_subset(
 
 def _update_dataset_attributes(
     dataset: xarray.Dataset,
-    maximum_longitude: float,
+    maximum_longitude_modulus: float,
 ):
     for coord_label in COORDINATES_LABEL["longitude"]:
         if coord_label in dataset.dims:
             attrs = dataset[coord_label].attrs
             if "valid_min" in attrs:
-                attrs["valid_min"] += maximum_longitude - 180
+                attrs["valid_min"] += maximum_longitude_modulus - 180
             if "valid_max" in attrs:
-                attrs["valid_max"] += maximum_longitude - 180
+                attrs["valid_max"] += maximum_longitude_modulus - 180
             dataset = dataset.assign_coords(
                 {
                     coord_label: (
-                        (dataset[coord_label] - (maximum_longitude - 360))
+                        (
+                            dataset[coord_label]
+                            - (360 - maximum_longitude_modulus)
+                        )
                         % 360
                     )
-                    + (maximum_longitude - 360)
+                    + (360 - maximum_longitude_modulus)
                 }
             ).sortby(coord_label)
             dataset[coord_label].attrs = attrs
@@ -190,7 +193,7 @@ def _longitude_subset(
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
                     dataset = _update_dataset_attributes(
-                        dataset, maximum_longitude
+                        dataset, maximum_longitude_modulus
                     )
                 longitude_selection = slice(
                     minimum_longitude_modulus,
