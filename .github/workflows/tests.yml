@@ -24,7 +24,7 @@ jobs:
 
       - name: Run tests
         env:
-          COPERNICUS_MARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_MARINE_SERVICE_USERNAME }}
-          COPERNICUS_MARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_MARINE_SERVICE_PASSWORD }}
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: make run-tests
         shell: micromamba-shell {0}

@@ -27,8 +27,8 @@ class TestPythonInterface:
 
     def test_get_function(self, tmp_path):
         get_result = get(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
             output_directory=tmp_path,
             force_download=True,
@@ -38,8 +38,8 @@ class TestPythonInterface:
 
     def test_subset_function(self, tmp_path):
         subset_result = subset(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             variables=["so"],
             start_datetime=datetime(year=2021, month=1, day=1),
@@ -57,8 +57,8 @@ class TestPythonInterface:
 
     def test_open_dataset(self):
         dataset = open_dataset(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             start_datetime=datetime(year=2021, month=1, day=1),
             end_datetime=datetime(year=2021, month=1, day=2),
@@ -71,8 +71,8 @@ class TestPythonInterface:
 
     def test_read_dataframe(self):
         dataframe = read_dataframe(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             start_datetime=datetime(year=2021, month=1, day=1),
             end_datetime=datetime(year=2021, month=1, day=2),
@@ -86,8 +86,8 @@ class TestPythonInterface:
     def test_login_ok(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         is_valid = login(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             configuration_file_directory=non_existing_directory,
             overwrite_configuration_file=True,
         )
@@ -106,7 +106,7 @@ class TestPythonInterface:
     def test_login_not_ok_with_wrong_credentials(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         is_valid = login(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password="FAKEPASSWORD",
             configuration_file_directory=non_existing_directory,
             overwrite_configuration_file=True,
@@ -134,8 +134,8 @@ class TestPythonInterface:
         self,
     ):
         dataset = open_dataset(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             start_datetime="2023-09-15T00:00:00.000Z",
             end_datetime="2023-09-20T00:00:00.000Z",
@@ -177,8 +177,8 @@ class TestPythonInterface:
 
     def test_read_dataframe_with_strict_method(self, caplog):
         dataframe = read_dataframe(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             start_datetime=datetime(year=2021, month=1, day=1),
             end_datetime=datetime(year=2021, month=1, day=2),
@@ -193,8 +193,8 @@ class TestPythonInterface:
 
     def test_open_dataset_with_retention_date(self):
         dataset = open_dataset(
-            username=os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"),
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
         )
         assert dataset.time.valid_min > "2024-01-01T00:00:00.000000000"

@@ -1,7 +1,6 @@
 import base64
 import configparser
 import logging
-import os
 import pathlib
 from datetime import timedelta
 from netrc import netrc
@@ -13,6 +12,10 @@ import lxml.html
 import requests
 from cachier.core import cachier
 
+from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_SERVICE_PASSWORD,
+    COPERNICUSMARINE_SERVICE_USERNAME,
+)
 from copernicusmarine.core_functions.sessions import (
     get_configured_request_session,
 )
@@ -92,11 +95,10 @@ def _retrieve_credential_from_environment_variable(
 ) -> Optional[str]:
     if credential_type == "username":
         logger.debug("username loaded from environment variable")
-        return os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME")
+        return COPERNICUSMARINE_SERVICE_USERNAME
     if credential_type == "password":
         logger.debug("password loaded from environment variable")
-        return os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD")
-    return None
+        return COPERNICUSMARINE_SERVICE_PASSWORD
 
 
 def _retrieve_credential_from_custom_configuration_files(
@@ -231,7 +233,9 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
         f"https://cmems-cas.cls.fr/cas/login?service={service}"
     )
     conn_session = get_configured_request_session()
-    login_session = conn_session.get(cmems_cas_login_url)
+    login_session = conn_session.get(
+        cmems_cas_login_url, proxies=conn_session.proxies
+    )
     login_from_html = lxml.html.fromstring(login_session.text)
     hidden_elements_from_html = login_from_html.xpath(
         '//form//input[@type="hidden"]'
@@ -243,7 +247,9 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     playload["username"] = username
     playload["password"] = password
     logger.debug(f"POSTing credentials to {cmems_cas_login_url}...")
-    login_response = conn_session.post(cmems_cas_login_url, data=playload)
+    login_response = conn_session.post(
+        cmems_cas_login_url, data=playload, proxies=conn_session.proxies
+    )
     login_success = 'class="success"' in login_response.text
     logger.debug("User credentials checked")
     return login_success

@@ -74,7 +74,7 @@ def cli_group_get() -> None:
     type=str,
     default=None,
     help="If not set, search for environment variable"
-    + " COPERNICUS_MARINE_SERVICE_USERNAME"
+    + " COPERNICUSMARINE_SERVICE_USERNAME"
     + ", or else look for configuration files, or else ask for user input.",
 )
 @click.option(
@@ -82,7 +82,7 @@ def cli_group_get() -> None:
     type=str,
     default=None,
     help="If not set, search for environment variable"
-    + " COPERNICUS_MARINE_SERVICE_PASSWORD"
+    + " COPERNICUSMARINE_SERVICE_PASSWORD"
     + ", or else look for configuration files, or else ask for user input.",
 )
 @click.option(

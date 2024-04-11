@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -12,7 +11,7 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 import nest_asyncio
 import pystac
-from aiohttp import ContentTypeError
+from aiohttp import ContentTypeError, ServerDisconnectedError
 from cachier.core import cachier
 from tqdm import tqdm
 
@@ -20,8 +19,12 @@ from copernicusmarine.aioretry import RetryInfo, RetryPolicyStrategy, retry
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_debug,
 )
+from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS,
+)
 from copernicusmarine.core_functions.sessions import (
     get_configured_aiohttp_session,
+    get_https_proxy,
 )
 from copernicusmarine.core_functions.utils import (
     CACHE_BASE_DIRECTORY,
@@ -64,9 +67,7 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"
 )
 
-MAX_CONCURRENT_REQUESTS = int(
-    os.getenv("COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS", "15")
-)
+MAX_CONCURRENT_REQUESTS = int(COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS or "15")
 
 
 @dataclass(frozen=True)
@@ -362,6 +363,7 @@ class CatalogParserConnection:
     def __init__(self, proxy: Optional[str] = None) -> None:
         self.proxy = proxy
         self.session = get_configured_aiohttp_session()
+        self.proxy = get_https_proxy()
         self.__max_retries = 5
         self.__sleep_time = 1
 
@@ -371,6 +373,7 @@ class CatalogParserConnection:
         async with self.session.get(
             url,
             params=construct_query_params_for_marine_data_store_monitoring(),
+            proxy=self.proxy,
         ) as response:
             return await response.json()
 
@@ -384,6 +387,7 @@ class CatalogParserConnection:
                 TimeoutError,
                 ConnectionResetError,
                 ContentTypeError,
+                ServerDisconnectedError,
             ),
         ):
             logger.error(
