@@ -284,11 +284,17 @@ def get_credential(
                 host="nrt.cmems-du.eu",
             )
             if not credential:
-                credential = _retrieve_credential_from_prompt(
-                    credential_type, hide_input=hide_input
+                credential = _retrieve_credential_from_configuration_files(
+                    credential_type=credential_type,
+                    credentials_file=credentials_file,
+                    host="my.cmems-du.eu",
                 )
                 if not credential:
-                    raise ValueError(f"{credential} cannot be None")
+                    credential = _retrieve_credential_from_prompt(
+                        credential_type, hide_input=hide_input
+                    )
+                    if not credential:
+                        raise ValueError(f"{credential} cannot be None")
     else:
         logger.debug("Credentials loaded from function arguments")
     return credential
