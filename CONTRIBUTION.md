@@ -34,8 +34,8 @@ conda activate {name_of_the_test_environment}
 ```
 Export credentials to local variables (if you don't use `moi`, simply put your own credentials):
 ```
-export COPERNICUS_MARINE_SERVICE_USERNAME=$(moi read-secret --name COPERNICUS_MARINE_SERVICE_USERNAME)
-export COPERNICUS_MARINE_SERVICE_PASSWORD=$(moi read-secret --name COPERNICUS_MARINE_SERVICE_PASSWORD)
+export COPERNICUSMARINE_SERVICE_USERNAME=$(moi read-secret --name COPERNICUSMARINE_SERVICE_USERNAME)
+export COPERNICUSMARINE_SERVICE_PASSWORD=$(moi read-secret --name COPERNICUSMARINE_SERVICE_PASSWORD)
 ```
 Finally run the tests:
 ```
@@ -59,8 +59,8 @@ pip install --editable .
 ```
 Export credentials to local variables (if you don't use `moi`, simply put your own credentials):
 ```
-export COPERNICUS_MARINE_SERVICE_USERNAME=$(moi read-secret --name COPERNICUS_MARINE_SERVICE_USERNAME)
-export COPERNICUS_MARINE_SERVICE_PASSWORD=$(moi read-secret --name COPERNICUS_MARINE_SERVICE_PASSWORD)
+export COPERNICUSMARINE_SERVICE_USERNAME=$(moi read-secret --name COPERNICUSMARINE_SERVICE_USERNAME)
+export COPERNICUSMARINE_SERVICE_PASSWORD=$(moi read-secret --name COPERNICUSMARINE_SERVICE_PASSWORD)
 ```
 Finally run the tests:
 ```

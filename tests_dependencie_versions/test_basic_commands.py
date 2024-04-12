@@ -53,8 +53,8 @@ class TestBasicCommands:
         assert not (b"No data to download") in output.stdout
 
     def test_login(self, tmp_path):
-        assert os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME") is not None
-        assert os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD") is not None
+        assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
+        assert os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD") is not None
 
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         command = [
@@ -64,9 +64,9 @@ class TestBasicCommands:
             "--configuration-file-directory",
             f"{non_existing_directory}",
             "--username",
-            f"{os.getenv('COPERNICUS_MARINE_SERVICE_USERNAME')}",
+            f"{os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}",
             "--password",
-            f"{os.getenv('COPERNICUS_MARINE_SERVICE_PASSWORD')}",
+            f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
         output = subprocess.run(command)

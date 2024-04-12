@@ -41,10 +41,10 @@ def get_all_files_in_folder_tree(folder: str) -> list[str]:
 def get_environment_without_crendentials():
     environment_without_crendentials = os.environ.copy()
     environment_without_crendentials.pop(
-        "COPERNICUS_MARINE_SERVICE_USERNAME", None
+        "COPERNICUSMARINE_SERVICE_USERNAME", None
     )
     environment_without_crendentials.pop(
-        "COPERNICUS_MARINE_SERVICE_PASSWORD", None
+        "COPERNICUSMARINE_SERVICE_PASSWORD", None
     )
     return environment_without_crendentials
 
@@ -817,8 +817,8 @@ class TestCommandLineInterface:
         self.check_credentials_username_specified_password_prompt(tmp_path)
 
     def check_credentials_username_specified_password_prompt(self, tmp_path):
-        assert os.getenv("COPERNICUS_MARINE_SERVICE_USERNAME") is not None
-        assert os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD") is not None
+        assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
+        assert os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD") is not None
 
         environment_without_crendentials = (
             get_environment_without_crendentials()
@@ -848,18 +848,17 @@ class TestCommandLineInterface:
             "--maximum-depth",
             "11.4",
             "--username",
-            f"{os.getenv('COPERNICUS_MARINE_SERVICE_USERNAME')}",
+            f"{os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}",
             "--force-download",
             "-o",
             f"{tmp_path}",
         ]
-
+        password = os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD")
+        assert password is not None
         output = subprocess.run(
             command,
             env=environment_without_crendentials,
-            input=bytes(
-                os.getenv("COPERNICUS_MARINE_SERVICE_PASSWORD"), "utf-8"
-            ),
+            input=bytes(password, "utf-8"),
         )
         assert output.returncode == 0, output.stdout
         shutil.rmtree(Path(tmp_path))
@@ -945,9 +944,9 @@ class TestCommandLineInterface:
             "--configuration-file-directory",
             f"{non_existing_directory}",
             "--username",
-            f"{os.getenv('COPERNICUS_MARINE_SERVICE_USERNAME')}",
+            f"{os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}",
             "--password",
-            f"{os.getenv('COPERNICUS_MARINE_SERVICE_PASSWORD')}",
+            f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
         output = subprocess.run(command)

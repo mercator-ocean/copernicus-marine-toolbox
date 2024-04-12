@@ -30,7 +30,7 @@ def cli_group_login() -> None:
     Examples:
 
     \b
-    COPERNICUS_MARINE_SERVICE_USERNAME=<USERNAME> COPERNICUS_MARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
+    COPERNICUSMARINE_SERVICE_USERNAME=<USERNAME> COPERNICUSMARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
 
     \b
     copernicusmarine login --username <USERNAME> --password <PASSWORD>
@@ -45,14 +45,14 @@ def cli_group_login() -> None:
     "--username",
     hide_input=False,
     help="If not set, search for environment variable"
-    + " COPERNICUS_MARINE_SERVICE_USERNAME"
+    + " COPERNICUSMARINE_SERVICE_USERNAME"
     + ", or else ask for user input.",
 )
 @click.option(
     "--password",
     hide_input=True,
     help="If not set, search for environment variable"
-    + " COPERNICUS_MARINE_SERVICE_PASSWORD"
+    + " COPERNICUSMARINE_SERVICE_PASSWORD"
     + ", or else ask for user input.",
 )
 @click.option(

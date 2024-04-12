@@ -70,5 +70,6 @@ class VersionVerifier:
         mds_versions: dict[str, str] = session.get(
             url_mds_versions,
             params=construct_query_params_for_marine_data_store_monitoring(),
+            proxies=session.proxies,
         ).json()["clientVersions"]
         return mds_versions

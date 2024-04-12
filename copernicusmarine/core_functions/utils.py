@@ -22,6 +22,10 @@ from typing import (
 import xarray
 from requests import PreparedRequest
 
+from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_CACHE_DIRECTORY,
+)
+
 logger = logging.getLogger("copernicus_marine_root_logger")
 
 OVERWRITE_SHORT_OPTION = "--overwrite"
@@ -33,9 +37,7 @@ OVERWRITE_OPTION_HELP_TEXT = (
 
 FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE = "Do you want to proceed with download?"
 
-USER_DEFINED_CACHE_DIRECTORY = os.getenv(
-    "COPERNICUSMARINE_CACHE_DIRECTORY", ""
-)
+USER_DEFINED_CACHE_DIRECTORY = COPERNICUSMARINE_CACHE_DIRECTORY
 DEFAULT_CLIENT_BASE_DIRECTORY = (
     pathlib.Path(USER_DEFINED_CACHE_DIRECTORY)
     if USER_DEFINED_CACHE_DIRECTORY

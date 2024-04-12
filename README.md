@@ -66,10 +66,25 @@ Cachier library is used for caching part of the requests (as result of `describe
 - on **UNIX** platforms: `export COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
 - on **Windows** platforms: `set COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
 
+### Network configuration
+
 #### Disable SSL
+
 A global SSL context is used when making HTTP calls using the `copernicusmarine` Toolbox. For some reason, it can lead to unexpected behavior depending on your network configuration. You can set the `COPERNICUSMARINE_DISABLE_SSL_CONTEXT` environment variable to any value to globally disable the usage of SSL in the toolbox:
+
 - on **UNIX** platforms: `export COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True`
 - on **Windows** platforms: `set COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True`
+
+#### Trust Env for python libraries
+
+To do HTTP calls, the Copernicus Marine Toolbox uses two python libraries: requests and aiohttp. By default, those libraries will have `trust_env` values set to `True`. If you want to deactivate this, you can set `COPERNICUSMARINE_TRUST_ENV=False` (default `True`). This can be useful for example if you don't want those libraries to read your `.netrc` file as it has been reported that having a `.netrc` with a line: "default login anonymous password user@site" is incompatible with S3 connection required by the toolbox.
+
+#### Proxy
+
+To use proxies, as describe in the [aiohttp documentation](https://docs.aiohttp.org/en/stable/client_advanced.html#proxy-support) you can use two options:
+
+- set the `HTTPS_PROXY` variable. For eg: `HTTPS_PROXY="http://user:pass@some.proxy.com"`. It should work even with `COPERNICUSMARINE_TRUST_ENV=False`.
+- use a `.netrc` file but be aware that having a line: "default login anonymous password user@site" is incompatible with S3 connection required by the toolbox. Also note that if you have `COPERNICUSMARINE_TRUST_ENV=True` (the default value) then if `NETRC` environment variable is set with a specified location, the `.netrc` file will be read from the specified location there rather than from `~/.netrc`.
 
 ## Command Line Interface (CLI)
 
