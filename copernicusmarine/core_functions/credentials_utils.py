@@ -281,7 +281,7 @@ def get_credential(
             credential = _retrieve_credential_from_configuration_files(
                 credential_type=credential_type,
                 credentials_file=credentials_file,
-                host="my.cmems-du.eu",
+                host="nrt.cmems-du.eu",
             )
             if not credential:
                 credential = _retrieve_credential_from_prompt(
