@@ -468,6 +468,11 @@ def _get_retrieval_service_from_dataset_version(
             "Dataset part was not specified, the first "
             f'one was selected: "{dataset_part.name}"'
         )
+    if dataset_part.retired_date:
+        warning_dataset_will_be_deprecated(
+            dataset_id, dataset_version, dataset_part
+        )
+
     if force_service_type:
         logger.info(
             f"You forced selection of service: "
@@ -517,6 +522,23 @@ def _get_dataset_start_date_from_service(
 
 class ServiceNotAvailable(Exception):
     ...
+
+
+def warning_dataset_will_be_deprecated(
+    dataset_id: str,
+    dataset_version: CopernicusMarineDatasetVersion,
+    dataset_part: CopernicusMarineVersionPart,
+):
+    logger.warn(
+        f"""The dataset {dataset_id}"""
+        f"""{f", version '{dataset_version.label}'"
+             if dataset_version.label != 'default' else ''}"""
+        f"""{(f"and part '{dataset_part.name}'"
+              if dataset_part.name != 'default' else '')}"""
+        f"""{"," if dataset_version.label != 'default' else ""}"""
+        f""" will be retired on the {dataset_part.retired_date}."""
+        """ After this date, it will no longer be available on the toolbox."""
+    )
 
 
 def _service_not_available_error(
