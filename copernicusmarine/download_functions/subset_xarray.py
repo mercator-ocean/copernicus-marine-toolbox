@@ -367,13 +367,22 @@ def subset(
 
 def longitude_modulus(longitude: float) -> float:
     """
-    Returns the equivalent longitude between -180 and 180
+    Returns the equivalent longitude between -180 and 179.999999999
     """
     # We are using Decimal to avoid issue with rounding
     modulus = float(Decimal(str(longitude + 180)) % 360)
     # Modulus with python return a negative value if the denominator is negative
     # To counteract that, we add 360 if the result is < 0
     modulus = modulus if modulus >= 0 else modulus + 360
+    return modulus - 180
+
+
+def longitude_modulus_open(longitude: float) -> float:
+    """
+    Returns the equivalent longitude between -179.9999999 and 180
+    """
+    modulus = float(Decimal(str(longitude + 180)) % 360)
+    modulus = modulus if modulus > 0 else modulus + 360
     return modulus - 180
 
 
@@ -434,7 +443,7 @@ def check_dataset_subset_bounds(
                     else longitudes.min()
                 ),
                 user_maximum_coordinate_value=(
-                    longitude_modulus(dataset_subset.maximum_longitude)
+                    longitude_modulus_open(dataset_subset.maximum_longitude)
                     if dataset_subset.maximum_longitude is not None
                     else longitudes.max()
                 ),
