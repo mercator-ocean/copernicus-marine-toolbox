@@ -224,6 +224,9 @@ def _depth_subset(
             dataset = dataset.reindex(elevation=dataset.elevation[::-1])
             dataset["elevation"] = dataset.elevation * (-1)
             attrs["positive"] = "down"
+            attrs["standard_name"] = "depth"
+            attrs["long_name"] = "Depth"
+            attrs["units"] = "m"
             dataset = dataset.rename({"elevation": "depth"})
             dataset.depth.attrs = attrs
         return dataset
