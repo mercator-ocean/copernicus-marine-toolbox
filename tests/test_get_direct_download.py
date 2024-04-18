@@ -121,7 +121,6 @@ class TestGetDirectDownload:
             show_outputnames=True,
             overwrite_output_data=True,
         )
-        print(get_result)
         assert get_result == [
             pathlib.Path(
                 "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
@@ -140,7 +139,6 @@ class TestGetDirectDownload:
             show_outputnames=True,
             overwrite_output_data=True,
         )
-        print(get_result)
         assert set(get_result) == {
             pathlib.Path(
                 "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
