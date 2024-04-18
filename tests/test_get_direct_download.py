@@ -1,3 +1,4 @@
+import os
 import pathlib
 
 from copernicusmarine import get
@@ -32,6 +33,7 @@ class TestGetDirectDownload:
         ) in self.output.stdout
 
         assert b"Skipping" not in self.output.stdout
+        self._assert_file_exists_locally("index_history.txt")
         assert self.output.returncode == 0
 
     def test_get_direct_download_one_get_index_files(self):
@@ -56,6 +58,8 @@ class TestGetDirectDownload:
             b"history/BO/AR_PR_BO_58JM.nc"
         ) in self.output.stdout
         assert b"Skipping" not in self.output.stdout
+        self._assert_file_exists_locally("history/BO/AR_PR_BO_58JM.nc")
+        self._assert_file_exists_locally("history/BO/AR_PR_BO_58US.nc")
         assert self.output.returncode == 0
 
     def test_get_direct_download_one_not_found(self):
@@ -95,6 +99,7 @@ class TestGetDirectDownload:
         assert (
             b"history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
         ) not in self.output.stdout
+        self._assert_file_exists_locally("history/BO/AR_PR_BO_58JM.nc")
         assert self.output.returncode == 0
 
     def test_get_direct_download_one_different_path_types(self):
@@ -128,6 +133,7 @@ class TestGetDirectDownload:
                 "index_history.txt"
             )
         ]
+        self._assert_file_exists_locally("index_history.txt")
 
     def test_get_direct_download_multiple_python(self):
         get_result = get(
@@ -151,3 +157,12 @@ class TestGetDirectDownload:
                 "history/BO/AR_PR_BO_58US.nc"
             ),
         }
+        for file_path in get_result:
+            assert os.path.exists(file_path)
+
+    def _assert_file_exists_locally(self, file_name: str):
+        assert os.path.exists(
+            f"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            f"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            f"{file_name}"
+        )

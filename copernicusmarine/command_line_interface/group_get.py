@@ -228,7 +228,7 @@ def cli_group_get() -> None:
     help="Option to directly download a file "
     "using its path. "
     "The file has to be from the dataset specified with --dataset-id.",
-    mutually_exclusive=["direct-download-multiple", "sync", "sync_delete"],
+    mutually_exclusive=["direct_download_multiple", "sync", "sync_delete"],
 )
 @click.option(
     "--direct-download-multiple",
@@ -238,7 +238,7 @@ def cli_group_get() -> None:
     help="Option to directly download multiple files "
     "using a list of path from a '.txt' file. "
     "The file has to be from the dataset specified with --dataset-id.",
-    mutually_exclusive=["direct-download-one", "sync", "sync_delete"],
+    mutually_exclusive=["direct_download_one", "sync", "sync_delete"],
 )
 @click.option(
     "--sync",
