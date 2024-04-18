@@ -6,11 +6,13 @@ import re
 from itertools import chain
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple, Union
 
 import boto3
 import botocore
+import botocore.config
 import click
+from botocore.client import ClientError
 from numpy import append, arange
 from tqdm import tqdm
 
@@ -34,26 +36,38 @@ def download_original_files(
     disable_progress_bar: bool,
     create_file_list: Optional[str],
 ) -> list[pathlib.Path]:
-    result = _download_header(
-        str(get_request.dataset_url),
-        get_request.regex,
-        username,
-        password,
-        get_request.sync,
-        create_file_list,
-        pathlib.Path(get_request.output_directory),
-        only_list_root_path=get_request.index_parts,
-        overwrite=get_request.overwrite_output_data,
-    )
-    if result is None:
-        return []
-    (
-        message,
-        locator,
-        filenames_in,
-        total_size,
-        filenames_in_sync_ignored,
-    ) = result
+    if get_request.direct_download:
+        (
+            message,
+            locator,
+            filenames_in,
+            total_size,
+        ) = _download_header_for_direct_download(
+            get_request.direct_download,
+            str(get_request.dataset_url),
+            username,
+        )
+    else:
+        result = _download_header(
+            str(get_request.dataset_url),
+            get_request.regex,
+            username,
+            password,
+            get_request.sync,
+            create_file_list,
+            pathlib.Path(get_request.output_directory),
+            only_list_root_path=get_request.index_parts,
+            overwrite=get_request.overwrite_output_data,
+        )
+        if result is None:
+            return []
+        (
+            message,
+            locator,
+            filenames_in,
+            total_size,
+            filenames_in_sync_ignored,
+        ) = result
     filenames_out = create_filenames_out(
         filenames_in=filenames_in,
         output_directory=pathlib.Path(get_request.output_directory),
@@ -193,11 +207,14 @@ def _download_header(
         data_path, only_dataset_root_path=only_list_root_path
     )
 
-    filenames, sizes, total_size = [], [], 0.0
+    filenames: list[str] = []
+    sizes: list[float] = []
+    total_size = 0.0
+    last_modified_datetimes: list[datetime.datetime] = []
+    etags: list[str] = []
     raw_filenames = _list_files_on_marine_data_lake_s3(
         username, endpoint_url, bucket, path, not only_list_root_path
     )
-    filename_filtered = []
     filenames_without_sync = []
     for filename, size, last_modified_datetime, etag in raw_filenames:
         if not regex or re.search(regex, filename):
@@ -207,18 +224,16 @@ def _download_header(
             ):
                 filenames.append(filename)
                 sizes.append(float(size))
-                total_size += float(size)
-                filename_filtered.append(
-                    (filename, size, last_modified_datetime, etag)
-                )
-
+                last_modified_datetimes.append(last_modified_datetime)
+                etags.append(etag)
+    total_size = sum(sizes)
     if create_file_list and create_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
             directory_out / create_file_list, overwrite
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
-            for filename, _, _, _ in filename_filtered:
+            for filename in filenames:
                 file_out.write(f"{filename}\n")
         return None
     elif create_file_list and create_file_list.endswith(".csv"):
@@ -230,33 +245,76 @@ def _download_header(
             file_out.write("filename,size,last_modified_datetime,etag\n")
             for (
                 filename,
-                size,
+                size_file,
                 last_modified_datetime,
                 etag,
-            ) in filename_filtered:
+            ) in zip(filenames, sizes, last_modified_datetimes, etags):
                 file_out.write(
-                    f"{filename},{size},{last_modified_datetime},{etag}\n"
+                    f"{filename},{size_file},{last_modified_datetime},{etag}\n"
                 )
         return None
 
-    message = "You requested the download of the following files:\n"
-    for filename, size, last_modified_datetime, _ in filename_filtered[:20]:
-        message += str(filename)
-        datetime_iso = re.sub(
-            r"\+00:00$",
-            "Z",
-            last_modified_datetime.astimezone(datetime.timezone.utc).isoformat(
-                timespec="seconds"
-            ),
-        )
-        message += f" - {format_file_size(float(size))} - {datetime_iso}\n"
-    if len(filenames) > 20:
-        message += f"Printed 20 out of {len(filenames)} files\n"
-    message += (
-        f"\nTotal size of the download: {format_file_size(total_size)}\n\n"
+    message = _create_information_message_before_download(
+        filenames, sizes, last_modified_datetimes, total_size
     )
     locator = (endpoint_url, bucket)
     return (message, locator, filenames, total_size, filenames_without_sync)
+
+
+def _download_header_for_direct_download(
+    s3_path_or_path_to_txt_file: Union[str, pathlib.Path],
+    dataset_url: str,
+    username: str,
+) -> Tuple[str, Tuple[str, str], List[str], float]:
+    (endpoint_url, bucket, path) = parse_access_dataset_url(dataset_url)
+    splitted_path = path.split("/")
+    root_folder = splitted_path[0]
+    product_id = splitted_path[1]
+    dataset_id_with_tag = splitted_path[2]
+    if isinstance(s3_path_or_path_to_txt_file, pathlib.Path):
+        if not os.path.exists(s3_path_or_path_to_txt_file):
+            raise FileNotFoundError(
+                f"File {s3_path_or_path_to_txt_file} does not exist."
+                " Please provide a valid path to a .txt file."
+            )
+        with open(s3_path_or_path_to_txt_file) as f:
+            files_to_download = [line.strip() for line in f.readlines()]
+    else:
+        files_to_download = [s3_path_or_path_to_txt_file]
+
+    sizes = []
+    last_modified_datetimes = []
+    filenames_in = []
+    for file_to_download in files_to_download:
+        file_path = file_to_download.split(f"{dataset_id_with_tag}/")[-1]
+        if not file_path:
+            logger.warning(
+                f"{file_to_download} does not seem to be valid. Skipping."
+            )
+            continue
+        full_path = (
+            f"s3://{bucket}/{root_folder}/{product_id}/"
+            f"{dataset_id_with_tag}/{file_path}"
+        )
+        size_and_last_modified = _get_file_size_and_last_modified(
+            endpoint_url, bucket, full_path, username
+        )
+        if size_and_last_modified:
+            size, last_modified = size_and_last_modified
+            sizes.append(float(size))
+            last_modified_datetimes.append(last_modified)
+            filenames_in.append(full_path)
+    if not filenames_in:
+        raise ValueError(
+            f"{s3_path_or_path_to_txt_file} does not seem to be valid. "
+            "Please provide a valid path to a .txt file "
+            "that correspond to the entered dataset and version."
+        )
+    total_size = sum([size for size in sizes])
+    message = _create_information_message_before_download(
+        filenames_in, sizes, last_modified_datetimes, total_size
+    )
+    return (message, (endpoint_url, bucket), filenames_in, total_size)
 
 
 def _check_needs_to_be_synced(
@@ -279,10 +337,50 @@ def _check_needs_to_be_synced(
             return last_modified_datetime > last_created_datetime_out
 
 
+def _create_information_message_before_download(
+    filenames: list[str],
+    sizes: list[float],
+    last_modified_datetimes: list[datetime.datetime],
+    total_size: float,
+) -> str:
+    message = "You requested the download of the following files:\n"
+    for filename, size, last_modified_datetime in zip(
+        filenames[:20], sizes[:20], last_modified_datetimes[:20]
+    ):
+        message += str(filename)
+        datetime_iso = re.sub(
+            r"\+00:00$",
+            "Z",
+            last_modified_datetime.astimezone(datetime.timezone.utc).isoformat(
+                timespec="seconds"
+            ),
+        )
+        message += f" - {format_file_size(float(size))} - {datetime_iso}\n"
+    if len(filenames) > 20:
+        message += f"Printed 20 out of {len(filenames)} files\n"
+    message += (
+        f"\nTotal size of the download: {format_file_size(total_size)}\n\n"
+    )
+    return message
+
+
 def _local_path_from_s3_url(
     s3_url: str, local_directory: pathlib.Path
 ) -> pathlib.Path:
     return local_directory / pathlib.Path("/".join(s3_url.split("/")[4:]))
+
+
+def _create_custom_query_function(username: str) -> Callable:
+    def _add_custom_query_param(params, context, **kwargs):
+        """
+        Add custom query params for MDS's Monitoring
+        """
+        params["url"] = construct_url_with_query_params(
+            params["url"],
+            construct_query_params_for_marine_data_store_monitoring(username),
+        )
+
+    return _add_custom_query_param
 
 
 def _list_files_on_marine_data_lake_s3(
@@ -292,14 +390,6 @@ def _list_files_on_marine_data_lake_s3(
     prefix: str,
     recursive: bool,
 ) -> list[tuple[str, int, datetime.datetime, str]]:
-    def _add_custom_query_param(params, context, **kwargs):
-        """
-        Add custom query params for MDS's Monitoring
-        """
-        params["url"] = construct_url_with_query_params(
-            params["url"],
-            construct_query_params_for_marine_data_store_monitoring(username),
-        )
 
     s3_session = boto3.Session()
     s3_client = s3_session.client(
@@ -315,7 +405,7 @@ def _list_files_on_marine_data_lake_s3(
     # Register the botocore event handler for adding custom query params
     # to S3 LIST requests
     s3_client.meta.events.register(
-        "before-call.s3.ListObjects", _add_custom_query_param
+        "before-call.s3.ListObjects", _create_custom_query_function(username)
     )
 
     paginator = s3_client.get_paginator("list_objects")
@@ -342,6 +432,39 @@ def _list_files_on_marine_data_lake_s3(
     return files_already_found
 
 
+def _get_file_size_and_last_modified(
+    endpoint_url: str, bucket: str, file_in: str, username: str
+) -> Optional[Tuple[int, datetime.datetime]]:
+    s3_session = boto3.Session()
+    s3_client = s3_session.client(
+        "s3",
+        config=botocore.config.Config(
+            s3={"addressing_style": "virtual"},
+            signature_version=botocore.UNSIGNED,
+        ),
+        endpoint_url=endpoint_url,
+    )
+
+    s3_client.meta.events.register(
+        "before-call.s3.HeadObject", _create_custom_query_function(username)
+    )
+
+    try:
+        s3_object = s3_client.head_object(
+            Bucket=bucket,
+            Key=file_in.replace(f"s3://{bucket}/", ""),
+        )
+        return s3_object["ContentLength"], s3_object["LastModified"]
+    except ClientError as e:
+        if "404" in str(e):
+            logger.warning(
+                f"File {file_in} not found on the server. Skipping."
+            )
+            return None
+        else:
+            raise e
+
+
 def _download_files(
     tuple_original_files_filename: Tuple[
         str, str, str, list[str], list[pathlib.Path]
@@ -354,15 +477,6 @@ def _download_files(
         filenames_in,
         filenames_out,
     ) = tuple_original_files_filename
-
-    def _add_custom_query_param(params, context, **kwargs):
-        """
-        Add custom query params for MDS's Monitoring
-        """
-        params["url"] = construct_url_with_query_params(
-            params["url"],
-            construct_query_params_for_marine_data_store_monitoring(username),
-        )
 
     def _original_files_file_download(
         endpoint_url: str, bucket: str, file_in: str, file_out: pathlib.Path
@@ -393,10 +507,11 @@ def _download_files(
         # Register the botocore event handler for adding custom query params
         # to S3 HEAD and GET requests
         s3_client.meta.events.register(
-            "before-call.s3.HeadObject", _add_custom_query_param
+            "before-call.s3.HeadObject",
+            _create_custom_query_function(username),
         )
         s3_client.meta.events.register(
-            "before-call.s3.GetObject", _add_custom_query_param
+            "before-call.s3.GetObject", _create_custom_query_function(username)
         )
 
         last_modified_date_epoch = s3_resource.Object(
