@@ -3,7 +3,12 @@ import subprocess
 
 class TestWarningsSubsetBounds:
     def _build_custom_command(
-        self, dataset_id, variable, min_longitude, max_longitude
+        self,
+        dataset_id,
+        variable,
+        min_longitude,
+        max_longitude,
+        subset_method="nearest",
     ):
         return [
             "copernicusmarine",
@@ -16,6 +21,8 @@ class TestWarningsSubsetBounds:
             f"{min_longitude}",
             "--maximum-longitude",
             f"{max_longitude}",
+            "--subset-method",
+            f"{subset_method}",
         ]
 
     def test_subset_warning_properly(self):
@@ -24,7 +31,9 @@ class TestWarningsSubsetBounds:
         dataset_id = (
             "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
         )
-        command = self._build_custom_command(dataset_id, "CHL", -180, 180)
+        command = self._build_custom_command(
+            dataset_id, "CHL", -180, 180, "nearest"
+        )
 
         output = subprocess.run(command, capture_output=True)
 
@@ -40,8 +49,12 @@ class TestWarningsSubsetBounds:
         # The first call should return a warning, the second one should not
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
-        command1 = self._build_custom_command(dataset_id, "thetao", -180, 180)
-        command2 = self._build_custom_command(dataset_id, "thetao", -179, 179)
+        command1 = self._build_custom_command(
+            dataset_id, "thetao", -180, 180, "nearest"
+        )
+        command2 = self._build_custom_command(
+            dataset_id, "thetao", -179.9, 179.9, "nearest"
+        )
 
         output1 = subprocess.run(command1, capture_output=True)
         output2 = subprocess.run(command2, capture_output=True)
@@ -62,9 +75,11 @@ class TestWarningsSubsetBounds:
             "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
         )
 
-        command1 = self._build_custom_command(dataset_id, "CHL", -180, 180)
+        command1 = self._build_custom_command(
+            dataset_id, "CHL", -180, 180, "nearest"
+        )
         command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.99, 179.99
+            dataset_id, "CHL", -179.99, 179.99, "nearest"
         )
 
         output1 = subprocess.run(command1, capture_output=True)
@@ -80,3 +95,34 @@ class TestWarningsSubsetBounds:
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output2.stdout
+
+    def test_subset_strict_error(self):
+        dataset_id = (
+            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
+        )
+
+        command1 = self._build_custom_command(
+            dataset_id, "CHL", -180, 180, "strict"
+        )
+        command2 = self._build_custom_command(
+            dataset_id, "CHL", -179.9, 179.9, "strict"
+        )
+
+        output1 = subprocess.run(command1, capture_output=True)
+        output2 = subprocess.run(command2, capture_output=True)
+        assert (
+            b"""one was selected: "arco-geo-series"\nERROR"""
+        ) in output1.stdout
+        assert (
+            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension  exceed the dataset coordinates "
+            b"[-179.9791717529297, 179.9791717529297]"
+        ) in output1.stdout
+        assert (
+            b"""one was selected: "arco-geo-series"\nERROR"""
+        ) not in output2.stdout
+        assert (
+            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
+            b"dimension  exceed the dataset coordinates "
+            b"[-179.9791717529297, 179.9791717529297]"
+        ) not in output2.stdout
