@@ -383,7 +383,7 @@ def longitude_modulus_upper_bound(longitude: float) -> float:
     """
     modulus = longitude_modulus(longitude)
     if modulus == -180:
-        return 180
+        return 180.0
     return modulus
 
 

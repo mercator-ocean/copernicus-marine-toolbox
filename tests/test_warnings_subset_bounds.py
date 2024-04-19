@@ -30,7 +30,7 @@ class TestWarningsSubsetBounds:
 
         assert b"WARNING" in output.stdout
         assert (
-            b"ome or all of your subset selection [-180.0, 180.0]"
+            b"Some or all of your subset selection [-180.0, 180.0]"
             b" for the longitude dimension  exceed the dataset"
             b" coordinates [-179.9791717529297, 179.9791717529297]"
         ) in output.stdout
@@ -47,11 +47,11 @@ class TestWarningsSubsetBounds:
         output2 = subprocess.run(command2, capture_output=True)
 
         assert (
-            b"ome or all of your subset selection [-180.0, 180.0] for the longitude "
+            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
             b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) in output1.stdout
         assert (
-            b"ome or all of your subset selection [-179.9, 179.9] for the longitude "
+            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
             b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) not in output2.stdout  # Here they don't have to appear
 
@@ -71,12 +71,12 @@ class TestWarningsSubsetBounds:
         output2 = subprocess.run(command2, capture_output=True)
 
         assert (
-            b"ome or all of your subset selection [-180.0, 180.0] for the longitude "
+            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output1.stdout
         assert (
-            b"ome or all of your subset selection [-179.99, 179.99] for the longitude "
+            b"Some or all of your subset selection [-179.99, 179.99] for the longitude "
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output2.stdout
