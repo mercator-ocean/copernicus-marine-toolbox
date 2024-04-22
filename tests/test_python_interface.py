@@ -199,8 +199,10 @@ class TestPythonInterface:
         )
         assert dataset.time.valid_min > "2024-01-01T00:00:00.000000000"
 
-    def test_subset_modify_attr_positive_to_down_for_depth(self):
+    def test_subset_modify_attr_for_depth(self):
         dataset = open_dataset(
             dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1D-m"
         )
         assert dataset.depth.attrs["positive"] == "down"
+        assert dataset.depth.attrs["standard_name"] == "depth"
+        assert dataset.depth.attrs["long_name"] == "Depth"
