@@ -372,10 +372,44 @@ Total size of the download: 2.52 MB
 Do you want to proceed with download? [Y/n]:
 ```
 
+#### Note about direct download options
+
+By default, the get functionality lists all the files on the bucket to be able to select the requested ones. This create some overhead when there are a lot of files for a specific dataset. For example, a dataset with more than 100 000 files would create an overhead of around two minutes. To work around this problem, two options are available `--direct-download-one` and `--direct-download-multiple`.
+
+Given a path to a file, the toolbox will skip the listing step and directly build the url to query the bucket. Note that you still need to input a `--dataset-id` and the requested files should all be for the same dataset and for the same version.
+
+- `--direct-download-one`: takes the path to a file on the bucket as input, used to query one file
+- `--direct-download-multiple`: takes the path to a `.txt` file that contains paths to files on the bucket (one per line). It is compatible with the `--create-file-list`.txt output.
+
+Here are example of accepted paths input if we want for example files from "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr":
+
+```
+# correct paths
+> s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
+> INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
+> cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
+> history/BO/AR_PR_BO_58JM.nc
+> index_history.txt
+
+# incorrect paths
+# version is missing
+> INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr/history/BO/AR_PR_BO_58JM.nc
+# only the file name and not the path to the file
+> AR_PR_BO_58JM.nc
+# not the same dataset
+> another_dataset/history/BO/AR_PR_BO_58JM.nc
+```
+
+Careful when you use this option as a path can easily be mispelled or wrongly queried. The toolbox will display a warning if the file is not found on the bucket and if all the files queried are not found then it will raise an error.
+
+Note: The direct download is not compatible with `--sync`, `--sync-delete`, `--filter` and `--regex`.
+
 ### Shared options
+
 Both `subset` and `get` commands provide these options:
 
 #### Option `--overwrite-output-data`
+
 When specified, the existing files will be overwritten.
 Otherwise, if the files already exist on destination, new ones with a unique index will be created once the download has been accepted (or once `--force-download` is provided).
 

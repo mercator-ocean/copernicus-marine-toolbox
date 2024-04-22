@@ -5,7 +5,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from json import load
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -214,6 +214,7 @@ class GetRequest:
     sync: bool = False
     sync_delete: bool = False
     index_parts: bool = False
+    direct_download: Union[Optional[str], Optional[pathlib.Path]] = None
 
     def update(self, new_dict: dict):
         """Method to update values in GetRequest object.

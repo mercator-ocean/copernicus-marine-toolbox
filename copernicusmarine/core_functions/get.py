@@ -54,6 +54,8 @@ def get_function(
     file_list_path: Optional[pathlib.Path],
     create_file_list: Optional[str],
     download_file_list: bool,
+    direct_download_one: Optional[str],
+    direct_download_multiple: Optional[pathlib.Path],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -135,6 +137,10 @@ def get_function(
             ".csv"
         ), "Download file list must be a .txt or .csv file. "
         f"Got '{create_file_list}' instead."
+    if direct_download_one or direct_download_multiple:
+        get_request.direct_download = (
+            direct_download_one or direct_download_multiple
+        )
 
     return _run_get_request(
         username=username,
@@ -164,6 +170,7 @@ def _run_get_request(
         credentials_file,
         no_metadata_cache=no_metadata_cache,
     )
+
     catalogue = parse_catalogue(
         no_metadata_cache=no_metadata_cache,
         disable_progress_bar=disable_progress_bar,
