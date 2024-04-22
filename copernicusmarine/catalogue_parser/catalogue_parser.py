@@ -180,6 +180,7 @@ class CopernicusMarineVersionPart:
     name: str
     services: list[CopernicusMarineService]
     retired_date: Optional[str]
+    released_date: Optional[str]
 
     def get_service_by_service_type(
         self, service_type: CopernicusMarineDatasetServiceType
@@ -197,17 +198,35 @@ class CopernicusMarineDatasetVersion:
     parts: list[CopernicusMarineVersionPart]
 
     def get_part(
-        self, force_part: Optional[str] = None
+        self, force_part: Optional[str]
     ) -> CopernicusMarineVersionPart:
         wanted_part = force_part or PART_DEFAULT
         for part in self.parts:
             if part.name == wanted_part:
                 return part
             elif not force_part:
-                # TODO: If a dataset version has a non default part,
-                # then return the first one for the moment
                 return part
         raise dataset_version_part_not_found_exception(self)
+
+    def sort_parts(self) -> Optional[str]:
+        not_released_parts = {
+            part.name
+            for part in self.parts
+            if part.released_date
+            and datetime_parser(part.released_date) > datetime_parser("now")
+        }
+        # TODO: also sort by retired date
+        self.parts = sorted(
+            self.parts,
+            key=lambda x: (
+                x.released_date in not_released_parts,
+                -(x.name == PART_DEFAULT),
+                -(x.name == "latest"),  # for INSITU datasets
+                -(x.name == "bathy"),  # for STATIC datasets
+                x.name,
+            ),
+        )
+        return self.parts[0].released_date
 
 
 class DatasetVersionPartNotFound(Exception):
@@ -248,11 +267,35 @@ class CopernicusMarineProductDataset:
             return default_version
         raise dataset_version_not_found_exception(self)
 
-    def get_latest_version(self) -> Optional[CopernicusMarineDatasetVersion]:
-        try:
-            return self.get_latest_version_or_raise()
-        except DatasetVersionNotFound:
-            return None
+    def get_version(
+        self, force_version: Optional[str]
+    ) -> CopernicusMarineDatasetVersion:
+        wanted_version = force_version or VERSION_DEFAULT
+        for version in self.versions:
+            if version.label == wanted_version:
+                return version
+            elif not force_version:
+                return version
+        raise dataset_version_not_found_exception(self)
+
+    def sort_versions(self) -> None:
+        not_released_versions: set[str] = set()
+        for version in self.versions:
+            released_date = version.sort_parts()
+            if released_date and datetime_parser(
+                released_date
+            ) > datetime_parser("now"):
+                not_released_versions.add(version.label)
+
+        self.versions = sorted(
+            self.versions,
+            key=lambda x: (
+                -(x.label in not_released_versions),
+                x.label == VERSION_DEFAULT,
+                x.label,
+            ),
+            reverse=True,
+        )
 
 
 def dataset_version_part_not_found_exception(
@@ -322,11 +365,13 @@ class ProductParser(ABC):
 @dataclass
 class ProductDatasetFromMarineDataStore(ProductDatasetParser):
     def to_copernicus_marine_dataset(self) -> CopernicusMarineProductDataset:
-        return CopernicusMarineProductDataset(
+        dataset = CopernicusMarineProductDataset(
             dataset_id=self.dataset_id,
             dataset_name=self.dataset_name,
             versions=self.versions,
         )
+        dataset.sort_versions()
+        return dataset
 
 
 @dataclass
@@ -357,6 +402,31 @@ class CopernicusMarineCatalogue:
 
     def filter(self, tokens: list[str]):
         return filter_catalogue_with_strings(self, tokens)
+
+    def filter_only_official_versions_and_parts(self):
+        products_to_remove = []
+        for product in self.products:
+            datasets_to_remove = []
+            for dataset in product.datasets:
+                latest_version = dataset.versions[0]
+                parts_to_remove = []
+                for part in latest_version.parts:
+                    if part.released_date and datetime_parser(
+                        part.released_date
+                    ) > datetime_parser("now"):
+                        parts_to_remove.append(part)
+                for part_to_remove in parts_to_remove:
+                    latest_version.parts.remove(part_to_remove)
+                if not latest_version.parts:
+                    datasets_to_remove.append(dataset)
+                else:
+                    dataset.versions = [latest_version]
+            for dataset_to_remove in datasets_to_remove:
+                product.datasets.remove(dataset_to_remove)
+            if not product.datasets:
+                products_to_remove.append(product)
+        for product_to_remove in products_to_remove:
+            self.products.remove(product_to_remove)
 
 
 class CatalogParserConnection:
@@ -442,11 +512,13 @@ def _get_versions_from_marine_datastore(
         parts = _get_parts(datacubes)
 
         if parts:
-            copernicus_marine_dataset_versions.append(
-                CopernicusMarineDatasetVersion(
-                    label=dataset_version, parts=parts
-                )
+            version = CopernicusMarineDatasetVersion(
+                label=dataset_version,
+                parts=parts,
             )
+            version.sort_parts()
+            copernicus_marine_dataset_versions.append(version)
+
     return copernicus_marine_dataset_versions
 
 
@@ -454,8 +526,8 @@ def _get_parts(
     datacubes: List[pystac.Item],
 ) -> List[CopernicusMarineVersionPart]:
     parts: List[CopernicusMarineVersionPart] = []
-
     for datacube in datacubes:
+        released_date = datacube.properties.get("admp_released_date")
         retired_date = datacube.properties.get("admp_retired_date")
         if retired_date and datetime_parser(retired_date) < datetime_parser(
             "now"
@@ -471,6 +543,7 @@ def _get_parts(
                     name=part,
                     services=_get_services(datacube),
                     retired_date=retired_date,
+                    released_date=released_date,
                 )
             )
 
@@ -777,7 +850,9 @@ def parse_catalogue(
             disable_progress_bar=disable_progress_bar,
             staging=staging,
         )
-    except ValueError:
+    except ValueError as e:
+        logger.debug(f"Error while parsing catalogue: {e}")
+        logger.debug("Retrying parsing catalogue without cache...")
         catalog = _parse_catalogue(
             ignore_cache=True,
             _versions=package_version("copernicusmarine"),

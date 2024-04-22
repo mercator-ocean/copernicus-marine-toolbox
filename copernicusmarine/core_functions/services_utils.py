@@ -12,7 +12,6 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
     CopernicusMarineService,
     CopernicusMarineServiceFormat,
     CopernicusMarineVersionPart,
-    dataset_version_not_found_exception,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndGeographicalSubset,
@@ -20,6 +19,7 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions import sessions
 from copernicusmarine.core_functions.utils import (
     FormatNotSupported,
+    datetime_parser,
     next_or_raise_exception,
 )
 from copernicusmarine.download_functions.subset_xarray import (
@@ -400,18 +400,8 @@ def _get_retrieval_service_from_dataset(
             "You forced selection of dataset version "
             + f'"{force_dataset_version_label}"'
         )
-        dataset_version: CopernicusMarineDatasetVersion = (
-            next_or_raise_exception(
-                filter(
-                    lambda version: version.label
-                    == force_dataset_version_label,
-                    dataset.versions,
-                ),
-                dataset_version_not_found_exception(dataset),
-            )
-        )
-    else:
-        dataset_version = dataset.get_latest_version_or_raise()
+    dataset_version = dataset.get_version(force_dataset_version_label)
+    if not force_dataset_version_label:
         logger.info(
             "Dataset version was not specified, the latest "
             f'one was selected: "{dataset_version.label}"'
@@ -460,16 +450,20 @@ def _get_retrieval_service_from_dataset_version(
             f"You forced selection of dataset part "
             f'"{force_dataset_part_label}"'
         )
-    dataset_part = dataset_version.get_part(
-        force_part=force_dataset_part_label
-    )
+    dataset_part = dataset_version.get_part(force_dataset_part_label)
     if not force_dataset_part_label:
         logger.info(
             "Dataset part was not specified, the first "
             f'one was selected: "{dataset_part.name}"'
         )
     if dataset_part.retired_date:
-        warning_dataset_will_be_deprecated(
+        _warning_dataset_will_be_deprecated(
+            dataset_id, dataset_version, dataset_part
+        )
+    if dataset_part.released_date and datetime_parser(
+        dataset_part.released_date
+    ) > datetime_parser("now"):
+        _warning_dataset_not_yet_released(
             dataset_id, dataset_version, dataset_part
         )
 
@@ -524,7 +518,7 @@ class ServiceNotAvailable(Exception):
     ...
 
 
-def warning_dataset_will_be_deprecated(
+def _warning_dataset_will_be_deprecated(
     dataset_id: str,
     dataset_version: CopernicusMarineDatasetVersion,
     dataset_part: CopernicusMarineVersionPart,
@@ -538,6 +532,24 @@ def warning_dataset_will_be_deprecated(
         f"""{"," if dataset_version.label != 'default' else ""}"""
         f""" will be retired on the {dataset_part.retired_date}."""
         """ After this date, it will no longer be available on the toolbox."""
+    )
+
+
+def _warning_dataset_not_yet_released(
+    dataset_id: str,
+    dataset_version: CopernicusMarineDatasetVersion,
+    dataset_part: CopernicusMarineVersionPart,
+):
+    logger.warn(
+        f"""The dataset {dataset_id}"""
+        f"""{f", version '{dataset_version.label}'"
+             if dataset_version.label != 'default' else ''}"""
+        f"""{(f"and part '{dataset_part.name}'"
+              if dataset_part.name != 'default' else '')}"""
+        f"""{"," if dataset_version.label != 'default' else ""}"""
+        f""" is not yet released officially."""
+        f""" It will be available by default  on the toolbox on the"""
+        f""" {dataset_part.released_date}."""
     )
 
 

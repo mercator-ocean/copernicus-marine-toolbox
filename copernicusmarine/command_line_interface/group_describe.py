@@ -66,6 +66,13 @@ def cli_group_describe() -> None:
     help="Include product keyword details in output.",
 )
 @click.option(
+    "--include-all-versions",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Whether to include all versions of each item. Defaults to False.",
+)
+@click.option(
     "--contains",
     "-c",
     type=str,
@@ -113,6 +120,7 @@ def describe(
     include_description: bool,
     include_datasets: bool,
     include_keywords: bool,
+    include_all_versions: bool,
     contains: list[str],
     overwrite_metadata_cache: bool,
     no_metadata_cache: bool,
@@ -133,6 +141,7 @@ def describe(
         include_description=include_description,
         include_datasets=include_datasets,
         include_keywords=include_keywords,
+        include_all_versions=include_all_versions,
         contains=contains,
         overwrite_metadata_cache=overwrite_metadata_cache,
         no_metadata_cache=no_metadata_cache,
