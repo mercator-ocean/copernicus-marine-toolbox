@@ -1,5 +1,5 @@
 {
-  "dataset_id": "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+  "dataset_id": "cmems_obs-si_glo_phy-drift-south_my_l4_P1D-m",
   "end_datetime": "2021-01-02",
   "force_download": false,
   "maximum_latitude": 0.1,
