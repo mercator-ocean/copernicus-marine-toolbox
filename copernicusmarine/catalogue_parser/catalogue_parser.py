@@ -208,25 +208,34 @@ class CopernicusMarineDatasetVersion:
                 return part
         raise dataset_version_part_not_found_exception(self)
 
-    def sort_parts(self) -> Optional[str]:
+    def sort_parts(self) -> tuple[Optional[str], Optional[str]]:
         not_released_parts = {
             part.name
             for part in self.parts
             if part.released_date
             and datetime_parser(part.released_date) > datetime_parser("now")
         }
-        # TODO: also sort by retired date
+        will_be_retired_parts = {
+            part.name: datetime_parser(part.retired_date).timestamp()
+            for part in self.parts
+            if part.retired_date
+        }
+        max_retired_timestamp = 0
+        if will_be_retired_parts:
+            max_retired_timestamp = max(will_be_retired_parts.values()) + 1
         self.parts = sorted(
             self.parts,
             key=lambda x: (
-                x.released_date in not_released_parts,
+                x.name in not_released_parts,
+                max_retired_timestamp
+                - will_be_retired_parts.get(x.name, max_retired_timestamp),
                 -(x.name == PART_DEFAULT),
                 -(x.name == "latest"),  # for INSITU datasets
                 -(x.name == "bathy"),  # for STATIC datasets
                 x.name,
             ),
         )
-        return self.parts[0].released_date
+        return self.parts[0].released_date, self.parts[0].retired_date
 
 
 class DatasetVersionPartNotFound(Exception):
@@ -280,18 +289,22 @@ class CopernicusMarineProductDataset:
 
     def sort_versions(self) -> None:
         not_released_versions: set[str] = set()
+        retired_dates = {}
         for version in self.versions:
-            released_date = version.sort_parts()
+            released_date, retired_date = version.sort_parts()
             if released_date and datetime_parser(
                 released_date
             ) > datetime_parser("now"):
                 not_released_versions.add(version.label)
+            if retired_date:
+                retired_dates[version.label] = retired_date
 
         self.versions = sorted(
             self.versions,
             key=lambda x: (
                 -(x.label in not_released_versions),
-                x.label == VERSION_DEFAULT,
+                retired_dates.get(x.label, "9999-12-31"),
+                -(x.label == VERSION_DEFAULT),
                 x.label,
             ),
             reverse=True,
@@ -516,7 +529,6 @@ def _get_versions_from_marine_datastore(
                 label=dataset_version,
                 parts=parts,
             )
-            version.sort_parts()
             copernicus_marine_dataset_versions.append(version)
 
     return copernicus_marine_dataset_versions
