@@ -379,7 +379,7 @@ def longitude_modulus(longitude: float) -> float:
 
 def longitude_modulus_upper_bound(longitude: float) -> float:
     """
-    Returns the equivalent longitude between -179.9999999 and 180
+    Returns the equivalent longitude in ]-180, 180]
     """
     modulus = longitude_modulus(longitude)
     if modulus == -180:
