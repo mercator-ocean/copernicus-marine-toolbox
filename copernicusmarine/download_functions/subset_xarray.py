@@ -367,7 +367,7 @@ def subset(
 
 def longitude_modulus(longitude: float) -> float:
     """
-    Returns the equivalent longitude between -180 and 179.999999999
+    Returns the equivalent longitude in [-180, 180[
     """
     # We are using Decimal to avoid issue with rounding
     modulus = float(Decimal(str(longitude + 180)) % 360)
