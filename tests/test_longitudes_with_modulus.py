@@ -132,6 +132,26 @@ class TestLongitudesWithModulus:
         assert longitudes.min() == 170
         assert longitudes.max() == 190
 
+    def test_subset_with_longitude_over_antemeridian_and_below_0(
+        self, tmp_path
+    ):
+        filename_dataset = "dataset.nc"
+
+        command = self._build_custom_command(
+            tmp_path, filename_dataset, -145, 180
+        )
+
+        output = subprocess.run(command)
+
+        dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
+
+        longitudes = dataset.longitude.values
+
+        assert output.returncode == 0
+        assert not numpy.isnan(dataset.thetao.max().values.item())
+        assert longitudes.min() == -145
+        assert longitudes.max() == 180
+
     def test_subset_with_longitude_range_over_360(self, tmp_path):
         filename_dataset = "dataset.nc"
 
