@@ -457,13 +457,15 @@ def _get_retrieval_service_from_dataset_version(
             f'one was selected: "{dataset_part.name}"'
         )
     if dataset_part.retired_date:
+
         _warning_dataset_will_be_deprecated(
             dataset_id, dataset_version, dataset_part
         )
     if dataset_part.released_date and datetime_parser(
         dataset_part.released_date
     ) > datetime_parser("now"):
-        _warning_dataset_not_yet_released(
+
+        _warning_dataset_will_be_deprecated(
             dataset_id, dataset_version, dataset_part
         )
 

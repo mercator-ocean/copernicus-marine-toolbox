@@ -138,8 +138,7 @@ def _service_type_from_web_api_string(
     )
 
 
-class ServiceNotHandled(Exception):
-    ...
+class ServiceNotHandled(Exception): ...
 
 
 VERSION_DEFAULT = "default"
@@ -240,12 +239,10 @@ class CopernicusMarineDatasetVersion:
         return self.parts[0].released_date, self.parts[0].retired_date
 
 
-class DatasetVersionPartNotFound(Exception):
-    ...
+class DatasetVersionPartNotFound(Exception): ...
 
 
-class DatasetVersionNotFound(Exception):
-    ...
+class DatasetVersionNotFound(Exception): ...
 
 
 @dataclass
@@ -360,8 +357,7 @@ class ProductDatasetParser(ABC):
     @abstractmethod
     def to_copernicus_marine_dataset(
         self,
-    ) -> CopernicusMarineProductDataset:
-        ...
+    ) -> CopernicusMarineProductDataset: ...
 
 
 @dataclass

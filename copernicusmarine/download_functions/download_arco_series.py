@@ -8,6 +8,7 @@ import xarray
 
 from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
 from copernicusmarine.core_functions import sessions
+from copernicusmarine.core_functions.models import BoundingBoxMethod
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     add_copernicusmarine_version_in_dataset_attributes,
@@ -66,6 +67,7 @@ def download_dataset(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
+    bounding_box: BoundingBoxMethod,
     dataset_url: str,
     output_directory: pathlib.Path,
     output_filename: Optional[str],
@@ -87,6 +89,7 @@ def download_dataset(
             geographical_parameters=geographical_parameters,
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
+            bounding_box=bounding_box,
             chunks="auto",
         )
     )
@@ -183,6 +186,7 @@ def download_zarr(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
+        bounding_box=subset_request.bounding_box,
         dataset_url=dataset_url,
         output_directory=output_directory,
         output_filename=subset_request.output_filename,
@@ -206,6 +210,7 @@ def open_dataset_from_arco_series(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
+    bounding_box: BoundingBoxMethod,
     chunks=Optional[Literal["auto"]],
 ) -> xarray.Dataset:
     dataset = sessions.open_zarr(
@@ -219,6 +224,7 @@ def open_dataset_from_arco_series(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
+        bounding_box=bounding_box,
     )
     return dataset
 
@@ -231,6 +237,7 @@ def read_dataframe_from_arco_series(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
+    bounding_box: BoundingBoxMethod,
     chunks: Optional[Literal["auto"]],
 ) -> pandas.DataFrame:
     dataset = open_dataset_from_arco_series(
@@ -241,6 +248,7 @@ def read_dataframe_from_arco_series(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
+        bounding_box=bounding_box,
         chunks=chunks,
     )
     return dataset.to_dataframe()

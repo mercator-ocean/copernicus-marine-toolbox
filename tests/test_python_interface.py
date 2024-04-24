@@ -1,12 +1,12 @@
 import inspect
 import os
+import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import xarray
 
 from copernicusmarine import (
-    core_functions,
     describe,
     get,
     login,
@@ -14,6 +14,10 @@ from copernicusmarine import (
     read_dataframe,
     subset,
 )
+from copernicusmarine.core_functions.exceptions import (
+    CoordinatesOutOfDatasetBounds,
+)
+from tests.test_utils import execute_in_terminal
 
 
 class TestPythonInterface:
@@ -264,5 +268,95 @@ class TestPythonInterface:
                 end_datetime=datetime.today()
                 + timedelta(days=10, hours=23, minutes=59),
             )
-        except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
+        except CoordinatesOutOfDatasetBounds as e:
             assert "Some or all of your subset selection" in e.__str__()
+
+    def test_bounding_box_method(self, tmp_path):
+        output_filename = "output.nc"
+        min_longitude = 0.01
+        max_longitude = 2.97
+        min_latitude = 0.01
+        max_latitude = 3.1
+        start_datetime = "2020-11-01T01:00:00"
+        end_datetime = "2021-12-12T01:00:00"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--bounding-box-method",
+            "outside",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = subprocess.run(command)
+
+        dataset = xarray.open_dataset(Path(tmp_path, output_filename))
+        assert output.returncode == 0
+        assert dataset.longitude.values.min() <= min_longitude
+        assert dataset.longitude.values.max() >= max_longitude
+        assert dataset.latitude.values.min() <= min_latitude
+        assert dataset.latitude.values.max() >= max_latitude
+        assert datetime.strptime(
+            str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) <= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.strptime(
+            str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) >= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+
+    def test_bounding_box_method_outside_dataset_bounds(self, tmp_path):
+        output_filename = "output.nc"
+        min_longitude = 179.0
+        max_longitude = 181.0
+        min_latitude = 0.01
+        max_latitude = 3.1
+        start_datetime = "2024-01-01T01:00:00"
+        end_datetime = "2024-05-12T01:00:00"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D",
+            "--variable",
+            "CHL",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--bounding-box-method",
+            "outside",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = execute_in_terminal(command)
+
+        assert b"ERROR" in output.stdout
+        assert output.returncode == 1
