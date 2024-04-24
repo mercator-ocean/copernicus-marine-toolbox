@@ -12,6 +12,7 @@ def describe(
     include_description: bool = False,
     include_datasets: bool = False,
     include_keywords: bool = False,
+    include_all_versions: bool = False,
     contains: list[str] = [],
     overwrite_metadata_cache: bool = False,
     no_metadata_cache: bool = False,
@@ -28,6 +29,7 @@ def describe(
         include_description (bool, optional): Whether to include description for each item. Defaults to False.
         include_datasets (bool, optional): Whether to include dataset information. Defaults to False.
         include_keywords (bool, optional): Whether to include keywords for each item. Defaults to False.
+        include_all_versions (bool, optional): Whether to include all versions of each item. Defaults to False.
         contains (list[str], optional): List of strings to filter items containing these values. Defaults to [].
         overwrite_metadata_cache (bool, optional): Whether to overwrite the metadata cache. Defaults to False.
         no_metadata_cache (bool, optional): Whether to skip using the metadata cache. Defaults to False.
@@ -43,6 +45,7 @@ def describe(
         include_description,
         include_datasets,
         include_keywords,
+        include_all_versions,
         contains,
         overwrite_metadata_cache,
         no_metadata_cache,

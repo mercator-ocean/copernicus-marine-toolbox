@@ -1,5 +1,6 @@
 settings.json
 tests*/__pycache__/
+tests/resources/**/__pycache__/
 tests/downloads
 .vscode/
 copernicusmarine/**/__pycache__/
