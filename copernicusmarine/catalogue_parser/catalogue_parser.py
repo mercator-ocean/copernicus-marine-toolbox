@@ -864,7 +864,10 @@ def parse_catalogue(
         )
     except ValueError as e:
         logger.debug(f"Error while parsing catalogue: {e}")
-        logger.debug("Retrying parsing catalogue without cache...")
+        logger.debug(
+            "Now retrying without cache. If the problem persist, "
+            "try running copernicusmarine describe --overwrite-metadata-cache"
+        )
         catalog = _parse_catalogue(
             ignore_cache=True,
             _versions=package_version("copernicusmarine"),
