@@ -12,6 +12,7 @@ from json import loads
 from pathlib import Path
 from typing import List, Optional, Union
 
+import pytest
 import xarray
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
@@ -56,6 +57,7 @@ def get_file_size(filepath):
 
 
 class TestCommandLineInterface:
+    @pytest.mark.order(1)
     def test_describe_overwrite_metadata_cache(self):
         self.when_I_run_copernicus_marine_describe_with_overwrite_cache()
         self.then_stdout_can_be_load_as_json()
