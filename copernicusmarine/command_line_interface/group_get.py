@@ -197,8 +197,11 @@ def cli_group_get() -> None:
     type=pathlib.Path,
     default=None,
     help="A path to a text file that list filenames line by line. "
-    "Filenames must match the absolute paths of "
-    "the files to download.",
+    "Directly download multiple files "
+    "using a list of path from a '.txt' file. "
+    "The files to download have to be from the dataset specified with --dataset-id."
+    "If some files are not found, the toolbox will list all the files "
+    "on the remote server and try to match them.",
 )
 @click.option(
     "--create-file-list",
@@ -221,24 +224,12 @@ def cli_group_get() -> None:
     preferred="--create-file-list",
 )
 @click.option(
-    "--direct-download-one",
-    cls=MutuallyExclusiveOption,
+    "--direct-download",
     type=str,
     default=None,
     help="Option to directly download a file "
     "using its path. "
     "The file has to be from the dataset specified with --dataset-id.",
-    mutually_exclusive=["direct_download_multiple", "sync", "sync_delete"],
-)
-@click.option(
-    "--direct-download-multiple",
-    cls=MutuallyExclusiveOption,
-    type=pathlib.Path,
-    default=None,
-    help="Option to directly download multiple files "
-    "using a list of path from a '.txt' file. "
-    "The file has to be from the dataset specified with --dataset-id.",
-    mutually_exclusive=["direct_download_one", "sync", "sync_delete"],
 )
 @click.option(
     "--sync",
@@ -314,8 +305,7 @@ def get(
     file_list: Optional[pathlib.Path],
     create_file_list: Optional[str],
     download_file_list: bool,
-    direct_download_one: str,
-    direct_download_multiple: Optional[pathlib.Path],
+    direct_download: str,
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -361,8 +351,7 @@ def get(
         file_list_path=file_list,
         create_file_list=create_file_list,
         download_file_list=download_file_list,
-        direct_download_one=direct_download_one,
-        direct_download_multiple=direct_download_multiple,
+        direct_download=direct_download,
         sync=sync,
         sync_delete=sync_delete,
         index_parts=index_parts,
