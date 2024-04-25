@@ -62,12 +62,16 @@ def download_original_files(
             username,
         )
     if not get_request.direct_download or files_not_found or get_request.regex:
-        files_not_found_regex = "|".join(
-            [re.escape(file_not_found) for file_not_found in files_not_found]
-        )
-        get_request.regex = overload_regex_with_additionnal_filter(
-            files_not_found_regex, get_request.regex
-        )
+        if files_not_found:
+            files_not_found_regex = "|".join(
+                [
+                    re.escape(file_not_found)
+                    for file_not_found in files_not_found
+                ]
+            )
+            get_request.regex = overload_regex_with_additionnal_filter(
+                files_not_found_regex, get_request.regex
+            )
         result = _download_header(
             str(get_request.dataset_url),
             get_request.regex,
