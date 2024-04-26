@@ -86,6 +86,12 @@ To use proxies, as describe in the [aiohttp documentation](https://docs.aiohttp.
 - set the `HTTPS_PROXY` variable. For eg: `HTTPS_PROXY="http://user:pass@some.proxy.com"`. It should work even with `COPERNICUSMARINE_TRUST_ENV=False`.
 - use a `.netrc` file but be aware that having a line: "default login anonymous password user@site" is incompatible with S3 connection required by the toolbox. Also note that if you have `COPERNICUSMARINE_TRUST_ENV=True` (the default value) then if `NETRC` environment variable is set with a specified location, the `.netrc` file will be read from the specified location there rather than from `~/.netrc`.
 
+#### Number of concurrent requests
+
+The toolbox makes many requests to STAC to be able to parse the full marine data store STAC catalog. For that, it uses asynchronous calls. It can be problematic to do too many requests at the same time. To limit the number of requests at the same time you can use: `COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS`. The default value is `15` and minimum value is `1`.
+
+Note, that this concerns only the catalog parsing step so the describe command and the start of the get and subset command. It does not apply when downloading files or listing files from the get command or when requesting the data chunks for the subset command.
+
 ## Command Line Interface (CLI)
 
 ### The `--help` option
