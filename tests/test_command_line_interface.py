@@ -551,8 +551,8 @@ class TestCommandLineInterface:
         assert dataset.longitude.attrs["valid_max"] <= 0.3
         assert dataset.depth.attrs["valid_min"] >= 0
         assert dataset.depth.attrs["valid_max"] <= 5
-        assert dataset.time.attrs["valid_min"] == 622393
-        assert dataset.time.attrs["valid_max"] == 622417
+        assert dataset.time.attrs["valid_min"] == 622392
+        assert dataset.time.attrs["valid_max"] == 622416
 
     def test_retention_period_works(self):
         self.command = [

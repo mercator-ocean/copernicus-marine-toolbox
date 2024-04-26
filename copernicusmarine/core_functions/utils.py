@@ -3,7 +3,7 @@ import logging
 import os
 import pathlib
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from importlib.metadata import version
 from typing import (
     Any,
@@ -145,7 +145,9 @@ def convert_datetime64_to_netcdf_timestamp(
     necdf_unit: str,
 ) -> int:
     ns = 1e-9
-    date = datetime.fromtimestamp(datetime_value.astype(int) * ns)
+    date = datetime.fromtimestamp(
+        datetime_value.astype(int) * ns, tz=timezone.utc
+    )
     return cftime.date2num(date, necdf_unit)
 
 
