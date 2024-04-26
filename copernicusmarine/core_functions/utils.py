@@ -3,7 +3,7 @@ import logging
 import os
 import pathlib
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from importlib.metadata import version
 from typing import (
     Any,
@@ -19,6 +19,8 @@ from typing import (
     Union,
 )
 
+import cftime
+import numpy
 import xarray
 from requests import PreparedRequest
 
@@ -136,6 +138,17 @@ def datetime_parser(string: str):
         except ValueError:
             pass
     raise WrongDatetimeFormat(string)
+
+
+def convert_datetime64_to_netcdf_timestamp(
+    datetime_value: numpy.datetime64,
+    cftime_unit: str,
+) -> int:
+    nanosecond = 1e-9
+    date = datetime.fromtimestamp(
+        datetime_value.astype(int) * nanosecond, tz=timezone.utc
+    )
+    return cftime.date2num(date, cftime_unit)
 
 
 def add_copernicusmarine_version_in_dataset_attributes(

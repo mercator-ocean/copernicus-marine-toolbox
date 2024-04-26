@@ -22,6 +22,9 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import SubsetMethod
+from copernicusmarine.core_functions.utils import (
+    convert_datetime64_to_netcdf_timestamp,
+)
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -326,13 +329,21 @@ def _update_dataset_coordinate_valid_minmax_attributes(
             if coordinate_alias in dataset.dims:
                 coord = dataset[coordinate_alias]
                 attrs = coord.attrs
-
-                if "time" not in coordinate_label:
+                if "time" in coordinate_label:
+                    min_time_dimension = coord.values.min()
+                    max_time_dimension = coord.values.max()
+                    netcdf_unit = coord.encoding["units"]
+                    valid_min = convert_datetime64_to_netcdf_timestamp(
+                        min_time_dimension, netcdf_unit
+                    )
+                    valid_max = convert_datetime64_to_netcdf_timestamp(
+                        max_time_dimension, netcdf_unit
+                    )
+                    attrs["valid_min"] = valid_min
+                    attrs["valid_max"] = valid_max
+                else:
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
-                else:
-                    attrs["valid_min"] = str(coord.values.min())
-                    attrs["valid_max"] = str(coord.values.max())
 
                 coord.attrs = attrs
 
