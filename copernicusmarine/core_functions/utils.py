@@ -19,6 +19,8 @@ from typing import (
     Union,
 )
 
+import cftime
+import numpy as np
 import xarray
 from requests import PreparedRequest
 
@@ -136,6 +138,15 @@ def datetime_parser(string: str):
         except ValueError:
             pass
     raise WrongDatetimeFormat(string)
+
+
+def convert_datetime64_to_netcdf_timestamp(
+    datetime_value: np.datetime64,
+    necdf_unit: str,
+) -> int:
+    ns = 1e-9
+    date = datetime.fromtimestamp(datetime_value.astype(int) * ns)
+    return cftime.date2num(date, necdf_unit)
 
 
 def add_copernicusmarine_version_in_dataset_attributes(

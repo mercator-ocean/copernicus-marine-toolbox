@@ -209,7 +209,9 @@ def open_dataset_from_arco_series(
     chunks=Optional[Literal["auto"]],
 ) -> xarray.Dataset:
     dataset = sessions.open_zarr(
-        dataset_url, chunks=chunks, copernicus_marine_username=username
+        dataset_url,
+        chunks=chunks,
+        copernicus_marine_username=username,
     )
     dataset = subset(
         dataset=dataset,
