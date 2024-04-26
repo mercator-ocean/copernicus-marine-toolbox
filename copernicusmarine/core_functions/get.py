@@ -1,12 +1,12 @@
 import json
 import logging
+import os
 import pathlib
 from typing import List, Optional
 
 from copernicusmarine.catalogue_parser.catalogue_parser import parse_catalogue
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
-    file_list_to_regex,
     filter_to_regex,
     get_request_from_file,
     overload_regex_with_additionnal_filter,
@@ -54,8 +54,6 @@ def get_function(
     file_list_path: Optional[pathlib.Path],
     create_file_list: Optional[str],
     download_file_list: bool,
-    direct_download_one: Optional[str],
-    direct_download_multiple: Optional[pathlib.Path],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -106,11 +104,6 @@ def get_function(
         get_request.force_service = force_service
     if filter:
         get_request.regex = filter_to_regex(filter)
-    if file_list_path:
-        file_list_regex = file_list_to_regex(file_list_path)
-        get_request.regex = overload_regex_with_additionnal_filter(
-            file_list_regex, get_request.regex
-        )
     if regex:
         get_request.regex = overload_regex_with_additionnal_filter(
             regex, get_request.regex
@@ -137,10 +130,10 @@ def get_function(
             ".csv"
         ), "Download file list must be a .txt or .csv file. "
         f"Got '{create_file_list}' instead."
-    if direct_download_one or direct_download_multiple:
-        get_request.direct_download = (
-            direct_download_one or direct_download_multiple
-        )
+    if file_list_path:
+        direct_download_files = get_direct_download_files(file_list_path)
+        if direct_download_files:
+            get_request.direct_download = direct_download_files
 
     return _run_get_request(
         username=username,
@@ -236,3 +229,19 @@ def create_get_template() -> None:
             indent=4,
         )
     logger.info(f"Template created at: {filename}")
+
+
+def get_direct_download_files(
+    file_list_path: Optional[pathlib.Path],
+) -> Optional[list[str]]:
+    if file_list_path:
+        if not os.path.exists(file_list_path):
+            raise FileNotFoundError(
+                f"File {file_list_path} does not exist."
+                " Please provide a valid path to a .txt file."
+            )
+        with open(file_list_path) as f:
+            direct_download_files = [line.strip() for line in f.readlines()]
+        return direct_download_files
+    else:
+        return None

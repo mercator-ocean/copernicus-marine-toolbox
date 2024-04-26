@@ -1984,7 +1984,7 @@ class TestCommandLineInterface:
             "--service",
             f"{self.FILES.name}",
             "--file-list",
-            "./tests/resources/file_list_example.txt",
+            "./tests/resources/file_list_examples/file_list_example.txt",
             "--force-download",
             "--output-directory",
             f"{tmp_path}",
