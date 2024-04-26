@@ -224,25 +224,13 @@ def cli_group_get() -> None:
     preferred="--create-file-list",
 )
 @click.option(
-    "--direct-download",
-    type=str,
-    default=None,
-    help="Option to directly download a file "
-    "using its path. "
-    "The file has to be from the dataset specified with --dataset-id.",
-)
-@click.option(
     "--sync",
     cls=MutuallyExclusiveOption,
     is_flag=True,
     default=False,
     help="Option to synchronize the local directory with "
     "the remote directory. See the documentation for more details.",
-    mutually_exclusive=[
-        "no-directories",
-        "direct-download-one",
-        "direct-download-multiple",
-    ],
+    mutually_exclusive=["no-directories"],
 )
 @click.option(
     "--sync-delete",
@@ -251,11 +239,7 @@ def cli_group_get() -> None:
     default=False,
     help="Option to delete local files that are not present on "
     "the remote server while applying sync.",
-    mutually_exclusive=[
-        "no-directories",
-        "direct-download-one",
-        "direct-download-multiple",
-    ],
+    mutually_exclusive=["no-directories"],
 )
 @click.option(
     "--index-parts",
@@ -305,7 +289,6 @@ def get(
     file_list: Optional[pathlib.Path],
     create_file_list: Optional[str],
     download_file_list: bool,
-    direct_download: str,
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -351,7 +334,6 @@ def get(
         file_list_path=file_list,
         create_file_list=create_file_list,
         download_file_list=download_file_list,
-        direct_download=direct_download,
         sync=sync,
         sync_delete=sync_delete,
         index_parts=index_parts,

@@ -54,7 +54,6 @@ def get_function(
     file_list_path: Optional[pathlib.Path],
     create_file_list: Optional[str],
     download_file_list: bool,
-    direct_download: Optional[str],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -131,10 +130,8 @@ def get_function(
             ".csv"
         ), "Download file list must be a .txt or .csv file. "
         f"Got '{create_file_list}' instead."
-    if direct_download or file_list_path:
-        direct_download_files = get_direct_download_files(
-            direct_download, file_list_path
-        )
+    if file_list_path:
+        direct_download_files = get_direct_download_files(file_list_path)
         if direct_download_files:
             get_request.direct_download = direct_download_files
 
@@ -235,7 +232,7 @@ def create_get_template() -> None:
 
 
 def get_direct_download_files(
-    direct_download: Optional[str], file_list_path: Optional[pathlib.Path]
+    file_list_path: Optional[pathlib.Path],
 ) -> Optional[list[str]]:
     direct_download_files = []
     if file_list_path:
@@ -248,6 +245,4 @@ def get_direct_download_files(
             direct_download_files.extend(
                 [line.strip() for line in f.readlines()]
             )
-    if direct_download:
-        direct_download_files.append(direct_download)
     return direct_download_files or None
