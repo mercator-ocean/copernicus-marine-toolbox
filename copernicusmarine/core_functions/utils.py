@@ -20,7 +20,7 @@ from typing import (
 )
 
 import cftime
-import numpy as np
+import numpy
 import xarray
 from requests import PreparedRequest
 
@@ -141,14 +141,14 @@ def datetime_parser(string: str):
 
 
 def convert_datetime64_to_netcdf_timestamp(
-    datetime_value: np.datetime64,
-    necdf_unit: str,
+    datetime_value: numpy.datetime64,
+    cftime_unit: str,
 ) -> int:
-    ns = 1e-9
+    nanosecond = 1e-9
     date = datetime.fromtimestamp(
-        datetime_value.astype(int) * ns, tz=timezone.utc
+        datetime_value.astype(int) * nanosecond, tz=timezone.utc
     )
-    return cftime.date2num(date, necdf_unit)
+    return cftime.date2num(date, cftime_unit)
 
 
 def add_copernicusmarine_version_in_dataset_attributes(
