@@ -197,7 +197,7 @@ class TestPythonInterface:
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
         )
-        assert dataset.time.valid_min > "2024-01-01T00:00:00.000000000"
+        assert dataset.time.valid_min > 45388
 
     def test_subset_modify_attr_for_depth(self):
         dataset = open_dataset(
