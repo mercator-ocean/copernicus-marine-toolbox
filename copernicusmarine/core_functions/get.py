@@ -234,7 +234,6 @@ def create_get_template() -> None:
 def get_direct_download_files(
     file_list_path: Optional[pathlib.Path],
 ) -> Optional[list[str]]:
-    direct_download_files = []
     if file_list_path:
         if not os.path.exists(file_list_path):
             raise FileNotFoundError(
@@ -242,7 +241,7 @@ def get_direct_download_files(
                 " Please provide a valid path to a .txt file."
             )
         with open(file_list_path) as f:
-            direct_download_files.extend(
-                [line.strip() for line in f.readlines()]
-            )
-    return direct_download_files or None
+            direct_download_files = [line.strip() for line in f.readlines()]
+        return direct_download_files
+    else:
+        return None
