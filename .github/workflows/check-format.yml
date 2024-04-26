@@ -5,6 +5,7 @@ on: push
 jobs:
   check-format:
     runs-on: self-hosted
+    timeout-minutes: 10
 
     steps:
       - name: Check out code
