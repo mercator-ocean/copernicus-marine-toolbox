@@ -222,6 +222,7 @@ def cli_group_get() -> None:
     cls=DeprecatedClickOption,
     deprecated=["--download-file-list"],
     preferred="--create-file-list",
+    hidden=True,
 )
 @click.option(
     "--sync",
