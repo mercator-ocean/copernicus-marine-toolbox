@@ -499,7 +499,7 @@ Set the details printed to console by the command (based on standard logging lib
 Available values are: `[DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]`
 
 ## Python package (API)
-The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://marine.copernicus.eu/python-interface).
+The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://help.marine.copernicus.eu/en/collections/9054839-main-functionalities).
 
 ## Documentation
 A detailed standalone API documentation is under construction and will come at a later stage. For the moment, see the [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox).
