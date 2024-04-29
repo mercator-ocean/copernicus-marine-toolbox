@@ -504,6 +504,12 @@ The `copernicusmarine` exposes a Python interface to allow you to [call commands
 ## Documentation
 A detailed standalone API documentation is under construction and will come at a later stage. For the moment, see the [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox).
 
+## Version management
+We are using semantic versioning X.Y.Z → for example 1.0.2
+- Z is bumped on minor non-breaking changes.
+- Y is bumped on breaking changes.
+- X is bumped on demand to highlight a new significant feature or for communication purposes (new Copernicus Marine Service release for example).
+
 ## Contribution
 We welcome contributions from the community to enhance this package. If you find any issues or have suggestions for improvements, please check out our [Report Template](https://help.marine.copernicus.eu/en/articles/8218546-reporting-an-issue-or-feature-request).
 
