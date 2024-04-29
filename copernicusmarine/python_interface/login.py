@@ -12,6 +12,16 @@ def login(
     overwrite_configuration_file: bool = False,
     skip_if_user_logged_in: bool = False,
 ) -> bool:
+    """
+    Create a configuration file with your Copernicus Marine credentials.
+
+    Args:
+        username (str, optional): If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, or else ask for user input.
+        password (str, optional): If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, or else ask for user input.
+        configuration_file_directory (Union[pathlib.Path, str]): Path to the directory where the configuration file is stored.
+        overwrite_configuration_file (bool): Flag to skip confirmation before overwriting configuration file.
+        skip_if_user_logged_in (bool): Flag to skip the logging process if the user is already logged in.
+    """  # noqa
     return login_function(
         username=username,
         password=password,
