@@ -57,7 +57,7 @@ python -m pip install copernicusmarine --upgrade
 ```
 
 ## User Guide
-For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9054839-copernicus-marine-toolbox-guide). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
+For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
 
 ### General configuration
 
@@ -502,7 +502,7 @@ Available values are: `[DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]`
 The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://marine.copernicus.eu/python-interface).
 
 ## Documentation
-A detailed standalone API documentation is under construction and will come at a later stage. For the moment, see the [Help Center](https://help.marine.copernicus.eu/en/collections/9054839-copernicus-marine-toolbox-guide).
+A detailed standalone API documentation is under construction and will come at a later stage. For the moment, see the [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox).
 
 ## Contribution
 We welcome contributions from the community to enhance this package. If you find any issues or have suggestions for improvements, please check out our [Report Template](https://help.marine.copernicus.eu/en/articles/8218546-reporting-an-issue-or-feature-request).
