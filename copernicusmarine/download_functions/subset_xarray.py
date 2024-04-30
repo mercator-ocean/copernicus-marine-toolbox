@@ -70,12 +70,12 @@ def _dataset_custom_sel(
     method: Union[str, None] = None,
 ) -> xarray.Dataset:
     for coord_label in COORDINATES_LABEL[coord_type]:
-        if coord_label in dataset.dims:
+        if coord_label in dataset.sizes:
             tmp_dataset = dataset.sel(
                 {coord_label: coord_selection}, method=method
             )
             if tmp_dataset.coords[coord_label].size == 0 or (
-                coord_label not in tmp_dataset.dims
+                coord_label not in tmp_dataset.sizes
             ):
                 target = (
                     coord_selection.start
@@ -104,7 +104,7 @@ def get_size_of_coordinate_subset(
     maximum: Optional[Union[float, datetime]],
 ) -> int:
     for label in COORDINATES_LABEL[coordinate]:
-        if label in dataset.dims:
+        if label in dataset.sizes:
             return (
                 dataset.coords[coordinate]
                 .sel({coordinate: slice(minimum, maximum)}, method=None)
@@ -126,7 +126,7 @@ def _update_dataset_attributes(
         minimum_longitude_modulus + 180
     )  # compute the degrees needed to move the dataset
     for coord_label in COORDINATES_LABEL["longitude"]:
-        if coord_label in dataset.dims:
+        if coord_label in dataset.sizes:
             attrs = dataset[coord_label].attrs
             if "valid_min" in attrs:
                 attrs["valid_min"] += window
@@ -235,7 +235,7 @@ def _depth_subset(
     depth_parameters: DepthParameters,
 ) -> xarray.Dataset:
     def convert_elevation_to_depth(dataset: xarray.Dataset):
-        if "elevation" in dataset.dims:
+        if "elevation" in dataset.sizes:
             attrs = dataset["elevation"].attrs
             dataset = dataset.reindex(elevation=dataset.elevation[::-1])
             dataset["elevation"] = dataset.elevation * (-1)
@@ -248,7 +248,7 @@ def _depth_subset(
         return dataset
 
     def update_elevation_attributes(dataset: xarray.Dataset):
-        if "elevation" in dataset.dims:
+        if "elevation" in dataset.sizes:
             attrs = dataset["elevation"].attrs
             attrs["positive"] = "up"
             attrs["standard_name"] = "elevation"
@@ -326,7 +326,7 @@ def _update_dataset_coordinate_valid_minmax_attributes(
 ) -> xarray.Dataset:
     for coordinate_label in COORDINATES_LABEL:
         for coordinate_alias in COORDINATES_LABEL[coordinate_label]:
-            if coordinate_alias in dataset.dims:
+            if coordinate_alias in dataset.sizes:
                 coord = dataset[coordinate_alias]
                 attrs = coord.attrs
                 if "time" in coordinate_label:
@@ -424,7 +424,7 @@ def check_dataset_subset_bounds(
         dataset = xarray.open_dataset(store)
         dataset_coordinates = dataset.coords
     for coordinate_label in COORDINATES_LABEL["latitude"]:
-        if coordinate_label in dataset.dims:
+        if coordinate_label in dataset.sizes:
             latitudes = dataset_coordinates[coordinate_label].values
             user_minimum_coordinate_value = (
                 dataset_subset.minimum_latitude
@@ -445,7 +445,7 @@ def check_dataset_subset_bounds(
                 is_strict=subset_method == "strict",
             )
     for coordinate_label in COORDINATES_LABEL["longitude"]:
-        if coordinate_label in dataset.dims:
+        if coordinate_label in dataset.sizes:
             longitudes = dataset_coordinates[coordinate_label].values
             _check_coordinate_overlap(
                 dimension="longitude",
@@ -466,7 +466,7 @@ def check_dataset_subset_bounds(
                 is_strict=subset_method == "strict",
             )
     for coordinate_label in COORDINATES_LABEL["time"]:
-        if coordinate_label in dataset.dims:
+        if coordinate_label in dataset.sizes:
             times = dataset_coordinates[coordinate_label].values
             if dataset_valid_date:
                 times_min = dataset_valid_date

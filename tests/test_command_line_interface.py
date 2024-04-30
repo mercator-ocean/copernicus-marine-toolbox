@@ -1674,7 +1674,7 @@ class TestCommandLineInterface:
             len(
                 xarray.open_dataset(
                     Path(tmp_path) / output_filename
-                ).dims.keys()
+                ).sizes.keys()
             )
             == 4
         )
