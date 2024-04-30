@@ -49,7 +49,7 @@ def _rechunk(dataset: xarray.Dataset) -> xarray.Dataset:
         preferred_chunks["depth"] = preferred_chunks["elevation"]
 
     return dataset.chunk(
-        _filter_dimensions(preferred_chunks, dataset.dims.keys())
+        _filter_dimensions(preferred_chunks, dataset.sizes.keys())
     )
 
 

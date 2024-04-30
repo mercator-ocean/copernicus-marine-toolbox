@@ -329,5 +329,5 @@ class TestCommandLineInterfaceNearestLayerSubset:
         output = subprocess.run(command)
         dataset = xarray.open_dataset(f"{tmp_path}/{output_filename}")
         assert output.returncode == 0
-        for dimension in dataset.dims:
-            assert dataset.dims[dimension] > 0
+        for dimension in dataset.sizes:
+            assert dataset.sizes[dimension] > 0

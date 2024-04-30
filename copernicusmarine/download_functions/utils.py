@@ -65,12 +65,16 @@ def _build_filename_from_dataset(
     max_time_coordinate = _get_max_coordinate(dataset, "time")
 
     datetimes = _format_datetimes(
-        Timestamp(min_time_coordinate).to_pydatetime()
-        if min_time_coordinate is not None
-        else None,
-        Timestamp(max_time_coordinate).to_pydatetime()
-        if max_time_coordinate is not None
-        else None,
+        (
+            Timestamp(min_time_coordinate).to_pydatetime()
+            if min_time_coordinate is not None
+            else None
+        ),
+        (
+            Timestamp(max_time_coordinate).to_pydatetime()
+            if max_time_coordinate is not None
+            else None
+        ),
     )
 
     filename = "_".join(
@@ -86,14 +90,14 @@ def _build_filename_from_dataset(
 
 def _get_min_coordinate(dataset: xarray.Dataset, coordinate: str):
     for coord_label in COORDINATES_LABEL[coordinate]:
-        if coord_label in dataset.dims:
+        if coord_label in dataset.sizes:
             return min(dataset[coord_label].values)
     return None
 
 
 def _get_max_coordinate(dataset: xarray.Dataset, coordinate: str):
     for coord_label in COORDINATES_LABEL[coordinate]:
-        if coord_label in dataset.dims:
+        if coord_label in dataset.sizes:
             return max(dataset[coord_label].values)
     return None
 
@@ -167,7 +171,7 @@ def _format_datetimes(
 
 def get_formatted_dataset_size_estimation(dataset: xarray.Dataset) -> str:
     coordinates_size = 1
-    for coordinate in dataset.dims:
+    for coordinate in dataset.sizes:
         coordinates_size *= dataset[coordinate].size
     estimate_size = (
         coordinates_size
