@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from typing import Optional
+from typing import Any, Optional
 
 import xarray
 import zarr
@@ -57,6 +57,7 @@ def _prepare_download_dataset_as_netcdf(
     netcdf3_compatible: bool,
 ):
     logger.debug("Writing dataset to NetCDF")
+    encoding: dict[str, Any]
     if netcdf_compression_enabled:
         complevel = (
             1 if netcdf_compression_level is None else netcdf_compression_level
@@ -67,7 +68,10 @@ def _prepare_download_dataset_as_netcdf(
         )
         encoding = {var: comp for var in dataset.data_vars}
     else:
-        encoding = None
+        encoding = {
+            f"{coord}": {"_FillValue": None} for coord in dataset.coords
+        }
+        logger.info(encoding)
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
     return dataset.to_netcdf(
         output_path,
