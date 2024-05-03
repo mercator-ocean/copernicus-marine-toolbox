@@ -71,7 +71,6 @@ def _prepare_download_dataset_as_netcdf(
         encoding = {
             f"{coord}": {"_FillValue": None} for coord in dataset.coords
         }
-        logger.info(encoding)
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
     return dataset.to_netcdf(
         output_path,
