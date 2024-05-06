@@ -56,12 +56,14 @@ class _ServiceShortName(str, Enum):
     STATIC_ARCO = "static-arco"
 
 
-MARINE_DATA_STORE_STAC_BASE_URL = "https://stac.marine.copernicus.eu/metadata"
+MARINE_DATA_STORE_STAC_BASE_URL = (
+    "https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata"
+)
 MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL = (
     MARINE_DATA_STORE_STAC_BASE_URL + "/catalog.stac.json"
 )
 MARINE_DATA_STORE_STAC_BASE_URL_STAGING = (
-    "https://stac-dta.marine.copernicus.eu/metadata"
+    "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta"
 )
 MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"

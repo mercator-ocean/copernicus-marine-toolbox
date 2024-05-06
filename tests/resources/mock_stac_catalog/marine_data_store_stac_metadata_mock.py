@@ -1,5 +1,8 @@
 from typing import Optional
 
+from copernicusmarine.catalogue_parser.catalogue_parser import (
+    MARINE_DATA_STORE_STAC_BASE_URL,
+)
 from tests.resources.mock_stac_catalog.mock_catalog import MOCK_STAC_CATALOG
 from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_cur import (
     MOCK_DATASET_GLO_PHY_CUR,
