@@ -61,9 +61,9 @@ class VersionVerifier:
         staging: bool,
     ) -> dict[str, str]:
         url_mds_versions = (
-            "https://stac-dta.marine.copernicus.eu/mdsVersions.json"
+            "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta/mdsVersions.json"
             if staging
-            else "https://stac.marine.copernicus.eu/mdsVersions.json"
+            else "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
         )
         logger.debug(f"Getting required versions from {url_mds_versions}")
         session = get_configured_request_session()

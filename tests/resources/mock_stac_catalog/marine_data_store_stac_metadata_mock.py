@@ -1,5 +1,8 @@
 from typing import Optional
 
+from copernicusmarine.catalogue_parser.catalogue_parser import (
+    MARINE_DATA_STORE_STAC_BASE_URL,
+)
 from tests.resources.mock_stac_catalog.mock_catalog import MOCK_STAC_CATALOG
 from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_cur import (
     MOCK_DATASET_GLO_PHY_CUR,
@@ -21,7 +24,7 @@ from tests.resources.mock_stac_catalog.mock_product_NWSHELF import (
     MOCK_PRODUCT_NWSHELF,
 )
 
-BASE_URL = "https://stac.marine.copernicus.eu/metadata"
+BASE_URL = MARINE_DATA_STORE_STAC_BASE_URL
 
 
 def mocked_stac_aiohttp_get(*args, **kwargs):
