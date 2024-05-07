@@ -266,4 +266,3 @@ class TestPythonInterface:
             )
         except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
             assert "Some or all of your subset selection" in e.__str__()
-
