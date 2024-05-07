@@ -217,5 +217,7 @@ class TestPythonInterface:
                 end_datetime=datetime.today()
                 + timedelta(days=10, hours=23, minutes=59),
             )
+            assert "bb" not in "bbb"
+            assert output is not None
         except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
             assert "Some or all of your subset selection" in e.__str__()
