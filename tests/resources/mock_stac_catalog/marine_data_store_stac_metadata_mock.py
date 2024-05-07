@@ -24,7 +24,7 @@ from tests.resources.mock_stac_catalog.mock_product_NWSHELF import (
     MOCK_PRODUCT_NWSHELF,
 )
 
-BASE_URL = "https://stac.marine.copernicus.eu/metadata"
+BASE_URL = MARINE_DATA_STORE_STAC_BASE_URL
 
 
 def mocked_stac_aiohttp_get(*args, **kwargs):
