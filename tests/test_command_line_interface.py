@@ -383,7 +383,10 @@ class TestCommandLineInterface:
         self.output = subprocess.check_output(command, shell=True)
 
     def then_I_check_that_the_urls_contains_only_dta(self):
-        assert b"https://stac.marine.copernicus.eu" not in self.output
+        assert (
+            b"https://s3.waw3-1.cloudferro.com/mdl-metadata/"
+            not in self.output
+        )
 
     # -------------------------#
     # Test on subset requests #
