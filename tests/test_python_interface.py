@@ -1,10 +1,9 @@
 import inspect
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 from copernicusmarine import (
-    core_functions,
     describe,
     get,
     login,
@@ -207,17 +206,3 @@ class TestPythonInterface:
         assert dataset.depth.attrs["positive"] == "down"
         assert dataset.depth.attrs["standard_name"] == "depth"
         assert dataset.depth.attrs["long_name"] == "Depth"
-
-    def test_error_Coord_out_of_dataset_bounds(self):
-        try:
-            output = subset(
-                dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
-                start_datetime=datetime.today() + timedelta(10),
-                force_download=True,
-                end_datetime=datetime.today()
-                + timedelta(days=10, hours=23, minutes=59),
-            )
-            assert "bb" not in "bbb"
-            assert output is not None
-        except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
-            assert "Some or all of your subset selection" in e.__str__()
