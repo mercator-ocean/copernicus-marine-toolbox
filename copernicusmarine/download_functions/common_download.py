@@ -58,19 +58,22 @@ def _prepare_download_dataset_as_netcdf(
 ):
     logger.debug("Writing dataset to NetCDF")
     encoding: dict[str, Any]
+    encoding = {f"{coord}": {"_FillValue": None} for coord in dataset.coords}
     if netcdf_compression_enabled:
         complevel = (
             1 if netcdf_compression_level is None else netcdf_compression_level
         )
         logger.info(f"NetCDF compression enabled with level {complevel}")
         comp = dict(
-            zlib=True, complevel=complevel, contiguous=False, shuffle=True
+            zlib=True,
+            complevel=complevel,
+            contiguous=False,
+            shuffle=True,
+            _FillValue=None,
         )
-        encoding = {var: comp for var in dataset.data_vars}
-    else:
-        encoding = {
-            f"{coord}": {"_FillValue": None} for coord in dataset.coords
-        }
+        encoding_vars = {var: comp for var in dataset.data_vars}
+        encoding.update(encoding_vars)
+
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
     return dataset.to_netcdf(
         output_path,
