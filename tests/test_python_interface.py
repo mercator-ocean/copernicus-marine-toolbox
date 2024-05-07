@@ -218,5 +218,4 @@ class TestPythonInterface:
                 + timedelta(days=10, hours=23, minutes=59),
             )
         except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
-            output = e.__str__()
-        assert "Some or all of your subset selection" in output
+            assert "Some or all of your subset selection" in e.__str__()
