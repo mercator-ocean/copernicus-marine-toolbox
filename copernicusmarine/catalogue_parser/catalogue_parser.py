@@ -63,7 +63,7 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL = (
     MARINE_DATA_STORE_STAC_BASE_URL + "/catalog.stac.json"
 )
 MARINE_DATA_STORE_STAC_BASE_URL_STAGING = (
-    "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta"
+    "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta/metadata"
 )
 MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"
@@ -823,6 +823,7 @@ async def async_fetch_catalog(
     )
     json_catalog = await connection.get_json_file(catalog_root_url)
     catalog = pystac.Catalog.from_dict(json_catalog)
+    catalog.set_self_href(catalog_root_url)
     child_links = catalog.get_child_links()
     root_url = (
         MARINE_DATA_STORE_STAC_BASE_URL
