@@ -1,11 +1,12 @@
 import inspect
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import xarray
 
 from copernicusmarine import (
+    core_functions,
     describe,
     get,
     login,
