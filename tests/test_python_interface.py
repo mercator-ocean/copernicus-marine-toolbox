@@ -388,5 +388,17 @@ class TestPythonInterface:
         ]
         output = execute_in_terminal(command)
 
-        assert b"ERROR" in output.stdout
-        assert output.returncode == 1
+        assert (
+            b""""not all values found in index \'longitude\'"\nWARNING"""
+            in output.stdout
+        )
+        assert (
+            b"""not all values found in index \'time\'"\nWARNING"""
+            in output.stdout
+        )
+        assert (
+            b"""Bounding box method doesn\'t find a max outer value """
+            b"""for time.Using the inside value instead.\nINFO"""
+            in output.stdout
+        )
+        assert output.returncode == 0

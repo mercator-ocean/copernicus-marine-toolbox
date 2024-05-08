@@ -81,34 +81,38 @@ def _enlarge_selection(
     coord_label: str,
     coord_selection: slice,  # only slices are supported
 ):
+    nanosecond = 1e-9
     try:
         external_minimum = dataset.sel(
             {coord_label: coord_selection.start}, method="pad"
         )[coord_label].values
-    except Exception as e:
+        if coord_label == "time":
+            external_minimum = datetime.fromtimestamp(
+                external_minimum.astype(int) * nanosecond, tz=timezone.utc
+            ).replace(tzinfo=None)
+    except KeyError as e:
         logger.warn(e)
         logger.warn(
             f"Bounding box method doesn't find a min outer value for {coord_label}."
             f"Using the inside value instead."
         )
+        external_minimum = coord_selection.start
     try:
         external_maximum = dataset.sel(
             {coord_label: coord_selection.stop}, method="backfill"
         )[coord_label].values
-    except Exception as e:
+        if coord_label == "time":
+            external_maximum = datetime.fromtimestamp(
+                external_maximum.astype(int) * nanosecond, tz=timezone.utc
+            ).replace(tzinfo=None)
+    except KeyError as e:
         logger.warn(e)
         logger.warn(
             f"Bounding box method doesn't find a max outer value for {coord_label}."
             f"Using the inside value instead."
         )
-    if coord_label == "time":
-        nanosecond = 1e-9
-        external_minimum = datetime.fromtimestamp(
-            external_minimum.astype(int) * nanosecond, tz=timezone.utc
-        ).replace(tzinfo=None)
-        external_maximum = datetime.fromtimestamp(
-            external_maximum.astype(int) * nanosecond, tz=timezone.utc
-        ).replace(tzinfo=None)
+        external_maximum = coord_selection.stop
+
     return slice(external_minimum, external_maximum)
 
 
