@@ -11,8 +11,10 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
+    DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_FILE_FORMAT,
     DEFAULT_SUBSET_METHOD,
+    BoundingBoxMethod,
     FileFormat,
     SubsetMethod,
 )
@@ -59,6 +61,7 @@ class SubsetRequest:
     vertical_dimension_as_originally_produced: bool = True
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
+    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
     output_filename: Optional[str] = None
     file_format: FileFormat = DEFAULT_FILE_FORMAT
@@ -290,6 +293,7 @@ class LoadRequest:
         default_factory=TemporalParameters
     )
     depth_parameters: DepthParameters = field(default_factory=DepthParameters)
+    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None
