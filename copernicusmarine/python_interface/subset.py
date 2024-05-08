@@ -7,8 +7,10 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
+    DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_FILE_FORMAT,
     DEFAULT_SUBSET_METHOD,
+    BoundingBoxMethod,
     FileFormat,
     SubsetMethod,
 )
@@ -37,6 +39,7 @@ def subset(
     vertical_dimension_as_originally_produced: bool = True,
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
+    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     output_filename: Optional[str] = None,
     file_format: FileFormat = DEFAULT_FILE_FORMAT,
@@ -143,6 +146,7 @@ def subset(
         vertical_dimension_as_originally_produced,
         start_datetime,
         end_datetime,
+        bounding_box,
         subset_method,
         output_filename,
         file_format,

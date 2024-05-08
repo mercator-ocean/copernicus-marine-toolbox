@@ -19,7 +19,10 @@ from copernicusmarine.core_functions.exceptions import (
     MinimumLongitudeGreaterThanMaximumLongitude,
     VariableDoesNotExistInTheDataset,
 )
-from copernicusmarine.core_functions.models import SubsetMethod
+from copernicusmarine.core_functions.models import (
+    BoundingBoxMethod,
+    SubsetMethod,
+)
 from copernicusmarine.core_functions.utils import (
     ServiceNotSupported,
     timestamp_or_datestring_to_datetime,
@@ -70,20 +73,90 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 ]
 
 
+class BoundingBoxError(Exception): ...
+
+
+def _nearest_neighbor_coordinates(
+    dataset: xarray.Dataset,
+    dimension: str,
+    target_value: Union[float, datetime],
+):
+    if isinstance(target_value, datetime):
+        target_value = numpy.datetime64(target_value)
+    coordinates = dataset[dimension].values
+    index = numpy.searchsorted(coordinates, target_value)
+    index = numpy.clip(index, 0, len(coordinates) - 1)
+    if index > 0 and (
+        index == len(coordinates)
+        or abs(target_value - coordinates[index - 1])
+        < abs(target_value - coordinates[index])
+    ):
+        return coordinates[index - 1]
+    else:
+        return coordinates[index]
+
+
+def _enlarge_selection(
+    dataset: xarray.Dataset,
+    coord_label: str,
+    coord_selection: slice,  # only slices are supported
+):
+    external_minimum = dataset.sel(
+        {coord_label: coord_selection.start}, method="pad"
+    )[coord_label].values
+    external_maximum = dataset.sel(
+        {coord_label: coord_selection.stop}, method="backfill"
+    )[coord_label].values
+    if coord_label == "time":
+        nanosecond = 1e-9
+        external_minimum = datetime.fromtimestamp(
+            external_minimum.astype(int) * nanosecond, tz=timezone.utc
+        ).replace(tzinfo=None)
+        external_maximum = datetime.fromtimestamp(
+            external_maximum.astype(int) * nanosecond, tz=timezone.utc
+        ).replace(tzinfo=None)
+    return slice(external_minimum, external_maximum)
+
+
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
     coord_type: Literal["latitude", "longitude", "depth", "time"],
     coord_selection: Union[float, slice, DateTime, None],
+    bounding_box: Optional[Union[BoundingBoxMethod, None]],
     method: Union[str, None] = None,
 ) -> xarray.Dataset:
     for coord_label in COORDINATES_LABEL[coord_type]:
         if coord_label in dataset.sizes:
+            if bounding_box == "outside":
+                if (
+                    isinstance(coord_selection, slice)
+                    and coord_selection.stop is not None
+                ):
+                    try:
+                        coord_selection = _enlarge_selection(
+                            dataset, coord_label, coord_selection
+                        )  # update the slic¡ing
+                    except Exception as e:
+                        logger.error(e)
+                        raise BoundingBoxError(
+                            "BoundingBoxMethod 'outside' "
+                            "is a method implemented "
+                            "to enlarge the selection, but it failed. "
+                            f"Make sure your selection '{coord_selection}' "
+                            "is valid when enlarged."
+                        )
+                else:
+                    logger.warn(
+                        f"Bounding box 'outside' is only supported for slices, "
+                        f"not apllying it to {coord_label}"
+                    )
             tmp_dataset = dataset.sel(
                 {coord_label: coord_selection}, method=method
             )
             if tmp_dataset.coords[coord_label].size == 0 or (
                 coord_label not in tmp_dataset.sizes
             ):
+                logger.info(coord_label)
                 target = (
                     coord_selection.start
                     if isinstance(coord_selection, slice)
@@ -154,6 +227,7 @@ def _shift_longitude_dimension(
 def _latitude_subset(
     dataset: xarray.Dataset,
     latitude_parameters: LatitudeParameters,
+    bounding_box: BoundingBoxMethod,
 ) -> xarray.Dataset:
     minimum_latitude = latitude_parameters.minimum_latitude
     maximum_latitude = latitude_parameters.maximum_latitude
@@ -167,7 +241,11 @@ def _latitude_subset(
             "nearest" if minimum_latitude == maximum_latitude else None
         )
         dataset = _dataset_custom_sel(
-            dataset, "latitude", latitude_selection, latitude_method
+            dataset,
+            "latitude",
+            latitude_selection,
+            bounding_box,
+            latitude_method,
         )
 
     return dataset
@@ -176,6 +254,7 @@ def _latitude_subset(
 def _longitude_subset(
     dataset: xarray.Dataset,
     longitude_parameters: LongitudeParameters,
+    bounding_box: BoundingBoxMethod,
 ) -> xarray.Dataset:
     minimum_longitude = longitude_parameters.minimum_longitude
     maximum_longitude = longitude_parameters.maximum_longitude
@@ -213,7 +292,11 @@ def _longitude_subset(
 
         if longitude_selection is not None:
             dataset = _dataset_custom_sel(
-                dataset, "longitude", longitude_selection, longitude_method
+                dataset,
+                "longitude",
+                longitude_selection,
+                bounding_box,
+                longitude_method,
             )
     return dataset
 
@@ -221,6 +304,7 @@ def _longitude_subset(
 def _temporal_subset(
     dataset: xarray.Dataset,
     temporal_parameters: TemporalParameters,
+    bounding_box: BoundingBoxMethod,
 ) -> xarray.Dataset:
     start_datetime = (
         temporal_parameters.start_datetime.in_tz("UTC").naive()
@@ -240,7 +324,7 @@ def _temporal_subset(
         )
         temporal_method = "nearest" if start_datetime == end_datetime else None
         dataset = _dataset_custom_sel(
-            dataset, "time", temporal_selection, temporal_method
+            dataset, "time", temporal_selection, bounding_box, temporal_method
         )
     return dataset
 
@@ -298,7 +382,7 @@ def _depth_subset(
         )
         depth_method = "nearest" if minimum_depth == maximum_depth else None
         dataset = _dataset_custom_sel(
-            dataset, "depth", depth_selection, depth_method
+            dataset, "depth", depth_selection, None, depth_method
         )
     return dataset
 
@@ -388,18 +472,19 @@ def subset(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
+    bounding_box: BoundingBoxMethod,
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
 
     dataset = _latitude_subset(
-        dataset, geographical_parameters.latitude_parameters
+        dataset, geographical_parameters.latitude_parameters, bounding_box
     )
     dataset = _longitude_subset(
-        dataset, geographical_parameters.longitude_parameters
+        dataset, geographical_parameters.longitude_parameters, bounding_box
     )
 
-    dataset = _temporal_subset(dataset, temporal_parameters)
+    dataset = _temporal_subset(dataset, temporal_parameters, bounding_box)
 
     dataset = _depth_subset(dataset, depth_parameters)
 

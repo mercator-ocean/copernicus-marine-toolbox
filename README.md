@@ -232,6 +232,19 @@ In addition to this option, you can also provide the `--netcdf-compression-level
 
 The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
 
+#### Note about the `--bounding-box-method` option
+The `--bounding-box-method` option has been added to allow for different funcitonalities with the requested area. The default method `inside` returns all data points that are included within the requested area. The available option `outside` returns all data points such that all the area requested is returned.
+
+For example, when requesting for **longitude** values in the range (0.01, 2.98) for the two different cases:
+
+>* --bounding-box-method **inside**
+>
+>Returned dataset longitude: [0.08334, 2.917]
+>
+>* --bounding-box-method **outside**
+>
+>Returned dataset longitude: [0.0, 3.0]
+
 ### Command `get`
 
 Download the dataset file(s) as originally produced, based on the datasetID or the path to files.

@@ -13,7 +13,9 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
+    DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_SUBSET_METHOD,
+    BoundingBoxMethod,
     SubsetMethod,
 )
 from copernicusmarine.download_functions.download_arco_series import (
@@ -62,6 +64,7 @@ def read_dataframe(
     vertical_dimension_as_originally_produced: bool = True,
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
+    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     force_service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
@@ -143,6 +146,7 @@ def read_dataframe(
             maximum_depth=maximum_depth,
             vertical_dimension_as_originally_produced=vertical_dimension_as_originally_produced,  # noqa
         ),
+        bounding_box=bounding_box,
         force_service=force_service,
         credentials_file=credentials_file,
     )
