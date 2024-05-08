@@ -76,37 +76,31 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 class BoundingBoxError(Exception): ...
 
 
-def _nearest_neighbor_coordinates(
-    dataset: xarray.Dataset,
-    dimension: str,
-    target_value: Union[float, datetime],
-):
-    if isinstance(target_value, datetime):
-        target_value = numpy.datetime64(target_value)
-    coordinates = dataset[dimension].values
-    index = numpy.searchsorted(coordinates, target_value)
-    index = numpy.clip(index, 0, len(coordinates) - 1)
-    if index > 0 and (
-        index == len(coordinates)
-        or abs(target_value - coordinates[index - 1])
-        < abs(target_value - coordinates[index])
-    ):
-        return coordinates[index - 1]
-    else:
-        return coordinates[index]
-
-
 def _enlarge_selection(
     dataset: xarray.Dataset,
     coord_label: str,
     coord_selection: slice,  # only slices are supported
 ):
-    external_minimum = dataset.sel(
-        {coord_label: coord_selection.start}, method="pad"
-    )[coord_label].values
-    external_maximum = dataset.sel(
-        {coord_label: coord_selection.stop}, method="backfill"
-    )[coord_label].values
+    try:
+        external_minimum = dataset.sel(
+            {coord_label: coord_selection.start}, method="pad"
+        )[coord_label].values
+    except Exception as e:
+        logger.warn(e)
+        logger.warn(
+            f"Bounding box method doesn't find a min outer value for {coord_label}."
+            f"Using the inside value instead."
+        )
+    try:
+        external_maximum = dataset.sel(
+            {coord_label: coord_selection.stop}, method="backfill"
+        )[coord_label].values
+    except Exception as e:
+        logger.warn(e)
+        logger.warn(
+            f"Bounding box method doesn't find a max outer value for {coord_label}."
+            f"Using the inside value instead."
+        )
     if coord_label == "time":
         nanosecond = 1e-9
         external_minimum = datetime.fromtimestamp(
