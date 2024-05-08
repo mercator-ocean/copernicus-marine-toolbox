@@ -1,11 +1,12 @@
 import inspect
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import xarray
 
 from copernicusmarine import (
+    core_functions,
     describe,
     get,
     login,
@@ -290,7 +291,7 @@ class TestPythonInterface:
 
     def test_error_Coord_out_of_dataset_bounds(self):
         try:
-            output = subset(
+            _ = subset(
                 dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
                 start_datetime=datetime.today() + timedelta(10),
                 force_download=True,
@@ -298,5 +299,4 @@ class TestPythonInterface:
                 + timedelta(days=10, hours=23, minutes=59),
             )
         except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
-            output = e.__str__()
-        assert "Some or all of your subset selection" in output
+            assert "Some or all of your subset selection" in e.__str__()
