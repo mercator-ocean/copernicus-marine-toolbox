@@ -285,7 +285,6 @@ class TestPythonInterface:
         )
 
         subsetdata = xarray.open_dataset("netcdf_fillval.nc", decode_cf=False)
-        print(f"longitude attrs: {subsetdata.longitude.attrs}")
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "valid_max" in subsetdata.longitude.attrs
 
