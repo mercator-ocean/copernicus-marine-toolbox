@@ -24,6 +24,7 @@ import numpy
 import xarray
 from requests import PreparedRequest
 
+import copernicusmarine
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_CACHE_DIRECTORY,
 )
@@ -119,7 +120,10 @@ def construct_url_with_query_params(url, query_params: dict) -> Optional[str]:
 def construct_query_params_for_marine_data_store_monitoring(
     username: Optional[str] = None,
 ) -> dict:
-    query_params = {"x-cop-client": "copernicus-marine-client"}
+    query_params = {
+        "x-cop-client": "copernicus-marine-toolbox",
+        "x-cop-client-version": copernicusmarine.__version__,
+    }
     if username:
         query_params["x-cop-user"] = username
     return query_params
@@ -218,3 +222,16 @@ def parse_access_dataset_url(
         return endpoint_url, bucket, path
     else:
         raise Exception(f"Invalid data path: {data_path}")
+
+
+def create_custom_query_function(username: Optional[str]) -> Callable:
+    def _add_custom_query_param(params, context, **kwargs):
+        """
+        Add custom query params for MDS's Monitoring
+        """
+        params["url"] = construct_url_with_query_params(
+            params["url"],
+            construct_query_params_for_marine_data_store_monitoring(username),
+        )
+
+    return _add_custom_query_param

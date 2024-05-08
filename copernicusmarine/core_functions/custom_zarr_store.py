@@ -7,10 +7,9 @@ import botocore.config
 import botocore.exceptions
 import botocore.session
 
-log = logging.getLogger("copernicus_marine_root_logger")
+from copernicusmarine.core_functions.utils import create_custom_query_function
 
-S3_NUM_RETRIES = 9
-S3_INITIAL_RETRY_WAIT_S = 1
+logger = logging.getLogger("copernicus_marine_root_logger")
 
 
 class CustomS3Store(MutableMapping):
@@ -21,6 +20,9 @@ class CustomS3Store(MutableMapping):
         root_path: str,
         secret_key: Optional[str] = None,
         access_key: Optional[str] = None,
+        copernicus_marine_username: Optional[str] = None,
+        num_retries: int = 9,
+        initial_retry_wait_s: int = 1,
     ):
         self._root_path = root_path.lstrip("/")
         self._bucket = bucket
@@ -40,6 +42,21 @@ class CustomS3Store(MutableMapping):
                 aws_secret_access_key=secret_key,
                 aws_access_key_id=access_key,
             )
+        self.client.meta.events.register(
+            "before-call.s3.ListObjects",
+            create_custom_query_function(copernicus_marine_username),
+        )
+        self.client.meta.events.register(
+            "before-call.s3.HeadObject",
+            create_custom_query_function(copernicus_marine_username),
+        )
+        self.client.meta.events.register(
+            "before-call.s3.GetObject",
+            create_custom_query_function(copernicus_marine_username),
+        )
+
+        self.num_retries = num_retries
+        self.initial_retry_wait_s = initial_retry_wait_s
 
     def __getitem__(self, key):
         def fn():
@@ -52,7 +69,7 @@ class CustomS3Store(MutableMapping):
             except botocore.exceptions.ClientError as e:
                 raise KeyError(key) from e
 
-        return with_retries(fn)
+        return self.with_retries(fn)
 
     def __contains__(self, key):
         full_key = f"{self._root_path}/{key}"
@@ -72,18 +89,17 @@ class CustomS3Store(MutableMapping):
                 Bucket=self._bucket, Key=full_key, Body=value, **final_headers
             )
 
-        return with_retries(fn)
+        return self.with_retries(fn)
 
     def __delitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
             self.client.delete_object(Bucket=self._bucket, Key=full_key)
 
-        return with_retries(fn)
+        return self.with_retries(fn)
 
     # Example of headers: {"ContentType": "application/json", "ContentEncoding": "gzip"}
     def set_item_with_headers(self, key, value, headers):
-        # pylint: disable=unnecessary-dunder-call
         return self.__setitem__(key, value, headers)
 
     def keys(self):
@@ -123,21 +139,20 @@ class CustomS3Store(MutableMapping):
             )
             idx += 1000
 
-
-def with_retries(fn):
-    retry_delay = S3_INITIAL_RETRY_WAIT_S
-    for idx_try in range(S3_NUM_RETRIES):
-        try:
-            return fn()
-        # KeyError is a normal error that we want to propagate
-        # (e.g. if we try to get a chunk and it doesn't exist,
-        # we want the caller to know this has happened -- and not retry!)
-        except KeyError:
-            raise
-        except Exception as e:
-            if idx_try == S3_NUM_RETRIES - 1:
-                raise e
-            log.error(f"S3 error: {e}")
-            log.info(f"Retrying in {retry_delay} s...")
-            time.sleep(retry_delay)
-            retry_delay *= 2
+    def with_retries(self, fn):
+        retry_delay = self.initial_retry_wait_s
+        for idx_try in range(self.num_retries):
+            try:
+                return fn()
+            # KeyError is a normal error that we want to propagate
+            # (e.g. if we try to get a chunk and it doesn't exist,
+            # we want the caller to know this has happened -- and not retry!)
+            except KeyError:
+                raise
+            except Exception as e:
+                if idx_try == self.num_retries - 1:
+                    raise e
+                logger.error(f"S3 error: {e}")
+                logger.info(f"Retrying in {retry_delay} s...")
+                time.sleep(retry_delay)
+                retry_delay *= 2

@@ -14,10 +14,7 @@ from copernicusmarine.core_functions.environment_variables import (
     PROXY_HTTP,
     PROXY_HTTPS,
 )
-from copernicusmarine.core_functions.utils import (
-    construct_query_params_for_marine_data_store_monitoring,
-    parse_access_dataset_url,
-)
+from copernicusmarine.core_functions.utils import parse_access_dataset_url
 
 TRUST_ENV = COPERNICUSMARINE_TRUST_ENV == "True"
 PROXIES = {}
@@ -62,14 +59,14 @@ def open_zarr(
         root_path,
     ) = parse_access_dataset_url(dataset_url)
     store = CustomS3Store(
-        endpoint=endpoint, bucket=bucket, root_path=root_path
+        endpoint=endpoint,
+        bucket=bucket,
+        root_path=root_path,
+        copernicus_marine_username=copernicus_marine_username,
     )
     kwargs.update(
         {
             "storage_options": {
-                "params": construct_query_params_for_marine_data_store_monitoring(
-                    username=copernicus_marine_username
-                ),
                 "client_kwargs": {"trust_env": TRUST_ENV, "proxies": PROXIES},
                 "ssl": _get_ssl_context(),
             }

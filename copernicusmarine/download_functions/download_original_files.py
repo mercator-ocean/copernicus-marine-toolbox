@@ -6,7 +6,7 @@ import re
 from itertools import chain
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import Callable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import boto3
 import botocore
@@ -22,8 +22,7 @@ from copernicusmarine.catalogue_parser.request_structure import (
 )
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
-    construct_query_params_for_marine_data_store_monitoring,
-    construct_url_with_query_params,
+    create_custom_query_function,
     flatten,
     get_unique_filename,
     parse_access_dataset_url,
@@ -434,19 +433,6 @@ def _local_path_from_s3_url(
     return local_directory / pathlib.Path("/".join(s3_url.split("/")[4:]))
 
 
-def _create_custom_query_function(username: str) -> Callable:
-    def _add_custom_query_param(params, context, **kwargs):
-        """
-        Add custom query params for MDS's Monitoring
-        """
-        params["url"] = construct_url_with_query_params(
-            params["url"],
-            construct_query_params_for_marine_data_store_monitoring(username),
-        )
-
-    return _add_custom_query_param
-
-
 def _list_files_on_marine_data_lake_s3(
     username: str,
     endpoint_url: str,
@@ -469,7 +455,7 @@ def _list_files_on_marine_data_lake_s3(
     # Register the botocore event handler for adding custom query params
     # to S3 LIST requests
     s3_client.meta.events.register(
-        "before-call.s3.ListObjects", _create_custom_query_function(username)
+        "before-call.s3.ListObjects", create_custom_query_function(username)
     )
 
     paginator = s3_client.get_paginator("list_objects")
@@ -510,7 +496,7 @@ def _get_file_size_and_last_modified(
     )
 
     s3_client.meta.events.register(
-        "before-call.s3.HeadObject", _create_custom_query_function(username)
+        "before-call.s3.HeadObject", create_custom_query_function(username)
     )
 
     try:
@@ -572,10 +558,10 @@ def _download_files(
         # to S3 HEAD and GET requests
         s3_client.meta.events.register(
             "before-call.s3.HeadObject",
-            _create_custom_query_function(username),
+            create_custom_query_function(username),
         )
         s3_client.meta.events.register(
-            "before-call.s3.GetObject", _create_custom_query_function(username)
+            "before-call.s3.GetObject", create_custom_query_function(username)
         )
 
         last_modified_date_epoch = s3_resource.Object(
