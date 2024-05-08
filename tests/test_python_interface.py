@@ -228,7 +228,30 @@ class TestPythonInterface:
         )
 
         subsetdata = xarray.open_dataset("netcdf_fillval.nc", decode_cf=False)
-        print(f"longitude attrs: {subsetdata.longitude.attrs}")
+        assert "_FillValue" not in subsetdata.longitude.attrs
+        assert "valid_max" in subsetdata.longitude.attrs
+
+    def test_subset_keeps_fillvalue_empty_w_compression(self):
+        subset(
+            dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            dataset_version="202211",
+            variables=["thetao"],
+            minimum_longitude=-28.10,
+            maximum_longitude=-27.94,
+            minimum_latitude=40.20,
+            maximum_latitude=40.44,
+            start_datetime="2024-02-23T00:00:00",
+            end_datetime="2024-02-23T23:59:59",
+            minimum_depth=0,
+            maximum_depth=1,
+            force_download=True,
+            output_filename="netcdf_fillval_compressed.nc",
+            netcdf_compression_enabled=True,
+        )
+
+        subsetdata = xarray.open_dataset(
+            "netcdf_fillval_compressed.nc", decode_cf=False
+        )
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "valid_max" in subsetdata.longitude.attrs
 
