@@ -64,7 +64,7 @@ class SubsetRequest:
     vertical_dimension_as_originally_produced: bool = True
     start_datetime: Optional[DateTime] = None
     end_datetime: Optional[DateTime] = None
-    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
+    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
     output_filename: Optional[str] = None
     file_format: FileFormat = DEFAULT_FILE_FORMAT
@@ -283,7 +283,7 @@ class LoadRequest:
         default_factory=TemporalParameters
     )
     depth_parameters: DepthParameters = field(default_factory=DepthParameters)
-    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
+    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None

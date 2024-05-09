@@ -82,21 +82,31 @@ def _enlarge_point_min_max(
     if which_extreme == "min":
         actual_extreme = coord_selection.start
         method = "pad"
+        warn_str = "lower"
     elif which_extreme == "max":
         actual_extreme = coord_selection.stop
         method = "backfill"
+        warn_str = "higher"
     else:  # should never happen
         raise ValueError(
             f"which_extreme must be 'min' or 'max' not {which_extreme}"
         )
     nanosecond = 1e-9
-    external_point = dataset.sel({coord_label: actual_extreme}, method=method)[
-        coord_label
-    ].values
-    if coord_label == "time":
-        external_point = datetime.fromtimestamp(
-            external_point.astype(int) * nanosecond, tz=timezone.utc
-        ).replace(tzinfo=None)
+    try:
+        external_point = dataset.sel(
+            {coord_label: actual_extreme}, method=method
+        )[coord_label].values
+        if coord_label == "time":
+            external_point = datetime.fromtimestamp(
+                external_point.astype(int) * nanosecond, tz=timezone.utc
+            ).replace(tzinfo=None)
+    except KeyError:
+        logger.warning(
+            f"There doesn't exist a {warn_str} value than {actual_extreme} in"
+            f" the {coord_label} dimension."
+            f" The returned interval will not fully cover the requested interval."
+        )
+        external_point = actual_extreme
     return external_point
 
 
@@ -105,24 +115,13 @@ def _enlarge_selection(
     coord_label: str,
     coord_selection: slice,  # only slices are supported
 ):
-    try:
-        _enlarge_point_min_max(dataset, coord_label, coord_selection, "min")
-    except KeyError:
-        logger.warn(
-            f"There doesn't exist a lower value than {coord_selection.start} in"
-            f" the {coord_label} dimension."
-            f" The returned interval will not fully cover the requested interval."
-        )
-        external_minimum = coord_selection.start
-    try:
-        _enlarge_point_min_max(dataset, coord_label, coord_selection, "max")
-    except KeyError:
-        logger.warning(
-            f"There doesn't exist a higher value than {coord_selection.stop} in"
-            f" the {coord_label} dimension."
-            f" The returned interval will not fully cover the requested interval."
-        )
-        external_maximum = coord_selection.stop
+    external_minimum = _enlarge_point_min_max(
+        dataset, coord_label, coord_selection, "min"
+    )
+
+    external_maximum = _enlarge_point_min_max(
+        dataset, coord_label, coord_selection, "max"
+    )
 
     return slice(external_minimum, external_maximum)
 
@@ -131,12 +130,12 @@ def _dataset_custom_sel(
     dataset: xarray.Dataset,
     coord_type: Literal["latitude", "longitude", "depth", "time"],
     coord_selection: Union[float, slice, DateTime, None],
-    bounding_box: Optional[Union[BoundingBoxMethod, None]],
+    bounding_box_method: Optional[Union[BoundingBoxMethod, None]],
     method: Union[str, None] = None,
 ) -> xarray.Dataset:
     for coord_label in COORDINATES_LABEL[coord_type]:
         if coord_label in dataset.sizes:
-            if bounding_box == "outside":
+            if bounding_box_method == "outside":
                 if (
                     isinstance(coord_selection, slice)
                     and coord_selection.stop is not None
@@ -225,7 +224,7 @@ def _shift_longitude_dimension(
 def _latitude_subset(
     dataset: xarray.Dataset,
     latitude_parameters: LatitudeParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
 ) -> xarray.Dataset:
     minimum_latitude = latitude_parameters.minimum_latitude
     maximum_latitude = latitude_parameters.maximum_latitude
@@ -242,7 +241,7 @@ def _latitude_subset(
             dataset,
             "latitude",
             latitude_selection,
-            bounding_box,
+            bounding_box_method,
             latitude_method,
         )
 
@@ -252,7 +251,7 @@ def _latitude_subset(
 def _longitude_subset(
     dataset: xarray.Dataset,
     longitude_parameters: LongitudeParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
 ) -> xarray.Dataset:
     minimum_longitude = longitude_parameters.minimum_longitude
     maximum_longitude = longitude_parameters.maximum_longitude
@@ -293,7 +292,7 @@ def _longitude_subset(
                 dataset,
                 "longitude",
                 longitude_selection,
-                bounding_box,
+                bounding_box_method,
                 longitude_method,
             )
     return dataset
@@ -302,7 +301,7 @@ def _longitude_subset(
 def _temporal_subset(
     dataset: xarray.Dataset,
     temporal_parameters: TemporalParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
 ) -> xarray.Dataset:
     start_datetime = (
         temporal_parameters.start_datetime.in_tz("UTC").naive()
@@ -322,7 +321,11 @@ def _temporal_subset(
         )
         temporal_method = "nearest" if start_datetime == end_datetime else None
         dataset = _dataset_custom_sel(
-            dataset, "time", temporal_selection, bounding_box, temporal_method
+            dataset,
+            "time",
+            temporal_selection,
+            bounding_box_method,
+            temporal_method,
         )
     return dataset
 
@@ -330,7 +333,7 @@ def _temporal_subset(
 def _depth_subset(
     dataset: xarray.Dataset,
     depth_parameters: DepthParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
 ) -> xarray.Dataset:
     def convert_elevation_to_depth(dataset: xarray.Dataset):
         if "elevation" in dataset.sizes:
@@ -381,7 +384,11 @@ def _depth_subset(
         )
         depth_method = "nearest" if minimum_depth == maximum_depth else None
         dataset = _dataset_custom_sel(
-            dataset, "depth", depth_selection, bounding_box, depth_method
+            dataset,
+            "depth",
+            depth_selection,
+            bounding_box_method,
+            depth_method,
         )
     return dataset
 
@@ -471,21 +478,27 @@ def subset(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
 
     dataset = _latitude_subset(
-        dataset, geographical_parameters.latitude_parameters, bounding_box
+        dataset,
+        geographical_parameters.latitude_parameters,
+        bounding_box_method,
     )
     dataset = _longitude_subset(
-        dataset, geographical_parameters.longitude_parameters, bounding_box
+        dataset,
+        geographical_parameters.longitude_parameters,
+        bounding_box_method,
     )
 
-    dataset = _temporal_subset(dataset, temporal_parameters, bounding_box)
+    dataset = _temporal_subset(
+        dataset, temporal_parameters, bounding_box_method
+    )
 
-    dataset = _depth_subset(dataset, depth_parameters, bounding_box)
+    dataset = _depth_subset(dataset, depth_parameters, bounding_box_method)
 
     dataset = _update_dataset_coordinate_attributes(dataset)
 

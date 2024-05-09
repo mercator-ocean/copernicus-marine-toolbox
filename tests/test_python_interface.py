@@ -395,19 +395,14 @@ class TestPythonInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
-
         assert (
-            b""""not all values found in index \'longitude\'"\nWARNING"""
-            in output.stdout
+            b"""There doesn\'t exist a lower value than 179.0 in the """
+            b"""longitude dimension. The returned interval will not """
+            b"""fully cover the requested interval.""" in output.stdout
         )
         assert (
-            b"""not all values found in index \'time\'"\nWARNING"""
-            in output.stdout
-        )
-        assert (
-            b"""Bounding box method doesn\'t find a max outer value """
-            b"""for time. Using the inside value instead.\nINFO"""
-            in output.stdout
+            b"""There doesn\'t exist a higher value than 2024-05-12 """
+            b"""01:00:00 in the time dimension.""" in output.stdout
         )
         assert output.returncode == 0
 
@@ -453,9 +448,8 @@ class TestPythonInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
-
         assert (
-            b"""Bounding box method doesn\'t find a min outer value """
-            b"""for depth. Using the inside value instead.\nINFO"""
+            b"""There doesn\'t exist a lower value than 0.4 in the depth dimension."""
+            b""" The returned interval will not fully cover the requested interval."""
             in output.stdout
         )
