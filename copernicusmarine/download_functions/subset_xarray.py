@@ -73,7 +73,31 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 ]
 
 
-class BoundingBoxError(Exception): ...
+def _enlarge_point_min_max(
+    dataset: xarray.Dataset,
+    coord_label: str,
+    coord_selection: slice,
+    which_extreme: str,
+):
+    if which_extreme == "min":
+        actual_extreme = coord_selection.start
+        method = "pad"
+    elif which_extreme == "max":
+        actual_extreme = coord_selection.stop
+        method = "backfill"
+    else:  # should never happen
+        raise ValueError(
+            f"which_extreme must be 'min' or 'max' not {which_extreme}"
+        )
+    nanosecond = 1e-9
+    external_point = dataset.sel({coord_label: actual_extreme}, method=method)[
+        coord_label
+    ].values
+    if coord_label == "time":
+        external_point = datetime.fromtimestamp(
+            external_point.astype(int) * nanosecond, tz=timezone.utc
+        ).replace(tzinfo=None)
+    return external_point
 
 
 def _enlarge_selection(
@@ -81,35 +105,22 @@ def _enlarge_selection(
     coord_label: str,
     coord_selection: slice,  # only slices are supported
 ):
-    nanosecond = 1e-9
     try:
-        external_minimum = dataset.sel(
-            {coord_label: coord_selection.start}, method="pad"
-        )[coord_label].values
-        if coord_label == "time":
-            external_minimum = datetime.fromtimestamp(
-                external_minimum.astype(int) * nanosecond, tz=timezone.utc
-            ).replace(tzinfo=None)
-    except KeyError as e:
-        logger.warn(e)
+        _enlarge_point_min_max(dataset, coord_label, coord_selection, "min")
+    except KeyError:
         logger.warn(
-            f"Bounding box method doesn't find a min outer value for {coord_label}."
-            f"Using the inside value instead."
+            f"There doesn't exist a lower value than {coord_selection.start} in"
+            f" the {coord_label} dimension."
+            f" The returned interval will not fully cover the requested interval."
         )
         external_minimum = coord_selection.start
     try:
-        external_maximum = dataset.sel(
-            {coord_label: coord_selection.stop}, method="backfill"
-        )[coord_label].values
-        if coord_label == "time":
-            external_maximum = datetime.fromtimestamp(
-                external_maximum.astype(int) * nanosecond, tz=timezone.utc
-            ).replace(tzinfo=None)
-    except KeyError as e:
-        logger.warn(e)
-        logger.warn(
-            f"Bounding box method doesn't find a max outer value for {coord_label}."
-            f"Using the inside value instead."
+        _enlarge_point_min_max(dataset, coord_label, coord_selection, "max")
+    except KeyError:
+        logger.warning(
+            f"There doesn't exist a higher value than {coord_selection.stop} in"
+            f" the {coord_label} dimension."
+            f" The returned interval will not fully cover the requested interval."
         )
         external_maximum = coord_selection.stop
 
@@ -130,23 +141,13 @@ def _dataset_custom_sel(
                     isinstance(coord_selection, slice)
                     and coord_selection.stop is not None
                 ):
-                    try:
-                        coord_selection = _enlarge_selection(
-                            dataset, coord_label, coord_selection
-                        )  # update the slic¡ing
-                    except Exception as e:
-                        logger.error(e)
-                        raise BoundingBoxError(
-                            "BoundingBoxMethod 'outside' "
-                            "is a method implemented "
-                            "to enlarge the selection, but it failed. "
-                            f"Make sure your selection '{coord_selection}' "
-                            "is valid when enlarged."
-                        )
+                    coord_selection = _enlarge_selection(
+                        dataset, coord_label, coord_selection
+                    )  # update the slic¡ing
                 else:
                     logger.warn(
                         f"Bounding box 'outside' is only supported for slices, "
-                        f"not apllying it to {coord_label}"
+                        f"not aplying it to {coord_label}"
                     )
             tmp_dataset = dataset.sel(
                 {coord_label: coord_selection}, method=method
@@ -154,7 +155,6 @@ def _dataset_custom_sel(
             if tmp_dataset.coords[coord_label].size == 0 or (
                 coord_label not in tmp_dataset.sizes
             ):
-                logger.info(coord_label)
                 target = (
                     coord_selection.start
                     if isinstance(coord_selection, slice)
@@ -330,6 +330,7 @@ def _temporal_subset(
 def _depth_subset(
     dataset: xarray.Dataset,
     depth_parameters: DepthParameters,
+    bounding_box: BoundingBoxMethod,
 ) -> xarray.Dataset:
     def convert_elevation_to_depth(dataset: xarray.Dataset):
         if "elevation" in dataset.sizes:
@@ -380,7 +381,7 @@ def _depth_subset(
         )
         depth_method = "nearest" if minimum_depth == maximum_depth else None
         dataset = _dataset_custom_sel(
-            dataset, "depth", depth_selection, None, depth_method
+            dataset, "depth", depth_selection, bounding_box, depth_method
         )
     return dataset
 
@@ -484,7 +485,7 @@ def subset(
 
     dataset = _temporal_subset(dataset, temporal_parameters, bounding_box)
 
-    dataset = _depth_subset(dataset, depth_parameters)
+    dataset = _depth_subset(dataset, depth_parameters, bounding_box)
 
     dataset = _update_dataset_coordinate_attributes(dataset)
 

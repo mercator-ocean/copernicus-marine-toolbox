@@ -307,6 +307,8 @@ class TestPythonInterface:
         max_longitude = 2.97
         min_latitude = 0.01
         max_latitude = 3.1
+        min_depth = 1.5
+        max_depth = 50.0
         start_datetime = "2020-11-01T01:00:00"
         end_datetime = "2021-12-12T01:00:00"
         command = [
@@ -328,6 +330,10 @@ class TestPythonInterface:
             f"{start_datetime}",
             "--end-datetime",
             f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
             "--bounding-box-method",
             "outside",
             "-o",
@@ -344,6 +350,8 @@ class TestPythonInterface:
         assert dataset.longitude.values.max() >= max_longitude
         assert dataset.latitude.values.min() <= min_latitude
         assert dataset.latitude.values.max() >= max_latitude
+        assert dataset.depth.values.min() <= min_depth
+        assert dataset.depth.values.max() >= max_depth
         assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) <= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
@@ -398,7 +406,56 @@ class TestPythonInterface:
         )
         assert (
             b"""Bounding box method doesn\'t find a max outer value """
-            b"""for time.Using the inside value instead.\nINFO"""
+            b"""for time. Using the inside value instead.\nINFO"""
             in output.stdout
         )
         assert output.returncode == 0
+
+    def test_bounding_box_method_depth(self, tmp_path):
+        output_filename = "output.nc"
+        min_longitude = 0.01
+        max_longitude = 2.97
+        min_latitude = 0.01
+        max_latitude = 3.1
+        min_depth = 0.4
+        max_depth = 50.0
+        start_datetime = "2020-11-01T01:00:00"
+        end_datetime = "2021-12-12T01:00:00"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
+            "--bounding-box-method",
+            "outside",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = execute_in_terminal(command)
+
+        assert (
+            b"""Bounding box method doesn\'t find a min outer value """
+            b"""for depth. Using the inside value instead.\nINFO"""
+            in output.stdout
+        )

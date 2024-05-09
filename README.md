@@ -233,17 +233,39 @@ In addition to this option, you can also provide the `--netcdf-compression-level
 The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
 
 #### Note about the `--bounding-box-method` option
-The `--bounding-box-method` option has been added to allow for different funcitonalities with the requested area. The default method `inside` returns all data points that are included within the requested area. The available option `outside` returns all data points such that all the area requested is returned.
+TThe `--bounding-box-method` option lets the user choose how the requested interval on dimensions selects the data points in the dataset. If `inside` is specified (default) then the command returns all data points that are included within the requested area. If `outside` is specified then the command returns all data points such that all the area requested is returned.
 
-For example, when requesting for **longitude** values in the range (0.01, 2.98) for the two different cases:
+It works for all 4 dimensions: that is **longitude**, **latitude**, **time** and **depth**.
+
+For example, when requesting for **longitude** values in the range (0.01, 2.98) for the two different cases from a dataset which has all data points `[-180, 180[`.
 
 >* --bounding-box-method **inside**
 >
->Returned dataset longitude: [0.08334, 2.917]
+> will return a dataset with longitudes: [0.08334 0.1667 0.25 ... 2.75 2.833 2.917]
 >
 >* --bounding-box-method **outside**
 >
->Returned dataset longitude: [0.0, 3.0]
+>will output a dataset with longitude: [0.0 0.08334 0.1667 0.25 ... 2.833 2.917 3.0]
+
+See that when the flag is `outside` the returned interval fully covers the requested area.
+
+When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered. For example, when requesting for **depth** values in the range (0.4, 50) from a dataset which covers `[0.494 1.541 2.646 ... 5.275e+03 5.728e+03]`, so that we are requesting a point which is lower than the minimum of the dataset:
+
+>* --bounding-box-method **outside**
+>
+>will return a dataset with depth: [0.494 1.541 2.646 3.819 ... 40.34 47.37 55.76]
+
+and it will raise a warning :
+```
+WARNING - 2024-05-09T13:26:37Z - "not all values found in index 'depth'"
+WARNING - 2024-05-09T13:26:37Z - Bounding box method doesn't find a min outer value for depth. Using the inside value instead.
+```
+See that here the returned interval isn't covering all the requested interval because the points don't exist.
+
+If you would like to change that, you could mix the two flags `-bounding-box-method outside` with `--subset-method strict` (see `subset method` before). With the combination of both flags, you will make sure the code crashes (or exits with returncode==1) if the interval asked for is not fully covered.
+
+
+
 
 ### Command `get`
 
