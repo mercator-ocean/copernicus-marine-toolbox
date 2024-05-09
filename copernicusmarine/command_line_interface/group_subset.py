@@ -209,8 +209,8 @@ def cli_group_subset() -> None:
     default=DEFAULT_BOUNDING_BOX_METHOD,
     help=(
         "The bounding box method when requesting the dataset. If inside, "
-        "(by default) it will return all points interior to the area. "
-        "If outside, it will return all the data such that the box is  "
+        "(by default) it will return all points inside the requested intervals. "
+        "If outside, it will return all the data such that the requested interval is  "
         "fully included. Check the documentation for more details."
     ),
 )
