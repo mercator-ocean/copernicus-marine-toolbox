@@ -8,9 +8,6 @@ from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-import boto3
-import botocore
-import botocore.config
 import click
 from botocore.client import ClientError
 from numpy import append, arange
@@ -20,9 +17,11 @@ from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     overload_regex_with_additionnal_filter,
 )
+from copernicusmarine.core_functions.sessions import (
+    get_configured_boto3_session,
+)
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
-    create_custom_query_function,
     flatten,
     get_unique_filename,
     parse_access_dataset_url,
@@ -441,21 +440,8 @@ def _list_files_on_marine_data_lake_s3(
     recursive: bool,
 ) -> list[tuple[str, int, datetime.datetime, str]]:
 
-    s3_session = boto3.Session()
-    s3_client = s3_session.client(
-        "s3",
-        config=botocore.config.Config(
-            # Configures to use subdomain/virtual calling format.
-            s3={"addressing_style": "virtual"},
-            signature_version=botocore.UNSIGNED,
-        ),
-        endpoint_url=endpoint_url,
-    )
-
-    # Register the botocore event handler for adding custom query params
-    # to S3 LIST requests
-    s3_client.meta.events.register(
-        "before-call.s3.ListObjects", create_custom_query_function(username)
+    s3_client, _ = get_configured_boto3_session(
+        endpoint_url, ["ListObjects"], username
     )
 
     paginator = s3_client.get_paginator("list_objects")
@@ -485,18 +471,8 @@ def _list_files_on_marine_data_lake_s3(
 def _get_file_size_and_last_modified(
     endpoint_url: str, bucket: str, file_in: str, username: str
 ) -> Optional[Tuple[int, datetime.datetime]]:
-    s3_session = boto3.Session()
-    s3_client = s3_session.client(
-        "s3",
-        config=botocore.config.Config(
-            s3={"addressing_style": "virtual"},
-            signature_version=botocore.UNSIGNED,
-        ),
-        endpoint_url=endpoint_url,
-    )
-
-    s3_client.meta.events.register(
-        "before-call.s3.HeadObject", create_custom_query_function(username)
+    s3_client, _ = get_configured_boto3_session(
+        endpoint_url, ["HeadObject"], username
     )
 
     try:
@@ -534,36 +510,12 @@ def _download_files(
         """
         Download ONE file and return a string of the result
         """
-        s3_session = boto3.Session()
-        s3_client = s3_session.client(
-            "s3",
-            config=botocore.config.Config(
-                # Configures to use subdomain/virtual calling format.
-                s3={"addressing_style": "virtual"},
-                signature_version=botocore.UNSIGNED,
-            ),
-            endpoint_url=endpoint_url,
+        s3_client, s3_resource = get_configured_boto3_session(
+            endpoint_url,
+            ["GetObject", "HeadObject"],
+            username,
+            return_ressources=True,
         )
-        s3_resource = boto3.resource(
-            "s3",
-            config=botocore.config.Config(
-                # Configures to use subdomain/virtual calling format.
-                s3={"addressing_style": "virtual"},
-                signature_version=botocore.UNSIGNED,
-            ),
-            endpoint_url=endpoint_url,
-        )
-
-        # Register the botocore event handler for adding custom query params
-        # to S3 HEAD and GET requests
-        s3_client.meta.events.register(
-            "before-call.s3.HeadObject",
-            create_custom_query_function(username),
-        )
-        s3_client.meta.events.register(
-            "before-call.s3.GetObject", create_custom_query_function(username)
-        )
-
         last_modified_date_epoch = s3_resource.Object(
             bucket, file_in.replace(f"s3://{bucket}/", "")
         ).last_modified.timestamp()

@@ -1,13 +1,19 @@
 import logging
-import time
 from collections.abc import MutableMapping
 from typing import Optional
 
 import botocore.config
 import botocore.exceptions
 import botocore.session
+import xarray
 
-from copernicusmarine.core_functions.utils import create_custom_query_function
+from copernicusmarine.core_functions.sessions import (
+    PROXIES,
+    TRUST_ENV,
+    _get_ssl_context,
+    get_configured_boto3_session,
+)
+from copernicusmarine.core_functions.utils import parse_access_dataset_url
 
 logger = logging.getLogger("copernicus_marine_root_logger")
 
@@ -18,41 +24,16 @@ class CustomS3Store(MutableMapping):
         endpoint: str,
         bucket: str,
         root_path: str,
-        secret_key: Optional[str] = None,
-        access_key: Optional[str] = None,
         copernicus_marine_username: Optional[str] = None,
         number_of_retries: int = 9,
         initial_retry_wait_seconds: int = 1,
     ):
         self._root_path = root_path.lstrip("/")
         self._bucket = bucket
-        session = botocore.session.get_session()
-        if secret_key is None and access_key is None:
-            self.client = session.create_client(
-                "s3",
-                endpoint_url=endpoint,
-                config=botocore.config.Config(
-                    signature_version=botocore.UNSIGNED
-                ),
-            )
-        else:
-            self.client = session.create_client(
-                "s3",
-                endpoint_url=endpoint,
-                aws_secret_access_key=secret_key,
-                aws_access_key_id=access_key,
-            )
-        self.client.meta.events.register(
-            "before-call.s3.ListObjects",
-            create_custom_query_function(copernicus_marine_username),
-        )
-        self.client.meta.events.register(
-            "before-call.s3.HeadObject",
-            create_custom_query_function(copernicus_marine_username),
-        )
-        self.client.meta.events.register(
-            "before-call.s3.GetObject",
-            create_custom_query_function(copernicus_marine_username),
+        self.client, _ = get_configured_boto3_session(
+            endpoint,
+            ["GetObject", "HeadObject", "ListObjects"],
+            copernicus_marine_username,
         )
 
         self.number_of_retries = number_of_retries
@@ -69,16 +50,21 @@ class CustomS3Store(MutableMapping):
             except botocore.exceptions.ClientError as e:
                 raise KeyError(key) from e
 
-        return self.with_retries(fn)
+        return fn()
+        # return self.with_retries(fn)
 
     def __contains__(self, key):
         full_key = f"{self._root_path}/{key}"
         try:
+            logger.info(f"Downloading {full_key}")
             self.client.head_object(Bucket=self._bucket, Key=full_key)
+            logger.info(f"Success {full_key}")
             return True
         except botocore.exceptions.ClientError as e:
+            logger.info(f"Failed {full_key}")
             if "404" in str(e) or "403" in str(e):
                 return False
+            logger.info(f"Failed and raising {full_key}")
             raise
 
     def __setitem__(self, key, value, headers=None):
@@ -89,14 +75,16 @@ class CustomS3Store(MutableMapping):
                 Bucket=self._bucket, Key=full_key, Body=value, **final_headers
             )
 
-        return self.with_retries(fn)
+        return fn()
+        # return self.with_retries(fn)
 
     def __delitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
             self.client.delete_object(Bucket=self._bucket, Key=full_key)
 
-        return self.with_retries(fn)
+        return fn()
+        # return self.with_retries(fn)
 
     # Example of headers: {"ContentType": "application/json", "ContentEncoding": "gzip"}
     def set_item_with_headers(self, key, value, headers):
@@ -139,20 +127,47 @@ class CustomS3Store(MutableMapping):
             )
             idx += 1000
 
-    def with_retries(self, fn):
-        retry_delay = self.initial_retry_wait_seconds
-        for index_try in range(self.number_of_retries):
-            try:
-                return fn()
-            # KeyError is a normal error that we want to propagate
-            # (e.g. if we try to get a chunk and it doesn't exist,
-            # we want the caller to know this has happened -- and not retry!)
-            except KeyError:
-                raise
-            except Exception as e:
-                if index_try == self.number_of_retries - 1:
-                    raise e
-                logger.debug(f"S3 error: {e}")
-                logger.debug(f"Retrying in {retry_delay} s...")
-                time.sleep(retry_delay)
-                retry_delay *= 2
+    # def with_retries(self, fn):
+    #     retry_delay = self.initial_retry_wait_seconds
+    #     for index_try in range(self.number_of_retries):
+    #         try:
+    #             return fn()
+    #         # KeyError is a normal error that we want to propagate
+    #         # (e.g. if we try to get a chunk and it doesn't exist,
+    #         # we want the caller to know this has happened -- and not retry!)
+    #         except KeyError:
+    #             raise
+    #         except Exception as e:
+    #             if index_try == self.number_of_retries - 1:
+    #                 raise e
+    #             logger.debug(f"S3 error: {e}")
+    #             logger.debug(f"Retrying in {retry_delay} s...")
+    #             time.sleep(retry_delay)
+    #             retry_delay *= 2
+
+
+def open_zarr(
+    dataset_url: str,
+    copernicus_marine_username: Optional[str] = None,
+    **kwargs,
+) -> xarray.Dataset:
+    (
+        endpoint,
+        bucket,
+        root_path,
+    ) = parse_access_dataset_url(dataset_url)
+    store = CustomS3Store(
+        endpoint=endpoint,
+        bucket=bucket,
+        root_path=root_path,
+        copernicus_marine_username=copernicus_marine_username,
+    )
+    kwargs.update(
+        {
+            "storage_options": {
+                "client_kwargs": {"trust_env": TRUST_ENV, "proxies": PROXIES},
+                "ssl": _get_ssl_context(),
+            }
+        }
+    )
+    return xarray.open_zarr(store, **kwargs)

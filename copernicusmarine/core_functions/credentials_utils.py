@@ -17,7 +17,7 @@ from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_SERVICE_USERNAME,
 )
 from copernicusmarine.core_functions.sessions import (
-    get_configured_request_session,
+    get_configured_requests_session,
 )
 from copernicusmarine.core_functions.utils import (
     CACHE_BASE_DIRECTORY,
@@ -232,7 +232,7 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     cmems_cas_login_url = (
         f"https://cmems-cas.cls.fr/cas/login?service={service}"
     )
-    conn_session = get_configured_request_session()
+    conn_session = get_configured_requests_session()
     login_session = conn_session.get(
         cmems_cas_login_url, proxies=conn_session.proxies
     )

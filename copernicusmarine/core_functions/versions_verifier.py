@@ -4,7 +4,7 @@ import semver
 
 from copernicusmarine import __version__ as client_version
 from copernicusmarine.core_functions.sessions import (
-    get_configured_request_session,
+    get_configured_requests_session,
 )
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
@@ -65,7 +65,7 @@ class VersionVerifier:
             else "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
         )
         logger.debug(f"Getting required versions from {url_mds_versions}")
-        session = get_configured_request_session()
+        session = get_configured_requests_session()
         mds_versions: dict[str, str] = session.get(
             url_mds_versions,
             params=construct_query_params_for_marine_data_store_monitoring(),
