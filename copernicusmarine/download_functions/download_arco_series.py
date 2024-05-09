@@ -67,7 +67,7 @@ def download_dataset(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
     dataset_url: str,
     output_directory: pathlib.Path,
     output_filename: Optional[str],
@@ -89,7 +89,7 @@ def download_dataset(
             geographical_parameters=geographical_parameters,
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
-            bounding_box=bounding_box,
+            bounding_box_method=bounding_box_method,
             chunks="auto",
         )
     )
@@ -186,7 +186,7 @@ def download_zarr(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
-        bounding_box=subset_request.bounding_box,
+        bounding_box_method=subset_request.bounding_box_method,
         dataset_url=dataset_url,
         output_directory=output_directory,
         output_filename=subset_request.output_filename,
@@ -210,7 +210,7 @@ def open_dataset_from_arco_series(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
     chunks=Optional[Literal["auto"]],
 ) -> xarray.Dataset:
     dataset = sessions.open_zarr(
@@ -224,7 +224,7 @@ def open_dataset_from_arco_series(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
-        bounding_box=bounding_box,
+        bounding_box_method=bounding_box_method,
     )
     return dataset
 
@@ -237,7 +237,7 @@ def read_dataframe_from_arco_series(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box: BoundingBoxMethod,
+    bounding_box_method: BoundingBoxMethod,
     chunks: Optional[Literal["auto"]],
 ) -> pandas.DataFrame:
     dataset = open_dataset_from_arco_series(
@@ -248,7 +248,7 @@ def read_dataframe_from_arco_series(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
-        bounding_box=bounding_box,
+        bounding_box_method=bounding_box_method,
         chunks=chunks,
     )
     return dataset.to_dataframe()

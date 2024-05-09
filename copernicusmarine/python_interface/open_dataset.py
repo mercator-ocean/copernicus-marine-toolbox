@@ -65,7 +65,7 @@ def open_dataset(
     vertical_dimension_as_originally_produced: bool = True,
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
-    bounding_box: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
+    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
@@ -95,7 +95,7 @@ def open_dataset(
         vertical_dimension_as_originally_produced (bool, optional): If True, use the vertical dimension as originally produced.
         start_datetime (datetime, optional): The start datetime for temporal subsetting.
         end_datetime (datetime, optional): The end datetime for temporal subsetting.
-        bounding_box (BoundingBoxMethod, optional): Method for bounding box.
+        bounding_box_method (BoundingBoxMethod, optional): Method for bounding box.
         service (str, optional): Force the use of a specific service (ARCO geo series or time series).
         credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
         overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
@@ -136,7 +136,7 @@ def open_dataset(
             maximum_depth=maximum_depth,
             vertical_dimension_as_originally_produced=vertical_dimension_as_originally_produced,  # noqa
         ),
-        bounding_box=bounding_box,
+        bounding_box_method=bounding_box_method,
         subset_method=subset_method,
         force_service=service,
         credentials_file=credentials_file,
