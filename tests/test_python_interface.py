@@ -359,7 +359,7 @@ class TestPythonInterface:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_bounding_box_method_outside_dataset_bounds(self, tmp_path):
+    def test_bounding_box_method_odb_time(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = 179.0
         max_longitude = 181.0
@@ -395,11 +395,6 @@ class TestPythonInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
-        assert (
-            b"""There doesn\'t exist a lower value than 179.0 in the """
-            b"""longitude dimension. The returned interval will not """
-            b"""fully cover the requested interval.""" in output.stdout
-        )
         assert (
             b"""There doesn\'t exist a higher value than 2024-05-12 """
             b"""01:00:00 in the time dimension.""" in output.stdout
@@ -450,6 +445,36 @@ class TestPythonInterface:
         output = execute_in_terminal(command)
         assert (
             b"""There doesn\'t exist a lower value than 0.4 in the depth dimension."""
+            b""" The returned interval will not fully cover the requested interval."""
+            in output.stdout
+        )
+
+    def test_bounding_box_method_odb_longitude(self, tmp_path):
+        output_filename = "output.nc"
+        min_longitude = 0.0
+        max_longitude = 40
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_med_phy-cur_anfc_4.2km_P1D-m",
+            "--variable",
+            "uo",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--bounding-box-method",
+            "outside",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = execute_in_terminal(command)
+        assert (
+            b"There doesn't exist a higher value than 40.0 in the longitude dimension."
             b""" The returned interval will not fully cover the requested interval."""
             in output.stdout
         )
