@@ -75,20 +75,16 @@ def _enlarge_point_min_max(
     dataset: xarray.Dataset,
     coord_label: str,
     coord_selection: slice,
-    which_extreme: str,
+    which_extreme: Literal["min", "max"],
 ):
     if which_extreme == "min":
         actual_extreme = coord_selection.start
         method = "pad"
         warn_str = "lower"
-    elif which_extreme == "max":
+    else:  # then which_extreme = max
         actual_extreme = coord_selection.stop
         method = "backfill"
         warn_str = "higher"
-    else:  # should never happen
-        raise ValueError(
-            f"which_extreme must be 'min' or 'max' not {which_extreme}"
-        )
     nanosecond = 1e-9
     try:
         external_point = dataset.sel(
@@ -142,7 +138,7 @@ def _dataset_custom_sel(
                         dataset, coord_label, coord_selection
                     )  # update the slic¡ing
                 else:
-                    logger.warn(
+                    logger.warning(
                         f"Bounding box 'outside' is only supported for slices, "
                         f"not aplying it to {coord_label}"
                     )
