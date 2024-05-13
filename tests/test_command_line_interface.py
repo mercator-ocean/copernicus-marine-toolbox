@@ -1325,7 +1325,6 @@ class TestCommandLineInterface:
         ]
 
         output = subprocess.run(command, capture_output=True)
-        print(output.stdout)
         assert output.returncode == 0
 
     def test_dataset_url_suffix_path_are_used_as_filter(self):
