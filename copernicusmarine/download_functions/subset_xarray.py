@@ -269,7 +269,7 @@ def _longitude_subset(
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
                     if bounding_box_method == "outside":
-                        min_point = _enlarge_point_min_max(
+                        minimum_longitude_modulus = _enlarge_point_min_max(
                             dataset,
                             "longitude",
                             slice(
