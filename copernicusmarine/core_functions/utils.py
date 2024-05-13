@@ -24,6 +24,7 @@ import numpy
 import xarray
 from requests import PreparedRequest
 
+from copernicusmarine import __version__ as copernicusmarine_version
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_CACHE_DIRECTORY,
 )
@@ -39,14 +40,14 @@ OVERWRITE_OPTION_HELP_TEXT = (
 
 FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE = "Do you want to proceed with download?"
 
-USER_DEFINED_CACHE_DIRECTORY = COPERNICUSMARINE_CACHE_DIRECTORY
-DEFAULT_CLIENT_BASE_DIRECTORY = (
+USER_DEFINED_CACHE_DIRECTORY: str = COPERNICUSMARINE_CACHE_DIRECTORY
+DEFAULT_CLIENT_BASE_DIRECTORY: pathlib.Path = (
     pathlib.Path(USER_DEFINED_CACHE_DIRECTORY)
     if USER_DEFINED_CACHE_DIRECTORY
     else pathlib.Path.home()
 ) / ".copernicusmarine"
 
-CACHE_BASE_DIRECTORY = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
+CACHE_BASE_DIRECTORY: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
 
 DATETIME_SUPPORTED_FORMATS = [
     "%Y",
@@ -119,7 +120,10 @@ def construct_url_with_query_params(url, query_params: dict) -> Optional[str]:
 def construct_query_params_for_marine_data_store_monitoring(
     username: Optional[str] = None,
 ) -> dict:
-    query_params = {"x-cop-client": "copernicus-marine-client"}
+    query_params = {
+        "x-cop-client": "copernicus-marine-toolbox",
+        "x-cop-client-version": copernicusmarine_version,
+    }
     if username:
         query_params["x-cop-user"] = username
     return query_params
@@ -218,3 +222,16 @@ def parse_access_dataset_url(
         return endpoint_url, bucket, path
     else:
         raise Exception(f"Invalid data path: {data_path}")
+
+
+def create_custom_query_function(username: Optional[str]) -> Callable:
+    def _add_custom_query_param(params, context, **kwargs):
+        """
+        Add custom query params for MDS's Monitoring
+        """
+        params["url"] = construct_url_with_query_params(
+            params["url"],
+            construct_query_params_for_marine_data_store_monitoring(username),
+        )
+
+    return _add_custom_query_param

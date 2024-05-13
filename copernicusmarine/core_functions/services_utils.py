@@ -154,11 +154,14 @@ def _select_forced_service(
 def _get_best_arco_service_type(
     dataset_subset: DatasetTimeAndGeographicalSubset,
     dataset_url: str,
+    username: Optional[str],
 ) -> Literal[
     CopernicusMarineDatasetServiceType.TIMESERIES,
     CopernicusMarineDatasetServiceType.GEOSERIES,
 ]:
-    dataset = sessions.open_zarr(dataset_url)
+    dataset = sessions.open_zarr(
+        dataset_url, copernicus_marine_username=username
+    )
 
     latitude_size = get_size_of_coordinate_subset(
         dataset,
@@ -217,6 +220,7 @@ def _select_service_by_priority(
     dataset_version_part: CopernicusMarineVersionPart,
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    username: Optional[str],
 ) -> CopernicusMarineService:
     dataset_available_service_types = [
         service.service_type for service in dataset_version_part.services
@@ -245,7 +249,7 @@ def _select_service_by_priority(
             )
         best_arco_service_type: CopernicusMarineDatasetServiceType = (
             _get_best_arco_service_type(
-                dataset_subset, first_available_service.uri
+                dataset_subset, first_available_service.uri, username
             )
         )
         return dataset_version_part.get_service_by_service_type(
@@ -307,6 +311,7 @@ def get_retrieval_service(
     index_parts: bool = False,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset] = None,
     dataset_sync: bool = False,
+    username: Optional[str] = None,
 ) -> RetrievalService:
     force_service_type: Optional[CopernicusMarineDatasetServiceType] = (
         _service_type_from_string(force_service_type_string, command_type)
@@ -343,6 +348,7 @@ def get_retrieval_service(
         index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
+        username=username,
     )
 
 
@@ -357,6 +363,7 @@ def _get_retrieval_service_from_dataset_id(
     index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
     dataset_sync: bool,
+    username: Optional[str],
 ) -> RetrievalService:
     dataset: CopernicusMarineProductDataset = next_or_raise_exception(
         (
@@ -381,6 +388,7 @@ def _get_retrieval_service_from_dataset_id(
         index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
+        username=username,
     )
 
 
@@ -394,6 +402,7 @@ def _get_retrieval_service_from_dataset(
     index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
     dataset_sync: bool,
+    username: Optional[str],
 ) -> RetrievalService:
     if force_dataset_version_label:
         logger.info(
@@ -416,6 +425,7 @@ def _get_retrieval_service_from_dataset(
         index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
+        username=username,
     )
 
 
@@ -429,6 +439,7 @@ def _get_retrieval_service_from_dataset_version(
     index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
     dataset_sync: bool,
+    username: Optional[str],
 ) -> RetrievalService:
     if len(dataset_version.parts) > 1 and dataset_sync:
         raise Exception(
@@ -484,6 +495,7 @@ def _get_retrieval_service_from_dataset_version(
             dataset_version_part=dataset_part,
             command_type=command_type,
             dataset_subset=dataset_subset,
+            username=username,
         )
         logger.info(
             "Service was not specified, the default one was "
