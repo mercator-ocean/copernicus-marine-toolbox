@@ -237,6 +237,7 @@ The `--bounding-box-method` option lets the user choose how the requested interv
 
 It works for all 4 dimensions: that is **longitude**, **latitude**, **time** and **depth**.
 
+
 For example, when requesting for **longitude** values in the range (0.01, 2.98) for the two different cases from a dataset which has all data points `[-180, 180[`.
 
 >* --bounding-box-method **inside**
@@ -248,6 +249,8 @@ For example, when requesting for **longitude** values in the range (0.01, 2.98) 
 >will output a dataset with longitude: [0.0 0.08334 0.1667 0.25 ... 2.833 2.917 3.0]
 
 Note that when the flag is `outside` the returned interval fully covers the requested area.
+
+It will apply to all 4 dimensions at the same time. If asked for a single point (not an interval) in one of the dimensions, it will return the nearest point (a single one) in that dimension.
 
 When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered. For example, when requesting for **depth** values in the range (0.4, 50) from a dataset which covers `[0.494 1.541 2.646 ... 5.275e+03 5.728e+03]`, so that we are requesting a point which is lower than the minimum of the dataset:
 
