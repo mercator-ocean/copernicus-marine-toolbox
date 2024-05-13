@@ -56,7 +56,7 @@ def _enlarge_point_min_max(
         actual_extreme = coord_selection.start
         method = "pad"
         warn_str = "lower"
-    else:  # then which_extreme = max
+    else:
         actual_extreme = coord_selection.stop
         method = "backfill"
         warn_str = "higher"
@@ -82,7 +82,7 @@ def _enlarge_point_min_max(
 def _enlarge_selection(
     dataset: xarray.Dataset,
     coord_label: str,
-    coord_selection: slice,  # only slices are supported
+    coord_selection: slice,
 ):
     external_minimum = _enlarge_point_min_max(
         dataset, coord_label, coord_selection, "min"
@@ -111,11 +111,6 @@ def _dataset_custom_sel(
                 ):
                     coord_selection = _enlarge_selection(
                         dataset, coord_label, coord_selection
-                    )  # update the slic¡ing
-                else:
-                    logger.warning(
-                        f"Bounding box 'outside' is only supported for slices, "
-                        f"not aplying it to {coord_label}"
                     )
             tmp_dataset = dataset.sel(
                 {coord_label: coord_selection}, method=method
@@ -251,9 +246,17 @@ def _longitude_subset(
                 )
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
-                    dataset = _update_dataset_attributes(
-                        dataset, minimum_longitude_modulus
-                    )
+                    if bounding_box_method == "outside":
+                        min_point = _enlarge_point_min_max(
+                            dataset,
+                            "longitude",
+                            slice(
+                                minimum_longitude_modulus,
+                                maximum_longitude_modulus,
+                            ),
+                            "min",
+                        )
+                    dataset = _update_dataset_attributes(dataset, min_point)
                 longitude_selection = slice(
                     minimum_longitude_modulus,
                     maximum_longitude_modulus,
