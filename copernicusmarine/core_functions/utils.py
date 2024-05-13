@@ -24,7 +24,7 @@ import numpy
 import xarray
 from requests import PreparedRequest
 
-import copernicusmarine
+from copernicusmarine import __version__ as copernicusmarine_version
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_CACHE_DIRECTORY,
 )
@@ -40,14 +40,14 @@ OVERWRITE_OPTION_HELP_TEXT = (
 
 FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE = "Do you want to proceed with download?"
 
-USER_DEFINED_CACHE_DIRECTORY = COPERNICUSMARINE_CACHE_DIRECTORY
-DEFAULT_CLIENT_BASE_DIRECTORY = (
+USER_DEFINED_CACHE_DIRECTORY: str = COPERNICUSMARINE_CACHE_DIRECTORY
+DEFAULT_CLIENT_BASE_DIRECTORY: pathlib.Path = (
     pathlib.Path(USER_DEFINED_CACHE_DIRECTORY)
     if USER_DEFINED_CACHE_DIRECTORY
     else pathlib.Path.home()
 ) / ".copernicusmarine"
 
-CACHE_BASE_DIRECTORY = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
+CACHE_BASE_DIRECTORY: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
 
 DATETIME_SUPPORTED_FORMATS = [
     "%Y",
@@ -122,7 +122,7 @@ def construct_query_params_for_marine_data_store_monitoring(
 ) -> dict:
     query_params = {
         "x-cop-client": "copernicus-marine-toolbox",
-        "x-cop-client-version": copernicusmarine.__version__,
+        "x-cop-client-version": copernicusmarine_version,
     }
     if username:
         query_params["x-cop-user"] = username
