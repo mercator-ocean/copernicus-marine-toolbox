@@ -21,8 +21,8 @@ class CustomS3Store(MutableMapping):
         secret_key: Optional[str] = None,
         access_key: Optional[str] = None,
         copernicus_marine_username: Optional[str] = None,
-        num_retries: int = 9,
-        initial_retry_wait_s: int = 1,
+        number_of_retries: int = 9,
+        initial_retry_wait_seconds: int = 1,
     ):
         self._root_path = root_path.lstrip("/")
         self._bucket = bucket
@@ -55,8 +55,8 @@ class CustomS3Store(MutableMapping):
             create_custom_query_function(copernicus_marine_username),
         )
 
-        self.num_retries = num_retries
-        self.initial_retry_wait_s = initial_retry_wait_s
+        self.number_of_retries = number_of_retries
+        self.initial_retry_wait_seconds = initial_retry_wait_seconds
 
     def __getitem__(self, key):
         def fn():
@@ -140,8 +140,8 @@ class CustomS3Store(MutableMapping):
             idx += 1000
 
     def with_retries(self, fn):
-        retry_delay = self.initial_retry_wait_s
-        for idx_try in range(self.num_retries):
+        retry_delay = self.initial_retry_wait_seconds
+        for index_try in range(self.number_of_retries):
             try:
                 return fn()
             # KeyError is a normal error that we want to propagate
@@ -150,9 +150,9 @@ class CustomS3Store(MutableMapping):
             except KeyError:
                 raise
             except Exception as e:
-                if idx_try == self.num_retries - 1:
+                if index_try == self.number_of_retries - 1:
                     raise e
-                logger.error(f"S3 error: {e}")
-                logger.info(f"Retrying in {retry_delay} s...")
+                logger.debug(f"S3 error: {e}")
+                logger.debug(f"Retrying in {retry_delay} s...")
                 time.sleep(retry_delay)
                 retry_delay *= 2
