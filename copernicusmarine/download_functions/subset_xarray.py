@@ -73,6 +73,26 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 ]
 
 
+def _nearest_neighbor_coordinates(
+    dataset: xarray.Dataset,
+    dimension: str,
+    target_value: Union[float, datetime],
+):
+    if isinstance(target_value, datetime):
+        target_value = numpy.datetime64(target_value)
+    coordinates = dataset[dimension].values
+    index = numpy.searchsorted(coordinates, target_value)
+    index = numpy.clip(index, 0, len(coordinates) - 1)
+    if index > 0 and (
+        index == len(coordinates)
+        or abs(target_value - coordinates[index - 1])
+        < abs(target_value - coordinates[index])
+    ):
+        return coordinates[index - 1]
+    else:
+        return coordinates[index]
+
+
 def _enlarge_point_min_max(
     dataset: xarray.Dataset,
     coord_label: str,
@@ -150,9 +170,9 @@ def _dataset_custom_sel(
                     if isinstance(coord_selection, slice)
                     else coord_selection
                 )
-                nearest_neighbor_value = dataset.sel(
-                    {coord_label: target}, method="nearest"
-                )[coord_label].values
+                nearest_neighbor_value = _nearest_neighbor_coordinates(
+                    dataset, coord_label, target
+                )
                 dataset = dataset.sel(
                     {
                         coord_label: slice(
