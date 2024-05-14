@@ -208,14 +208,16 @@ class TestOverwriteOutputData:
 
         assert output.returncode == 0, output.stdout
 
-    def test_that_overwrite_option_does_not_create_subdirectory(self):
+    def test_that_overwrite_option_does_not_create_subdirectory(
+        self, tmp_path
+    ):
         """Unit test that verify that sub-directory is not created if data is
         overwritten and provided filepath is relative.
 
         JIRA ticket IOD-623 (https://mercator-ocean.atlassian.net/browse/IOD-623)
         """
         relative_folder = pathlib.Path(
-            "tests/downloads/test_that_overwrite_option_does_not_create_subdirectory"
+            f"{tmp_path}/test_that_overwrite_option_does_not_create_subdirectory"
         )  # noqa
         pathlib.Path.mkdir(relative_folder, parents=True, exist_ok=True)
         filename = "test_file"
