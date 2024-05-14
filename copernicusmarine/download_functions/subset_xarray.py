@@ -89,7 +89,6 @@ def _nearest_neighbor_coordinates(
         < abs(target_value - coordinates[index])
     ):
         return coordinates[index - 1]
-
     else:
         return coordinates[index]
 
