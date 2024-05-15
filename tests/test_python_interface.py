@@ -399,7 +399,6 @@ class TestPythonInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
-        print(output.stdout)
         assert (
             b"""There doesn't exist a higher value than 2024-05-14 """
             b"""00:00:00 in the time dimension.""" in output.stdout
