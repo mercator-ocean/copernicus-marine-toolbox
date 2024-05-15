@@ -303,12 +303,12 @@ class TestPythonInterface:
     def test_bounding_box_method(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = 0.01
-        max_longitude = 2.97
+        max_longitude = 1.55
         min_latitude = 0.01
-        max_latitude = 3.1
-        min_depth = 1.5
+        max_latitude = 1.1
+        min_depth = 30.5
         max_depth = 50.0
-        start_datetime = "2020-11-01T01:00:00"
+        start_datetime = "2021-12-01T01:00:00"
         end_datetime = "2021-12-12T01:00:00"
         command = [
             "copernicusmarine",
