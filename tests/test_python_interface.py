@@ -451,8 +451,12 @@ class TestPythonInterface:
 
     def test_bounding_box_method_odb_longitude(self, tmp_path):
         output_filename = "output.nc"
-        min_longitude = 0.0
+        min_longitude = 35.0
         max_longitude = 40
+        min_latitude = 35.0
+        max_latitude = 35.0
+        start_datetime = "2021-12-12T01:00:00"
+        end_datetime = "2021-12-12T01:00:00"
         command = [
             "copernicusmarine",
             "subset",
@@ -464,6 +468,14 @@ class TestPythonInterface:
             f"{min_longitude}",
             "--maximum-longitude",
             f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
             "--bounding-box-method",
             "outside",
             "-o",
