@@ -7,7 +7,6 @@ from typing import List, Literal, Optional, Union
 import numpy
 import xarray
 from pandas import Timestamp
-from xarray.backends import PydapDataStore
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     CopernicusMarineDatasetServiceType,
@@ -23,6 +22,7 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import SubsetMethod
 from copernicusmarine.core_functions.utils import (
+    ServiceNotSupported,
     convert_datetime64_to_netcdf_timestamp,
 )
 from copernicusmarine.download_functions.subset_parameters import (
@@ -403,11 +403,7 @@ def check_dataset_subset_bounds(
         )
         dataset_coordinates = dataset.coords
     else:
-        session = sessions.get_configured_request_session()
-        session.auth = (username, password)
-        store = PydapDataStore.open(dataset_url, session=session, timeout=300)
-        dataset = xarray.open_dataset(store)
-        dataset_coordinates = dataset.coords
+        raise ServiceNotSupported(service_type)
     for coordinate_label in COORDINATES_LABEL["latitude"]:
         if coordinate_label in dataset.sizes:
             latitudes = dataset_coordinates[coordinate_label].values
