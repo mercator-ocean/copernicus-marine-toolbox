@@ -362,11 +362,11 @@ class TestPythonInterface:
     def test_bounding_box_method_odb_time(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = 179.0
-        max_longitude = 181.0
-        min_latitude = 0.01
+        max_longitude = 179.0
+        min_latitude = 3.1
         max_latitude = 3.1
-        start_datetime = "2024-01-01T01:00:00"
-        end_datetime = "2024-05-12T01:00:00"
+        start_datetime = "2024-05-12"
+        end_datetime = "2024-05-14"
         command = [
             "copernicusmarine",
             "subset",
@@ -388,6 +388,10 @@ class TestPythonInterface:
             f"{end_datetime}",
             "--bounding-box-method",
             "outside",
+            "--dataset-version",
+            "202311",
+            "--dataset-part",
+            "default",
             "-o",
             f"{tmp_path}",
             "-f",
@@ -395,21 +399,22 @@ class TestPythonInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
+        print(output.stdout)
         assert (
-            b"""There doesn\'t exist a higher value than 2024-05-12 """
-            b"""01:00:00 in the time dimension.""" in output.stdout
+            b"""There doesn't exist a higher value than 2024-05-14 """
+            b"""00:00:00 in the time dimension.""" in output.stdout
         )
         assert output.returncode == 0
 
     def test_bounding_box_method_depth(self, tmp_path):
         output_filename = "output.nc"
-        min_longitude = 0.01
-        max_longitude = 2.97
-        min_latitude = 0.01
+        min_longitude = 3.0
+        max_longitude = 3.0
+        min_latitude = 3.1
         max_latitude = 3.1
         min_depth = 0.4
         max_depth = 50.0
-        start_datetime = "2020-11-01T01:00:00"
+        start_datetime = "2021-12-12T01:00:00"
         end_datetime = "2021-12-12T01:00:00"
         command = [
             "copernicusmarine",
