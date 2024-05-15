@@ -484,6 +484,7 @@ class TestPythonInterface:
             f"{output_filename}",
             "--force-download",
         ]
+
         output = execute_in_terminal(command)
         assert (
             b"There doesn't exist a higher value than 40.0 in the longitude dimension."
