@@ -102,11 +102,9 @@ def _enlarge_point_min_max(
     if which_extreme == "min":
         actual_extreme = coord_selection.start
         method = "pad"
-        warn_str = "lower"
     else:
         actual_extreme = coord_selection.stop
         method = "backfill"
-        warn_str = "higher"
     nanosecond = 1e-9
     try:
         external_point = dataset.sel(
@@ -117,11 +115,6 @@ def _enlarge_point_min_max(
                 external_point.astype(int) * nanosecond, tz=timezone.utc
             ).replace(tzinfo=None)
     except KeyError:
-        logger.warning(
-            f"There doesn't exist a {warn_str} value than {actual_extreme} in"
-            f" the {coord_label} dimension."
-            f" The returned interval will not fully cover the requested interval."
-        )
         external_point = actual_extreme
     return external_point
 
