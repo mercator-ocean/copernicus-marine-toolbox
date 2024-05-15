@@ -300,7 +300,9 @@ class TestPythonInterface:
         except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
             assert "Some or all of your subset selection" in e.__str__()
 
-    def test_bounding_box_method(self, tmp_path):
+    def test_that_requested_interval_fully_included_with_bounding_box_method_outside(
+        self, tmp_path
+    ):
         output_filename = "output.nc"
         min_longitude = 0.01
         max_longitude = 1.55
