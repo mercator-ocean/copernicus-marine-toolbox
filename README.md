@@ -252,20 +252,17 @@ Note that when the flag is `outside` the returned interval fully covers the requ
 
 It will apply to all 4 dimensions at the same time. If asked for a single point (not an interval) in one of the dimensions, it will return the nearest point (a single one) in that dimension.
 
-When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered. For example, when requesting for **depth** values in the range (0.4, 50) from a dataset which covers `[0.494 1.541 2.646 ... 5.275e+03 5.728e+03]`, so that we are requesting a point which is lower than the minimum of the dataset:
+When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered. For example, when requesting for **longitude** values in the range (0.0, 40) from a dataset which covers `[-17.29166603088379, 36.29166793823242]`, so that we are requesting a point which is higher than the maximum of the dataset:
 
 >* --bounding-box-method **outside**
 >
->will return a dataset with depth: [0.494 1.541 2.646 3.819 ... 40.34 47.37 55.76]
+>will return a dataset with loongitude: [0.0 0.04167 0.08333 ... 36.21 36.25 36.29]
 
 and it will raise a warning :
 ```
-WARNING - 2024-05-09T13:26:37Z - "not all values found in index 'depth'"
-WARNING - 2024-05-09T13:26:37Z - Bounding box method doesn't find a min outer value for depth. Using the inside value instead.
+WARNING - 2024-05-15T10:05:06Z - Some or all of your subset selection [0.0, 40.0] for the longitude dimension  exceed the dataset coordinates [-17.29166603088379, 36.29166793823242]
 ```
 Note that here the returned interval isn't covering all the requested interval because the points don't exist.
-
-If you would like to change that, you could mix the two flags `-bounding-box-method outside` with `--subset-method strict` (see `subset method` before). With the combination of both flags, you will make sure the code crashes (or exits with returncode==1) if the asked interval is not fully covered.
 
 
 
