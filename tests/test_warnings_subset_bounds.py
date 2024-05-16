@@ -39,8 +39,8 @@ class TestWarningsSubsetBounds:
 
         assert b"WARNING" in output.stdout
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0]"
-            b" for the longitude dimension  exceed the dataset"
+            b"Some of your subset selection [-180.0, 180.0]"
+            b" for the longitude dimension exceed the dataset"
             b" coordinates [-179.9791717529297, 179.9791717529297]"
         ) in output.stdout
 
@@ -60,12 +60,12 @@ class TestWarningsSubsetBounds:
         output2 = subprocess.run(command2, capture_output=True)
 
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) in output1.stdout
         assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
+            b"Some of your subset selection [-179.9, 179.9] for the longitude "
+            b"dimension exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) not in output2.stdout  # Here they don't have to appear
 
     def test_subset_warnings_when_surpassing(self):
@@ -86,13 +86,13 @@ class TestWarningsSubsetBounds:
         output2 = subprocess.run(command2, capture_output=True)
 
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output1.stdout
         assert (
-            b"Some or all of your subset selection [-179.99, 179.99] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-179.99, 179.99] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output2.stdout
 
@@ -114,15 +114,15 @@ class TestWarningsSubsetBounds:
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) in output1.stdout
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output1.stdout
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) not in output2.stdout
         assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-179.9, 179.9] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) not in output2.stdout
