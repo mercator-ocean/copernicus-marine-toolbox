@@ -227,7 +227,6 @@ class TestPythonInterface:
             output_filename="netcdf_fillval.nc",
         )
         subsetdata = xarray.open_dataset("netcdf_fillval.nc", decode_cf=False)
-        print(subsetdata.time.attrs)
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
