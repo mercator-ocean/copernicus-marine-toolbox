@@ -17,7 +17,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineVersionPart,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
-    DatasetTimeAndGeographicalSubset,
+    DatasetTimeandSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.utils import (
@@ -155,7 +155,7 @@ def _select_forced_service(
 
 
 def _get_best_arco_service_type(
-    dataset_subset: DatasetTimeAndGeographicalSubset,
+    dataset_subset: DatasetTimeandSpaceSubset,
     dataset_url: str,
     username: Optional[str],
 ) -> Literal[
@@ -222,7 +222,7 @@ def _get_first_available_service_type(
 def _select_service_by_priority(
     dataset_version_part: CopernicusMarineVersionPart,
     command_type: CommandType,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    dataset_subset: Optional[DatasetTimeandSpaceSubset],
     username: Optional[str],
 ) -> CopernicusMarineService:
     dataset_available_service_types = [
@@ -277,7 +277,7 @@ def get_retrieval_service(
     force_service_type_string: Optional[str],
     command_type: CommandType,
     index_parts: bool = False,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset] = None,
+    dataset_subset: Optional[DatasetTimeandSpaceSubset] = None,
     dataset_sync: bool = False,
     username: Optional[str] = None,
     staging: bool = False,
@@ -319,7 +319,7 @@ def _get_retrieval_service_from_dataset(
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
     index_parts: bool,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    dataset_subset: Optional[DatasetTimeandSpaceSubset],
     dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
@@ -354,7 +354,7 @@ def _get_retrieval_service_from_dataset_version(
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
     index_parts: bool,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    dataset_subset: Optional[DatasetTimeandSpaceSubset],
     dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
@@ -443,8 +443,7 @@ def _get_dataset_start_date_from_service(
     return None
 
 
-class ServiceNotAvailable(Exception):
-    ...
+class ServiceNotAvailable(Exception): ...
 
 
 def _warning_dataset_will_be_deprecated(
@@ -497,8 +496,7 @@ def _service_not_available_error(
     )
 
 
-class NoServiceAvailable(Exception):
-    ...
+class NoServiceAvailable(Exception): ...
 
 
 def _no_service_available_for_command(
