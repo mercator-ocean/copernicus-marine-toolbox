@@ -36,8 +36,8 @@ class TestWarningsSubsetBounds:
 
         assert b"WARNING" in self.output.stderr
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0]"
-            b" for the longitude dimension  exceed the dataset"
+            b"Some of your subset selection [-180.0, 180.0]"
+            b" for the longitude dimension exceed the dataset"
             b" coordinates [-179.9791717529297, 179.9791717529297]"
         ) in self.output.stderr
 
@@ -73,13 +73,13 @@ class TestWarningsSubsetBounds:
         self.output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in self.output1.stderr
         assert (
-            b"Some or all of your subset selection [-179.99, 179.99] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-179.99, 179.99] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in self.output2.stderr
 
@@ -100,16 +100,16 @@ class TestWarningsSubsetBounds:
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) in self.output1.stderr
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in self.output1.stderr
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) not in self.output2.stderr
         assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-179.9, 179.9] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) not in self.output2.stderr
 
