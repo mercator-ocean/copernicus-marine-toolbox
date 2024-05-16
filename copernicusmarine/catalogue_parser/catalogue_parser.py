@@ -504,6 +504,9 @@ def _construct_copernicus_marine_service(
                 or service_type
                 == CopernicusMarineDatasetServiceType.TIMESERIES
             ):
+                print(
+                    f"Datacube is in preparation and may have arco: {datacube.id} "
+                )
                 return None
             else:
                 return CopernicusMarineService(
