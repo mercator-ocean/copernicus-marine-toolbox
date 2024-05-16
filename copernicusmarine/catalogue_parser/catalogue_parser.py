@@ -504,9 +504,6 @@ def _construct_copernicus_marine_service(
                 or service_type
                 == CopernicusMarineDatasetServiceType.TIMESERIES
             ):
-                print(
-                    f"Datacube is in preparation and may have arco: {datacube.id} "
-                )
                 return None
             else:
                 return CopernicusMarineService(
@@ -566,7 +563,7 @@ def _get_parts(
             parts.append(
                 CopernicusMarineVersionPart(
                     name=part,
-                    services=_get_services(datacube),
+                    services=services,
                     retired_date=retired_date,
                     released_date=released_date,
                 )
