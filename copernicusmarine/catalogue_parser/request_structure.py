@@ -34,7 +34,7 @@ MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
 
 
 @dataclass
-class DatasetTimeandSpaceSubset:
+class DatasetTimeAndSpaceSubset:
     minimum_longitude: Optional[float] = None
     maximum_longitude: Optional[float] = None
     minimum_latitude: Optional[float] = None
@@ -116,8 +116,8 @@ class SubsetRequest:
 
     def get_time_and_geographical_subset(
         self,
-    ) -> DatasetTimeandSpaceSubset:
-        return DatasetTimeandSpaceSubset(
+    ) -> DatasetTimeAndSpaceSubset:
+        return DatasetTimeAndSpaceSubset(
             minimum_longitude=self.minimum_longitude,
             maximum_longitude=self.maximum_longitude,
             minimum_latitude=self.minimum_latitude,
@@ -285,8 +285,8 @@ class LoadRequest:
 
     def get_time_and_space_subset(
         self,
-    ) -> DatasetTimeandSpaceSubset:
-        return DatasetTimeandSpaceSubset(
+    ) -> DatasetTimeAndSpaceSubset:
+        return DatasetTimeAndSpaceSubset(
             minimum_longitude=self.geographical_parameters.longitude_parameters.minimum_longitude,  # noqa
             maximum_longitude=self.geographical_parameters.longitude_parameters.maximum_longitude,  # noqa
             minimum_latitude=self.geographical_parameters.latitude_parameters.minimum_latitude,  # noqa

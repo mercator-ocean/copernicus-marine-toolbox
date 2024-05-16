@@ -12,7 +12,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
-    DatasetTimeandSpaceSubset,
+    DatasetTimeAndSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
@@ -425,7 +425,7 @@ def check_dataset_subset_bounds(
     password: str,
     dataset_url: str,
     service_type: CopernicusMarineDatasetServiceType,
-    dataset_subset: DatasetTimeandSpaceSubset,
+    dataset_subset: DatasetTimeAndSpaceSubset,
     subset_method: SubsetMethod,
     dataset_valid_date: Optional[Union[str, int]],
 ) -> None:
