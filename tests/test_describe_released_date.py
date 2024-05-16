@@ -45,5 +45,6 @@ class TestDescribe:
     def then_I_get_all_products_versions_and_datasets(
         self, describe_result, snapshot
     ):
+        print(describe_result)
         assert 2 == len(describe_result["products"])
         assert describe_result == snapshot

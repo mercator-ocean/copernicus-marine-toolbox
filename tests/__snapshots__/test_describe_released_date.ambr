@@ -1327,6 +1327,47 @@
               }),
             ]),
           }),
+          dict({
+            'dataset_id': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
+            'dataset_name': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
+            'versions': list([
+              dict({
+                'label': '202211',
+                'parts': list([
+                  dict({
+                    'name': 'default',
+                    'released_date': None,
+                    'retired_date': None,
+                    'services': list([
+                      dict({
+                        'service_format': None,
+                        'service_type': dict({
+                          'service_name': 'original-files',
+                          'short_name': 'files',
+                        }),
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-dta/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -179.99722290039062,
+                              -89.99722290039062,
+                              179.9972381591797,
+                              89.99722290039062,
+                            ]),
+                            'coordinates': list([
+                            ]),
+                            'short_name': 'CHL',
+                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
+                            'units': 'milligram m-3',
+                          }),
+                        ]),
+                      }),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          }),
         ]),
         'digital_object_identifier': '10.48670/moi-00016',
         'processing_level': 'Level 4',
@@ -3076,6 +3117,47 @@
                             'short_name': 'vo',
                             'standard_name': 'northward_sea_water_velocity',
                             'units': 'm s-1',
+                          }),
+                        ]),
+                      }),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+          dict({
+            'dataset_id': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
+            'dataset_name': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
+            'versions': list([
+              dict({
+                'label': '202211',
+                'parts': list([
+                  dict({
+                    'name': 'default',
+                    'released_date': None,
+                    'retired_date': None,
+                    'services': list([
+                      dict({
+                        'service_format': None,
+                        'service_type': dict({
+                          'service_name': 'original-files',
+                          'short_name': 'files',
+                        }),
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-dta/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -179.99722290039062,
+                              -89.99722290039062,
+                              179.9972381591797,
+                              89.99722290039062,
+                            ]),
+                            'coordinates': list([
+                            ]),
+                            'short_name': 'CHL',
+                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
+                            'units': 'milligram m-3',
                           }),
                         ]),
                       }),
