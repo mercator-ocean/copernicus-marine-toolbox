@@ -88,7 +88,7 @@ def cli_group_describe() -> None:
     type=bool,
     is_flag=True,
     default=False,
-    help="Include all the possible date in output: "
+    help="Include all the possible data in output: "
     "description, datasets, keywords, and versions.",
 )
 @click.option(
