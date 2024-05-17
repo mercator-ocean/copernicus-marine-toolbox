@@ -70,10 +70,9 @@ def get_configured_boto3_session(
         return s3_client, None
     s3_resource = boto3.resource(
         "s3",
-        config_boto3,
+        config=config_boto3,
         endpoint_url=endpoint_url,
     )
-
     return s3_client, s3_resource
 
 
@@ -87,7 +86,7 @@ def get_configured_requests_session() -> requests.Session:
         HTTPAdapter(
             max_retries=Retry(
                 total=5,
-                backoff_factor=0.5,
+                backoff_factor=1,
                 status_forcelist=[500, 502, 503, 504],
             )
         ),
