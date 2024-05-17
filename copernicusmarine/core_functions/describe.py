@@ -20,7 +20,7 @@ def describe_function(
     include_description: bool,
     include_datasets: bool,
     include_keywords: bool,
-    include_all_versions: bool,
+    include_versions: bool,
     contains: list[str],
     overwrite_metadata_cache: bool,
     no_metadata_cache: bool,
@@ -45,7 +45,7 @@ def describe_function(
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
-    if not include_all_versions:
+    if not include_versions:
         base_catalogue.filter_only_official_versions_and_parts()
 
     catalogue_dict = (
