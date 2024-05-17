@@ -56,15 +56,11 @@ class CustomS3Store(MutableMapping):
     def __contains__(self, key):
         full_key = f"{self._root_path}/{key}"
         try:
-            logger.info(f"Downloading {full_key}")
             self.client.head_object(Bucket=self._bucket, Key=full_key)
-            logger.info(f"Success {full_key}")
             return True
         except botocore.exceptions.ClientError as e:
-            logger.info(f"Failed {full_key}")
             if "404" in str(e) or "403" in str(e):
                 return False
-            logger.info(f"Failed and raising {full_key}")
             raise
 
     def __setitem__(self, key, value, headers=None):

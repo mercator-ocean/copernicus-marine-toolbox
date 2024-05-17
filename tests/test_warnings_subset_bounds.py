@@ -1,4 +1,4 @@
-import subprocess
+from tests.test_utils import execute_in_terminal
 
 
 class TestWarningsSubsetBounds:
@@ -34,8 +34,7 @@ class TestWarningsSubsetBounds:
         command = self._build_custom_command(
             dataset_id, "CHL", -180, 180, "nearest"
         )
-
-        output = subprocess.run(command, capture_output=True)
+        output = execute_in_terminal(command, input=b"n")
 
         assert b"WARNING" in output.stdout
         assert (
@@ -55,9 +54,8 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "thetao", -179.9, 179.9, "nearest"
         )
-
-        output1 = subprocess.run(command1, capture_output=True)
-        output2 = subprocess.run(command2, capture_output=True)
+        output1 = execute_in_terminal(command1, input=b"n")
+        output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
             b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
@@ -81,9 +79,8 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "CHL", -179.99, 179.99, "nearest"
         )
-
-        output1 = subprocess.run(command1, capture_output=True)
-        output2 = subprocess.run(command2, capture_output=True)
+        output1 = execute_in_terminal(command1, input=b"n")
+        output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
             b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
@@ -107,9 +104,8 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "CHL", -179.9, 179.9, "strict"
         )
-
-        output1 = subprocess.run(command1, capture_output=True)
-        output2 = subprocess.run(command2, capture_output=True)
+        output1 = execute_in_terminal(command1, input=b"n")
+        output2 = execute_in_terminal(command2, input=b"n")
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) in output1.stdout
