@@ -58,9 +58,7 @@ def _prepare_download_dataset_as_netcdf(
 ):
     logger.debug("Writing dataset to NetCDF")
     for coord in dataset.coords:
-        if "_FillValue" in dataset[coord].encoding:
-            dataset[coord].encoding["_FillValue"] = None
-
+        dataset[coord].encoding["_FillValue"] = None
     if netcdf_compression_enabled:
         complevel = (
             1 if netcdf_compression_level is None else netcdf_compression_level
