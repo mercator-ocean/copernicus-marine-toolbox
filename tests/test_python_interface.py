@@ -225,11 +225,13 @@ class TestPythonInterface:
             maximum_depth=1,
             force_download=True,
             output_filename="netcdf_fillval.nc",
+            overwrite_output_data=True,
         )
         subsetdata = xarray.open_dataset("netcdf_fillval.nc", decode_cf=False)
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
+        assert "_FillValue" not in subsetdata.depth.attrs
         assert "valid_max" in subsetdata.longitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
@@ -250,6 +252,7 @@ class TestPythonInterface:
             force_download=True,
             output_filename="netcdf_fillval_compressed.nc",
             netcdf_compression_enabled=True,
+            overwrite_output_data=True,
         )
 
         subsetdata = xarray.open_dataset(
@@ -258,6 +261,7 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
+        assert "_FillValue" not in subsetdata.depth.attrs
         assert "valid_max" in subsetdata.longitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
