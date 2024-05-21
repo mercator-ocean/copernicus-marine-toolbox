@@ -68,7 +68,7 @@ def _dataset_custom_sel(
                 if coord_label == "time":
                     nanosecond = 1e-9
                     nearest_neighbor_value = datetime.fromtimestamp(
-                        nearest_neighbor_value.astype(int) * nanosecond
+                        nearest_neighbor_value.astype(datetime) * nanosecond
                     )
                 dataset = dataset.sel(
                     {
