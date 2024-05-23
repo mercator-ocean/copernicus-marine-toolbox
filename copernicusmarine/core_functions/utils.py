@@ -150,7 +150,7 @@ def convert_datetime64_to_netcdf_timestamp(
 ) -> int:
     nanosecond = 1e-9
     date = datetime.fromtimestamp(
-        datetime_value.astype(int) * nanosecond, tz=timezone.utc
+        datetime_value.astype(datetime) * nanosecond, tz=timezone.utc
     )
     return cftime.date2num(date, cftime_unit)
 
