@@ -37,7 +37,7 @@
     '  --include-versions, --include-all-versions',
     '                                  Include dataset versions in output. By',
     '                                  default, shows only the default version.',
-    '  -a, --include-all               Include all the possible date in output:',
+    '  -a, --include-all               Include all the possible data in output:',
     '                                  description, datasets, keywords, and',
     '                                  versions.',
     '  -c, --contains TEXT             Filter catalogue output. Returns products',
