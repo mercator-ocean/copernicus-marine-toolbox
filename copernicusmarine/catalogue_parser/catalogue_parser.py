@@ -492,18 +492,26 @@ def _construct_copernicus_marine_service(
         service_uri = stac_asset.get_absolute_href()
         service_type = _service_type_from_web_api_string(stac_service_name)
         service_format = None
+        admp_in_preparation = datacube.properties.get("admp_in_preparation")
         if stac_asset.media_type and "zarr" in stac_asset.media_type:
             service_format = CopernicusMarineServiceFormat.ZARR
         elif stac_asset.media_type and "sqlite3" in stac_asset.media_type:
             service_format = CopernicusMarineServiceFormat.SQLITE
 
         if not service_uri.endswith("/"):
-            return CopernicusMarineService(
-                service_type=service_type,
-                uri=service_uri,
-                variables=_get_variables(datacube, stac_asset),
-                service_format=service_format,
-            )
+            if admp_in_preparation and (
+                service_type == CopernicusMarineDatasetServiceType.GEOSERIES
+                or service_type
+                == CopernicusMarineDatasetServiceType.TIMESERIES
+            ):
+                return None
+            else:
+                return CopernicusMarineService(
+                    service_type=service_type,
+                    uri=service_uri,
+                    variables=_get_variables(datacube, stac_asset),
+                    service_format=service_format,
+                )
         return None
     except ServiceNotHandled as service_not_handled:
         log_exception_debug(service_not_handled)
@@ -555,7 +563,7 @@ def _get_parts(
             parts.append(
                 CopernicusMarineVersionPart(
                     name=part,
-                    services=_get_services(datacube),
+                    services=services,
                     retired_date=retired_date,
                     released_date=released_date,
                 )

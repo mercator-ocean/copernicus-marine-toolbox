@@ -83,6 +83,12 @@ MOCK_PRODUCT_GLO = {
             "type": "application/json",
         },
         {
+            "rel": "item",  # fake item
+            "href": "cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json",
+            "title": "cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211",
+            "type": "application/json",
+        },
+        {
             "rel": "item",
             "href": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/dataset.stac.json",
             "title": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211",

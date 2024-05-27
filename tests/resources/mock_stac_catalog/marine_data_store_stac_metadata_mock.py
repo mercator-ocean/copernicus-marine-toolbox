@@ -13,6 +13,9 @@ from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_cur_new_version 
 from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_so import (
     MOCK_DATASET_GLO_PHY_SO,
 )
+from tests.resources.mock_stac_catalog.mock_dataset_in_prep import (
+    MOCK_DATASET_IN_PREP,
+)
 from tests.resources.mock_stac_catalog.mock_dataset_NWSHELF_P1D_m_202012 import (
     MOCK_DATASET_NWSHELF_P1D_M_202012,
 )
@@ -84,4 +87,10 @@ def mocked_stac_aiohttp_get(*args, **kwargs):
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_NWSHELF_P1M_M_202012, 200)
+    elif (
+        args[0] == f"{BASE_URL}/GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+        f"cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/"
+        f"dataset.stac.json"
+    ):
+        return MockResponse(MOCK_DATASET_IN_PREP, 200)
     return MockResponse(None, 404)
