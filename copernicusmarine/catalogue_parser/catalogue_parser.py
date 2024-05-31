@@ -581,7 +581,6 @@ def _get_services(
     return [
         dataset_service
         for stac_service_name, stac_asset in stac_assets_dict.items()
-        if stac_asset.roles and "data" in stac_asset.roles
         if (
             dataset_service := _construct_copernicus_marine_service(
                 stac_service_name, stac_asset, datacube
