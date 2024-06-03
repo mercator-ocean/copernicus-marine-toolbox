@@ -52,7 +52,7 @@ class TestGetSync:
             in self.output.stdout
         )
 
-    def when_I_get_some_native_files_with_sync(self, output_path):
+    def when_I_get_some_native_files_with_sync(self, tmp_path):
         self.command = [
             "copernicusmarine",
             "get",
@@ -65,11 +65,11 @@ class TestGetSync:
             "202105",
             "--force-download",
             "-o",
-            f"{output_path}",
+            f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
 
-    def then_same_command_should_not_download(self, output_path):
+    def then_same_command_should_not_download(self, tmp_path):
         self.command = [
             "copernicusmarine",
             "get",
@@ -81,15 +81,15 @@ class TestGetSync:
             "--dataset-version",
             "202105",
             "-o",
-            f"{output_path}",
+            f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
         assert b"No data to download" in self.output.stdout
 
-    def when_I_delete_one_file(self, output_path):
+    def when_I_delete_one_file(self, tmp_path):
         self.command = [
             "rm",
-            f"{output_path}/ARCTIC_MULTIYEAR_BGC_002_005"
+            f"{tmp_path}/ARCTIC_MULTIYEAR_BGC_002_005"
             "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             "/2007/01/"
             "20070110_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc",
@@ -97,7 +97,7 @@ class TestGetSync:
         self.output = execute_in_terminal(self.command)
 
     def then_same_command_with_sync_should_download_only_one_file(
-        self, output_path
+        self, tmp_path
     ):
         self.command = [
             "copernicusmarine",
@@ -110,7 +110,7 @@ class TestGetSync:
             "--dataset-version",
             "202105",
             "-o",
-            f"{output_path}",
+            f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
         assert (
@@ -128,10 +128,10 @@ class TestGetSync:
             not in self.output.stdout
         )
 
-    def when_I_add_a_file_locally(self, output_path):
+    def when_I_add_a_file_locally(self, tmp_path):
         self.command = [
             "touch",
-            f"{output_path}s/ARCTIC_MULTIYEAR_BGC_002_005"
+            f"{tmp_path}s/ARCTIC_MULTIYEAR_BGC_002_005"
             "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             "/2007/01/"
             "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc",
@@ -139,7 +139,7 @@ class TestGetSync:
         self.output = execute_in_terminal(self.command)
 
     def then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
-        self, output_path
+        self, tmp_path
     ):
         self.command = [
             "copernicusmarine",
@@ -153,7 +153,7 @@ class TestGetSync:
             "202105",
             "--force-download",
             "-o",
-            f"{output_path}",
+            f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
         assert (
@@ -161,7 +161,7 @@ class TestGetSync:
             in self.output.stdout
         )
         assert (
-            f"{output_path}".encode() + b"/ARCTIC_MULTIYEAR_BGC_002_005"
+            f"{tmp_path}".encode() + b"/ARCTIC_MULTIYEAR_BGC_002_005"
             b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             b"/2007/01/"
             b"20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
@@ -169,7 +169,7 @@ class TestGetSync:
         )
         assert (
             os.path.isfile(
-                f"{output_path}/ARCTIC_MULTIYEAR_BGC_002_005"
+                f"{tmp_path}/ARCTIC_MULTIYEAR_BGC_002_005"
                 "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
                 "/2007/01/"
                 "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
