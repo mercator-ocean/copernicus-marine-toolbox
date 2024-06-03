@@ -136,6 +136,7 @@ class TestCommandLineInterface:
             "original-files",
             "arco-geo-series",
             "arco-time-series",
+            "wmts",
         ]
 
         json_result = loads(self.output)
