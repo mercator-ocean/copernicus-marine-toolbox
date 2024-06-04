@@ -9,6 +9,10 @@ from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     tqdm_disable_option,
 )
+from copernicusmarine.core_functions.deprecated import (
+    DeprecatedClickOption,
+    DeprecatedClickOptionsCommand,
+)
 from copernicusmarine.core_functions.describe import describe_function
 
 logger = logging.getLogger("copernicus_marine_root_logger")
@@ -22,6 +26,7 @@ def cli_group_describe() -> None:
 
 @cli_group_describe.command(
     "describe",
+    cls=DeprecatedClickOptionsCommand,
     short_help="Print Copernicus Marine catalog as JSON.",
     help="""
     Print Copernicus Marine catalog as JSON.
@@ -66,11 +71,25 @@ def cli_group_describe() -> None:
     help="Include product keyword details in output.",
 )
 @click.option(
+    "--include-versions",
     "--include-all-versions",
+    cls=DeprecatedClickOption,
+    deprecated=["--include-all-versions"],
+    preferred="--include-versions",
     type=bool,
     is_flag=True,
     default=False,
-    help="Whether to include all versions of each item. Defaults to False.",
+    help="Include dataset versions in output. "
+    "By default, shows only the default version.",
+)
+@click.option(
+    "-a",
+    "--include-all",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Include all the possible data in output: "
+    "description, datasets, keywords, and versions.",
 )
 @click.option(
     "--contains",
@@ -120,7 +139,8 @@ def describe(
     include_description: bool,
     include_datasets: bool,
     include_keywords: bool,
-    include_all_versions: bool,
+    include_versions: bool,
+    include_all: bool,
     contains: list[str],
     overwrite_metadata_cache: bool,
     no_metadata_cache: bool,
@@ -137,11 +157,17 @@ def describe(
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug("DEBUG mode activated")
 
+    if include_all:
+        include_description = True
+        include_datasets = True
+        include_keywords = True
+        include_versions = True
+
     json_dump = describe_function(
         include_description=include_description,
         include_datasets=include_datasets,
         include_keywords=include_keywords,
-        include_all_versions=include_all_versions,
+        include_versions=include_versions,
         contains=contains,
         overwrite_metadata_cache=overwrite_metadata_cache,
         no_metadata_cache=no_metadata_cache,

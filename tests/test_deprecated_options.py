@@ -1,4 +1,4 @@
-from copernicusmarine import open_dataset
+from copernicusmarine import describe, open_dataset
 from tests.test_utils import execute_in_terminal
 
 
@@ -64,3 +64,26 @@ class TestDeprecatedOptions:
             force_dataset_part="default",
         )
         assert dataset
+
+    def test_describe_include_all_dataset_versions_deprecated(self):
+        command = [
+            "copernicusmarine",
+            "describe",
+            "--contains",
+            "METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2",
+            "--include-all-versions",
+        ]
+        output = execute_in_terminal(command)
+        assert b"WARNING" in output.stdout
+        assert (
+            b"'--include-all-versions' has been deprecated, "
+            b"use '--include-versions' instead"
+        ) in output.stdout
+        assert output.returncode == 0
+
+    def test_describe_include_all_dataset_versions_python_interface(self):
+        describe_result = describe(
+            contains=["lkshdflkhsdlfksdflhh"],
+            include_all_versions=True,
+        )
+        assert describe_result == {}

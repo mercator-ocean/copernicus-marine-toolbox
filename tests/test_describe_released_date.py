@@ -14,11 +14,11 @@ class TestDescribe:
     def when_I_describe_the_marine_data_store(
         self,
         mock_get,
-        include_all_versions=False,
+        include_versions=False,
     ):
         return describe(
             no_metadata_cache=True,
-            include_all_versions=include_all_versions,
+            include_versions=include_versions,
             include_datasets=True,
         )
 
@@ -36,7 +36,7 @@ class TestDescribe:
 
     def test_describe_all_versions(self, snapshot):
         describe_result = self.when_I_describe_the_marine_data_store(
-            include_all_versions=True
+            include_versions=True
         )
         self.then_I_get_all_products_versions_and_datasets(
             describe_result, snapshot

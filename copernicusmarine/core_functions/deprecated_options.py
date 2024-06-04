@@ -65,5 +65,9 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
             new_name="create_file_list",
             replace=False,
         ),
+        DeprecatedOption(
+            old_name="include_all_versions",
+            new_name="include_versions",
+        ),
     ]
 )
