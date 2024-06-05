@@ -1,7 +1,6 @@
 name: Push Docker Image on DockerHub
 
-on:
-    workflow_dispatch: {}
+on: workflow_dispatch
 
 jobs:
     push-docker-image:
@@ -21,14 +20,16 @@ jobs:
                   condarc-file: .condarc
                   cache-environment: true
                   post-cleanup: 'all'
-
-            - name: Build Docker image
-              run: make build-docker-image
+                  
+            - name: Set VERSION environment variable
+              id: set-version
               shell: micromamba-shell {0}
+              run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
-            - name: Push Docker image
+            - name: Build and publish Docker image
+              shell: micromamba-shell {0}
               env:
-                  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-                  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-              run: make push-docker-image
-              shell: micromamba-shell {0}
+                VERSION: ${{ steps.set-version.outputs.VERSION }}
+                DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+                DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
+              run: make build-and-publish-dockerhub-image
