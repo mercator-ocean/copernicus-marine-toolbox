@@ -157,7 +157,6 @@ class TestGetSync:
             f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
-        print(self.output.stdout)
         assert (
             b"Some files will be deleted due to sync delete:"
             in self.output.stdout
