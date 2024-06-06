@@ -7,7 +7,7 @@ import pandas
 import xarray
 
 from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
-from copernicusmarine.core_functions import sessions
+from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     add_copernicusmarine_version_in_dataset_attributes,
@@ -208,7 +208,7 @@ def open_dataset_from_arco_series(
     depth_parameters: DepthParameters,
     chunks=Optional[Literal["auto"]],
 ) -> xarray.Dataset:
-    dataset = sessions.open_zarr(
+    dataset = custom_open_zarr.open_zarr(
         dataset_url,
         chunks=chunks,
         copernicus_marine_username=username,

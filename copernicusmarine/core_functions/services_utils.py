@@ -16,7 +16,7 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
 from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndGeographicalSubset,
 )
-from copernicusmarine.core_functions import sessions
+from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.utils import (
     FormatNotSupported,
     datetime_parser,
@@ -159,7 +159,7 @@ def _get_best_arco_service_type(
     CopernicusMarineDatasetServiceType.TIMESERIES,
     CopernicusMarineDatasetServiceType.GEOSERIES,
 ]:
-    dataset = sessions.open_zarr(
+    dataset = custom_open_zarr.open_zarr(
         dataset_url, copernicus_marine_username=username
     )
 
