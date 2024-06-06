@@ -13,6 +13,7 @@ class TestGetSync:
         )
 
     def test_get_sync_delete(self, tmp_path):
+
         self.when_I_get_some_native_files_with_sync(tmp_path)
         self.when_I_add_a_file_locally(tmp_path)
         self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
@@ -131,7 +132,7 @@ class TestGetSync:
     def when_I_add_a_file_locally(self, tmp_path):
         self.command = [
             "touch",
-            f"{tmp_path}s/ARCTIC_MULTIYEAR_BGC_002_005"
+            f"{tmp_path}/ARCTIC_MULTIYEAR_BGC_002_005"
             "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             "/2007/01/"
             "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc",
@@ -156,6 +157,7 @@ class TestGetSync:
             f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
+        print(self.output.stdout)
         assert (
             b"Some files will be deleted due to sync delete:"
             in self.output.stdout
