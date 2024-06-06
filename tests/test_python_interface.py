@@ -210,7 +210,7 @@ class TestPythonInterface:
         assert dataset.depth.attrs["standard_name"] == "depth"
         assert dataset.depth.attrs["long_name"] == "Depth"
 
-    def test_subset_keeps_fillvalue_empty(self):
+    def test_subset_keeps_fillvalue_empty(self, tmp_path):
         subset(
             dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
             dataset_version="202211",
@@ -224,10 +224,14 @@ class TestPythonInterface:
             minimum_depth=0,
             maximum_depth=1,
             force_download=True,
+            output_directory=tmp_path,
             output_filename="netcdf_fillval.nc",
             overwrite_output_data=True,
         )
-        subsetdata = xarray.open_dataset("netcdf_fillval.nc", decode_cf=False)
+
+        subsetdata = xarray.open_dataset(
+            f"{tmp_path}/netcdf_fillval.nc", decode_cf=False
+        )
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
@@ -236,7 +240,7 @@ class TestPythonInterface:
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
-    def test_subset_keeps_fillvalue_empty_w_compression(self):
+    def test_subset_keeps_fillvalue_empty_w_compression(self, tmp_path):
         subset(
             dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
             dataset_version="202211",
@@ -250,13 +254,14 @@ class TestPythonInterface:
             minimum_depth=0,
             maximum_depth=1,
             force_download=True,
+            output_directory=tmp_path,
             output_filename="netcdf_fillval_compressed.nc",
             netcdf_compression_enabled=True,
             overwrite_output_data=True,
         )
 
         subsetdata = xarray.open_dataset(
-            "netcdf_fillval_compressed.nc", decode_cf=False
+            f"{tmp_path}/netcdf_fillval_compressed.nc", decode_cf=False
         )
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "_FillValue" not in subsetdata.time.attrs

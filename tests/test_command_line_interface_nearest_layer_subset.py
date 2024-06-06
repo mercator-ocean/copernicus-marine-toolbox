@@ -4,11 +4,6 @@ import subprocess
 import numpy
 import xarray
 
-from tests.test_command_line_interface import DOWNLOAD_TEST_FOLDER
-
-DOWNLOAD_TEST_FOLDER_NEAREST_LAYERS_SUBSET = pathlib.Path(
-    DOWNLOAD_TEST_FOLDER, "nearest_layer_subset"
-)
 SUBSET_NEAREST_LAYER_OPTIONS = {
     "dataset_id": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
     "requested_depth": 11.7,
