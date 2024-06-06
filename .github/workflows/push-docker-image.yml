@@ -20,7 +20,7 @@ jobs:
                   condarc-file: .condarc
                   cache-environment: true
                   post-cleanup: 'all'
-                  
+
             - name: Set VERSION environment variable
               id: set-version
               shell: micromamba-shell {0}
