@@ -1,0 +1,35 @@
+name: Push Docker Image on DockerHub
+
+on: workflow_dispatch
+
+jobs:
+    push-docker-image:
+        runs-on: self-hosted
+        timeout-minutes: 10
+
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v4
+
+            - uses: mamba-org/setup-micromamba@v1
+              with:
+                  micromamba-version: '1.5.6-0'
+                  micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+                  environment-file: conda_environment.yaml
+                  environment-name: copernicusmarine
+                  condarc-file: .condarc
+                  cache-environment: true
+                  post-cleanup: 'all'
+
+            - name: Set VERSION environment variable
+              id: set-version
+              shell: micromamba-shell {0}
+              run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+
+            - name: Build and publish Docker image
+              shell: micromamba-shell {0}
+              env:
+                VERSION: ${{ steps.set-version.outputs.VERSION }}
+                DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+                DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
+              run: make build-and-publish-dockerhub-image

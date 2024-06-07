@@ -61,6 +61,10 @@ jobs:
           timeout: 600000
           interval: 5000
 
+      - name: Wait 30sec for the version to be in pip
+        run: sleep 30s
+        shell: bash
+
       - name: Build and publish Docker image
         shell: micromamba-shell {0}
         env:
