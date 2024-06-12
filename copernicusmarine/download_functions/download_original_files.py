@@ -6,7 +6,7 @@ import re
 from itertools import chain
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Iterator, List, Optional, Tuple
 
 import click
 from botocore.client import ClientError
@@ -16,6 +16,9 @@ from tqdm import tqdm
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     overload_regex_with_additionnal_filter,
+)
+from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
@@ -28,6 +31,12 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
+
+NUMBER_THREADS = (
+    int(COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS)
+    if COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS
+    else None
+)
 
 
 def download_original_files(
@@ -186,7 +195,6 @@ def download_files(
     filenames_out: List[pathlib.Path],
     disable_progress_bar: bool,
 ) -> list[pathlib.Path]:
-    pool = ThreadPool()
     nfiles_per_process, nfiles = 1, len(filenames_in)
     indexes = append(
         arange(0, nfiles, nfiles_per_process, dtype=int),
@@ -206,16 +214,32 @@ def download_files(
         if not parent_dir.is_dir():
             pathlib.Path.mkdir(parent_dir, parents=True)
 
-    download_summary_list = pool.imap(
-        _download_files,
-        zip(
-            [username] * len(groups_in_files),
-            [endpoint_url] * len(groups_in_files),
-            [bucket] * len(groups_in_files),
-            groups_in_files,
-            groups_out_files,
-        ),
-    )
+    # TODO: It would be proably better to use an async approach
+    if NUMBER_THREADS is None or NUMBER_THREADS:
+        logger.info(f"Downloading files on {NUMBER_THREADS} threads...")
+        pool = ThreadPool(processes=NUMBER_THREADS)
+        download_summary_list: Iterator[List[Path]] = pool.imap(
+            _download_files,
+            zip(
+                [username] * len(groups_in_files),
+                [endpoint_url] * len(groups_in_files),
+                [bucket] * len(groups_in_files),
+                groups_in_files,
+                groups_out_files,
+            ),
+        )
+    else:
+        logger.info("Downloading files one by one...")
+        download_summary_list = map(
+            _download_files,
+            zip(
+                [username] * len(groups_in_files),
+                [endpoint_url] * len(groups_in_files),
+                [bucket] * len(groups_in_files),
+                groups_in_files,
+                groups_out_files,
+            ),
+        )
     download_summary = list(
         tqdm(
             download_summary_list,
