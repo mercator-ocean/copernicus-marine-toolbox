@@ -6,7 +6,6 @@ import os
 import pathlib
 import re
 import shutil
-import subprocess
 from dataclasses import dataclass
 from json import loads
 from pathlib import Path
@@ -87,11 +86,11 @@ class TestCommandLineInterface:
             "describe",
             "--overwrite-metadata-cache",
         ]
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
     def then_stdout_can_be_load_as_json(self):
         loads(self.output.stdout.decode("utf-8"))
@@ -115,7 +114,7 @@ class TestCommandLineInterface:
         )
 
     def then_omi_services_are_not_in_the_catalog(self):
-        json_result = loads(self.output)
+        json_result = loads(self.output.stdout)
         for product in json_result["products"]:
             for dataset in product["datasets"]:
                 for version in dataset["versions"]:
@@ -137,7 +136,7 @@ class TestCommandLineInterface:
             "wmts",
         ]
 
-        json_result = loads(self.output)
+        json_result = loads(self.output.stdout)
         expected_product = list(
             filter(
                 lambda product: product["product_id"] == expected_product_id,
@@ -169,7 +168,7 @@ class TestCommandLineInterface:
         expected_product_id = "BALTICSEA_ANALYSISFORECAST_BGC_003_007"
         expected_dataset_id = "cmems_mod_bal_bgc_anfc_static"
 
-        json_result = loads(self.output)
+        json_result = loads(self.output.stdout)
         expected_product = list(
             filter(
                 lambda product: product["product_id"] == expected_product_id,
@@ -217,11 +216,16 @@ class TestCommandLineInterface:
 
     def when_I_run_copernicus_marine_describe_with_contains_option(self):
         filter_token = "OMI_HEALTH_CHL_GLOBAL_OCEANCOLOUR_oligo_n"
-        command = f"copernicusmarine describe --contains {filter_token}"
-        self.output = subprocess.check_output(command, shell=True)
+        command = [
+            "copernicusmarine",
+            "describe",
+            "--contains",
+            f"{filter_token}",
+        ]
+        self.output = execute_in_terminal(command)
 
     def then_I_can_read_the_filtered_json(self):
-        json_result = loads(self.output)
+        json_result = loads(self.output.stdout)
         assert len(json_result["products"]) == 2
         assert (
             json_result["products"][0]["product_id"]
@@ -253,17 +257,23 @@ class TestCommandLineInterface:
 
     def when_I_run_copernicus_marine_describe_including_datasets(self):
         command = "copernicusmarine describe --include-datasets"
-        self.output = subprocess.check_output(command, shell=True)
+        command = [
+            "copernicusmarine",
+            "describe",
+            "--include-datasets",
+            "--no-metadata-cache",
+        ]
+        self.output = execute_in_terminal(command)
 
     def then_I_can_read_it_does_not_contain_weird_symbols(self):
-        assert b"__" not in self.output
-        assert b" _" not in self.output
+        assert b"__" not in self.output.stdout
+        assert b" _" not in self.output.stdout
         # assert b"_ " not in self.output
-        assert b'"_' not in self.output
-        assert b'_"' not in self.output
+        assert b'"_' not in self.output.stdout
+        assert b'_"' not in self.output.stdout
 
     def then_I_can_read_the_json_including_datasets(self):
-        json_result = loads(self.output)
+        json_result = loads(self.output.stdout)
         assert len(json_result["products"]) >= 270
         for product in json_result["products"]:
             assert product["title"] is not None
@@ -379,12 +389,12 @@ class TestCommandLineInterface:
             "DEBUG",
             "--no-metadata-cache",
         ]
-        self.output = subprocess.check_output(command, shell=True)
+        self.output = execute_in_terminal(command)
 
     def then_I_check_that_the_urls_contains_only_dta(self):
         assert (
             b"https://s3.waw3-1.cloudferro.com/mdl-metadata/"
-            not in self.output
+            not in self.output.stdout
         )
 
     # -------------------------#
@@ -465,7 +475,7 @@ class TestCommandLineInterface:
             "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
     def check_subset_request_with_dataseturl(
@@ -484,7 +494,7 @@ class TestCommandLineInterface:
             "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
     def check_subset_request_with_dataset_not_in_catalog(self):
@@ -497,9 +507,7 @@ class TestCommandLineInterface:
             "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
-        self.output = subprocess.run(
-            unknown_dataset_request, capture_output=True
-        )
+        self.output = execute_in_terminal(unknown_dataset_request)
         assert (
             b"Key error: The requested dataset 'FAKE_ID' was not found in the "
             b"catalogue, you can use 'copernicusmarine describe "
@@ -515,7 +523,7 @@ class TestCommandLineInterface:
             f"{dataset_id}",
         ]
 
-        self.output = subprocess.run(command, stdout=subprocess.PIPE)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
             b"Missing subset option. Try 'copernicusmarine subset --help'."
@@ -623,7 +631,7 @@ class TestCommandLineInterface:
             f"{folder}",
         ] + self.flatten_request_dict(self.base_get_request_dict)
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
     def test_get_download_s3_without_regex(self, tmp_path):
@@ -640,7 +648,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 29
@@ -662,7 +670,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 3
@@ -686,7 +694,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert (
             b"You requested the download of the following files"
             in self.output.stderr
@@ -711,7 +719,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert (
             b"You requested the download of the following files"
             not in self.output.stderr
@@ -749,7 +757,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         is_file = pathlib.Path(tmp_path, output_filename).is_file()
         assert self.output.returncode == 0
         assert is_file
@@ -771,7 +779,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
         assert b"Invalid username or password" in self.output.stderr
@@ -809,8 +817,8 @@ class TestCommandLineInterface:
             f"{credentials_file}",
         ]
 
-        self.output = subprocess.run(
-            command, capture_output=True, env=environment_without_crendentials
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
         assert b"username:" in self.output.stderr
@@ -857,7 +865,7 @@ class TestCommandLineInterface:
         ]
         password = os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD")
         assert password is not None
-        self.output = subprocess.run(
+        self.output = execute_in_terminal(
             command,
             env=environment_without_crendentials,
             input=bytes(password, "utf-8"),
@@ -882,7 +890,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 3
@@ -910,7 +918,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 5
@@ -933,7 +941,7 @@ class TestCommandLineInterface:
             f"{regex}",
         ]
 
-        self.output = subprocess.run(command, stdout=subprocess.PIPE)
+        self.output = execute_in_terminal(command)
         assert b"No data to download" in self.output.stderr
         assert self.output.returncode == 0
 
@@ -951,7 +959,7 @@ class TestCommandLineInterface:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
 
@@ -962,7 +970,7 @@ class TestCommandLineInterface:
             f"{non_existing_directory}",
             "--skip-if-user-logged-in",
         ]
-        output_with_skip = subprocess.run(command_with_skip)
+        output_with_skip = execute_in_terminal(command_with_skip)
         assert output_with_skip.returncode == 0
 
     def test_subset_error_when_forced_service_does_not_exist(self):
@@ -983,9 +991,7 @@ class TestCommandLineInterface:
             "unavailable-service",
         ]
 
-        self.output = subprocess.run(
-            command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
-        )
+        self.output = execute_in_terminal(command)
 
     def then_I_got_a_clear_output_with_available_service_for_subset(self):
         assert (
@@ -1021,9 +1027,7 @@ class TestCommandLineInterface:
             "--overwrite-metadata-cache",
             "--no-metadata-cache",
         ]
-        self.output = subprocess.run(
-            command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
-        )
+        self.output = execute_in_terminal(command)
 
     def then_I_got_an_error_regarding_mutual_exclusivity(self):
         assert self.output.returncode == 2
@@ -1075,9 +1079,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.output = subprocess.run(
-            command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
-        )
+        self.output = execute_in_terminal(command)
 
     def then_I_have_correct_sign_for_depth_coordinates_values(
         self, output_path, sign
@@ -1140,7 +1142,7 @@ class TestCommandLineInterface:
             "--no-directories",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
 
@@ -1190,7 +1192,7 @@ class TestCommandLineInterface:
             "-o",
             f"{tmp_path}",
         ]
-        self.output = subprocess.run(command, input=b"y")
+        self.output = execute_in_terminal(command, input=b"y")
 
         assert self.output.returncode == 0
         assert (
@@ -1212,9 +1214,7 @@ class TestCommandLineInterface:
             "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
         ]
 
-        self.output = subprocess.run(
-            command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
-        )
+        self.output = execute_in_terminal(command)
 
     def then_I_can_see_the_original_files_service_is_choosen(self):
         assert (
@@ -1238,9 +1238,7 @@ class TestCommandLineInterface:
             "thetao",
         ]
 
-        self.output = subprocess.run(
-            command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
-        )
+        self.output = execute_in_terminal(command)
 
     def then_I_can_see_the_arco_geo_series_service_is_choosen(self):
         assert (
@@ -1260,7 +1258,7 @@ class TestCommandLineInterface:
             "thetao",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
         assert (
@@ -1277,7 +1275,7 @@ class TestCommandLineInterface:
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m/2023",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
         assert not (b"Traceback") in self.output.stderr
@@ -1291,7 +1289,7 @@ class TestCommandLineInterface:
             "--filter",
             "*/2023/08/*",
         ]
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
         assert not (b"No data to download") in self.output.stderr
@@ -1325,7 +1323,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
 
@@ -1339,7 +1337,7 @@ class TestCommandLineInterface:
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202211/2023/11",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert b"Printed 20 out of 30 files" in self.output.stderr
 
@@ -1353,12 +1351,8 @@ class TestCommandLineInterface:
             "--help",
         ]
 
-        self.short_option_output = subprocess.run(
-            short_option_command, capture_output=True
-        )
-        self.long_option_output = subprocess.run(
-            long_option_command, capture_output=True
-        )
+        self.short_option_output = execute_in_terminal(short_option_command)
+        self.long_option_output = execute_in_terminal(long_option_command)
 
         assert (
             self.short_option_output.stderr == self.long_option_output.stderr
@@ -1376,12 +1370,8 @@ class TestCommandLineInterface:
             "--help",
         ]
 
-        self.short_option_output = subprocess.run(
-            short_option_command, capture_output=True
-        )
-        self.long_option_output = subprocess.run(
-            long_option_command, capture_output=True
-        )
+        self.short_option_output = execute_in_terminal(short_option_command)
+        self.long_option_output = execute_in_terminal(long_option_command)
 
         assert (
             self.short_option_output.stderr == self.long_option_output.stderr
@@ -1390,7 +1380,7 @@ class TestCommandLineInterface:
     def test_subset_template_creation(self):
         command = ["copernicusmarine", "subset", "--create-template"]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Template created at: subset_template.json"
@@ -1401,7 +1391,7 @@ class TestCommandLineInterface:
     def test_get_template_creation(self):
         command = ["copernicusmarine", "get", "--create-template"]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Template created at: get_template.json"
@@ -1417,7 +1407,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Other options passed with create template: force_download"
@@ -1434,7 +1424,7 @@ class TestCommandLineInterface:
             "theta",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"The variable 'theta' is neither a "
@@ -1455,7 +1445,7 @@ class TestCommandLineInterface:
             "ft",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Service ft does not exist for command subset"
@@ -1508,7 +1498,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
             "thetao"
@@ -1549,7 +1539,7 @@ class TestCommandLineInterface:
             "DEBUG",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert b"DEBUG - " in self.output.stderr
 
@@ -1630,7 +1620,7 @@ class TestCommandLineInterface:
             + expected_extension
         )
         expected_filepath = Path(tmp_path, expected_filename)
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert expected_filepath.is_dir()
 
@@ -1677,7 +1667,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
             len(
@@ -1715,7 +1705,7 @@ class TestCommandLineInterface:
             f"{subset_method}",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
     def then_I_can_read_an_error_in_stdout(self):
         assert self.output.returncode == 1
@@ -1775,17 +1765,17 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output_without_option = subprocess.run(
+        output_without_option = execute_in_terminal(
             base_command + ["-f", filename_without_option]
         )
-        output_with_option = subprocess.run(
+        output_with_option = execute_in_terminal(
             base_command
             + ["-f", filename_with_option, netcdf_compression_option]
         )
-        output_zarr_without_option = subprocess.run(
+        output_zarr_without_option = execute_in_terminal(
             base_command + ["-f", filename_zarr_without_option]
         )
-        output_zarr_with_option = subprocess.run(
+        output_zarr_with_option = execute_in_terminal(
             base_command
             + ["-f", filename_zarr_with_option, netcdf_compression_option]
         )
@@ -1829,13 +1819,11 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(base_command, capture_output=True)
+        self.output = execute_in_terminal(base_command)
         assert self.output.returncode == 0
         assert b"Downloading using service omi-arco..." in self.output.stderr
 
-        self.output = subprocess.run(
-            base_command + ["-s", "omi-arco"], capture_output=True
-        )
+        self.output = execute_in_terminal(base_command + ["-s", "omi-arco"])
         assert self.output.returncode == 0
         assert b"Downloading using service omi-arco..." in self.output.stderr
 
@@ -1854,15 +1842,13 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(base_command, capture_output=True)
+        self.output = execute_in_terminal(base_command)
         assert self.output.returncode == 0
         assert (
             b"Downloading using service static-arco..." in self.output.stderr
         )
 
-        self.output = subprocess.run(
-            base_command + ["-s", "static-arco"], capture_output=True
-        )
+        self.output = execute_in_terminal(base_command + ["-s", "static-arco"])
         assert self.output.returncode == 0
         assert (
             b"Downloading using service static-arco..." in self.output.stderr
@@ -1881,8 +1867,8 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(
-            base_command + ["--dataset-part", "bathy"], capture_output=True
+        self.output = execute_in_terminal(
+            base_command + ["--dataset-part", "bathy"]
         )
         assert self.output.returncode == 0
 
@@ -1920,10 +1906,10 @@ class TestCommandLineInterface:
             f"{forced_comp_level}",
         ]
 
-        output_without_netcdf_compression_enabled = subprocess.run(
+        output_without_netcdf_compression_enabled = execute_in_terminal(
             base_command
         )
-        output_with_netcdf_compression_enabled = subprocess.run(
+        output_with_netcdf_compression_enabled = execute_in_terminal(
             base_command + [netcdf_compression_enabled_option]
         )
 
@@ -1974,11 +1960,11 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        subprocess.run(command + ["--no-metadata-cache"])
+        execute_in_terminal(command + ["--no-metadata-cache"])
         cache_path = Path(tmp_path) / Path(".copernicusmarine") / Path("cache")
         assert cache_path.is_dir() is False
 
-        subprocess.run(command)
+        execute_in_terminal(command)
         assert cache_path.is_dir() is True
 
         del os.environ["COPERNICUSMARINE_CACHE_DIRECTORY"]
@@ -1999,7 +1985,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 2
@@ -2035,7 +2021,7 @@ class TestCommandLineInterface:
 
         output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert output_filename.is_file()
         with open(output_filename) as file:
@@ -2069,7 +2055,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "--no-directories",
         ]
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         output_file = pathlib.Path(
             tmp_path,
             "20220531120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.nc",
@@ -2114,11 +2100,11 @@ class TestCommandLineInterface:
             "--netcdf3-compatible",
             "--force-download",
         ]
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        output_netcdf_format = subprocess.run(
-            ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"], capture_output=True
+        output_netcdf_format = execute_in_terminal(
+            ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"]
         )
         assert output_netcdf_format.returncode == 0
         assert output_netcdf_format.stdout == b"classic\n"

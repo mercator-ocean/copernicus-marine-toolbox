@@ -1,6 +1,7 @@
 import os
-import subprocess
 from pathlib import Path
+
+from tests.test_utils import execute_in_terminal
 
 
 class TestBasicCommands:
@@ -10,7 +11,7 @@ class TestBasicCommands:
             "describe",
             "--overwrite-metadata-cache",
         ]
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
     def test_subset(self):
         command = [
@@ -35,7 +36,7 @@ class TestBasicCommands:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
     def test_get(self):
@@ -47,7 +48,7 @@ class TestBasicCommands:
             "--filter",
             "*/2023/08/*",
         ]
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
         assert b"No data to download" not in self.output.stderr
@@ -69,6 +70,6 @@ class TestBasicCommands:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()

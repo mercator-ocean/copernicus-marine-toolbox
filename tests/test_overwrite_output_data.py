@@ -1,9 +1,9 @@
 import pathlib
-import subprocess
 from pathlib import Path
 from typing import Optional
 
 from copernicusmarine.core_functions.utils import get_unique_filename
+from tests.test_utils import execute_in_terminal
 
 
 class TestOverwriteOutputData:
@@ -175,7 +175,7 @@ class TestOverwriteOutputData:
         if overwrite_option:
             full_command.append("--overwrite")
 
-        self.output = subprocess.run(full_command, capture_output=True)
+        self.output = execute_in_terminal(full_command)
         assert self.output.returncode == 0, self.output.stderr
 
         if command == "get":

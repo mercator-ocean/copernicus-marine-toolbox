@@ -1,9 +1,9 @@
 import fnmatch
 import re
-import subprocess
 from pathlib import Path
 
 from tests.test_command_line_interface import get_all_files_in_folder_tree
+from tests.test_utils import execute_in_terminal
 
 
 def get_path_to_request_file(filename: str):
@@ -32,7 +32,7 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
             b'You forced selection of dataset version "default"'
@@ -50,7 +50,7 @@ class TestRequestFiles:
 
         command = build_command(filepath, "subset")
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
             b"Missing subset option. Try 'copernicusmarine subset --help'."
@@ -69,7 +69,7 @@ class TestRequestFiles:
 
         command = build_command(filepath, "subset")
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
 
     def test_subset_error_when_forced_service_does_not_exist(self):
@@ -79,7 +79,7 @@ class TestRequestFiles:
 
         command = build_command(filepath, "subset")
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
             b"You forced selection of service: arco-time-series\n"
@@ -100,7 +100,7 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 5
@@ -120,7 +120,7 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command, stdout=subprocess.PIPE)
+        self.output = execute_in_terminal(command)
         assert b"No data to download" in self.output.stderr
         assert self.output.returncode == 0
 
@@ -135,7 +135,7 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
     def test_get_request_with_one_wrong_attribute(self, tmp_path):
@@ -149,5 +149,5 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0

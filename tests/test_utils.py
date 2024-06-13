@@ -21,12 +21,19 @@ FIVE_MINUTES = 5 * 60
 
 
 def execute_in_terminal(
-    command: list[str], timeout_second: float = FIVE_MINUTES, input=None
+    command: list[str],
+    timeout_second: float = FIVE_MINUTES,
+    input=None,
+    env=None,
 ) -> CompletedProcess[bytes]:
     t1 = time.time()
     logger.info(f"Running command: {' '.join(command)}...")
     output = subprocess.run(
-        command, capture_output=True, timeout=timeout_second, input=input
+        command,
+        capture_output=True,
+        timeout=timeout_second,
+        input=input,
+        env=env,
     )
     t2 = time.time()
     duration_second = t2 - t1

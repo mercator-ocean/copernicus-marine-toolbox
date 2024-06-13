@@ -1,8 +1,9 @@
 import pathlib
-import subprocess
 
 import numpy
 import xarray
+
+from tests.test_utils import execute_in_terminal
 
 SUBSET_NEAREST_LAYER_OPTIONS = {
     "dataset_id": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
@@ -131,7 +132,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             "--force-download",
         ]
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_depth = dataset.depth.values.min()
@@ -149,7 +150,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             tmp_path, output_filename, "arco-geo-series", same_depth=True
         )
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_depth = dataset.depth.values.min()
@@ -198,7 +199,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
 
@@ -220,7 +221,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             same_datetime=True,
         )
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_datetime = dataset.time.values.min()
@@ -247,7 +248,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             same_longitude=True,
         )
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_elevation = dataset.longitude.values.min()
@@ -274,7 +275,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             same_latitude=True,
         )
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_elevation = dataset.latitude.values.min()
@@ -321,7 +322,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "--force-download",
         ]
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         dataset = xarray.open_dataset(f"{tmp_path}/{output_filename}")
         assert self.output.returncode == 0
         for dimension in dataset.sizes:

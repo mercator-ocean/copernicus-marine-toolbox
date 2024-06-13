@@ -1,4 +1,4 @@
-import subprocess
+from tests.test_utils import execute_in_terminal
 
 
 class TestArcoServiceSelection:
@@ -14,7 +14,7 @@ class TestArcoServiceSelection:
             "thetao",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-geo-series..."
@@ -41,7 +41,7 @@ class TestArcoServiceSelection:
             "34.2",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-time-series..."
@@ -64,7 +64,7 @@ class TestArcoServiceSelection:
             "2005-01-01 00:00:00",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-geo-series..."
@@ -97,7 +97,7 @@ class TestArcoServiceSelection:
             "2005-01-01 00:00:00",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-time-series..."
@@ -130,7 +130,7 @@ class TestArcoServiceSelection:
             "2001-01-01 00:00:00",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-geo-series..."
@@ -161,7 +161,7 @@ class TestArcoServiceSelection:
             "2005-01-01 00:00:00",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-time-series..."
@@ -194,7 +194,7 @@ class TestArcoServiceSelection:
             "2023-11-28T23:59:59",
         ]
 
-        self.output = subprocess.run(command, capture_output=True)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Downloading using service arco-geo-series..."

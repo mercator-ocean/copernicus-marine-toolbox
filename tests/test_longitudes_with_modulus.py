@@ -1,8 +1,9 @@
-import subprocess
 from pathlib import Path
 
 import numpy
 import xarray
+
+from tests.test_utils import execute_in_terminal
 
 
 class TestLongitudesWithModulus:
@@ -51,8 +52,8 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset2, 350.16, 355.18
         )
 
-        output1 = subprocess.run(command1)
-        output2 = subprocess.run(command2)
+        output1 = execute_in_terminal(command1)
+        output2 = execute_in_terminal(command2)
 
         dataset1 = xarray.open_dataset(Path(tmp_path, filename_dataset1))
         dataset2 = xarray.open_dataset(Path(tmp_path, filename_dataset2))
@@ -89,8 +90,8 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset2, 350.16, 350.16
         )
 
-        output1 = subprocess.run(command1)
-        output2 = subprocess.run(command2)
+        output1 = execute_in_terminal(command1)
+        output2 = execute_in_terminal(command2)
 
         dataset1 = xarray.open_dataset(Path(tmp_path, filename_dataset1))
         dataset2 = xarray.open_dataset(Path(tmp_path, filename_dataset2))
@@ -121,7 +122,7 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, -190, -170
         )
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
@@ -141,7 +142,7 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, -145, 180
         )
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
@@ -159,7 +160,7 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, 240, 800
         )
 
-        self.output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
@@ -176,7 +177,7 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, 60, 30
         )
 
-        self.output = subprocess.run(command, stdout=subprocess.PIPE)
+        self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
         assert self.output.stderr.endswith(
