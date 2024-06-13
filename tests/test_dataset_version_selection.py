@@ -14,15 +14,15 @@ class TestDatasetVersionSelection:
             "cmems_mod_blk_wav_anfc_2.5km_PT1H-i",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Dataset version was not specified, the latest one was selected:"
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b'Dataset version was not specified, the latest one was selected: "default"'
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_get_when_dataset_has_only_a_default_version(self):
@@ -33,11 +33,11 @@ class TestDatasetVersionSelection:
             "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'Dataset version was not specified, the latest one was selected: "default"'
-            in output.stdout
+            in self.output.stderr
         )
 
     def test_get_when_dataset_version_is_specified(self):
@@ -50,15 +50,15 @@ class TestDatasetVersionSelection:
             "default",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b"Dataset version was not specified, the latest one was selected:"
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_get_when_dataset_specified_version_does_not_exist(self):
@@ -71,13 +71,13 @@ class TestDatasetVersionSelection:
             "default",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
-        assert b'No version "default" found' not in output.stdout
+        assert b'No version "default" found' not in self.output.stderr
 
     def test_get_when_dataset_specified_version_does_not_exist_with_forced_service(
         self,
@@ -93,13 +93,13 @@ class TestDatasetVersionSelection:
             "files",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
-        assert b'No version "default" found' not in output.stdout
+        assert b'No version "default" found' not in self.output.stderr
 
     def test_subset_when_no_version_is_specified_fetches_the_latest_one(self):
         command = [
@@ -111,15 +111,15 @@ class TestDatasetVersionSelection:
             "ice_concentration",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Dataset version was not specified, the latest one was selected:"
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b'Dataset version was not specified, the latest one was selected: "default"'
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_subset_when_dataset_has_only_a_default_version(self):
@@ -132,11 +132,11 @@ class TestDatasetVersionSelection:
             "ice_concentration",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'Dataset version was not specified, the latest one was selected: "default"'
-            in output.stdout
+            in self.output.stderr
         )
 
     def test_subset_when_dataset_version_is_specified(self):
@@ -151,15 +151,15 @@ class TestDatasetVersionSelection:
             "default",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b"Dataset version was not specified, the latest one was selected:"
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_subset_when_dataset_specified_version_does_not_exist(self):
@@ -174,13 +174,13 @@ class TestDatasetVersionSelection:
             "default",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
-        assert b'No version "default" found' not in output.stdout
+        assert b'No version "default" found' not in self.output.stderr
 
     def test_subset_when_dataset_specified_version_does_not_exist_with_forced_service(
         self,
@@ -198,13 +198,13 @@ class TestDatasetVersionSelection:
             "geoseries",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
-        assert b'No version "default" found' not in output.stdout
+        assert b'No version "default" found' not in self.output.stderr
 
     def test_dataset_version_is_specifiable_in_python_with_get(self, caplog):
         try:

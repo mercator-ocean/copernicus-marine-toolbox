@@ -14,9 +14,12 @@ class TestArcoServiceSelection:
             "thetao",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert b"Downloading using service arco-geo-series..." in output.stdout
+        assert (
+            b"Downloading using service arco-geo-series..."
+            in self.output.stderr
+        )
 
     def test_with_only_geographical_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -38,10 +41,11 @@ class TestArcoServiceSelection:
             "34.2",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
-            b"Downloading using service arco-time-series..." in output.stdout
+            b"Downloading using service arco-time-series..."
+            in self.output.stderr
         )
 
     def test_with_only_temporal_subset(self):
@@ -60,9 +64,12 @@ class TestArcoServiceSelection:
             "2005-01-01 00:00:00",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert b"Downloading using service arco-geo-series..." in output.stdout
+        assert (
+            b"Downloading using service arco-geo-series..."
+            in self.output.stderr
+        )
 
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_geo_point(
         self,
@@ -90,10 +97,11 @@ class TestArcoServiceSelection:
             "2005-01-01 00:00:00",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
-            b"Downloading using service arco-time-series..." in output.stdout
+            b"Downloading using service arco-time-series..."
+            in self.output.stderr
         )
 
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_temporal_point(
@@ -122,9 +130,12 @@ class TestArcoServiceSelection:
             "2001-01-01 00:00:00",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert b"Downloading using service arco-geo-series..." in output.stdout
+        assert (
+            b"Downloading using service arco-geo-series..."
+            in self.output.stderr
+        )
 
     def test_with_a_mix_of_geographical_and_temporal_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -150,10 +161,11 @@ class TestArcoServiceSelection:
             "2005-01-01 00:00:00",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
-            b"Downloading using service arco-time-series..." in output.stdout
+            b"Downloading using service arco-time-series..."
+            in self.output.stderr
         )
 
     def test_dataset_has_interdependant_coordinates(self):
@@ -182,6 +194,9 @@ class TestArcoServiceSelection:
             "2023-11-28T23:59:59",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert b"Downloading using service arco-geo-series..." in output.stdout
+        assert (
+            b"Downloading using service arco-geo-series..."
+            in self.output.stderr
+        )

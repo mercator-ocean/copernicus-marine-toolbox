@@ -34,14 +34,14 @@ class TestWarningsSubsetBounds:
         command = self._build_custom_command(
             dataset_id, "CHL", -180, 180, "nearest"
         )
-        output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command, input=b"n")
 
-        assert b"WARNING" in output.stdout
+        assert b"WARNING" in self.output.stderr
         assert (
             b"Some or all of your subset selection [-180.0, 180.0]"
             b" for the longitude dimension  exceed the dataset"
             b" coordinates [-179.9791717529297, 179.9791717529297]"
-        ) in output.stdout
+        ) in self.output.stderr
 
     def test_subset_warnings_differently(self):
         # Dataset with longitude bounds from -180 to 179.91668701171875

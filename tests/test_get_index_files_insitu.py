@@ -16,22 +16,22 @@ class TestGetIndexInsituFiles:
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
             b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_history.txt"
-            in self.output.stdout
+            in self.output.stderr
         )
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
             b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_latest.txt"
-            in self.output.stdout
+            in self.output.stderr
         )
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
             b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_monthly.txt"
-            in self.output.stdout
+            in self.output.stderr
         )
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
             b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_platform.txt"
-            in self.output.stdout
+            in self.output.stderr
         )
 
     def test_get_index_insitu_files_not_an_insitu(self):
@@ -44,7 +44,7 @@ class TestGetIndexInsituFiles:
         ]
         self.output = execute_in_terminal(self.command)
 
-        assert b"No data to download" in self.output.stdout
+        assert b"No data to download" in self.output.stderr
 
     def test_get_index_insitu_files_python(self):
         get_result = get(

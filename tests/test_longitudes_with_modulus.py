@@ -121,13 +121,13 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, -190, -170
         )
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
         longitudes = dataset.longitude.values
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert not numpy.isnan(dataset.thetao.max().values.item())
         assert longitudes.min() == 170
         assert longitudes.max() == 190
@@ -141,13 +141,13 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, -145, 180
         )
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
         longitudes = dataset.longitude.values
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert not numpy.isnan(dataset.thetao.max().values.item())
         assert longitudes.min() == -145
         assert longitudes.max() == 180
@@ -159,13 +159,13 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, 240, 800
         )
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
         longitudes = dataset.longitude.values
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert longitudes.min() == numpy.float32(-180)
         assert longitudes.max() == numpy.float32(179.91669)
 
@@ -176,10 +176,10 @@ class TestLongitudesWithModulus:
             tmp_path, filename_dataset, 60, 30
         )
 
-        output = subprocess.run(command, stdout=subprocess.PIPE)
+        self.output = subprocess.run(command, stdout=subprocess.PIPE)
 
-        assert output.returncode == 1
-        assert output.stdout.endswith(
+        assert self.output.returncode == 1
+        assert self.output.stderr.endswith(
             b"Minimum longitude greater than maximum longitude: "
             b"--minimum-longitude option must be smaller or equal to "
             b"--maximum-longitude\n"

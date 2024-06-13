@@ -15,12 +15,12 @@ class TestSqliteSubsetting:
             "--end-datetime",
             "2024-01-01T03:00:00",
         ]
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
         assert (
             b"Format not supported: Subsetting format type sqlite not supported yet."
-            in output.stdout
+            in self.output.stderr
         )
-        assert output.returncode == 1
+        assert self.output.returncode == 1
 
     def test_sqlite_subsetting_not_supported_yet_even_when_force_service(self):
         command = [
@@ -37,9 +37,9 @@ class TestSqliteSubsetting:
             "--service",
             "geoseries",
         ]
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
         assert (
             b"Format not supported: Subsetting format type sqlite not supported yet."
-            in output.stdout
+            in self.output.stderr
         )
-        assert output.returncode == 1
+        assert self.output.returncode == 1

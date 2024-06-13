@@ -111,7 +111,7 @@ class TestCommandLineInterface:
     def and_there_are_no_warnings_about_backend_versions(self):
         assert (
             b"Please update to the latest client version."
-            not in self.output.stdout
+            not in self.output.stderr
         )
 
     def then_omi_services_are_not_in_the_catalog(self):
@@ -465,8 +465,8 @@ class TestCommandLineInterface:
             "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def check_subset_request_with_dataseturl(
         self, function_name, dataset_url, tmp_path
@@ -484,8 +484,8 @@ class TestCommandLineInterface:
             "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def check_subset_request_with_dataset_not_in_catalog(self):
         self.base_request_dict["--dataset-id"] = "FAKE_ID"
@@ -497,12 +497,14 @@ class TestCommandLineInterface:
             "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
-        output = subprocess.run(unknown_dataset_request, capture_output=True)
+        self.output = subprocess.run(
+            unknown_dataset_request, capture_output=True
+        )
         assert (
             b"Key error: The requested dataset 'FAKE_ID' was not found in the "
             b"catalogue, you can use 'copernicusmarine describe "
             b"--include-datasets --contains <search_token>' to find datasets"
-        ) in output.stdout
+        ) in self.output.stderr
 
     def check_subset_request_with_no_subsetting(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -513,16 +515,16 @@ class TestCommandLineInterface:
             f"{dataset_id}",
         ]
 
-        output = subprocess.run(command, stdout=subprocess.PIPE)
-        assert output.returncode == 1
+        self.output = subprocess.run(command, stdout=subprocess.PIPE)
+        assert self.output.returncode == 1
         assert (
             b"Missing subset option. Try 'copernicusmarine subset --help'."
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b"To retrieve a complete dataset, please use instead: "
             b"copernicusmarine get --dataset-id " + bytes(dataset_id, "utf-8")
-        ) in output.stdout
+        ) in self.output.stderr
 
     def test_if_dataset_coordinate_valid_minmax_attributes_are_setted(
         self, tmp_path
@@ -538,13 +540,13 @@ class TestCommandLineInterface:
             "--maximum-longitude": "0.3",
             "--minimum-depth": "0.0",
             "--maximum-depth": "5.0",
-            "-f": "output.nc",
+            "-f": "self.output.nc",
             "--output-directory": tmp_path,
         }
 
         self.check_default_subset_request(self.GEOSERIES.subpath, tmp_path)
 
-        dataset_path = pathlib.Path(tmp_path) / "output.nc"
+        dataset_path = pathlib.Path(tmp_path) / "self.output.nc"
         dataset = xarray.open_dataset(dataset_path)
 
         assert dataset.latitude.attrs["valid_min"] >= 0
@@ -579,7 +581,7 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(self.command)
         assert (
-            b"time       (time) datetime64[ns] 2023" not in self.output.stdout
+            b"time       (time) datetime64[ns] 2023" not in self.output.stderr
         )
 
     # -------------------------#
@@ -621,8 +623,8 @@ class TestCommandLineInterface:
             f"{folder}",
         ] + self.flatten_request_dict(self.base_get_request_dict)
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def test_get_download_s3_without_regex(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -638,9 +640,9 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert len(downloaded_files) == 29
 
     def test_get_download_s3_with_regex(self, tmp_path):
@@ -660,9 +662,9 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert len(downloaded_files) == 3
 
         for filename in downloaded_files:
@@ -684,10 +686,10 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
         assert (
             b"You requested the download of the following files"
-            in output.stdout
+            in self.output.stderr
         )
 
     def test_downloaded_files_are_not_displayed_with_force_download_option(
@@ -709,10 +711,10 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
         assert (
             b"You requested the download of the following files"
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_subset_output_file_as_netcdf(self, tmp_path):
@@ -747,9 +749,9 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         is_file = pathlib.Path(tmp_path, output_filename).is_file()
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert is_file
 
     def test_process_is_stopped_when_credentials_are_invalid(self):
@@ -769,10 +771,10 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 1
-        assert b"Invalid username or password" in output.stdout
+        assert self.output.returncode == 1
+        assert b"Invalid username or password" in self.output.stderr
 
     def test_login_is_prompt_when_configuration_file_doest_not_exist(
         self, tmp_path
@@ -807,11 +809,11 @@ class TestCommandLineInterface:
             f"{credentials_file}",
         ]
 
-        output = subprocess.run(
+        self.output = subprocess.run(
             command, capture_output=True, env=environment_without_crendentials
         )
-        assert output.returncode == 1
-        assert b"username:" in output.stdout
+        assert self.output.returncode == 1
+        assert b"username:" in self.output.stderr
 
     def test_login_command(self, tmp_path):
         self.check_credentials_username_specified_password_prompt(tmp_path)
@@ -855,12 +857,12 @@ class TestCommandLineInterface:
         ]
         password = os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD")
         assert password is not None
-        output = subprocess.run(
+        self.output = subprocess.run(
             command,
             env=environment_without_crendentials,
             input=bytes(password, "utf-8"),
         )
-        assert output.returncode == 0, output.stdout
+        assert self.output.returncode == 0, self.output.stderr
         shutil.rmtree(Path(tmp_path))
 
     def test_get_download_s3_with_wildcard_filter(self, tmp_path):
@@ -880,9 +882,9 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert len(downloaded_files) == 3
 
         for filename in downloaded_files:
@@ -908,9 +910,9 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert len(downloaded_files) == 5
 
         for filename in downloaded_files:
@@ -931,9 +933,9 @@ class TestCommandLineInterface:
             f"{regex}",
         ]
 
-        output = subprocess.run(command, stdout=subprocess.PIPE)
-        assert b"No data to download" in output.stdout
-        assert output.returncode == 0
+        self.output = subprocess.run(command, stdout=subprocess.PIPE)
+        assert b"No data to download" in self.output.stderr
+        assert self.output.returncode == 0
 
     def test_login(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")
@@ -949,8 +951,8 @@ class TestCommandLineInterface:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
 
         command_with_skip = [
@@ -981,7 +983,7 @@ class TestCommandLineInterface:
             "unavailable-service",
         ]
 
-        self.run_output = subprocess.run(
+        self.output = subprocess.run(
             command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
@@ -990,7 +992,7 @@ class TestCommandLineInterface:
             b"Service unavailable-service does not exist for command subset. "
             b"Possible services: ['arco-geo-series', 'geoseries', "
             b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco']"
-        ) in self.run_output.stdout
+        ) in self.output.stderr
 
     def test_mutual_exclusivity_of_cache_options_for_describe(self):
         self.when_I_run_copernicus_marine_command_with_both_cache_options(
@@ -1019,22 +1021,22 @@ class TestCommandLineInterface:
             "--overwrite-metadata-cache",
             "--no-metadata-cache",
         ]
-        self.run_output = subprocess.run(
+        self.output = subprocess.run(
             command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
     def then_I_got_an_error_regarding_mutual_exclusivity(self):
-        assert self.run_output.returncode == 2
-        assert self.run_output.stdout == b""
-        assert self.run_output.stderr == (
+        assert self.output.returncode == 2
+        assert self.output.stdout == b""
+        assert self.output.stderr == (
             b"Error: Illegal usage: `overwrite-metadata-cache` is mutually "
             b"exclusive with arguments `no-metadata-cache`.\n"
         )
 
     def test_describe_without_using_cache(self):
         command = ["copernicusmarine", "describe", "--no-metadata-cache"]
-        output = execute_in_terminal(command=command, timeout_second=30)
-        assert output.returncode == 0
+        self.output = execute_in_terminal(command=command, timeout_second=30)
+        assert self.output.returncode == 0
 
     def when_I_request_subset_dataset_with_zarr_service(
         self, output_path, vertical_dimension_as_originally_produced
@@ -1073,7 +1075,7 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        self.run_output = subprocess.run(
+        self.output = subprocess.run(
             command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
@@ -1083,7 +1085,7 @@ class TestCommandLineInterface:
         filepath = pathlib.Path(output_path, "data.zarr")
         dataset = xarray.open_dataset(filepath, engine="zarr")
 
-        assert self.run_output.returncode == 0
+        assert self.output.returncode == 0
         if sign == "positive":
             assert dataset.depth.min() <= 10
             assert dataset.depth.max() >= 0
@@ -1138,9 +1140,9 @@ class TestCommandLineInterface:
             "--no-directories",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
 
     def then_files_are_created_without_tree_folder(
         self, tmp_path, output_directory=None
@@ -1188,9 +1190,9 @@ class TestCommandLineInterface:
             "-o",
             f"{tmp_path}",
         ]
-        output = subprocess.run(command, input=b"y")
+        self.output = subprocess.run(command, input=b"y")
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert (
             Path(tmp_path)
             / "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc"
@@ -1210,14 +1212,14 @@ class TestCommandLineInterface:
             "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
         ]
 
-        self.run_output = subprocess.run(
+        self.output = subprocess.run(
             command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
     def then_I_can_see_the_original_files_service_is_choosen(self):
         assert (
             b"Downloading using service original-files..."
-            in self.run_output.stdout
+            in self.output.stderr
         )
 
     def test_default_service_for_subset_command(self, tmp_path):
@@ -1236,14 +1238,14 @@ class TestCommandLineInterface:
             "thetao",
         ]
 
-        self.run_output = subprocess.run(
+        self.output = subprocess.run(
             command, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
     def then_I_can_see_the_arco_geo_series_service_is_choosen(self):
         assert (
             b"Downloading using service arco-geo-series..."
-            in self.run_output.stdout
+            in self.output.stderr
         )
 
     def test_subset_with_dataset_id_and_url(self):
@@ -1258,12 +1260,12 @@ class TestCommandLineInterface:
             "thetao",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 1
+        assert self.output.returncode == 1
         assert (
             b"Must specify only one of 'dataset_url' or 'dataset_id' options"
-        ) in output.stdout
+        ) in self.output.stderr
 
     def test_no_traceback_is_printed_on_dataset_url_error(self):
         command = [
@@ -1275,10 +1277,10 @@ class TestCommandLineInterface:
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m/2023",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 1
-        assert not (b"Traceback") in output.stderr
+        assert self.output.returncode == 1
+        assert not (b"Traceback") in self.output.stderr
 
     def test_get_2023_08_original_files(self):
         command = [
@@ -1289,10 +1291,10 @@ class TestCommandLineInterface:
             "--filter",
             "*/2023/08/*",
         ]
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 1
-        assert not (b"No data to download") in output.stdout
+        assert self.output.returncode == 1
+        assert not (b"No data to download") in self.output.stderr
 
     def test_subset_with_chunking(self, tmp_path):
         command = [
@@ -1323,9 +1325,9 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
 
     def test_dataset_url_suffix_path_are_used_as_filter(self):
         command = [
@@ -1337,9 +1339,9 @@ class TestCommandLineInterface:
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202211/2023/11",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert b"Printed 20 out of 30 files" in output.stdout
+        assert b"Printed 20 out of 30 files" in self.output.stderr
 
     def test_short_option_for_copernicus_marine_command_helper(self):
         short_option_command = [
@@ -1351,14 +1353,16 @@ class TestCommandLineInterface:
             "--help",
         ]
 
-        short_option_output = subprocess.run(
+        self.short_option_output = subprocess.run(
             short_option_command, capture_output=True
         )
-        long_option_output = subprocess.run(
+        self.long_option_output = subprocess.run(
             long_option_command, capture_output=True
         )
 
-        assert short_option_output.stdout == long_option_output.stdout
+        assert (
+            self.short_option_output.stderr == self.long_option_output.stderr
+        )
 
     def test_short_option_for_copernicus_marine_subcommand_helper(self):
         short_option_command = [
@@ -1372,34 +1376,36 @@ class TestCommandLineInterface:
             "--help",
         ]
 
-        short_option_output = subprocess.run(
+        self.short_option_output = subprocess.run(
             short_option_command, capture_output=True
         )
-        long_option_output = subprocess.run(
+        self.long_option_output = subprocess.run(
             long_option_command, capture_output=True
         )
 
-        assert short_option_output.stdout == long_option_output.stdout
+        assert (
+            self.short_option_output.stderr == self.long_option_output.stderr
+        )
 
     def test_subset_template_creation(self):
         command = ["copernicusmarine", "subset", "--create-template"]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
             b"Template created at: subset_template.json"
-            == remove_extra_logging_prefix_info(output.stdout)
+            == remove_extra_logging_prefix_info(self.output.stderr)
         )
         assert Path("subset_template.json").is_file()
 
     def test_get_template_creation(self):
         command = ["copernicusmarine", "get", "--create-template"]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
             b"Template created at: get_template.json"
-            == remove_extra_logging_prefix_info(output.stdout)
+            == remove_extra_logging_prefix_info(self.output.stderr)
         )
         assert Path("get_template.json").is_file()
 
@@ -1411,11 +1417,11 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
             b"Other options passed with create template: force_download"
-            == remove_extra_logging_prefix_info(output.stdout)
+            == remove_extra_logging_prefix_info(self.output.stderr)
         )
 
     def test_error_log_for_variable_that_does_not_exist(self):
@@ -1428,11 +1434,11 @@ class TestCommandLineInterface:
             "theta",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
         assert (
             b"The variable 'theta' is neither a "
-            b"variable or a standard name in the dataset" in output.stdout
+            b"variable or a standard name in the dataset" in self.output.stderr
         )
 
     def test_error_log_for_service_that_does_not_exist(self):
@@ -1449,9 +1455,12 @@ class TestCommandLineInterface:
             "ft",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert b"Service ft does not exist for command subset" in output.stdout
+        assert (
+            b"Service ft does not exist for command subset"
+            in self.output.stderr
+        )
 
     def then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
         self, filepath
@@ -1499,8 +1508,8 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
         assert (
             "thetao"
             in xarray.open_zarr(f"{tmp_path}/{output_filename}").variables
@@ -1540,9 +1549,9 @@ class TestCommandLineInterface:
             "DEBUG",
         ]
 
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 0
-        assert b"DEBUG - " in output.stdout
+        self.output = subprocess.run(command, capture_output=True)
+        assert self.output.returncode == 0
+        assert b"DEBUG - " in self.output.stderr
 
     def test_arco_subset_is_fast(self, tmp_path):
         command = [
@@ -1571,8 +1580,8 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = execute_in_terminal(command, timeout_second=10)
-        assert output.returncode == 0, output.stderr
+        self.output = execute_in_terminal(command, timeout_second=10)
+        assert self.output.returncode == 0, self.output.stderr
 
     def test_name_dataset_with_subset_parameters(self, tmp_path):
         command = [
@@ -1621,14 +1630,12 @@ class TestCommandLineInterface:
             + expected_extension
         )
         expected_filepath = Path(tmp_path, expected_filename)
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
         assert expected_filepath.is_dir()
 
     def then_I_can_read_dataset_size(self):
-        assert (
-            b"Estimated size of the dataset file is" in self.run_output.stdout
-        )
+        assert b"Estimated size of the dataset file is" in self.output.stderr
 
     def test_dataset_size_is_displayed_when_downloading_with_arco_service(
         self, tmp_path
@@ -1670,8 +1677,8 @@ class TestCommandLineInterface:
             "--force-download",
         ]
 
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 0
+        self.output = subprocess.run(command, capture_output=True)
+        assert self.output.returncode == 0
         assert (
             len(
                 xarray.open_dataset(
@@ -1712,19 +1719,19 @@ class TestCommandLineInterface:
 
     def then_I_can_read_an_error_in_stdout(self):
         assert self.output.returncode == 1
-        assert b"ERROR" in self.output.stdout
+        assert b"ERROR" in self.output.stderr
         assert (
             b"Some or all of your subset selection [-19.0, -17.0] for "
             b"the longitude dimension  exceed the dataset coordinates"
-        ) in self.output.stdout
+        ) in self.output.stderr
 
     def then_I_can_read_a_warning_in_stdout(self):
         assert self.output.returncode == 0
-        assert b"WARNING" in self.output.stdout
+        assert b"WARNING" in self.output.stderr
         assert (
             b"Some or all of your subset selection [-19.0, -17.0] for "
             b"the longitude dimension  exceed the dataset coordinates"
-        ) in self.output.stdout
+        ) in self.output.stderr
 
     def test_subset_strict_method(self):
         self.when_I_request_a_dataset_with_subset_method_option("strict")
@@ -1822,15 +1829,15 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(base_command, capture_output=True)
-        assert output.returncode == 0
-        assert b"Downloading using service omi-arco..." in output.stdout
+        self.output = subprocess.run(base_command, capture_output=True)
+        assert self.output.returncode == 0
+        assert b"Downloading using service omi-arco..." in self.output.stderr
 
-        output = subprocess.run(
+        self.output = subprocess.run(
             base_command + ["-s", "omi-arco"], capture_output=True
         )
-        assert output.returncode == 0
-        assert b"Downloading using service omi-arco..." in output.stdout
+        assert self.output.returncode == 0
+        assert b"Downloading using service omi-arco..." in self.output.stderr
 
     def test_static_arco_service(self, tmp_path):
         base_command = [
@@ -1847,15 +1854,19 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(base_command, capture_output=True)
-        assert output.returncode == 0
-        assert b"Downloading using service static-arco..." in output.stdout
+        self.output = subprocess.run(base_command, capture_output=True)
+        assert self.output.returncode == 0
+        assert (
+            b"Downloading using service static-arco..." in self.output.stderr
+        )
 
-        output = subprocess.run(
+        self.output = subprocess.run(
             base_command + ["-s", "static-arco"], capture_output=True
         )
-        assert output.returncode == 0
-        assert b"Downloading using service static-arco..." in output.stdout
+        assert self.output.returncode == 0
+        assert (
+            b"Downloading using service static-arco..." in self.output.stderr
+        )
 
     def test_subset_dataset_part_option(self, tmp_path):
         base_command = [
@@ -1870,10 +1881,10 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(
+        self.output = subprocess.run(
             base_command + ["--dataset-part", "bathy"], capture_output=True
         )
-        assert output.returncode == 0
+        assert self.output.returncode == 0
 
     def test_netcdf_compression_level(self, tmp_path):
         netcdf_compression_enabled_option = "--netcdf-compression-enabled"
@@ -1988,9 +1999,9 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert len(downloaded_files) == 2
 
         for filename in downloaded_files:
@@ -2024,8 +2035,8 @@ class TestCommandLineInterface:
 
         output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
         assert output_filename.is_file()
         with open(output_filename) as file:
             lines = file.read().splitlines()
@@ -2058,7 +2069,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "--no-directories",
         ]
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         output_file = pathlib.Path(
             tmp_path,
             "20220531120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.nc",
@@ -2067,7 +2078,7 @@ class TestCommandLineInterface:
             minutes=5
         )
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert datetime.datetime.fromtimestamp(
             os.path.getmtime(output_file)
         ) < (five_minutes_ago)
@@ -2103,8 +2114,8 @@ class TestCommandLineInterface:
             "--netcdf3-compatible",
             "--force-download",
         ]
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
         output_netcdf_format = subprocess.run(
             ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"], capture_output=True

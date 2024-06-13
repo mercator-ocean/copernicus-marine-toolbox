@@ -13,11 +13,11 @@ class TestDatasetPartSelection:
             "files",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
             b"When dataset has multiple parts and using 'files' service"
-            in output.stdout
+            in self.output.stderr
         )
 
     def test_get_when_dataset_part_is_specified(self):
@@ -32,14 +32,15 @@ class TestDatasetPartSelection:
             "files",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
-            b'You forced selection of dataset part "history"' in output.stdout
+            b'You forced selection of dataset part "history"'
+            in self.output.stderr
         )
         assert (
             b"Dataset part was not specified, the first one was selected:"
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_get_when_dataset_specified_part_does_not_exist(self):
@@ -54,12 +55,13 @@ class TestDatasetPartSelection:
             "files",
         ]
 
-        output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command)
 
         assert (
-            b'You forced selection of dataset part "default"' in output.stdout
+            b'You forced selection of dataset part "default"'
+            in self.output.stderr
         )
-        assert b'No part "default" found' not in output.stdout
+        assert b'No part "default" found' not in self.output.stderr
 
     def test_dataset_part_is_specifiable_in_python_with_get(self, caplog):
         try:

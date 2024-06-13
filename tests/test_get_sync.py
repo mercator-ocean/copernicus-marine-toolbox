@@ -36,7 +36,7 @@ class TestGetSync:
         self.output = execute_in_terminal(self.command)
         assert (
             b"Sync is not supported for datasets with multiple parts."
-            in self.output.stdout
+            in self.output.stderr
         )
 
     def test_get_sync_needs_version(self):
@@ -50,7 +50,7 @@ class TestGetSync:
         self.output = execute_in_terminal(self.command)
         assert (
             b"Value error: Sync requires to set a dataset version."
-            in self.output.stdout
+            in self.output.stderr
         )
 
     def when_I_get_some_native_files_with_sync(self, tmp_path):
@@ -85,7 +85,7 @@ class TestGetSync:
             f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"No data to download" in self.output.stdout
+        assert b"No data to download" in self.output.stderr
 
     def when_I_delete_one_file(self, tmp_path):
         self.command = [
@@ -119,14 +119,14 @@ class TestGetSync:
             b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             b"/2007/01/"
             b"20070110_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
-            in self.output.stdout
+            in self.output.stderr
         )
         assert (
             b"ARCTIC_MULTIYEAR_BGC_002_005"
             b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             b"/2007/01/"
             b"20070111_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
-            not in self.output.stdout
+            not in self.output.stderr
         )
 
     def when_I_add_a_file_locally(self, tmp_path):
@@ -159,14 +159,14 @@ class TestGetSync:
         self.output = execute_in_terminal(self.command)
         assert (
             b"Some files will be deleted due to sync delete:"
-            in self.output.stdout
+            in self.output.stderr
         )
         assert (
             f"{tmp_path}".encode() + b"/ARCTIC_MULTIYEAR_BGC_002_005"
             b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             b"/2007/01/"
             b"20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
-            in self.output.stdout
+            in self.output.stderr
         )
         assert (
             os.path.isfile(

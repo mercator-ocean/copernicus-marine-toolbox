@@ -78,10 +78,10 @@ class TestGetDirectDownload:
             b"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
             b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
             b"lololo not found on the server. Skipping."
-        ) in self.output.stdout
+        ) in self.output.stderr
         assert (
             b"history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
-        ) not in self.output.stdout
+        ) not in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, file_name="history/BO/AR_PR_BO_58JM.nc"
         )
@@ -100,8 +100,8 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"WARNING" not in self.output.stdout
-        assert b"Skipping" not in self.output.stdout
+        assert b"WARNING" not in self.output.stderr
+        assert b"Skipping" not in self.output.stderr
         assert self.output.returncode == 0
 
     def test_get_direct_download_fails_but_listing_succeeds(self, tmp_path):

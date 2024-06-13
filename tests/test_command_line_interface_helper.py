@@ -8,8 +8,8 @@ class TestCommandLineInterfaceHelper:
             "--help",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def test_describe_helper(self):
         command = [
@@ -18,8 +18,8 @@ class TestCommandLineInterfaceHelper:
             "--help",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def test_login_helper(self):
         command = [
@@ -28,8 +28,8 @@ class TestCommandLineInterfaceHelper:
             "--help",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def test_get_helper(self):
         command = [
@@ -38,8 +38,8 @@ class TestCommandLineInterfaceHelper:
             "--help",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0
 
     def test_subset_helper(self):
         command = [
@@ -48,5 +48,5 @@ class TestCommandLineInterfaceHelper:
             "--help",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = subprocess.run(command)
+        assert self.output.returncode == 0

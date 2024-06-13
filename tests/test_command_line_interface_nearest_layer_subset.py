@@ -131,13 +131,13 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             "--force-download",
         ]
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert dataset.depth.size == 1
         assert min_depth == numpy.float32(0.494025)
         assert max_depth == numpy.float32(0.494025)
@@ -149,13 +149,13 @@ class TestCommandLineInterfaceNearestLayerSubset:
             tmp_path, output_filename, "arco-geo-series", same_depth=True
         )
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert dataset.depth.size == 1
         assert min_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
         assert max_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
@@ -198,9 +198,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "--force-download",
         ]
 
-        output = subprocess.run(command, capture_output=True)
+        self.output = subprocess.run(command, capture_output=True)
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_depth = dataset.depth.values.min()
@@ -220,13 +220,13 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             same_datetime=True,
         )
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_datetime = dataset.time.values.min()
         max_datetime = dataset.time.values.max()
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert dataset.time.size == 1
         assert (
             min_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
@@ -247,13 +247,13 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             same_longitude=True,
         )
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_elevation = dataset.longitude.values.min()
         max_elevation = dataset.longitude.values.max()
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert dataset.longitude.size == 1
         assert (
             min_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
@@ -274,13 +274,13 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "arco-geo-series",
             same_latitude=True,
         )
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_elevation = dataset.latitude.values.min()
         max_elevation = dataset.latitude.values.max()
 
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert dataset.latitude.size == 1
         assert (
             min_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
@@ -321,8 +321,8 @@ class TestCommandLineInterfaceNearestLayerSubset:
             "--force-download",
         ]
 
-        output = subprocess.run(command)
+        self.output = subprocess.run(command)
         dataset = xarray.open_dataset(f"{tmp_path}/{output_filename}")
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         for dimension in dataset.sizes:
             assert dataset.sizes[dimension] > 0
