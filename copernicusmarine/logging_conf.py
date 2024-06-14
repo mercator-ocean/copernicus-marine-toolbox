@@ -1,4 +1,4 @@
-logging_conf = {
+logging_configuration_dict = {
     "disable_existing_loggers": False,
     "formatters": {
         "blank": {"format": "%(message)s"},
