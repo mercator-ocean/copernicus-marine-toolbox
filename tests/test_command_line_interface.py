@@ -256,12 +256,10 @@ class TestCommandLineInterface:
         )
 
     def when_I_run_copernicus_marine_describe_including_datasets(self):
-        command = "copernicusmarine describe --include-datasets"
         command = [
             "copernicusmarine",
             "describe",
             "--include-datasets",
-            "--no-metadata-cache",
         ]
         self.output = execute_in_terminal(command)
 
