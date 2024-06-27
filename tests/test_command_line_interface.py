@@ -530,8 +530,8 @@ class TestCommandLineInterface:
         self.base_request_dict = {
             "--dataset-id": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             "--variable": "so",
-            "--start-datetime": "2021-01-01",
-            "--end-datetime": "2021-01-02",
+            "--start-datetime": "2024-01-01",
+            "--end-datetime": "2024-01-02",
             "--minimum-latitude": "0.0",
             "--maximum-latitude": "0.1",
             "--minimum-longitude": "0.2",
@@ -553,8 +553,8 @@ class TestCommandLineInterface:
         assert dataset.longitude.attrs["valid_max"] <= 0.3
         assert dataset.depth.attrs["valid_min"] >= 0
         assert dataset.depth.attrs["valid_max"] <= 5
-        assert dataset.time.attrs["valid_min"] == 622392
-        assert dataset.time.attrs["valid_max"] == 622416
+        assert dataset.time.attrs["valid_min"] == 648672
+        assert dataset.time.attrs["valid_max"] == 648696
 
     def test_retention_period_works(self):
         self.command = [
@@ -1301,9 +1301,9 @@ class TestCommandLineInterface:
             "-i",
             "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
             "-t",
-            "2021-01-01T00:00:00",
+            "2024-01-01T00:00:00",
             "-T",
-            "2021-01-05T23:59:59",
+            "2024-01-05T23:59:59",
             "-v",
             "uo",
             "-x",
