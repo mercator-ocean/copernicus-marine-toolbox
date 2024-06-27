@@ -60,12 +60,20 @@ def subset(
     Extracts a subset of data from a specified dataset using given parameters.
 
     Args:
-        dataset_url (str, optional): URL of the dataset source.
-        dataset_id (str, optional): Identifier for the dataset.
-        dataset_version (str, optional): Force use of specified data service.
-        dataset_part (str, optional): Force use of specified data service.
-        username (str, optional): Username for authentication.
-        password (str, optional): Password for authentication.
+        dataset_url (str, optional): The URL of the dataset to retrieve.
+        dataset_id (str, optional): The unique identifier of the dataset.
+        dataset_version (str, optional): Force the use of a specific dataset version.
+        dataset_part (str, optional): Force the use of a specific dataset part.
+        username (str, optional): The username for authentication.
+        password (str, optional): The password for authentication.
+        output_directory (Union[pathlib.Path, str], optional): The directory where downloaded files will be saved.
+        credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
+        force_download (bool, optional): Skip confirmation before download.
+        overwrite_output_data (bool, optional): If True, overwrite existing output files.
+        request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters.
+        service (str, optional): Force the use of a specific service.
+        overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
+        no_metadata_cache (bool, optional): If True, do not use the metadata cache.
         variables (List[str], optional): List of variable names to extract.
         minimum_longitude (float, optional): Minimum longitude value for spatial subset.
         maximum_longitude (float, optional): Maximum longitude value for spatial subset.
@@ -79,15 +87,7 @@ def subset(
         subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
         output_filename (str, optional): Output filename for the subsetted data.
         file_format (str, optional): Extension format for the filename.
-        service (str, optional): Force use of specified data service.
-        request_file (Union[pathlib.Path, str], optional): Path to request file.
-        output_directory (Union[pathlib.Path, str], optional): Directory to save output files.
-        credentials_file (Union[pathlib.Path, str], optional): Path to credentials file.
         motu_api_request (str, optional): MOTU API request string.
-        force_download (bool, optional): Skip confirmation before download.
-        overwrite_output_data (bool, optional): Overwrite existing output data if True.
-        overwrite_metadata_cache (bool, optional): Overwrite existing metadata cache if True.
-        no_metadata_cache (bool, optional): Disable metadata caching if True.
         netcdf_compression_enabled (bool, optional): Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the compression level.
         netcdf_compression_level (int, optional): Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
         netcdf3_compatible (bool, optional): Enable downloading the dataset in a netCDF 3 compatible format.
