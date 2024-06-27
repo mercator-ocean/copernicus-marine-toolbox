@@ -535,7 +535,7 @@ def _warning_dataset_will_be_deprecated(
     dataset_version: CopernicusMarineDatasetVersion,
     dataset_part: CopernicusMarineVersionPart,
 ):
-    logger.warn(
+    logger.warning(
         f"""The dataset {dataset_id}"""
         f"""{f", version '{dataset_version.label}'"
              if dataset_version.label != 'default' else ''}"""
@@ -552,7 +552,7 @@ def _warning_dataset_not_yet_released(
     dataset_version: CopernicusMarineDatasetVersion,
     dataset_part: CopernicusMarineVersionPart,
 ):
-    logger.warn(
+    logger.warning(
         f"""The dataset {dataset_id}"""
         f"""{f", version '{dataset_version.label}'"
              if dataset_version.label != 'default' else ''}"""
