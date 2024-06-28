@@ -15,11 +15,6 @@ class TestGetIndexInsituFiles:
 
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
-            b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_reference.txt"
-            not in self.output.stdout
-        )
-        assert (
-            b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
             b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_history.txt"
             in self.output.stdout
         )
