@@ -92,17 +92,22 @@ The toolbox makes many requests to STAC to be able to parse the full marine data
 
 Note, that this concerns only the catalog parsing step so the describe command and the start of the get and subset command. It does not apply when downloading files or listing files from the get command or when requesting the data chunks for the subset command.
 
+For the `get` command, you can use the `COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS` to set the number of threads open to download in parallel. There are no default value. By default the toolbox uses the python `multiprocessing.pool.ThreadPool`. You can set the environment variable to 0 if you don't want to use the `multiprocessing` library at all, the download will be used only through `boto3`.
+
 ## Command Line Interface (CLI)
 
 ### The `--help` option
+
 To discover commands and their available options, consider appending `--help` on any command line.
 
 Example:
+
 ```bash
 copernicusmarine --help
 ```
 
 Returns:
+
 ```bash
 Usage: copernicusmarine [OPTIONS] COMMAND [ARGS]...
 
@@ -118,20 +123,25 @@ Commands:
 ```
 
 ### Command `describe`
+
 Retrieve metadata information about all products/datasets and display as JSON output:
+
 ```bash
 copernicusmarine describe --include-datasets
 ```
 
 The JSON output can also be saved as follows:
+
 ```bash
 copernicusmarine describe --include-datasets > all_datasets_copernicusmarine.json
 ```
 
 ### Command `login`
+
 Create a single configuration file `.copernicusmarine-credentials` allowing to access all Copernicus Marine Data Store data services. By default, the file is saved in user's home directory.
 
 Example:
+
 ```bash
 > copernicusmarine login
 username : johndoe
