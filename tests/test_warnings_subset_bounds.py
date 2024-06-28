@@ -38,8 +38,8 @@ class TestWarningsSubsetBounds:
 
         assert b"WARNING" in output.stdout
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0]"
-            b" for the longitude dimension  exceed the dataset"
+            b"Some of your subset selection [-180.0, 180.0]"
+            b" for the longitude dimension exceed the dataset"
             b" coordinates [-179.9791717529297, 179.9791717529297]"
         ) in output.stdout
 
@@ -58,12 +58,12 @@ class TestWarningsSubsetBounds:
         output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) in output1.stdout
         assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
+            b"Some of your subset selection [-179.9, 179.9] for the longitude "
+            b"dimension exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) not in output2.stdout  # Here they don't have to appear
 
     def test_subset_warnings_when_surpassing(self):
@@ -83,13 +83,13 @@ class TestWarningsSubsetBounds:
         output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output1.stdout
         assert (
-            b"Some or all of your subset selection [-179.99, 179.99] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-179.99, 179.99] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output2.stdout
 
@@ -110,15 +110,62 @@ class TestWarningsSubsetBounds:
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) in output1.stdout
         assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-180.0, 180.0] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in output1.stdout
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) not in output2.stdout
         assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates "
+            b"Some of your subset selection [-179.9, 179.9] for the longitude "
+            b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) not in output2.stdout
+
+    def test_warn_depth_out_of_dataset_bounds(self, tmp_path):
+        output_filename = "output.nc"
+        min_longitude = 29.0
+        max_longitude = 30.0
+        min_latitude = 30
+        max_latitude = 32
+        min_depth = 0.4
+        max_depth = 50.0
+        start_datetime = "2021-11-03"
+        end_datetime = "2021-11-03"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = subprocess.run(command, capture_output=True)
+
+        assert (
+            b"Some of your subset selection [0.4, 50.0] for the depth "
+            b"dimension exceed the dataset coordinates "
+            b"[0.49402499198913574, 5727.9169921875]"
+        ) in output.stdout
