@@ -62,7 +62,9 @@ For more comprehensive details on how to use the `copernicusmarine` Toolbox, ple
 ### General configuration
 
 #### Cache Usage
+
 Cachier library is used for caching part of the requests (as result of `describe` or `login`). By default, the cache will be located in the home folder. If you need to change the location of the cache, you can set the environment variable `COPERNICUSMARINE_CACHE_DIRECTORY` to point to the desired directory:
+
 - on **UNIX** platforms: `export COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
 - on **Windows** platforms: `set COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
 
@@ -214,13 +216,17 @@ In addition to this option, you can also provide the `--netcdf-compression-level
 The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
 
 ### Command `get`
+
 Download the dataset file(s) as originally produced, based on the datasetID or the path to files.
 
 Example:
+
 ```bash
 copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --service original-files
 ```
+
 Returns:
+
 ```bash
 INFO - 2024-04-03T11:39:18Z - Dataset version was not specified, the latest one was selected: "202211"
 INFO - 2024-04-03T11:39:18Z - Dataset part was not specified, the first one was selected: "default"
@@ -237,6 +243,7 @@ Do you want to proceed with download? [Y/n]:
 ```
 
 By default:
+
 - After the header displays a summary of the request, a download confirmation is asked. To skip this user's action, add option `--force-download`.
 - Files are downloaded to the current directory applying the original folder structure. To avoid this behavior, add `--no-directories` and specify a destination with `-o/--output-directory`.
 
@@ -247,11 +254,14 @@ Option `--create-file-list` only creates a file containing the names of the targ
 - If the user inputs a filename that ends in `.txt`, then the file contains only the full s3 path to the targeted files and is compatible with the `--file-list` option.
 
 Example:
+
 ```bash
 copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.txt
 ```
+
 The content of `selected_files_for_2021.txt` would be:
-```
+
+```txt
 s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
 s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
 [... truncated for brevity..]
@@ -262,11 +272,14 @@ s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083de
 - If the user inputs a filename that ends in `.csv` the file contains the following columns, separated by a comma: `filename`, `size` (in Bytes), `last_modified_datetime`, and `etag`. It is **not** compatible "as is" with the `--file-list` option and would need further post-processing from user's side.
 
 Example:
+
 ```bash
 copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.csv
 ```
+
  The content of `selected_files_for_2021.csv` would be:
-```
+
+```txt
 filename,size,last_modified_datetime,etag
 s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc,12295906,2023-11-12 23:47:05.466000+00:00,"e8a7e564f676a08bf601bcdeaebdc563"
 s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc,12436177,2023-11-12 23:47:05.540000+00:00,"d4a22dfb6c7ed85860c4a122c45eb953"
@@ -426,32 +439,44 @@ When specified, the existing files will be overwritten.
 Otherwise, if the files already exist on destination, new ones with a unique index will be created once the download has been accepted (or once `--force-download` is provided).
 
 #### Option `--create-template`
+
 Option to create a file in your current directory containing request parameters. If specified, no other action will be performed.
 It will create the following files depending on the feature:
+
 - `subset`
+
 Example:
+
 ```bash
 copernicusmarine subset --create-template
 ```
+
 Returns:
+
 ```txt
 INFO - 2024-04-04T14:38:09Z - Template created at: subset_template.json
 ```
+
 - `get`
 Example:
+
 ```bash
 copernicusmarine get --create-template
 ```
+
 Returns:
+
 ```txt
 INFO - 2024-04-04T14:38:09Z - Template created at: get_template.json
 ```
 
 #### Option `--request-file`
+
 This option allows to specify request parameters but in a provided `.json` file, useful for batch processing.
 You can try the following templates or use the `--create-template` option to create both `subset` or `get` template request files.
 
 - Template for `subset` data request:
+
 ```json
 {
     "dataset_id": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
@@ -470,11 +495,13 @@ You can try the following templates or use the `--create-template` option to cre
 ```
 
 Example:
+
 ```bash
 copernicusmarine subset --request-file template_subset_data_request.json
 ```
 
 - Template for `get` data request:
+
 ```json
 {
     "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
@@ -491,47 +518,66 @@ copernicusmarine subset --request-file template_subset_data_request.json
 ```
 
 Example:
+
 ```bash
 copernicusmarine get --request-file template_get_data_request.json
 ```
 
 #### Option `--credentials-file`
+
 You can use the `--credentials-file` option to point to a credentials file. The file can be either `.copernicusmarine-credentials`, `motuclient-python.ini`, `.netrc` or `_netrc`.
 
 #### Option `--dataset-version`
+
 You can use the `--dataset-version` option to fetch a specific dataset version. Particularly useful to keep an operational chain working when an evolution impact the chosen dataset.
 
 #### Option `--dataset-part`
+
 You can use the `--dataset-part` option to fecth a specific part for the chosen dataset version.
 
 #### Option `--log-level`
+
 Set the details printed to console by the command (based on standard logging library).
 Available values are: `[DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]`
 
+All logs of the library are by default logged in stderr except the output of the `describe` command and the output of `--show-outputnames` option that are sent to stdout.
+
+_For versions <=1.2.4_, all logs are sent to stdout by default.
+
 ## Python package (API)
+
 The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://help.marine.copernicus.eu/en/collections/9054839-main-functionalities).
 
 ## Documentation
+
 A detailed standalone API documentation is under construction and will come at a later stage. For the moment, see the [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox).
 
 ## Version management
+
 We are using semantic versioning X.Y.Z → for example 1.0.2
+
 - Z is bumped on minor non-breaking changes.
 - Y is bumped on breaking changes.
 - X is bumped on demand to highlight a new significant feature or for communication purposes (new Copernicus Marine Service release for example).
 
 ## Contribution
+
 We welcome contributions from the community to enhance this package. If you find any issues or have suggestions for improvements, please check out our [Report Template](https://help.marine.copernicus.eu/en/articles/8218546-reporting-an-issue-or-feature-request).
 
 ## Future improvements & Roadmap
+
 To keep up to date with the most recent and planned advancements, including revisions, corrections, and feature requests generated from users' feedback, please refer to our [Roadmap](https://help.marine.copernicus.eu/en/articles/8218641-next-milestones-and-roadmap).
 
 ## Join the community
+
 Get in touch!
+
 - Create your [Copernicus Marine Account](https://data.marine.copernicus.eu/register?redirect=%2Fproducts)
 - [Log in](https://data.marine.copernicus.eu/login?redirect=%2Fproducts) and chat with us (bottom right corner of [Copernicus Marine Service](https://marine.copernicus.eu/))
 - Join our [training workshops](https://marine.copernicus.eu/services/user-learning-services)
 - Network y/our [Copernicus Stories](https://twitter.com/cmems_eu)
 - Watch [our videos](https://www.youtube.com/channel/UC71ceOVy7WtVC7F04BKoEew)
+
 ## Licence
+
 Licensed under the [EUPL](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
