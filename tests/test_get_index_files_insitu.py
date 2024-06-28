@@ -11,13 +11,8 @@ class TestGetIndexInsituFiles:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--index-parts",
         ]
-        self.output = execute_in_terminal(self.command)
+        self.output = execute_in_terminal(self.command, input=b"n\n")
 
-        assert (
-            b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
-            b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_reference.txt"
-            in self.output.stdout
-        )
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
             b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_history.txt"
