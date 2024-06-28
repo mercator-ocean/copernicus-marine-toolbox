@@ -214,9 +214,10 @@ def download_files(
         if not parent_dir.is_dir():
             pathlib.Path.mkdir(parent_dir, parents=True)
 
-    # TODO: It would be proably better to use an async approach
+    # TODO: v2 It would be proably better to use an async approach
+    # TODO: v2 probably better to use an argument for the number
+    # of threads instead of using the environment variable
     if NUMBER_THREADS is None or NUMBER_THREADS:
-        logger.info(f"Downloading files on {NUMBER_THREADS} threads...")
         pool = ThreadPool(processes=NUMBER_THREADS)
         download_summary_list: Iterator[List[Path]] = pool.imap(
             _download_files,
