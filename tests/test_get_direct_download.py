@@ -44,7 +44,7 @@ class TestGetDirectDownload:
             b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
             b"history/BO/AR_PR_BO_58JM.nc"
         ) in self.output.stdout
-        assert b"Skipping" not in self.output.stdout
+        assert b"Skipping" not in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58JM.nc"
         )
