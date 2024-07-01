@@ -70,7 +70,7 @@ def subset(
         credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
         force_download (bool, optional): Skip confirmation before download.
         overwrite_output_data (bool, optional): If True, overwrite existing output files.
-        request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters.
+        request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters. For more information please refer to the README.
         service (str, optional): Force the use of a specific service.
         overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
         no_metadata_cache (bool, optional): If True, do not use the metadata cache.
