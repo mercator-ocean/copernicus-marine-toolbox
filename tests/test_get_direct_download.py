@@ -17,6 +17,11 @@ DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIIFERENT_PATH_TYPES = (
     "direct_download_file_list_different_path_types.txt"
 )
 
+DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS = (
+    "tests/resources/file_list_examples/"
+    "direct_download_fails_listing_succeeds.txt"
+)
+
 
 class TestGetDirectDownload:
     def test_get_direct_download_file_list(self):
@@ -38,10 +43,11 @@ class TestGetDirectDownload:
             b"history/BO/AR_PR_BO_58JM.nc"
         ) in self.output.stdout
         assert b"Skipping" not in self.output.stdout
-        self._assert_file_exists_locally("history/BO/AR_PR_BO_58JM.nc")
-        self._assert_file_exists_locally("history/BO/AR_PR_BO_58US.nc")
+        self._assert_insitu_file_exists_locally("history/BO/AR_PR_BO_58JM.nc")
+        self._assert_insitu_file_exists_locally("history/BO/AR_PR_BO_58US.nc")
         assert self.output.returncode == 0
 
+    # Mocking to skip the listing and search phase
     @mock.patch(
         "copernicusmarine.download_functions.download_original_files._download_header",
         return_value=None,
@@ -68,7 +74,7 @@ class TestGetDirectDownload:
         assert (
             b"history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
         ) not in self.output.stdout
-        self._assert_file_exists_locally("history/BO/AR_PR_BO_58JM.nc")
+        self._assert_insitu_file_exists_locally("history/BO/AR_PR_BO_58JM.nc")
         assert self.output.returncode == 0
 
     def test_get_direct_download_different_path_types(self):
@@ -84,6 +90,30 @@ class TestGetDirectDownload:
         self.output = execute_in_terminal(self.command)
         assert b"WARNING" not in self.output.stdout
         assert b"Skipping" not in self.output.stdout
+        assert self.output.returncode == 0
+
+    def test_get_direct_download_fails_but_listing_succeeds(self):
+        self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            "--file-list",
+            DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS,
+            "--force-download",
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert b"Skipping" in self.output.stdout
+        assert (
+            b"No files found to download for direct download."
+            in self.output.stdout
+        )
+        assert os.path.exists(
+            "IBI_MULTIYEAR_PHY_005_002/"
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/"
+            "2021/"
+            "CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211001_20211031_R20230101_RE01.nc"
+        )
         assert self.output.returncode == 0
 
     # Python interface tests
@@ -111,7 +141,7 @@ class TestGetDirectDownload:
         for file_path in get_result:
             assert os.path.exists(file_path)
 
-    def _assert_file_exists_locally(self, file_name: str):
+    def _assert_insitu_file_exists_locally(self, file_name: str):
         assert os.path.exists(
             f"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
             f"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
