@@ -55,19 +55,19 @@ def get(
         dataset_part (str, optional): Force the use of a specific dataset part.
         username (str, optional): The username for authentication.
         password (str, optional): The password for authentication.
-        no_directories (bool, optional): If True, downloaded files will not be organized into directories.
-        show_outputnames (bool, optional): If True, display the names of the downloaded files.
         output_directory (Union[pathlib.Path, str], optional): The directory where downloaded files will be saved.
         credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
         force_download (bool, optional): Skip confirmation before download.
         overwrite_output_data (bool, optional): If True, overwrite existing output files.
-        request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters.
+        request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters. For more information please refer to the README.
         service (str, optional): Force the use of a specific service.
         overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
         no_metadata_cache (bool, optional): If True, do not use the metadata cache.
+        no_directories (bool, optional): If True, downloaded files will not be organized into directories.
+        show_outputnames (bool, optional): If True, display the names of the downloaded files.
         filter (str, optional): Apply a filter to the downloaded data.
         regex (str, optional): Apply a regular expression filter to the downloaded data.
-        file_list (Union[pathlib.Path, str], optional): A path to a text file that list filenames line by line. Filenames must match the absolute paths of the files to download.
+        file_list (Union[pathlib.Path, str], optional): Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the --dataset-id. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
         create_file_list (str, optional): Option to only create a file containing the names of the the targeted files instead of downloading them. It writes the file in the directory specified with the --output-directory option (default to current directory). If specified, no other action will be performed.
         index_parts (bool, optional): If True, download index files. Only for INSITU datasets. Temporary option.
         sync (bool, optional): If True, synchronize the local directory with the remote directory.

@@ -285,7 +285,8 @@ def cli_group_subset() -> None:
     "--request-file",
     type=click.Path(exists=True, path_type=pathlib.Path),
     help="Option to pass a file containing CLI arguments. "
-    "The file MUST follow the structure of dataclass 'SubsetRequest'.",
+    "The file MUST follow the structure of dataclass 'SubsetRequest'."
+    " For more information please refer to the README.",
 )
 @click.option(
     "--motu-api-request",

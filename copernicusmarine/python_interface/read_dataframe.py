@@ -91,6 +91,7 @@ def read_dataframe(
         vertical_dimension_as_originally_produced (bool, optional): If True, use the vertical dimension as originally produced.
         start_datetime (datetime, optional): Start datetime for temporal subset.
         end_datetime (datetime, optional): End datetime for temporal subset.
+        subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
         force_service (str, optional): Force a specific service for data download.
         credentials_file (Union[pathlib.Path, str], optional): Path to a credentials file for authentication.
         overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.

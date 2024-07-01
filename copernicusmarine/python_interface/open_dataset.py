@@ -89,6 +89,7 @@ def open_dataset(
         maximum_latitude (float, optional): The maximum latitude for subsetting the data.
         minimum_depth (float, optional): The minimum depth for subsetting the data.
         maximum_depth (float, optional): The maximum depth for subsetting the data.
+        subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
         vertical_dimension_as_originally_produced (bool, optional): If True, use the vertical dimension as originally produced.
         start_datetime (datetime, optional): The start datetime for temporal subsetting.
         end_datetime (datetime, optional): The end datetime for temporal subsetting.
