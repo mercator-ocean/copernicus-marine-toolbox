@@ -384,7 +384,7 @@ def _download_header_for_direct_download(
             else:
                 filenames_without_sync.append(full_path)
         else:
-            filenames_not_found.append(full_path)
+            filenames_not_found.append(file_path)
     if not filenames_in:
         logger.warning(
             "No files found to download for direct download. "
