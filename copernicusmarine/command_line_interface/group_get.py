@@ -156,7 +156,7 @@ def cli_group_get() -> None:
     "--request-file",
     type=click.Path(exists=True, path_type=pathlib.Path),
     help="Option to pass a file containing CLI arguments. "
-    "The file MUST follow the structure of dataclass 'GetRequest'.",
+    "The file MUST follow the structure of dataclass 'GetRequest'. ",
 )
 @click.option(
     "--overwrite-metadata-cache",
