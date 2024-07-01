@@ -197,12 +197,11 @@ def cli_group_get() -> None:
     "--file-list",
     type=pathlib.Path,
     default=None,
-    help="A path to a text file that list filenames line by line. "
-    "Directly download multiple files "
-    "using a list of path from a '.txt' file. "
-    "The files to download have to be from the dataset specified with --dataset-id."
-    "If some files are not found, the toolbox will list all the files "
-    "on the remote server and try to match them.",
+    help="Path to a .txt file containing a list of file paths,"
+    " line by line, that will be downloaded directly."
+    " These files must be from the specified dataset using the --dataset-id."
+    " If no files can be found, the Toolbox will list all"
+    " files on the remote server and attempt to find a match.",
 )
 @click.option(
     "--create-file-list",

@@ -67,7 +67,7 @@ def get(
         show_outputnames (bool, optional): If True, display the names of the downloaded files.
         filter (str, optional): Apply a filter to the downloaded data.
         regex (str, optional): Apply a regular expression filter to the downloaded data.
-        file_list (Union[pathlib.Path, str], optional): Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the --dataset-id. If any files cannot be found, the Toolbox will list all files on the remote server and attempt to find a match.
+        file_list (Union[pathlib.Path, str], optional): Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the --dataset-id. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
         create_file_list (str, optional): Option to only create a file containing the names of the the targeted files instead of downloading them. It writes the file in the directory specified with the --output-directory option (default to current directory). If specified, no other action will be performed.
         index_parts (bool, optional): If True, download index files. Only for INSITU datasets. Temporary option.
         sync (bool, optional): If True, synchronize the local directory with the remote directory.
