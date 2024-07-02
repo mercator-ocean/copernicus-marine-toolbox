@@ -117,7 +117,7 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"Skipping" in self.output.stdout
+        assert b"Skipping" in self.output.stderr
         assert (
             b"No files found to download for direct download."
             in self.output.stdout
