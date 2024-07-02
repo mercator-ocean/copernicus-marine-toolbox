@@ -120,7 +120,7 @@ class TestGetDirectDownload:
         assert b"Skipping" in self.output.stderr
         assert (
             b"No files found to download for direct download."
-            in self.output.stdout
+            in self.output.stderr
         )
         assert os.path.exists(
             f"{tmp_path}/"
