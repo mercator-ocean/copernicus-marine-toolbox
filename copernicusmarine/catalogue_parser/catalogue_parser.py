@@ -153,11 +153,22 @@ class CopernicusMarineCoordinates:
     minimum_value: Optional[float]
     maximum_value: Optional[float]
     step: Optional[float]
-    values: Optional[str]
+    values: Optional[list[Union[float, int]]]
     chunking_length: Optional[int]
     chunk_type: Optional[str]
     chunk_reference_coordinate: Optional[int]
     chunk_geometric_factor: Optional[int]
+
+    def convert_elevation_to_depth(self):
+        self.coordinates_id = "depth"
+        if self.minimum_value is not None:
+            self.minimum_value = -self.minimum_value
+        if self.maximum_value is not None:
+            self.maximum_value = -self.maximum_value
+        if self.step is not None:
+            self.step = -self.step
+        if self.values is not None:
+            self.values = [-value for value in self.values]
 
 
 @dataclass
@@ -654,26 +665,27 @@ def _get_coordinates(
             chunking_length = dimension_metadata.get("chunkLen")
             if isinstance(chunking_length, dict):
                 chunking_length = chunking_length.get(variable_id)
-            coordinates.append(
-                CopernicusMarineCoordinates(
-                    coordinates_id=(
-                        "depth" if dimension == "elevation" else dimension
-                    ),
-                    units=dimension_metadata.get("units") or "",
-                    minimum_value=minimum_value,  # type: ignore
-                    maximum_value=coordinates_info.get("max"),
-                    step=coordinates_info.get("step"),
-                    values=coordinates_info.get("values"),
-                    chunking_length=chunking_length,
-                    chunk_type=dimension_metadata.get("chunkType"),
-                    chunk_reference_coordinate=dimension_metadata.get(
-                        "chunkRefCoord"
-                    ),
-                    chunk_geometric_factor=dimension_metadata.get(
-                        "chunkGeometricFactor", {}
-                    ).get(variable_id),
-                )
+            coordinate = CopernicusMarineCoordinates(
+                coordinates_id=(
+                    "depth" if dimension == "elevation" else dimension
+                ),
+                units=dimension_metadata.get("units") or "",
+                minimum_value=minimum_value,  # type: ignore
+                maximum_value=coordinates_info.get("max"),
+                step=coordinates_info.get("step"),
+                values=coordinates_info.get("values"),
+                chunking_length=chunking_length,
+                chunk_type=dimension_metadata.get("chunkType"),
+                chunk_reference_coordinate=dimension_metadata.get(
+                    "chunkRefCoord"
+                ),
+                chunk_geometric_factor=dimension_metadata.get(
+                    "chunkGeometricFactor", {}
+                ).get(variable_id),
             )
+            if dimension == "elevation":
+                coordinate.convert_elevation_to_depth()
+            coordinates.append(coordinate)
         return coordinates
     else:
         return None
