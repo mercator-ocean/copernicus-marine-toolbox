@@ -1,9 +1,9 @@
 import fnmatch
 import re
-import subprocess
 from pathlib import Path
 
 from tests.test_command_line_interface import get_all_files_in_folder_tree
+from tests.test_utils import execute_in_terminal
 
 
 def get_path_to_request_file(filename: str):
@@ -32,15 +32,15 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 0
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
         assert (
             b'You forced selection of dataset version "default"'
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b"Dataset version was not specified, the latest one was selected:"
-            not in output.stdout
+            not in self.output.stderr
         )
 
     def test_subset_request_without_subset(self):
@@ -50,17 +50,17 @@ class TestRequestFiles:
 
         command = build_command(filepath, "subset")
 
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 1
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
         assert (
             b"Missing subset option. Try 'copernicusmarine subset --help'."
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b"To retrieve a complete dataset, please use instead: "
             b"copernicusmarine get --dataset-id "
             b"METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2"
-        ) in output.stdout
+        ) in self.output.stderr
 
     def test_subset_request_with_dataset_not_in_catalog(self):
         filepath = get_path_to_request_file(
@@ -69,8 +69,8 @@ class TestRequestFiles:
 
         command = build_command(filepath, "subset")
 
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 1
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
 
     def test_subset_error_when_forced_service_does_not_exist(self):
         filepath = get_path_to_request_file(
@@ -79,15 +79,15 @@ class TestRequestFiles:
 
         command = build_command(filepath, "subset")
 
-        output = subprocess.run(command, capture_output=True)
-        assert output.returncode == 1
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
         assert (
             b"You forced selection of service: arco-time-series\n"
-            in output.stdout
+            in self.output.stderr
         )
         assert (
             b"Service not available: Available services for dataset: []"
-        ) in output.stdout
+        ) in self.output.stderr
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
         filepath = get_path_to_request_file(
@@ -100,9 +100,9 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
+        self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert output.returncode == 0
+        assert self.output.returncode == 0
         assert len(downloaded_files) == 5
 
         for filename in downloaded_files:
@@ -120,9 +120,9 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command, stdout=subprocess.PIPE)
-        assert b"No data to download" in output.stdout
-        assert output.returncode == 0
+        self.output = execute_in_terminal(command)
+        assert b"No data to download" in self.output.stderr
+        assert self.output.returncode == 0
 
     def test_get_request_with_request_file(self, tmp_path):
         filepath = get_path_to_request_file(
@@ -135,8 +135,8 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
     def test_get_request_with_one_wrong_attribute(self, tmp_path):
         filepath = get_path_to_request_file(
@@ -149,5 +149,5 @@ class TestRequestFiles:
             f"{tmp_path}",
         ]
 
-        output = subprocess.run(command)
-        assert output.returncode == 0
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0

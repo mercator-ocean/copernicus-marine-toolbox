@@ -105,7 +105,10 @@ def download_dataset(
             f"{get_formatted_dataset_size_estimation(dataset)}."
         )
         click.confirm(
-            FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE, default=True, abort=True
+            FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
+            default=True,
+            abort=True,
+            err=True,
         )
     else:
         logger.info(

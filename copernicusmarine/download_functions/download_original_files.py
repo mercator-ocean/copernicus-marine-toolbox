@@ -31,6 +31,7 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
+blank_logger = logging.getLogger("copernicus_marine_blank_logger")
 
 NUMBER_THREADS = (
     int(COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS)
@@ -124,9 +125,8 @@ def download_original_files(
     if not get_request.force_download and total_size:
         logger.info(message)
     if get_request.show_outputnames:
-        logger.info("Output filenames:")
         for filename_out in filenames_out:
-            logger.info(filename_out)
+            blank_logger.info(filename_out)
     files_to_delete = []
     if get_request.sync_delete:
         filenames_out_sync_ignored = create_filenames_out(
@@ -151,7 +151,10 @@ def download_original_files(
             return []
     if not get_request.force_download:
         click.confirm(
-            FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE, default=True, abort=True
+            FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
+            default=True,
+            abort=True,
+            err=True,
         )
     endpoint: str
     bucket: str

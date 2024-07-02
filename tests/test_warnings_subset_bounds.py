@@ -25,23 +25,21 @@ class TestWarningsSubsetBounds:
             f"{subset_method}",
         ]
 
-    def test_subset_warning_properly(self):
-        # Dataset with longitude bounds from -179.97... to 179.91...
-        # The call should return a warning (and correctly the bounds)
+    def test_subset_send_warning_with_method_nearest(self):
         dataset_id = (
             "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
         )
         command = self._build_custom_command(
             dataset_id, "CHL", -180, 180, "nearest"
         )
-        output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command, input=b"n")
 
-        assert b"WARNING" in output.stdout
+        assert b"WARNING" in self.output.stderr
         assert (
             b"Some or all of your subset selection [-180.0, 180.0]"
             b" for the longitude dimension  exceed the dataset"
             b" coordinates [-179.9791717529297, 179.9791717529297]"
-        ) in output.stdout
+        ) in self.output.stderr
 
     def test_subset_warnings_differently(self):
         # Dataset with longitude bounds from -180 to 179.91668701171875
@@ -54,17 +52,17 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "thetao", -179.9, 179.9, "nearest"
         )
-        output1 = execute_in_terminal(command1, input=b"n")
-        output2 = execute_in_terminal(command2, input=b"n")
+        self.output1 = execute_in_terminal(command1, input=b"n")
+        self.output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
             b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
             b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
-        ) in output1.stdout
+        ) in self.output1.stderr
         assert (
             b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
             b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
-        ) not in output2.stdout  # Here they don't have to appear
+        ) not in self.output2.stderr
 
     def test_subset_warnings_when_surpassing(self):
         # Dataset with longitude bounds from [-179.9791717529297, 179.9791717529297]
@@ -79,19 +77,19 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "CHL", -179.99, 179.99, "nearest"
         )
-        output1 = execute_in_terminal(command1, input=b"n")
-        output2 = execute_in_terminal(command2, input=b"n")
+        self.output1 = execute_in_terminal(command1, input=b"n")
+        self.output2 = execute_in_terminal(command2, input=b"n")
 
         assert (
             b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
-        ) in output1.stdout
+        ) in self.output1.stderr
         assert (
             b"Some or all of your subset selection [-179.99, 179.99] for the longitude "
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
-        ) in output2.stdout
+        ) in self.output2.stderr
 
     def test_subset_strict_error(self):
         dataset_id = (
@@ -104,21 +102,21 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "CHL", -179.9, 179.9, "strict"
         )
-        output1 = execute_in_terminal(command1, input=b"n")
-        output2 = execute_in_terminal(command2, input=b"n")
+        self.output1 = execute_in_terminal(command1, input=b"n")
+        self.output2 = execute_in_terminal(command2, input=b"n")
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
-        ) in output1.stdout
+        ) in self.output1.stderr
         assert (
             b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
-        ) in output1.stdout
+        ) in self.output1.stderr
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
-        ) not in output2.stdout
+        ) not in self.output2.stderr
         assert (
             b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
             b"dimension  exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
-        ) not in output2.stdout
+        ) not in self.output2.stderr

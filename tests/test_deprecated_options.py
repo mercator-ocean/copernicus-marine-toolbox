@@ -18,8 +18,8 @@ class TestDeprecatedOptions:
             "--force-dataset-part",
             "latest",
         ]
-        output = execute_in_terminal(command)
-        assert b"Downloading" in output.stdout
+        self.output = execute_in_terminal(command)
+        assert b"Downloading" in self.output.stderr
 
     def test_subset_command_line_works_with_deprecated_options(
         self,
@@ -46,8 +46,8 @@ class TestDeprecatedOptions:
             "--force-dataset-part",
             "default",
         ]
-        output = execute_in_terminal(command)
-        assert b"Downloading" in output.stdout
+        self.output = execute_in_terminal(command)
+        assert b"Downloading" in self.output.stderr
 
     def test_get_python_works_and_shows_preferred_options_over_deprecated(
         self,
@@ -73,13 +73,13 @@ class TestDeprecatedOptions:
             "METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2",
             "--include-all-versions",
         ]
-        output = execute_in_terminal(command)
-        assert b"WARNING" in output.stdout
+        self.output = execute_in_terminal(command)
+        assert b"WARNING" in self.output.stderr
         assert (
             b"'--include-all-versions' has been deprecated, "
             b"use '--include-versions' instead"
-        ) in output.stdout
-        assert output.returncode == 0
+        ) in self.output.stderr
+        assert self.output.returncode == 0
 
     def test_describe_include_all_dataset_versions_python_interface(self):
         describe_result = describe(
