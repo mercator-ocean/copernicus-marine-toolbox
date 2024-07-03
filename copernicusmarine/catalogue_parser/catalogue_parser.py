@@ -161,12 +161,16 @@ class CopernicusMarineCoordinates:
 
     def convert_elevation_to_depth(self):
         self.coordinates_id = "depth"
-        if self.minimum_value is not None:
-            self.minimum_value = -self.minimum_value
-        if self.maximum_value is not None:
-            self.maximum_value = -self.maximum_value
-        if self.step is not None:
-            self.step = -self.step
+        minimum_elevation = self.minimum_value
+        maximum_elevation = self.maximum_value
+        if minimum_elevation is not None:
+            self.maximum_value = -minimum_elevation
+        else:
+            self.maximum_value = None
+        if maximum_elevation is not None:
+            self.minimum_value = -maximum_elevation
+        else:
+            self.minimum_value = None
         if self.values is not None:
             self.values = [-value for value in self.values]
 
