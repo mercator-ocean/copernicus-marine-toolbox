@@ -280,6 +280,25 @@ def _get_variable_name_from_standard_name(
     return None
 
 
+def _filter_variable_attrs(
+    dataset: xarray.Dataset, variables: Optional[List[str]]
+) -> xarray.Dataset:
+    list_var_attrs = [
+        "standard_name",
+        "long_name",
+        "units",
+        "unit_long",
+        "valid_min",
+        "valid_max",
+    ]
+    if variables:
+        for variable in variables:
+            dataset[variable].attrs = {
+                key: dataset[variable].attrs[key] for key in list_var_attrs
+            }
+    return dataset
+
+
 def _variables_subset(
     dataset: xarray.Dataset, variables: List[str]
 ) -> xarray.Dataset:
@@ -298,10 +317,15 @@ def _variables_subset(
                 )
             else:
                 raise VariableDoesNotExistInTheDataset(variable)
-    return dataset[numpy.array(dataset_variables_filter)]
+    dataset = dataset[
+        numpy.array(dataset_variables_filter)
+    ]  # filter the right variable
+    return _filter_variable_attrs(
+        dataset, dataset_variables_filter
+    )  # and chose the right attributes
 
 
-def _update_dataset_coordinate_valid_minmax_attributes(
+def _update_dataset_coordinate_attributes(
     dataset: xarray.Dataset,
 ) -> xarray.Dataset:
     for coordinate_label in COORDINATES_LABEL:
@@ -309,6 +333,15 @@ def _update_dataset_coordinate_valid_minmax_attributes(
             if coordinate_alias in dataset.sizes:
                 coord = dataset[coordinate_alias]
                 attrs = coord.attrs
+                list_coord_attrs = [
+                    "standard_name",
+                    "long_name",
+                    "units",
+                    "unit_long",
+                    "axis",
+                    "valid_min",
+                    "valid_max",
+                ]
                 if "time" in coordinate_label:
                     min_time_dimension = coord.values.min()
                     max_time_dimension = coord.values.max()
@@ -319,14 +352,50 @@ def _update_dataset_coordinate_valid_minmax_attributes(
                     valid_max = convert_datetime64_to_netcdf_timestamp(
                         max_time_dimension, netcdf_unit
                     )
+                    logger.info(f"netcdf_unit value: {netcdf_unit}")
+                    logger.info(coord.encoding)
+                    attrs["standard_name"] = "time"
+                    attrs["long_name"] = "Time"
                     attrs["valid_min"] = valid_min
                     attrs["valid_max"] = valid_max
-                else:
+                    # attrs["calendar"] = coord.encoding["calendar"]
+                    # attrs["units"] = coord.encoding["units"]
+                    attrs["axis"] = "T"
+                    attrs["unit_long"] = (
+                        coord.encoding["units"].replace("_", " ").title()
+                    )
+                    # list_coord_attrs.append("calendar")
+                    list_coord_attrs.remove("units")
+                    coord.attrs = {key: attrs[key] for key in list_coord_attrs}
+                elif coordinate_label in ["latitude", "depth", "elevation"]:
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
+                    coord.attrs = {key: attrs[key] for key in list_coord_attrs}
+                else:  # for longitude
+                    list_coord_attrs.remove("valid_min")
+                    list_coord_attrs.remove("valid_max")
+                    coord.attrs = {key: attrs[key] for key in list_coord_attrs}
 
-                coord.attrs = attrs
+    return dataset
 
+
+def _update_dataset_attrs(
+    dataset: xarray.Dataset,
+) -> xarray.Dataset:
+    list_dataset_attrs = [
+        "title",
+        "institution",
+        "source",
+        # "history", # there is no history
+        "references",
+        # "comment", # there is no comment
+        "Conventions",
+        "producer",  # added also in the frontend
+        "credit",
+        "contact",
+    ]
+    dataset.attrs = {key: dataset.attrs[key] for key in list_dataset_attrs}
+    logger.info(dataset.attrs)
     return dataset
 
 
@@ -339,6 +408,7 @@ def subset(
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
+    # try to filter the atts of the variables here:
 
     dataset = _latitude_subset(
         dataset, geographical_parameters.latitude_parameters
@@ -351,7 +421,9 @@ def subset(
 
     dataset = _depth_subset(dataset, depth_parameters)
 
-    dataset = _update_dataset_coordinate_valid_minmax_attributes(dataset)
+    dataset = _update_dataset_coordinate_attributes(dataset)
+
+    dataset = _update_dataset_attrs(dataset)
 
     return dataset
 

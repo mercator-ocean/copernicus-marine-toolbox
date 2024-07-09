@@ -179,8 +179,11 @@ class CopernicusMarineCoordinates:
 class CopernicusMarineVariable:
     short_name: str
     standard_name: str
+    # long_name: str
     units: str
     bbox: Tuple[float, float, float, float]
+    # validMin: Optional[float]
+    # validMax: Optional[float]
     coordinates: list[CopernicusMarineCoordinates]
 
 
@@ -628,8 +631,11 @@ def _get_variables(
         CopernicusMarineVariable(
             short_name=var_cube["id"],
             standard_name=var_cube["standardName"],
+            # long_name=var_cube["name"]["en"],
             units=var_cube.get("unit") or "",
             bbox=bbox,
+            # validMin=var_cube.get("valueMin"),
+            # validMax=var_cube.get("valueMax"),
             coordinates=_get_coordinates(
                 var_cube["id"],
                 stac_asset,
