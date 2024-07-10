@@ -2,7 +2,7 @@ name: Run tests
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "copernicusmarine-toolbox-v2" ]
 
 jobs:
   tests:
