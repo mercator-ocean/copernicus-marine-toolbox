@@ -13,23 +13,29 @@ import requests
 from cachier.core import cachier
 
 from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_CREDENTIALS_DIRECTORY,
     COPERNICUSMARINE_SERVICE_PASSWORD,
     COPERNICUSMARINE_SERVICE_USERNAME,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
 )
-from copernicusmarine.core_functions.utils import (
-    CACHE_BASE_DIRECTORY,
-    DEFAULT_CLIENT_BASE_DIRECTORY,
-)
 
 logger = logging.getLogger("copernicus_marine_root_logger")
 
+USER_DEFINED_CACHE_DIRECTORY: str = (
+    COPERNICUSMARINE_CREDENTIALS_DIRECTORY or ""
+)
+DEFAULT_CLIENT_BASE_DIRECTORY: pathlib.Path = (
+    pathlib.Path(USER_DEFINED_CACHE_DIRECTORY)
+    if USER_DEFINED_CACHE_DIRECTORY
+    else pathlib.Path.home()
+) / ".copernicusmarine"
 DEFAULT_CLIENT_CREDENTIALS_FILENAME = ".copernicusmarine-credentials"
 DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
     DEFAULT_CLIENT_BASE_DIRECTORY / DEFAULT_CLIENT_CREDENTIALS_FILENAME
 )
+CACHE_BASE_DIRECTORY: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
 
 
 class CredentialCannotBeNone(Exception):
@@ -255,6 +261,7 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     return login_success
 
 
+# TODO: Handle this to get rid of cachier
 @cachier(stale_after=timedelta(hours=48), cache_dir=CACHE_BASE_DIRECTORY)
 def _are_copernicus_marine_credentials_valid(
     username: str, password: str
@@ -310,14 +317,14 @@ def get_and_check_username_password(
     username: Optional[str],
     password: Optional[str],
     credentials_file: Optional[pathlib.Path],
-    no_metadata_cache: bool,
 ) -> Tuple[str, str]:
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
     )
     copernicus_marine_credentials_are_valid = (
         _are_copernicus_marine_credentials_valid(
-            username, password, ignore_cache=no_metadata_cache
+            username,
+            password,
         )
     )
     if not copernicus_marine_credentials_are_valid:

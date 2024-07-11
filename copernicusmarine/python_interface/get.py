@@ -18,8 +18,8 @@ from copernicusmarine.python_interface.exception_handler import (
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def get(
-    dataset_url: Optional[str] = None,
-    dataset_id: Optional[str] = None,
+    # dataset_url: Optional[str] = None,
+    dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
     username: Optional[str] = None,
@@ -32,8 +32,6 @@ def get(
     overwrite_output_data: bool = False,
     request_file: Optional[Union[pathlib.Path, str]] = None,
     service: Optional[str] = None,
-    overwrite_metadata_cache: bool = False,
-    no_metadata_cache: bool = False,
     filter: Optional[str] = None,
     regex: Optional[str] = None,
     file_list: Optional[Union[pathlib.Path, str]] = None,
@@ -61,8 +59,6 @@ def get(
         overwrite_output_data (bool, optional): If True, overwrite existing output files.
         request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters. For more information please refer to the README.
         service (str, optional): Force the use of a specific service.
-        overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
-        no_metadata_cache (bool, optional): If True, do not use the metadata cache.
         no_directories (bool, optional): If True, downloaded files will not be organized into directories.
         show_outputnames (bool, optional): If True, display the names of the downloaded files.
         filter (str, optional): Apply a filter to the downloaded data.
@@ -91,7 +87,7 @@ def get(
     elif download_file_list:
         log_deprecated_message("download_file_list", "create_file_list")
     return get_function(
-        dataset_url=dataset_url,
+        # dataset_url=dataset_url,
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -105,8 +101,6 @@ def get(
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
         force_service=service,
-        overwrite_metadata_cache=overwrite_metadata_cache,
-        no_metadata_cache=no_metadata_cache,
         filter=filter,
         regex=regex,
         file_list_path=file_list,

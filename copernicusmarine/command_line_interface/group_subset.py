@@ -9,7 +9,6 @@ from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
 from copernicusmarine.command_line_interface.utils import (
-    MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
     force_dataset_part_option,
     force_dataset_version_option,
@@ -74,16 +73,17 @@ def cli_group_subset() -> None:
     copernicusmarine subset -i cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i -v thetao -t 2022-01-01T00:00:00 -T 2022-12-31T23:59:59 -x -6.17 -X -5.08 -y 35.75 -Y 36.30 -z 0.0 -Z 5.0
     """,  # noqa
 )
-@click.option(
-    "--dataset-url",
-    "-u",
-    type=str,
-    help="The full dataset URL.",
-)
+# @click.option(
+#     "--dataset-url",
+#     "-u",
+#     type=str,
+#     help="The full dataset URL.",
+# )
 @click.option(
     "--dataset-id",
     "-i",
     type=str,
+    required=True,
     help="The datasetID.",
 )
 @force_dataset_version_option
@@ -297,24 +297,6 @@ def cli_group_subset() -> None:
         "quotes ' in the request."
     ),
 )
-@click.option(
-    "--overwrite-metadata-cache",
-    cls=MutuallyExclusiveOption,
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Force to refresh the catalogue by overwriting the local cache.",
-    mutually_exclusive=["no_metadata_cache"],
-)
-@click.option(
-    "--no-metadata-cache",
-    cls=MutuallyExclusiveOption,
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Bypass the use of cache.",
-    mutually_exclusive=["overwrite_metadata_cache"],
-)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -361,8 +343,8 @@ def cli_group_subset() -> None:
 )
 @log_exception_and_exit
 def subset(
-    dataset_url: Optional[str],
-    dataset_id: Optional[str],
+    # dataset_url: Optional[str],
+    dataset_id: str,
     dataset_version: Optional[str],
     dataset_part: Optional[str],
     username: Optional[str],
@@ -391,8 +373,6 @@ def subset(
     motu_api_request: Optional[str],
     force_download: bool,
     overwrite_output_data: bool,
-    overwrite_metadata_cache: bool,
-    no_metadata_cache: bool,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool = False,
@@ -414,7 +394,6 @@ def subset(
         return
 
     subset_function(
-        dataset_url,
         dataset_id,
         dataset_version,
         dataset_part,
@@ -440,8 +419,6 @@ def subset(
         motu_api_request,
         force_download,
         overwrite_output_data,
-        overwrite_metadata_cache,
-        no_metadata_cache,
         disable_progress_bar,
         staging,
         netcdf_compression_enabled,

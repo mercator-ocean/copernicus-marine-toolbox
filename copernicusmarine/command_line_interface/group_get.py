@@ -55,16 +55,17 @@ def cli_group_get() -> None:
     copernicusmarine get -nd -o data_folder --dataset-id cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
     """,  # noqa
 )
-@click.option(
-    "--dataset-url",
-    "-u",
-    type=str,
-    help="URL to the data files.",
-)
+# @click.option(
+#     "--dataset-url",
+#     "-u",
+#     type=str,
+#     help="URL to the data files.",
+# )
 @click.option(
     "--dataset-id",
     "-i",
     type=str,
+    required=True,
     help="The datasetID.",
 )
 @force_dataset_version_option
@@ -160,24 +161,6 @@ def cli_group_get() -> None:
     " For more information please refer to the README.",
 )
 @click.option(
-    "--overwrite-metadata-cache",
-    cls=MutuallyExclusiveOption,
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Force to refresh the catalogue by overwriting the local cache.",
-    mutually_exclusive=["no_metadata_cache"],
-)
-@click.option(
-    "--no-metadata-cache",
-    cls=MutuallyExclusiveOption,
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Bypass the use of cache.",
-    mutually_exclusive=["overwrite_metadata_cache"],
-)
-@click.option(
     "--filter",
     "--filter-with-globbing-pattern",
     type=str,
@@ -268,8 +251,8 @@ def cli_group_get() -> None:
 )
 @log_exception_and_exit
 def get(
-    dataset_url: Optional[str],
-    dataset_id: Optional[str],
+    # dataset_url: Optional[str],
+    dataset_id: str,
     dataset_version: Optional[str],
     dataset_part: Optional[str],
     username: Optional[str],
@@ -283,8 +266,6 @@ def get(
     create_template: bool,
     request_file: Optional[pathlib.Path],
     service: Optional[str],
-    overwrite_metadata_cache: bool,
-    no_metadata_cache: bool,
     filter: Optional[str],
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
@@ -314,7 +295,7 @@ def get(
         return
 
     return get_function(
-        dataset_url=dataset_url,
+        # dataset_url=dataset_url,
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -328,8 +309,6 @@ def get(
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
         force_service=service,
-        overwrite_metadata_cache=overwrite_metadata_cache,
-        no_metadata_cache=no_metadata_cache,
         filter=filter,
         regex=regex,
         file_list_path=file_list,

@@ -169,8 +169,6 @@ def describe(
         include_keywords=include_keywords,
         include_versions=include_versions,
         contains=contains,
-        overwrite_metadata_cache=overwrite_metadata_cache,
-        no_metadata_cache=no_metadata_cache,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

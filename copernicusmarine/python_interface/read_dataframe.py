@@ -47,8 +47,8 @@ def load_pandas_dataframe(*args, **kwargs):
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def read_dataframe(
-    dataset_url: Optional[str] = None,
-    dataset_id: Optional[str] = None,
+    # dataset_url: Optional[str] = None,
+    dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
     username: Optional[str] = None,
@@ -66,8 +66,6 @@ def read_dataframe(
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     force_service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-    overwrite_metadata_cache: bool = False,
-    no_metadata_cache: bool = False,
     disable_progress_bar: bool = False,
 ) -> pandas.DataFrame:
     """
@@ -94,8 +92,6 @@ def read_dataframe(
         subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
         force_service (str, optional): Force a specific service for data download.
         credentials_file (Union[pathlib.Path, str], optional): Path to a credentials file for authentication.
-        overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
-        no_metadata_cache (bool, optional): If True, do not use metadata caching.
 
     Returns:
         pandas.DataFrame: A DataFrame containing the loaded Copernicus Marine data.
@@ -106,7 +102,6 @@ def read_dataframe(
         pathlib.Path(credentials_file) if credentials_file else None
     )
     load_request = LoadRequest(
-        dataset_url=dataset_url,
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -135,12 +130,9 @@ def read_dataframe(
         ),
         force_service=force_service,
         credentials_file=credentials_file,
-        overwrite_metadata_cache=overwrite_metadata_cache,
-        no_metadata_cache=no_metadata_cache,
     )
     dataset = load_data_object_from_load_request(
         load_request,
-        disable_progress_bar,
         read_dataframe_from_arco_series,
     )
     return dataset
