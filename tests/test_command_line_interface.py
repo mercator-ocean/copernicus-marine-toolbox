@@ -14,7 +14,7 @@ from typing import List, Optional, Union
 import pytest
 import xarray
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
+from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     REGEX_PATTERN_DATE_YYYYMM,
     VERSION_DEFAULT,

@@ -2,7 +2,6 @@ import base64
 import configparser
 import logging
 import pathlib
-from datetime import timedelta
 from netrc import netrc
 from platform import system
 from typing import Literal, Optional, Tuple
@@ -10,7 +9,6 @@ from typing import Literal, Optional, Tuple
 import click
 import lxml.html
 import requests
-from cachier.core import cachier
 
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_CREDENTIALS_DIRECTORY,
@@ -35,6 +33,7 @@ DEFAULT_CLIENT_CREDENTIALS_FILENAME = ".copernicusmarine-credentials"
 DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
     DEFAULT_CLIENT_BASE_DIRECTORY / DEFAULT_CLIENT_CREDENTIALS_FILENAME
 )
+# TODO: handle cache of the credentials without cachier
 CACHE_BASE_DIRECTORY: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
 
 
@@ -261,8 +260,6 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     return login_success
 
 
-# TODO: Handle this to get rid of cachier
-@cachier(stale_after=timedelta(hours=48), cache_dir=CACHE_BASE_DIRECTORY)
 def _are_copernicus_marine_credentials_valid(
     username: str, password: str
 ) -> Optional[bool]:
@@ -387,9 +384,7 @@ def credentials_file_builder(
         password, "password", True
     )
     copernicus_marine_credentials_are_valid = (
-        _are_copernicus_marine_credentials_valid(
-            username, password, ignore_cache=False
-        )
+        _are_copernicus_marine_credentials_valid(username, password)
     )
     if copernicus_marine_credentials_are_valid:
         configuration_file = create_copernicusmarine_configuration_file(
