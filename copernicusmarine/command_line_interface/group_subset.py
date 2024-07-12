@@ -77,7 +77,7 @@ def cli_group_subset() -> None:
     "--dataset-id",
     "-i",
     type=str,
-    required=True,
+    default=None,
     help="The datasetID.",
 )
 @force_dataset_version_option

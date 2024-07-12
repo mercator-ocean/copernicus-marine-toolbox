@@ -27,7 +27,7 @@ logger = logging.getLogger("copernicus_marine_root_logger")
 
 
 def get_function(
-    dataset_id: str,
+    dataset_id: Optional[str],
     force_dataset_version: Optional[str],
     force_dataset_part: Optional[str],
     username: Optional[str],
@@ -58,9 +58,11 @@ def get_function(
             "Data will come from the staging environment."
         )
 
-    get_request = GetRequest(dataset_id=dataset_id)
+    get_request = GetRequest(dataset_id=dataset_id or "")
     if request_file:
         get_request.from_file(request_file)
+    if not get_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a get request.")
     request_update_dict = {
         "dataset_id": dataset_id,
         "force_dataset_version": force_dataset_version,

@@ -38,7 +38,7 @@ logger = logging.getLogger("copernicus_marine_root_logger")
 
 
 def subset_function(
-    dataset_id: str,
+    dataset_id: Optional[str],
     force_dataset_version: Optional[str],
     force_dataset_part: Optional[str],
     username: Optional[str],
@@ -85,9 +85,11 @@ def subset_function(
             "--netcdf-compression-level option"
         )
 
-    subset_request = SubsetRequest(dataset_id=dataset_id)
+    subset_request = SubsetRequest(dataset_id=dataset_id or "")
     if request_file:
         subset_request.from_file(request_file)
+    if not subset_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a subset request.")
     if motu_api_request:
         motu_api_subset_request = convert_motu_api_request_to_structure(
             motu_api_request

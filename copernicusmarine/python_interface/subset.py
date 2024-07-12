@@ -22,7 +22,7 @@ from copernicusmarine.python_interface.utils import homogenize_datetime
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def subset(
-    dataset_id: str,
+    dataset_id: Optional[str],
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
     username: Optional[str] = None,

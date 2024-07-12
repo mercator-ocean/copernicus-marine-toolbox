@@ -59,7 +59,7 @@ def cli_group_get() -> None:
     "--dataset-id",
     "-i",
     type=str,
-    required=True,
+    default=None,
     help="The datasetID.",
 )
 @force_dataset_version_option
@@ -245,7 +245,7 @@ def cli_group_get() -> None:
 )
 @log_exception_and_exit
 def get(
-    dataset_id: str,
+    dataset_id: Optional[str],
     dataset_version: Optional[str],
     dataset_part: Optional[str],
     username: Optional[str],

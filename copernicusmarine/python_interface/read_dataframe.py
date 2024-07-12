@@ -65,7 +65,6 @@ def read_dataframe(
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     force_service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-    disable_progress_bar: bool = False,
 ) -> pandas.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
