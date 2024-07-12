@@ -96,7 +96,6 @@ def subset_function(
         )
         subset_request.update(motu_api_subset_request.__dict__)
     request_update_dict = {
-        "dataset_id": dataset_id,
         "force_dataset_version": force_dataset_version,
         "force_dataset_part": force_dataset_part,
         "variables": variables,
@@ -142,7 +141,7 @@ def subset_function(
             raise SyntaxError("Must specify 'dataset_id' option")
         logger.info(
             "To retrieve a complete dataset, please use instead: "
-            f"copernicusmarine get --dataset-id {dataset_id}"
+            f"copernicusmarine get --dataset-id {subset_request.dataset_id}"
         )
         raise ValueError(
             "Missing subset option. Try 'copernicusmarine subset --help'."

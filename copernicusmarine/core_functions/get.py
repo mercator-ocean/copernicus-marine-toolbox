@@ -64,7 +64,6 @@ def get_function(
     if not get_request.dataset_id:
         raise ValueError("Please provide a dataset id for a get request.")
     request_update_dict = {
-        "dataset_id": dataset_id,
         "force_dataset_version": force_dataset_version,
         "output_directory": output_directory,
         "force_service": force_service,
