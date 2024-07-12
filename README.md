@@ -10,63 +10,67 @@
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
 
 ## Features
+
 The `copernicusmarine` offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
+
 - **Metadata Information**: List and retrieve metadata information on all variables, datasets, products, and their associated documentation.
 - **Subset Datasets**: Subset datasets to extract only the parts of interest, in preferred format, such as Analysis-Ready Cloud-Optimized (ARCO) Zarr or NetCDF file format.
 - **Advanced Filters**: Apply simple or advanced filters to get multiple files, in original formats like NetCDF/GeoTIFF, via direct Marine Data Store connections.
 - **No Quotas**: Enjoy no quotas, neither on volume size nor bandwidth.
 
 ## Installation
+
 For installation, multiple options are available depending on your setup:
 
 ### Mamba | Conda
+
 A `conda` package is available on [Anaconda](https://anaconda.org/conda-forge/copernicusmarine).
 
 You can install it using `mamba` (or conda) through the `conda-forge` channel with the following command:
+
 ```bash
 mamba install conda-forge::copernicusmarine --yes
 ```
 
 To upgrade the Toolbox with mamba (or conda):
+
 ```bash
 mamba update --name copernicusmarine copernicusmarine --yes
 ```
 
 ### Docker
+
 A docker image is also available here: [https://hub.docker.com/r/copernicusmarine/copernicusmarine](https://hub.docker.com/r/copernicusmarine/copernicusmarine)
 
 First step is to pull the container image:
+
 ```bash
 docker pull copernicusmarine/copernicusmarine:latest
 ```
 
 Then run it:
+
 ```bash
 docker run -it --rm copernicusmarine/copernicusmarine --version
 ```
 
 ### Pip
+
 Otherwise, if you already have an environment (safer to clone it), the package can be installed using the `pip` command:
+
 ```bash
 python -m pip install copernicusmarine
 ```
 
 And to **upgrade the package** to the newest available version, run:
+
 ```bash
 python -m pip install copernicusmarine --upgrade
 ```
 
 ## User Guide
+
 For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
-
-### General configuration
-
-#### Cache Usage
-
-Cachier library is used for caching part of the requests (as result of `describe` or `login`). By default, the cache will be located in the home folder. If you need to change the location of the cache, you can set the environment variable `COPERNICUSMARINE_CACHE_DIRECTORY` to point to the desired directory:
-
-- on **UNIX** platforms: `export COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
-- on **Windows** platforms: `set COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
 
 ### Network configuration
 
@@ -156,17 +160,22 @@ If `.copernicusmarine-credentials` already exists, the user is asked for confirm
 You can use the `--skip-if-user-logged-in` option to skip the configuration file overwrite if the user is already logged in.
 
 #### Access points migration and evolution
+
 If you still have a configuration for legacy services (e.g. `~/motuclient/motuclient-python.ini`, `~/.netrc` or `~/_netrc`) in your home directory, it will automatically be taken into account with commands `get` and `subset` without the need for running the `login` command.
 If the configuration files are already available in another directory, when running commands `subset` or `get`, you can use the `--credentials-file` option to point to the files.
 
 ### Command `subset`
+
 Remotely subset a dataset, based on variable names, geographical and temporal parameters.
 
 Example:
+
 ```bash
 copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
 ```
+
 Returns:
+
 ```bash
 INFO - 2024-04-03T10:18:18Z - <xarray.Dataset> Size: 3kB
 Dimensions:    (depth: 50, latitude: 2, longitude: 1, time: 3)
@@ -192,10 +201,13 @@ Do you want to proceed with download? [Y/n]:
 By default, after the display of the summary of the dataset subset, a download confirmation is asked. To skip this confirmation, use the option `--force-download`.
 
 #### Note about `--subset-method` option
+
 By default, the `subset` feature uses the `nearest` method of xarray. By specifying `--subset-method strict`, you can only request dimension strictly inside the dataset, useful for **operational use-case**.
 
 #### Note about longitude range
+
 Options `--minimum-longitude` and `--maximum-longitude` work as follows:
+
 - If the result of the substraction ( `--maximum-longitude` minus `--minimum-longitude` ) is superior or equal to 360, then return the full dataset.
 - If the requested longitude range:
   - **does not cross** the antemeridian, then return the dataset between range -180 and 180.
@@ -203,8 +215,8 @@ Options `--minimum-longitude` and `--maximum-longitude` work as follows:
 
 Note that you can request any longitudes you want. A modulus is applied to bring the result between -180° and 360°. For example, if you request [530, 560], the result dataset will be in [170, 200].
 
-
 #### Note about `--netcdf-compression-enabled` and `--netcdf-compression-level` options
+
 When subsetting data, if you decide to write your data as a NetCDF file (which is the default behavior), then you can provide the extra option `--netcdf-compression-enabled`. The downloaded file will be lighter but it will take more time to write it (because of the compression task). If you don't provide it, the task will be faster, but the file heavier.
 Otherwise, if you decide to write your data in Zarr format (`.zarr` extension), the original compression used in the Copernicus Marine Data Store will be applied, which means that the download task will be fast **and** the file compressed. In that case, you cannot use the `--netcdf-compression-enabled`.
 
@@ -213,6 +225,7 @@ Here are the default parameters added to xarray in the background when using the
 In addition to this option, you can also provide the `--netcdf-compression-level` option and customize the NetCDF compression level between 0 (no compression) and 9 (maximal compression).
 
 #### Note about `--netcdf3-compatible` option
+
 The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
 
 ### Command `get`
@@ -287,25 +300,31 @@ s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083de
 s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211101_20211130_R20230101_RE01.nc,12386940,2023-11-12 23:47:06.358000+00:00,"ea15d1f70fcc7f2ce404184d983530ff"
 s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211201_20211231_R20230101_RE01.nc,12398208,2023-11-12 23:47:06.456000+00:00,"585f49867aaefa2ce9d6e68dd468b5e1"
 ```
+
 If specified, no other action will be performed.
 
-
 #### Note about sync option
+
 Option `--sync` allows to download original files only if not exist and not up to date. The Toolbox checks the destination folder against the source folder. It can be combined with filters. Note that if set with `--overwrite-output-data`, the latter will be ignored.
 The logic is largely inspired from [s5cmd package sync command](https://github.com/peak/s5cmd#sync).
 Option `--sync-delete` will work as `--sync` with the added fonctionnality that it deletes any local file that has not been found on the remote server. Note that the files found on the server are also filtered. Hence, a file present locally might be deleted even if it is on the server because, for example, the executed `get` command contains a filter that excludes this specific file.
 
 Limitations:
+
 - `--sync` is not compatible with `--no-directories`.
 - `--sync` only works with `--dataset-version`.
 - `--sync` functionality is not available for datasets with several parts (like INSITU or static datasets for example).
 
 #### Note about filtering options
+
 Option `--filter` allows to specify a Unix shell-style wildcard pattern (see [fnmatch — Unix filename pattern matching](https://docs.python.org/3/library/fnmatch.html)) and select specific files:
+
 ```bash
 copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --filter "*01yav_200[0-2]*"
 ```
+
 Returns:
+
 ```bash
 INFO - 2024-04-03T11:51:15Z - Dataset version was not specified, the latest one was selected: "202211"
 INFO - 2024-04-03T11:51:15Z - Dataset part was not specified, the first one was selected: "default"
@@ -325,7 +344,9 @@ Option `--regex` allows to specify a regular expression for more advanced files 
 ```bash
 copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --regex ".*01yav_20(00|01|02).*.nc"
 ```
+
 Returns:
+
 ```bash
 INFO - 2024-04-03T11:52:43Z - Dataset version was not specified, the latest one was selected: "202211"
 INFO - 2024-04-03T11:52:43Z - Dataset part was not specified, the first one was selected: "default"
@@ -387,10 +408,13 @@ CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc
 > **_NOTE:_** This option is compatible with the file generated by the `--create-file-list` option if you generated a ".txt" file.
 
 Then the following command:
+
 ```bash
 copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --file-list file_list.txt
 ```
+
 Returns:
+
 ```bash
 INFO - 2024-04-03T12:57:44Z - Dataset version was not specified, the latest one was selected: "202211"
 INFO - 2024-04-03T12:57:44Z - Dataset part was not specified, the first one was selected: "default"
@@ -408,13 +432,15 @@ Do you want to proceed with download? [Y/n]:
 Also, there is a specific command `--index-parts` to retrieve the index files of INSITU datasets (as listed on the [Copernicus Marine File Browser](https://data.marine.copernicus.eu/product/INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034/files?subdataset=cmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311--ext--history&path=INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034%2Fcmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311%2F)).
 > **_NOTE:_** In the future, it is planned to have the index files for those datasets directly available through the `--filter`, `--regex` and/or `--file-list` options. Meanwhile, check this [Help Center article for a working example](https://help.marine.copernicus.eu/en/articles/9133855-how-to-download-insitu-data-using-index-files).
 
-
 Then the following command:
-```
+
+```bash
 copernicusmarine get --dataset-id cmems_obs-ins_blk_phybgcwav_mynrt_na_irr --index-parts
 ```
+
 Returns:
-```
+
+```text
 INFO - 2024-04-03T12:58:40Z - Dataset version was not specified, the latest one was selected: "202311"
 INFO - 2024-04-03T12:58:40Z - Dataset part was not specified, the first one was selected: "history"
 INFO - 2024-04-03T12:58:40Z - You forced selection of service: original-files
@@ -509,10 +535,8 @@ copernicusmarine subset --request-file template_subset_data_request.json
     "force_download": false,
     "log_level": "INFO",
     "no_directories": false,
-    "no_metadata_cache": false,
     "output_directory": "./data/",
     "overwrite_output_data": false,
-    "overwrite_metadata_cache": false,
     "show_outputnames": true
 }
 ```

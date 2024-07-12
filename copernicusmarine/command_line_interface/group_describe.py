@@ -5,10 +5,7 @@ import click
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
-from copernicusmarine.command_line_interface.utils import (
-    MutuallyExclusiveOption,
-    tqdm_disable_option,
-)
+from copernicusmarine.command_line_interface.utils import tqdm_disable_option
 from copernicusmarine.core_functions.deprecated import (
     DeprecatedClickOption,
     DeprecatedClickOptionsCommand,
@@ -99,24 +96,6 @@ def cli_group_describe() -> None:
     help="Filter catalogue output. Returns products with attributes "
     "matching a string token.",
 )
-@click.option(
-    "--overwrite-metadata-cache",
-    cls=MutuallyExclusiveOption,
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Force to refresh the catalogue by overwriting the local cache.",
-    mutually_exclusive=["no_metadata_cache"],
-)
-@click.option(
-    "--no-metadata-cache",
-    cls=MutuallyExclusiveOption,
-    type=bool,
-    is_flag=True,
-    default=False,
-    help="Bypass the use of cache.",
-    mutually_exclusive=["overwrite_metadata_cache"],
-)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -142,8 +121,6 @@ def describe(
     include_versions: bool,
     include_all: bool,
     contains: list[str],
-    overwrite_metadata_cache: bool,
-    no_metadata_cache: bool,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,

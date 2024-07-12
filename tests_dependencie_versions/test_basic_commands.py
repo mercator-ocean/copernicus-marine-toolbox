@@ -9,7 +9,6 @@ class TestBasicCommands:
         command = [
             "copernicusmarine",
             "describe",
-            "--overwrite-metadata-cache",
         ]
         self.output = execute_in_terminal(command)
 

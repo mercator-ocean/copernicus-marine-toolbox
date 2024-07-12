@@ -34,7 +34,6 @@ DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
     DEFAULT_CLIENT_BASE_DIRECTORY / DEFAULT_CLIENT_CREDENTIALS_FILENAME
 )
 # TODO: handle cache of the credentials without cachier
-CACHE_BASE_DIRECTORY: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
 
 
 class CredentialCannotBeNone(Exception):
@@ -99,10 +98,10 @@ def _retrieve_credential_from_environment_variable(
     credential_type: Literal["username", "password"]
 ) -> Optional[str]:
     if credential_type == "username":
-        logger.debug("username loaded from environment variable")
+        logger.debug("Tried to load username from environment variable")
         return COPERNICUSMARINE_SERVICE_USERNAME
     if credential_type == "password":
-        logger.debug("password loaded from environment variable")
+        logger.debug("Tried to load password from environment variable")
         return COPERNICUSMARINE_SERVICE_PASSWORD
 
 
@@ -264,7 +263,7 @@ def _are_copernicus_marine_credentials_valid(
     username: str, password: str
 ) -> Optional[bool]:
     number_of_retry = 3
-    user_is_active = None  # Not cached by cachier
+    user_is_active = None
     while (user_is_active not in [True, False]) and number_of_retry > 0:
         try:
             user_is_active = _check_credentials_with_cas(

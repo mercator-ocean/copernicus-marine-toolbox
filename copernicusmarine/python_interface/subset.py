@@ -22,7 +22,6 @@ from copernicusmarine.python_interface.utils import homogenize_datetime
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def subset(
-    # dataset_url: Optional[str] = None,
     dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
@@ -58,7 +57,6 @@ def subset(
     Extracts a subset of data from a specified dataset using given parameters.
 
     Args:
-        # dataset_url (str, optional): The URL of the dataset to retrieve.
         dataset_id (str, optional): The unique identifier of the dataset.
         dataset_version (str, optional): Force the use of a specific dataset version.
         dataset_part (str, optional): Force the use of a specific dataset part.

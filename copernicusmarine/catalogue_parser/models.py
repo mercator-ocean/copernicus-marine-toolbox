@@ -99,7 +99,8 @@ def _service_type_from_web_api_string(
     )
 
 
-class ServiceNotHandled(Exception): ...
+class ServiceNotHandled(Exception):
+    ...
 
 
 # service formats
@@ -149,9 +150,7 @@ class CopernicusMarineCoordinate:
             chunking_length = chunking_length.get(variable_id)
 
         coordinate = cls(
-            coordinates_id=(
-                "depth" if dimension == "elevation" else dimension
-            ),
+            coordinates_id=dimension,
             units=dimension_metadata.get("units") or "",
             minimum_value=minimum_value,  # type: ignore
             maximum_value=coordinates_info.get("max"),
@@ -164,7 +163,8 @@ class CopernicusMarineCoordinate:
                 "chunkGeometricFactor", {}
             ).get(variable_id),
         )
-        coordinate._convert_elevation_to_depth()
+        if dimension == "elevation":
+            coordinate._convert_elevation_to_depth()
         return coordinate
 
     @staticmethod
@@ -211,6 +211,7 @@ class CopernicusMarineVariable:
     def from_metadata_item(
         cls: Type[Variable],
         metadata_item: pystac.Item,
+        asset: pystac.Asset,
         variable_id: str,
         bbox: Optional[list[float]],
     ) -> Variable:
@@ -218,7 +219,7 @@ class CopernicusMarineVariable:
         cube_variable = cube_variables[variable_id]
 
         # to get coordinates
-        extra_fields_asset = metadata_item.extra_fields
+        extra_fields_asset = asset.extra_fields
         dimensions = extra_fields_asset.get("viewDims") or {}
         return cls(
             short_name=variable_id,
@@ -282,7 +283,7 @@ class CopernicusMarineService:
                         uri=service_uri,
                         variables=[
                             CopernicusMarineVariable.from_metadata_item(
-                                metadata_item, var_cube["id"], bbox
+                                metadata_item, asset, var_cube["id"], bbox
                             )
                             for var_cube in metadata_item.properties[
                                 "cube:variables"
@@ -398,14 +399,6 @@ class CopernicusMarineProductDataset:
     dataset_name: str
     versions: list[CopernicusMarineDatasetVersion]
 
-    def __init__(self, dataset_id, dataset_name, versions):
-        self.dataset_id = dataset_id
-        self.dataset_name = dataset_name
-        self.versions = versions
-        self.__versions_labels_mapping = {
-            version.label: version for version in versions
-        }
-
     def get_version(
         self, force_version: Optional[str]
     ) -> CopernicusMarineDatasetVersion:
@@ -443,6 +436,7 @@ class CopernicusMarineProductDataset:
     def parse_dataset_metadata_items(
         self, metadata_items: list[pystac.Item]
     ) -> None:
+        all_versions = set()
         for metadata_item in metadata_items:
             (
                 _,
@@ -454,16 +448,17 @@ class CopernicusMarineProductDataset:
             )
             if not part:
                 continue
-            if dataset_version in self.__versions_labels_mapping:
-                self.__versions_labels_mapping[dataset_version].parts.append(
-                    part
-                )
+            if dataset_version in all_versions:
+                for version in self.versions:
+                    if version.label == dataset_version:
+                        version.parts.append(part)
+                        break
             else:
+                all_versions.add(dataset_version)
                 version = CopernicusMarineDatasetVersion(
                     label=dataset_version, parts=[part]
                 )
                 self.versions.append(version)
-                self.__versions_labels_mapping[dataset_version] = version
 
 
 @dataclass
@@ -511,10 +506,12 @@ class CopernicusMarineCatalogue:
 
 
 # Errors
-class DatasetVersionPartNotFound(Exception): ...
+class DatasetVersionPartNotFound(Exception):
+    ...
 
 
-class DatasetVersionNotFound(Exception): ...
+class DatasetVersionNotFound(Exception):
+    ...
 
 
 def dataset_version_part_not_found_exception(

@@ -47,7 +47,6 @@ def load_xarray_dataset(*args, **kwargs):
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def open_dataset(
-    # dataset_url: Optional[str] = None,
     dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
@@ -73,8 +72,7 @@ def open_dataset(
     It supports various parameters for customization, such as specifying ge ographical bounds, temporal range, depth range, and more.
 
     Args:
-        dataset_url (str, optional): The URL of the dataset. Either `dataset_url` or `dataset_id` should be provided.
-        dataset_id (str, optional): The ID of the dataset. Either `dataset_url` or `dataset_id` should be provided.
+        dataset_id (str, optional): The ID of the dataset. `dataset_id` is mandatory.
         dataset_version (str, optional): Force the use of a specific dataset version.
         dataset_part (str, optional): Force the use of a specific dataset part.
         username (str, optional): Username for authentication, if required.
@@ -103,7 +101,6 @@ def open_dataset(
     )
     load_request = LoadRequest(
         dataset_id=dataset_id,
-        # dataset_url=dataset_url,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
         username=username,

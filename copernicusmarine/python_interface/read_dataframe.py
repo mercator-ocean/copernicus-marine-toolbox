@@ -47,7 +47,6 @@ def load_pandas_dataframe(*args, **kwargs):
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def read_dataframe(
-    # dataset_url: Optional[str] = None,
     dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
@@ -73,7 +72,6 @@ def read_dataframe(
     Unlike “lazy-loading”, the data is loaded as soon as this function is executed, which may be preferable when rapid access to the entire data set is required, but may require careful memory management.
 
     Args:
-        dataset_url (str, optional): The URL of the dataset.
         dataset_id (str, optional): The identifier of the dataset.
         dataset_version (str, optional): Force a specific dataset version.
         dataset_part (str, optional): Force a specific dataset part.

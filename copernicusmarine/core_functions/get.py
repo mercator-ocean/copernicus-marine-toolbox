@@ -27,7 +27,6 @@ logger = logging.getLogger("copernicus_marine_root_logger")
 
 
 def get_function(
-    # dataset_url: Optional[str],
     dataset_id: str,
     force_dataset_version: Optional[str],
     force_dataset_part: Optional[str],
@@ -63,7 +62,6 @@ def get_function(
     if request_file:
         get_request.from_file(request_file)
     request_update_dict = {
-        # "dataset_url": dataset_url,
         "dataset_id": dataset_id,
         "force_dataset_version": force_dataset_version,
         "output_directory": output_directory,
@@ -198,8 +196,6 @@ def create_get_template() -> None:
                 "index_parts": False,
                 "disable_progress_bar": False,
                 "overwrite_output_data": False,
-                "overwrite_metadata_cache": False,
-                "no_metadata_cache": False,
                 "log_level": "INFO",
             },
             output_file,

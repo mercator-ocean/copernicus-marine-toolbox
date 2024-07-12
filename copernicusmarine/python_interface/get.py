@@ -18,7 +18,6 @@ from copernicusmarine.python_interface.exception_handler import (
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def get(
-    # dataset_url: Optional[str] = None,
     dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
@@ -47,7 +46,6 @@ def get(
     Fetches data from the Copernicus Marine server based on the provided parameters.
 
     Args:
-        dataset_url (str, optional): The URL of the dataset to retrieve.
         dataset_id (str, optional): The unique identifier of the dataset.
         dataset_version (str, optional): Force the use of a specific dataset version.
         dataset_part (str, optional): Force the use of a specific dataset part.
@@ -87,7 +85,6 @@ def get(
     elif download_file_list:
         log_deprecated_message("download_file_list", "create_file_list")
     return get_function(
-        # dataset_url=dataset_url,
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,

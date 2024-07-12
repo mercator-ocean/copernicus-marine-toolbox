@@ -53,7 +53,7 @@ def cli_group_subset() -> None:
     help="""
     Download subsets of datasets as NetCDF files or Zarr stores.
 
-    Either one of --dataset-id or --dataset-url is required (can be found via the "describe" command).
+    --dataset-id is required (can be found via the "describe" command).
     The argument values passed individually through the CLI take precedence over the values from the --motu-api-request option,
     which takes precedence over the ones from the --request-file option.
     """,  # noqa
@@ -73,12 +73,6 @@ def cli_group_subset() -> None:
     copernicusmarine subset -i cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i -v thetao -t 2022-01-01T00:00:00 -T 2022-12-31T23:59:59 -x -6.17 -X -5.08 -y 35.75 -Y 36.30 -z 0.0 -Z 5.0
     """,  # noqa
 )
-# @click.option(
-#     "--dataset-url",
-#     "-u",
-#     type=str,
-#     help="The full dataset URL.",
-# )
 @click.option(
     "--dataset-id",
     "-i",
@@ -343,7 +337,6 @@ def cli_group_subset() -> None:
 )
 @log_exception_and_exit
 def subset(
-    # dataset_url: Optional[str],
     dataset_id: str,
     dataset_version: Optional[str],
     dataset_part: Optional[str],

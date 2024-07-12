@@ -168,11 +168,12 @@ def _parse_and_sort_dataset_items(
     The first version and part are the default.
     """
     dataset_item_example = dataset_items[0]
+    dataset_id, _, _ = get_version_and_part_from_full_dataset_id(
+        dataset_item_example.id
+    )
     dataset_part_version_merged = CopernicusMarineProductDataset(
-        dataset_id=dataset_item_example.id,
-        dataset_name=dataset_item_example.properties.get(
-            "title", dataset_item_example.id
-        ),
+        dataset_id=dataset_id,
+        dataset_name=dataset_item_example.properties.get("title", dataset_id),
         versions=[],
     )
     dataset_part_version_merged.parse_dataset_metadata_items(dataset_items)
@@ -212,6 +213,12 @@ def _construct_marine_data_store_product(
 
     production_center_name = production_center[0] if production_center else ""
 
+    if stac_product.assets:
+        thumbnail = stac_product.assets.get("thumbnail")
+        if thumbnail:
+            thumbnail_url = thumbnail.get_absolute_href()
+        else:
+            thumbnail_url = None
     thumbnail = stac_product.assets and stac_product.assets.get("thumbnail")
     digital_object_identifier = (
         stac_product.extra_fields.get("sci:doi", None)
@@ -226,7 +233,7 @@ def _construct_marine_data_store_product(
     return CopernicusMarineProduct(
         title=stac_product.title or stac_product.id,
         product_id=stac_product.id,
-        thumbnail_url=thumbnail.get_absolute_href() if thumbnail else "",
+        thumbnail_url=thumbnail_url or "",
         description=stac_product.description,
         digital_object_identifier=digital_object_identifier,
         sources=sources,

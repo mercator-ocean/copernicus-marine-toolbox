@@ -220,8 +220,6 @@ def create_subset_template() -> None:
                 "request_file": False,
                 "motu_api_request": False,
                 "overwrite_output_data": False,
-                "overwrite_metadata_cache": False,
-                "no_metadata_cache": False,
             },
             output_file,
             indent=4,

@@ -3,13 +3,12 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from itertools import chain
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Literal, Optional, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineCatalogue,
     CopernicusMarineDatasetServiceType,
     CopernicusMarineDatasetVersion,
     CopernicusMarineProductDataset,
@@ -260,39 +259,6 @@ def _select_service_by_priority(
             best_arco_service_type
         )
     return first_available_service
-
-
-def parse_dataset_id_and_service_and_suffix_path_from_url(
-    catalogue: CopernicusMarineCatalogue,
-    dataset_url: Optional[str],
-) -> Tuple[str, CopernicusMarineDatasetServiceType, str,]:
-    if dataset_url is None:
-        syntax_error = SyntaxError(
-            "Must specify at least one of "
-            "'dataset_url' or 'dataset_id' options"
-        )
-        raise syntax_error
-    return next_or_raise_exception(
-        (
-            (
-                dataset.dataset_id,
-                service.service_type,
-                dataset_url.split(service.uri)[1],
-            )
-            for product in catalogue.products
-            for dataset in product.datasets
-            for dataset_version in dataset.versions
-            for dataset_part in dataset_version.parts
-            for service in dataset_part.services
-            if dataset_url.startswith(service.uri)
-        ),
-        KeyError(
-            f"The requested dataset URL '{dataset_url}' "
-            "was not found in the catalogue, "
-            "you can use 'copernicusmarine describe --include-datasets "
-            "--contains <search_token>' to find datasets"
-        ),
-    )
 
 
 @dataclass

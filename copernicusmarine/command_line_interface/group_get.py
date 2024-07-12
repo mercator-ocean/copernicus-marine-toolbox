@@ -44,7 +44,7 @@ def cli_group_get() -> None:
     help="""
     Download originally produced data files.
 
-    Either one of --dataset-id or --dataset-url is required (can be found via the "describe" command).
+    --dataset-id is required (can be found via the "describe" command).
     The function fetches the files recursively if a folder path is passed as URL.
     When provided a datasetID, all the files in the corresponding folder will be downloaded if none of the --filter or --regex options is specified.
     """,  # noqa
@@ -55,12 +55,6 @@ def cli_group_get() -> None:
     copernicusmarine get -nd -o data_folder --dataset-id cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
     """,  # noqa
 )
-# @click.option(
-#     "--dataset-url",
-#     "-u",
-#     type=str,
-#     help="URL to the data files.",
-# )
 @click.option(
     "--dataset-id",
     "-i",
@@ -251,7 +245,6 @@ def cli_group_get() -> None:
 )
 @log_exception_and_exit
 def get(
-    # dataset_url: Optional[str],
     dataset_id: str,
     dataset_version: Optional[str],
     dataset_part: Optional[str],
@@ -295,7 +288,6 @@ def get(
         return
 
     return get_function(
-        # dataset_url=dataset_url,
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
