@@ -88,8 +88,6 @@ def subset_function(
     subset_request = SubsetRequest(dataset_id=dataset_id or "")
     if request_file:
         subset_request.from_file(request_file)
-    if not subset_request.dataset_id:
-        raise ValueError("Please provide a dataset id for a subset request.")
     if motu_api_request:
         motu_api_subset_request = convert_motu_api_request_to_structure(
             motu_api_request
@@ -118,6 +116,8 @@ def subset_function(
         "netcdf3_compatible": netcdf3_compatible,
     }
     subset_request.update(request_update_dict)
+    if not subset_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a subset request.")
     username, password = get_and_check_username_password(
         username,
         password,
@@ -137,8 +137,6 @@ def subset_function(
             subset_request.end_datetime,
         ]
     ):
-        if not subset_request.dataset_id:
-            raise SyntaxError("Must specify 'dataset_id' option")
         logger.info(
             "To retrieve a complete dataset, please use instead: "
             f"copernicusmarine get --dataset-id {subset_request.dataset_id}"
