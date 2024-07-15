@@ -293,8 +293,11 @@ def _filter_variable_attrs(
     ]
     if variables:
         for variable in variables:
+            existing_keys = list(
+                set(list_var_attrs).intersection(dataset[variable].attrs)
+            )
             dataset[variable].attrs = {
-                key: dataset[variable].attrs[key] for key in list_var_attrs
+                key: dataset[variable].attrs[key] for key in existing_keys
             }
     return dataset
 
@@ -320,6 +323,7 @@ def _variables_subset(
     dataset = dataset[
         numpy.array(dataset_variables_filter)
     ]  # filter the right variable
+    logger.info(f"Variables selected: {dataset_variables_filter}")
     return _filter_variable_attrs(
         dataset, dataset_variables_filter
     )  # and chose the right attributes
@@ -415,7 +419,6 @@ def subset(
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
-    # try to filter the atts of the variables here:
 
     dataset = _latitude_subset(
         dataset, geographical_parameters.latitude_parameters
