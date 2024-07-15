@@ -369,14 +369,14 @@ def _update_dataset_coordinate_attributes(
                     # list_coord_attrs.append("calendar")
                     list_coord_attrs.remove("units")
                     existing_keys = list(
-                        set(list_coord_attrs).intersection(dataset.attrs)
+                        set(list_coord_attrs).intersection(attrs)
                     )
                     coord.attrs = {key: attrs[key] for key in existing_keys}
                 elif coordinate_label in ["latitude", "depth", "elevation"]:
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
                     existing_keys = list(
-                        set(list_coord_attrs).intersection(dataset.attrs)
+                        set(list_coord_attrs).intersection(attrs)
                     )
                     coord.attrs = {key: attrs[key] for key in existing_keys}
                 else:  # for longitude

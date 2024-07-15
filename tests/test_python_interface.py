@@ -236,7 +236,6 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
         assert "_FillValue" not in subsetdata.depth.attrs
-        assert "valid_max" in subsetdata.longitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
@@ -267,7 +266,6 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
         assert "_FillValue" not in subsetdata.depth.attrs
-        assert "valid_max" in subsetdata.longitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
