@@ -42,6 +42,36 @@ COORDINATES_LABEL = {
     "depth": ["depth", "deptht", "elevation"],
 }
 
+NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
+    "standard_name",
+    "long_name",
+    "units",
+    "unit_long",
+    "valid_min",
+    "valid_max",
+]
+NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
+    "standard_name",
+    "long_name",
+    "units",
+    "unit_long",
+    "axis",
+    "valid_min",
+    "valid_max",
+]
+NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
+    "title",
+    "institution",
+    "source",
+    "history",
+    "references",
+    "comment",
+    "Conventions",
+    "producer",
+    "credit",
+    "contact",
+]
+
 
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
@@ -280,25 +310,18 @@ def _get_variable_name_from_standard_name(
     return None
 
 
-def _filter_variable_attrs(
-    dataset: xarray.Dataset, variables: Optional[List[str]]
+def _update_variables_attributes(
+    dataset: xarray.Dataset, variables: List[str]
 ) -> xarray.Dataset:
-    list_var_attrs = [
-        "standard_name",
-        "long_name",
-        "units",
-        "unit_long",
-        "valid_min",
-        "valid_max",
-    ]
-    if variables:
-        for variable in variables:
-            existing_keys = list(
-                set(list_var_attrs).intersection(dataset[variable].attrs)
+    for variable in variables:
+        attributes_to_keep = list(
+            set(NETCDF_CONVENTION_VARIABLE_ATTRIBUTES).intersection(
+                dataset[variable].attrs
             )
-            dataset[variable].attrs = {
-                key: dataset[variable].attrs[key] for key in existing_keys
-            }
+        )
+        dataset[variable].attrs = {
+            key: dataset[variable].attrs[key] for key in attributes_to_keep
+        }
     return dataset
 
 
@@ -320,13 +343,8 @@ def _variables_subset(
                 )
             else:
                 raise VariableDoesNotExistInTheDataset(variable)
-    dataset = dataset[
-        numpy.array(dataset_variables_filter)
-    ]  # filter the right variable
-    logger.info(f"Variables selected: {dataset_variables_filter}")
-    return _filter_variable_attrs(
-        dataset, dataset_variables_filter
-    )  # and chose the right attributes
+    dataset = dataset[numpy.array(dataset_variables_filter)]
+    return _update_variables_attributes(dataset, dataset_variables_filter)
 
 
 def _update_dataset_coordinate_attributes(
@@ -337,15 +355,7 @@ def _update_dataset_coordinate_attributes(
             if coordinate_alias in dataset.sizes:
                 coord = dataset[coordinate_alias]
                 attrs = coord.attrs
-                list_coord_attrs = [
-                    "standard_name",
-                    "long_name",
-                    "units",
-                    "unit_long",
-                    "axis",
-                    "valid_min",
-                    "valid_max",
-                ]
+                coordinate_attributes = NETCDF_CONVENTION_COORDINATE_ATTRIBUTES
                 if "time" in coordinate_label:
                     min_time_dimension = coord.values.min()
                     max_time_dimension = coord.values.max()
@@ -360,53 +370,31 @@ def _update_dataset_coordinate_attributes(
                     attrs["long_name"] = "Time"
                     attrs["valid_min"] = valid_min
                     attrs["valid_max"] = valid_max
-                    # attrs["calendar"] = coord.encoding["calendar"]
-                    # attrs["units"] = coord.encoding["units"]
                     attrs["axis"] = "T"
                     attrs["unit_long"] = (
                         coord.encoding["units"].replace("_", " ").title()
                     )
-                    # list_coord_attrs.append("calendar")
-                    list_coord_attrs.remove("units")
-                    existing_keys = list(
-                        set(list_coord_attrs).intersection(attrs)
-                    )
-                    coord.attrs = {key: attrs[key] for key in existing_keys}
+                    coordinate_attributes.remove("units")
                 elif coordinate_label in ["latitude", "depth", "elevation"]:
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
-                    existing_keys = list(
-                        set(list_coord_attrs).intersection(attrs)
-                    )
-                    coord.attrs = {key: attrs[key] for key in existing_keys}
-                else:  # for longitude
-                    list_coord_attrs.remove("valid_min")
-                    list_coord_attrs.remove("valid_max")
-                    existing_keys = list(
-                        set(list_coord_attrs).intersection(dataset.attrs)
-                    )
-                    coord.attrs = {key: attrs[key] for key in existing_keys}
-
-    return dataset
+                elif coordinate_label == "longitude":
+                    coordinate_attributes.remove("valid_min")
+                    coordinate_attributes.remove("valid_max")
+                attributes_to_keep = set(coordinate_attributes).intersection(
+                    attrs
+                )
+                coord.attrs = {key: attrs[key] for key in attributes_to_keep}
+    return _update_dataset_attrs(dataset)
 
 
 def _update_dataset_attrs(
     dataset: xarray.Dataset,
 ) -> xarray.Dataset:
-    list_dataset_attrs = [
-        "title",
-        "institution",
-        "source",
-        # "history", # there is no history
-        "references",
-        # "comment", # there is no comment
-        "Conventions",
-        "producer",  # added also in the frontend
-        "credit",
-        "contact",
-    ]
-    existing_keys = list(set(list_dataset_attrs).intersection(dataset.attrs))
-    dataset.attrs = {key: dataset.attrs[key] for key in existing_keys}
+    attributes_to_keep = set(
+        NETCDF_CONVENTION_DATASET_ATTRIBUTES
+    ).intersection(dataset.attrs)
+    dataset.attrs = {key: dataset.attrs[key] for key in attributes_to_keep}
     return dataset
 
 
@@ -432,8 +420,6 @@ def subset(
     dataset = _depth_subset(dataset, depth_parameters)
 
     dataset = _update_dataset_coordinate_attributes(dataset)
-
-    dataset = _update_dataset_attrs(dataset)
 
     return dataset
 
