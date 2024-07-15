@@ -352,8 +352,6 @@ def _update_dataset_coordinate_attributes(
                     valid_max = convert_datetime64_to_netcdf_timestamp(
                         max_time_dimension, netcdf_unit
                     )
-                    logger.info(f"netcdf_unit value: {netcdf_unit}")
-                    logger.info(coord.encoding)
                     attrs["standard_name"] = "time"
                     attrs["long_name"] = "Time"
                     attrs["valid_min"] = valid_min
@@ -366,15 +364,24 @@ def _update_dataset_coordinate_attributes(
                     )
                     # list_coord_attrs.append("calendar")
                     list_coord_attrs.remove("units")
-                    coord.attrs = {key: attrs[key] for key in list_coord_attrs}
+                    existing_keys = list(
+                        set(list_coord_attrs).intersection(dataset.attrs)
+                    )
+                    coord.attrs = {key: attrs[key] for key in existing_keys}
                 elif coordinate_label in ["latitude", "depth", "elevation"]:
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
-                    coord.attrs = {key: attrs[key] for key in list_coord_attrs}
+                    existing_keys = list(
+                        set(list_coord_attrs).intersection(dataset.attrs)
+                    )
+                    coord.attrs = {key: attrs[key] for key in existing_keys}
                 else:  # for longitude
                     list_coord_attrs.remove("valid_min")
                     list_coord_attrs.remove("valid_max")
-                    coord.attrs = {key: attrs[key] for key in list_coord_attrs}
+                    existing_keys = list(
+                        set(list_coord_attrs).intersection(dataset.attrs)
+                    )
+                    coord.attrs = {key: attrs[key] for key in existing_keys}
 
     return dataset
 
@@ -394,8 +401,8 @@ def _update_dataset_attrs(
         "credit",
         "contact",
     ]
-    dataset.attrs = {key: dataset.attrs[key] for key in list_dataset_attrs}
-    logger.info(dataset.attrs)
+    existing_keys = list(set(list_dataset_attrs).intersection(dataset.attrs))
+    dataset.attrs = {key: dataset.attrs[key] for key in existing_keys}
     return dataset
 
 

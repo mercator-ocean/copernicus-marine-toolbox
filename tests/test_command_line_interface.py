@@ -557,8 +557,6 @@ class TestCommandLineInterface:
 
         assert dataset.latitude.attrs["valid_min"] >= 0
         assert dataset.latitude.attrs["valid_max"] <= 0.1
-        assert dataset.longitude.attrs["valid_min"] >= 0.2
-        assert dataset.longitude.attrs["valid_max"] <= 0.3
         assert dataset.depth.attrs["valid_min"] >= 0
         assert dataset.depth.attrs["valid_max"] <= 5
         assert dataset.time.attrs["valid_min"] == 648672

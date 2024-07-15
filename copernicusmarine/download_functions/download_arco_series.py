@@ -97,7 +97,6 @@ def download_dataset(
     output_path = pathlib.Path(output_directory, filename)
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
-    logger.info(f"Salinity info: {dataset.so}")
     if not force_download:
         logger.info(dataset)
         logger.info(
