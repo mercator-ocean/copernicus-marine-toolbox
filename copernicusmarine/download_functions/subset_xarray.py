@@ -101,6 +101,7 @@ def get_size_of_coordinate_subset(
 def _update_dataset_attributes(
     dataset: xarray.Dataset,
     minimum_longitude_modulus: float,
+    maximum_longitude_modulus: float,
 ):
     window = (
         minimum_longitude_modulus + 180
@@ -121,6 +122,14 @@ def _update_dataset_attributes(
                 }
             ).sortby(coord_label)
             dataset[coord_label].attrs = attrs
+    # _check_coordinate_overlap(
+    #     "longitude",
+    #     minimum_longitude_modulus,
+    #     maximum_longitude_modulus,
+    #     dataset["longitude"].values.min(),
+    #     dataset["longitude"].values.max(),
+    #     is_strict=False,
+    # )
     return dataset
 
 
@@ -175,7 +184,9 @@ def _longitude_subset(
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
                     dataset = _update_dataset_attributes(
-                        dataset, minimum_longitude_modulus
+                        dataset,
+                        minimum_longitude_modulus,
+                        maximum_longitude_modulus,
                     )
                 longitude_selection = slice(
                     minimum_longitude_modulus,
@@ -423,24 +434,33 @@ def check_dataset_subset_bounds(
     for coordinate_label in COORDINATES_LABEL["longitude"]:
         if coordinate_label in dataset.sizes:
             longitudes = dataset_coordinates[coordinate_label].values
-            _check_coordinate_overlap(
-                dimension="longitude",
-                user_minimum_coordinate_value=(
-                    longitude_modulus(dataset_subset.minimum_longitude)
-                    if dataset_subset.minimum_longitude is not None
-                    else longitudes.min()
-                ),
-                user_maximum_coordinate_value=(
-                    longitude_modulus_upper_bound(
-                        dataset_subset.maximum_longitude
-                    )
-                    if dataset_subset.maximum_longitude is not None
-                    else longitudes.max()
-                ),
-                dataset_minimum_coordinate_value=longitudes.min(),
-                dataset_maximum_coordinate_value=longitudes.max(),
-                is_strict=subset_method == "strict",
+            user_minimum_coordinate_value = (
+                longitude_modulus(dataset_subset.minimum_longitude)
+                if dataset_subset.minimum_longitude is not None
+                else longitudes.min()
             )
+            user_maximum_coordinate_value = (
+                longitude_modulus_upper_bound(dataset_subset.maximum_longitude)
+                if dataset_subset.maximum_longitude is not None
+                else longitudes.max()
+            )
+            if (
+                not _window_is_needed(
+                    dataset_coordinates[coordinate_label],
+                    user_minimum_coordinate_value,
+                    user_maximum_coordinate_value,
+                )
+                or subset_method == "strict"
+            ):
+                logger.info("passem per aquí")
+                _check_coordinate_overlap(
+                    dimension="longitude",
+                    user_minimum_coordinate_value=user_minimum_coordinate_value,
+                    user_maximum_coordinate_value=user_maximum_coordinate_value,
+                    dataset_minimum_coordinate_value=longitudes.min(),
+                    dataset_maximum_coordinate_value=longitudes.max(),
+                    is_strict=subset_method == "strict",
+                )
     for coordinate_label in COORDINATES_LABEL["time"]:
         if coordinate_label in dataset.sizes:
             times = dataset_coordinates[coordinate_label].values
@@ -475,6 +495,22 @@ def date_to_datetime(date: Union[str, int]) -> datetime:
         return Timestamp(date * 1e6).to_pydatetime()
     else:
         return Timestamp(date).to_pydatetime()
+
+
+def _window_is_needed(
+    longitude: xarray.DataArray,
+    user_minimum_coordinate_value: float,
+    user_maximum_coordinate_value: float,
+) -> bool:
+    longitudes = longitude.values
+    if longitudes.min() == -180 and longitudes.max() >= (180 - longitude.step):
+        if (
+            user_maximum_coordinate_value - user_minimum_coordinate_value
+            >= 360
+        ):
+            return False
+        return True
+    return False
 
 
 @typing.no_type_check
