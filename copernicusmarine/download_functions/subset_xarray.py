@@ -314,14 +314,9 @@ def _update_variables_attributes(
     dataset: xarray.Dataset, variables: List[str]
 ) -> xarray.Dataset:
     for variable in variables:
-        attributes_to_keep = list(
-            set(NETCDF_CONVENTION_VARIABLE_ATTRIBUTES).intersection(
-                dataset[variable].attrs
-            )
+        dataset[variable].attrs = _filter_attributes(
+            dataset[variable].attrs, NETCDF_CONVENTION_VARIABLE_ATTRIBUTES
         )
-        dataset[variable].attrs = {
-            key: dataset[variable].attrs[key] for key in attributes_to_keep
-        }
     return dataset
 
 
@@ -347,6 +342,11 @@ def _variables_subset(
     return _update_variables_attributes(dataset, dataset_variables_filter)
 
 
+def _filter_attributes(attributes: dict, attributes_to_keep: List[str]):
+    attributes_that_exist = set(attributes).intersection(attributes_to_keep)
+    return {key: attributes[key] for key in attributes_that_exist}
+
+
 def _update_dataset_coordinate_attributes(
     dataset: xarray.Dataset,
 ) -> xarray.Dataset:
@@ -355,7 +355,9 @@ def _update_dataset_coordinate_attributes(
             if coordinate_alias in dataset.sizes:
                 coord = dataset[coordinate_alias]
                 attrs = coord.attrs
-                coordinate_attributes = NETCDF_CONVENTION_COORDINATE_ATTRIBUTES
+                coordinate_attributes = (
+                    NETCDF_CONVENTION_COORDINATE_ATTRIBUTES.copy()
+                )
                 if "time" in coordinate_label:
                     min_time_dimension = coord.values.min()
                     max_time_dimension = coord.values.max()
@@ -381,20 +383,12 @@ def _update_dataset_coordinate_attributes(
                 elif coordinate_label == "longitude":
                     coordinate_attributes.remove("valid_min")
                     coordinate_attributes.remove("valid_max")
-                attributes_to_keep = set(coordinate_attributes).intersection(
-                    attrs
-                )
-                coord.attrs = {key: attrs[key] for key in attributes_to_keep}
-    return _update_dataset_attrs(dataset)
+                coord.attrs = _filter_attributes(attrs, coordinate_attributes)
 
+    dataset.attrs = _filter_attributes(
+        dataset.attrs, NETCDF_CONVENTION_DATASET_ATTRIBUTES
+    )
 
-def _update_dataset_attrs(
-    dataset: xarray.Dataset,
-) -> xarray.Dataset:
-    attributes_to_keep = set(
-        NETCDF_CONVENTION_DATASET_ATTRIBUTES
-    ).intersection(dataset.attrs)
-    dataset.attrs = {key: dataset.attrs[key] for key in attributes_to_keep}
     return dataset
 
 
