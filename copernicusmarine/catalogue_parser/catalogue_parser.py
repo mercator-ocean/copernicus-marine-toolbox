@@ -1,23 +1,24 @@
 import asyncio
 import logging
-import re
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import timedelta
 from enum import Enum
-from importlib.metadata import version as package_version
 from itertools import groupby
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import nest_asyncio
 import pystac
 from aiohttp import ContentTypeError, ServerDisconnectedError
-from cachier.core import cachier
 from tqdm import tqdm
 
 from copernicusmarine.aioretry import RetryInfo, RetryPolicyStrategy, retry
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_debug,
+from copernicusmarine.catalogue_parser.dataset_product_mapping import (
+    dataset_product_mapping,
+)
+from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineCatalogue,
+    CopernicusMarineProduct,
+    CopernicusMarineProductDataset,
+    get_version_and_part_from_full_dataset_id,
 )
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS,
@@ -27,33 +28,12 @@ from copernicusmarine.core_functions.sessions import (
     get_https_proxy,
 )
 from copernicusmarine.core_functions.utils import (
-    CACHE_BASE_DIRECTORY,
     construct_query_params_for_marine_data_store_monitoring,
-    datetime_parser,
     map_reject_none,
-    next_or_raise_exception,
     rolling_batch_gather,
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
-
-
-class _ServiceName(str, Enum):
-    GEOSERIES = "arco-geo-series"
-    TIMESERIES = "arco-time-series"
-    FILES = "original-files"
-    WMTS = "wmts"
-    OMI_ARCO = "omi-arco"
-    STATIC_ARCO = "static-arco"
-
-
-class _ServiceShortName(str, Enum):
-    GEOSERIES = "geoseries"
-    TIMESERIES = "timeseries"
-    FILES = "files"
-    WMTS = "wmts"
-    OMI_ARCO = "omi-arco"
-    STATIC_ARCO = "static-arco"
 
 
 MARINE_DATA_STORE_STAC_BASE_URL = (
@@ -70,393 +50,6 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
 )
 
 MAX_CONCURRENT_REQUESTS = int(COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS)
-
-
-@dataclass(frozen=True)
-class _Service:
-    service_name: _ServiceName
-    short_name: _ServiceShortName
-
-    def aliases(self) -> List[str]:
-        return (
-            [self.service_name.value, self.short_name.value]
-            if self.short_name.value != self.service_name.value
-            else [self.service_name.value]
-        )
-
-    def to_json_dict(self):
-        return {
-            "service_name": self.service_name.value,
-            "short_name": self.short_name.value,
-        }
-
-
-class CopernicusMarineDatasetServiceType(_Service, Enum):
-    GEOSERIES = _ServiceName.GEOSERIES, _ServiceShortName.GEOSERIES
-    TIMESERIES = (
-        _ServiceName.TIMESERIES,
-        _ServiceShortName.TIMESERIES,
-    )
-    FILES = _ServiceName.FILES, _ServiceShortName.FILES
-    WMTS = _ServiceName.WMTS, _ServiceShortName.WMTS
-    OMI_ARCO = _ServiceName.OMI_ARCO, _ServiceShortName.OMI_ARCO
-    STATIC_ARCO = _ServiceName.STATIC_ARCO, _ServiceShortName.STATIC_ARCO
-
-
-class CopernicusMarineServiceFormat(str, Enum):
-    ZARR = "zarr"
-    SQLITE = "sqlite"
-
-
-def _service_type_from_web_api_string(
-    name: str,
-) -> CopernicusMarineDatasetServiceType:
-    class WebApi(Enum):
-        GEOSERIES = "timeChunked"
-        TIMESERIES = "geoChunked"
-        FILES = "native"
-        WMTS = "wmts"
-        OMI_ARCO = "omi"
-        STATIC_ARCO = "static"
-
-    web_api_mapping = {
-        WebApi.GEOSERIES: CopernicusMarineDatasetServiceType.GEOSERIES,
-        WebApi.TIMESERIES: CopernicusMarineDatasetServiceType.TIMESERIES,
-        WebApi.FILES: CopernicusMarineDatasetServiceType.FILES,
-        WebApi.WMTS: CopernicusMarineDatasetServiceType.WMTS,
-        WebApi.OMI_ARCO: CopernicusMarineDatasetServiceType.OMI_ARCO,
-        WebApi.STATIC_ARCO: CopernicusMarineDatasetServiceType.STATIC_ARCO,
-    }
-
-    return next_or_raise_exception(
-        (
-            service_type
-            for service_web_api, service_type in web_api_mapping.items()
-            if service_web_api.value == name
-        ),
-        ServiceNotHandled(name),
-    )
-
-
-class ServiceNotHandled(Exception):
-    ...
-
-
-VERSION_DEFAULT = "default"
-PART_DEFAULT = "default"
-
-
-@dataclass
-class CopernicusMarineCoordinates:
-    coordinates_id: str
-    units: str
-    minimum_value: Optional[float]
-    maximum_value: Optional[float]
-    step: Optional[float]
-    values: Optional[list[Union[float, int]]]
-    chunking_length: Optional[int]
-    chunk_type: Optional[str]
-    chunk_reference_coordinate: Optional[int]
-    chunk_geometric_factor: Optional[int]
-
-    def convert_elevation_to_depth(self):
-        self.coordinates_id = "depth"
-        minimum_elevation = self.minimum_value
-        maximum_elevation = self.maximum_value
-        if minimum_elevation is not None:
-            self.maximum_value = -minimum_elevation
-        else:
-            self.maximum_value = None
-        if maximum_elevation is not None:
-            self.minimum_value = -maximum_elevation
-        else:
-            self.minimum_value = None
-        if self.values is not None:
-            self.values = [-value for value in self.values]
-
-
-@dataclass
-class CopernicusMarineVariable:
-    short_name: str
-    standard_name: str
-    units: str
-    bbox: Tuple[float, float, float, float]
-    coordinates: list[CopernicusMarineCoordinates]
-
-
-@dataclass
-class CopernicusMarineService:
-    service_type: CopernicusMarineDatasetServiceType
-    service_format: Optional[CopernicusMarineServiceFormat]
-    uri: str
-    variables: list[CopernicusMarineVariable]
-
-
-@dataclass
-class CopernicusMarineVersionPart:
-    name: str
-    services: list[CopernicusMarineService]
-    retired_date: Optional[str]
-    released_date: Optional[str]
-
-    def get_service_by_service_type(
-        self, service_type: CopernicusMarineDatasetServiceType
-    ):
-        return next(
-            service
-            for service in self.services
-            if service.service_type == service_type
-        )
-
-
-@dataclass
-class CopernicusMarineDatasetVersion:
-    label: str
-    parts: list[CopernicusMarineVersionPart]
-
-    def get_part(
-        self, force_part: Optional[str]
-    ) -> CopernicusMarineVersionPart:
-        wanted_part = force_part or PART_DEFAULT
-        for part in self.parts:
-            if part.name == wanted_part:
-                return part
-            elif not force_part:
-                return part
-        raise dataset_version_part_not_found_exception(self)
-
-    def sort_parts(self) -> tuple[Optional[str], Optional[str]]:
-        not_released_parts = {
-            part.name
-            for part in self.parts
-            if part.released_date
-            and datetime_parser(part.released_date) > datetime_parser("now")
-        }
-        will_be_retired_parts = {
-            part.name: datetime_parser(part.retired_date).timestamp()
-            for part in self.parts
-            if part.retired_date
-        }
-        max_retired_timestamp = 0
-        if will_be_retired_parts:
-            max_retired_timestamp = max(will_be_retired_parts.values()) + 1
-        self.parts = sorted(
-            self.parts,
-            key=lambda x: (
-                x.name in not_released_parts,
-                max_retired_timestamp
-                - will_be_retired_parts.get(x.name, max_retired_timestamp),
-                -(x.name == PART_DEFAULT),
-                -(x.name == "latest"),  # for INSITU datasets
-                -(x.name == "bathy"),  # for STATIC datasets
-                x.name,
-            ),
-        )
-        return self.parts[0].released_date, self.parts[0].retired_date
-
-
-class DatasetVersionPartNotFound(Exception):
-    ...
-
-
-class DatasetVersionNotFound(Exception):
-    ...
-
-
-@dataclass
-class CopernicusMarineProductDataset:
-    dataset_id: str
-    dataset_name: str
-    versions: list[CopernicusMarineDatasetVersion]
-
-    def _seperate_version_and_default(
-        self,
-    ) -> Tuple[
-        Optional[CopernicusMarineDatasetVersion],
-        List[CopernicusMarineDatasetVersion],
-    ]:
-        default_version = None
-        versions = []
-        for version in self.versions:
-            if version.label == VERSION_DEFAULT:
-                default_version = version
-            else:
-                versions.append(version)
-        return default_version, versions
-
-    def get_latest_version_or_raise(self) -> CopernicusMarineDatasetVersion:
-        default_version, versions = self._seperate_version_and_default()
-        sorted_versions = sorted(versions, key=lambda x: x.label)
-        if sorted_versions:
-            return sorted_versions[-1]
-        if default_version:
-            return default_version
-        raise dataset_version_not_found_exception(self)
-
-    def get_version(
-        self, force_version: Optional[str]
-    ) -> CopernicusMarineDatasetVersion:
-        wanted_version = force_version or VERSION_DEFAULT
-        for version in self.versions:
-            if version.label == wanted_version:
-                return version
-            elif not force_version:
-                return version
-        raise dataset_version_not_found_exception(self)
-
-    def sort_versions(self) -> None:
-        not_released_versions: set[str] = set()
-        retired_dates = {}
-        for version in self.versions:
-            released_date, retired_date = version.sort_parts()
-            if released_date and datetime_parser(
-                released_date
-            ) > datetime_parser("now"):
-                not_released_versions.add(version.label)
-            if retired_date:
-                retired_dates[version.label] = retired_date
-
-        self.versions = sorted(
-            self.versions,
-            key=lambda x: (
-                -(x.label in not_released_versions),
-                retired_dates.get(x.label, "9999-12-31"),
-                -(x.label == VERSION_DEFAULT),
-                x.label,
-            ),
-            reverse=True,
-        )
-
-
-def dataset_version_part_not_found_exception(
-    version: CopernicusMarineDatasetVersion,
-) -> DatasetVersionPartNotFound:
-    return DatasetVersionPartNotFound(
-        f"No part found for version {version.label}"
-    )
-
-
-def dataset_version_not_found_exception(
-    dataset: CopernicusMarineProductDataset,
-) -> DatasetVersionNotFound:
-    return DatasetVersionNotFound(
-        f"No version found for dataset {dataset.dataset_id}"
-    )
-
-
-@dataclass
-class CopernicusMarineProductProvider:
-    name: str
-    roles: list[str]
-    url: str
-    email: str
-
-
-@dataclass
-class CopernicusMarineProduct:
-    title: str
-    product_id: str
-    thumbnail_url: str
-    description: str
-    digital_object_identifier: Optional[str]
-    sources: List[str]
-    processing_level: Optional[str]
-    production_center: str
-    keywords: dict[str, str]
-    datasets: list[CopernicusMarineProductDataset]
-
-
-@dataclass
-class ProductDatasetParser(ABC):
-    dataset_id: str
-    dataset_name: str
-    versions: list[CopernicusMarineDatasetVersion]
-
-    @abstractmethod
-    def to_copernicus_marine_dataset(
-        self,
-    ) -> CopernicusMarineProductDataset:
-        ...
-
-
-@dataclass
-class ProductParser(ABC):
-    title: str
-    product_id: str
-    thumbnail_url: str
-    description: str
-    digital_object_identifier: Optional[str]
-    sources: List[str]
-    processing_level: Optional[str]
-    production_center: str
-    keywords: dict[str, str]
-
-
-@dataclass
-class ProductDatasetFromMarineDataStore(ProductDatasetParser):
-    def to_copernicus_marine_dataset(self) -> CopernicusMarineProductDataset:
-        dataset = CopernicusMarineProductDataset(
-            dataset_id=self.dataset_id,
-            dataset_name=self.dataset_name,
-            versions=self.versions,
-        )
-        dataset.sort_versions()
-        return dataset
-
-
-@dataclass
-class ProductFromMarineDataStore(ProductParser):
-    datasets: list[ProductDatasetFromMarineDataStore]
-
-    def to_copernicus_marine_product(self) -> CopernicusMarineProduct:
-        return CopernicusMarineProduct(
-            title=self.title,
-            product_id=self.product_id,
-            thumbnail_url=self.thumbnail_url,
-            description=self.description,
-            digital_object_identifier=self.digital_object_identifier,
-            sources=self.sources,
-            processing_level=self.processing_level,
-            production_center=self.production_center,
-            keywords=self.keywords,
-            datasets=[
-                dataset.to_copernicus_marine_dataset()
-                for dataset in self.datasets
-            ],
-        )
-
-
-@dataclass
-class CopernicusMarineCatalogue:
-    products: list[CopernicusMarineProduct]
-
-    def filter(self, tokens: list[str]):
-        return filter_catalogue_with_strings(self, tokens)
-
-    def filter_only_official_versions_and_parts(self):
-        products_to_remove = []
-        for product in self.products:
-            datasets_to_remove = []
-            for dataset in product.datasets:
-                latest_version = dataset.versions[0]
-                parts_to_remove = []
-                for part in latest_version.parts:
-                    if part.released_date and datetime_parser(
-                        part.released_date
-                    ) > datetime_parser("now"):
-                        parts_to_remove.append(part)
-                for part_to_remove in parts_to_remove:
-                    latest_version.parts.remove(part_to_remove)
-                if not latest_version.parts:
-                    datasets_to_remove.append(dataset)
-                else:
-                    dataset.versions = [latest_version]
-            for dataset_to_remove in datasets_to_remove:
-                product.datasets.remove(dataset_to_remove)
-            if not product.datasets:
-                products_to_remove.append(product)
-        for product_to_remove in products_to_remove:
-            self.products.remove(product_to_remove)
 
 
 class CatalogParserConnection:
@@ -500,243 +93,132 @@ class CatalogParserConnection:
         return info.fails >= self.__max_retries, info.fails * self.__sleep_time
 
 
-def _construct_copernicus_marine_service(
-    stac_service_name, stac_asset, datacube
-) -> Optional[CopernicusMarineService]:
+async def get_dataset_metadata(
+    dataset_id: str, staging: bool
+) -> Optional[CopernicusMarineProductDataset]:
+    connection = CatalogParserConnection()
+    product_id = dataset_product_mapping[dataset_id]  # here mds mapping
+    root_url = (
+        MARINE_DATA_STORE_STAC_BASE_URL
+        if not staging
+        else MARINE_DATA_STORE_STAC_BASE_URL_STAGING
+    )
+    url = f"{root_url}/{product_id}/product.stac.json"
+    product_json = await connection.get_json_file(url)
+    product_collection = pystac.Collection.from_dict(product_json)
+    product_datasets_metadata_links = product_collection.get_item_links()
+    datasets_metadata_links = [
+        dataset_metadata_link
+        for dataset_metadata_link in product_datasets_metadata_links
+        if dataset_id in dataset_metadata_link.href
+    ]
+    if not datasets_metadata_links:
+        return None
+    # TODO: check if we gain a lot of time by doing a gather here
+    # if not don't forget to add a retry policy
+
+    dataset_jsons: list[dict] = await asyncio.gather(
+        *[
+            connection.get_json_file(f"{root_url}/{product_id}/{link.href}")
+            for link in datasets_metadata_links
+        ]
+    )
+    await connection.close()
+    dataset_items = [
+        dataset_item
+        for dataset_json in dataset_jsons
+        if (dataset_item := _parse_dataset_json_to_pystac_item(dataset_json))
+    ]
+    return _parse_and_sort_dataset_items(dataset_items)
+
+
+def _parse_dataset_json_to_pystac_item(
+    metadate_json: dict,
+) -> Optional[pystac.Item]:
     try:
-        service_uri = stac_asset.get_absolute_href()
-        service_type = _service_type_from_web_api_string(stac_service_name)
-        service_format = None
-        admp_in_preparation = datacube.properties.get("admp_in_preparation")
-        if stac_asset.media_type and "zarr" in stac_asset.media_type:
-            service_format = CopernicusMarineServiceFormat.ZARR
-        elif stac_asset.media_type and "sqlite3" in stac_asset.media_type:
-            service_format = CopernicusMarineServiceFormat.SQLITE
-
-        if not service_uri.endswith("/"):
-            if admp_in_preparation and (
-                service_type == CopernicusMarineDatasetServiceType.GEOSERIES
-                or service_type
-                == CopernicusMarineDatasetServiceType.TIMESERIES
-            ):
-                return None
-            else:
-                return CopernicusMarineService(
-                    service_type=service_type,
-                    uri=service_uri,
-                    variables=_get_variables(datacube, stac_asset),
-                    service_format=service_format,
-                )
-        return None
-    except ServiceNotHandled as service_not_handled:
-        log_exception_debug(service_not_handled)
-        return None
-
-
-def _get_versions_from_marine_datastore(
-    datacubes: List[pystac.Item],
-) -> List[CopernicusMarineDatasetVersion]:
-    copernicus_marine_dataset_versions: List[
-        CopernicusMarineDatasetVersion
-    ] = []
-
-    datacubes_by_version = groupby(
-        datacubes,
-        key=lambda datacube: get_version_and_part_from_full_dataset_id(
-            datacube.id
-        )[1],
-    )
-    for dataset_version, datacubes in datacubes_by_version:  # type: ignore
-        parts = _get_parts(datacubes)
-
-        if parts:
-            version = CopernicusMarineDatasetVersion(
-                label=dataset_version,
-                parts=parts,
-            )
-            copernicus_marine_dataset_versions.append(version)
-
-    return copernicus_marine_dataset_versions
-
-
-def _get_parts(
-    datacubes: List[pystac.Item],
-) -> List[CopernicusMarineVersionPart]:
-    parts: List[CopernicusMarineVersionPart] = []
-    for datacube in datacubes:
-        released_date = datacube.properties.get("admp_released_date")
-        retired_date = datacube.properties.get("admp_retired_date")
-        if retired_date and datetime_parser(retired_date) < datetime_parser(
-            "now"
-        ):
-            continue
-
-        services = _get_services(datacube)
-        _, _, part = get_version_and_part_from_full_dataset_id(datacube.id)
-
-        if services:
-            parts.append(
-                CopernicusMarineVersionPart(
-                    name=part,
-                    services=services,
-                    retired_date=retired_date,
-                    released_date=released_date,
-                )
-            )
-
-    if parts:
-        return parts
-    return []
-
-
-def _get_services(
-    datacube: pystac.Item,
-) -> list[CopernicusMarineService]:
-    stac_assets_dict = datacube.get_assets()
-    return [
-        dataset_service
-        for stac_service_name, stac_asset in stac_assets_dict.items()
-        if (
-            dataset_service := _construct_copernicus_marine_service(
-                stac_service_name, stac_asset, datacube
-            )
+        return pystac.Item.from_dict(metadate_json)
+    except pystac.STACError as exception:
+        message = (
+            "Invalid Item: If datetime is None, a start_datetime "
+            + "and end_datetime must be supplied."
         )
-        is not None
-    ]
-
-
-def _format_arco_data_metadata_producer_valid_start_date(
-    arco_data_metadata_producer_valid_start_date: str,
-    to_timestamp: bool = False,
-) -> Union[str, int]:
-    if to_timestamp:
-        return int(
-            datetime_parser(
-                arco_data_metadata_producer_valid_start_date.split(".")[0]
-            ).timestamp()
-            * 1000
-        )
-    return arco_data_metadata_producer_valid_start_date
-
-
-def _get_variables(
-    stac_dataset: pystac.Item,
-    stac_asset: pystac.Asset,
-) -> list[CopernicusMarineVariable]:
-    bbox = stac_dataset.bbox
-    return [
-        CopernicusMarineVariable(
-            short_name=var_cube["id"],
-            standard_name=var_cube["standardName"],
-            units=var_cube.get("unit") or "",
-            bbox=bbox,
-            coordinates=_get_coordinates(
-                var_cube["id"],
-                stac_asset,
-                stac_dataset.properties.get("admp_valid_start_date"),
-            )
-            or [],
-        )
-        for var_cube in stac_dataset.properties["cube:variables"].values()
-    ]
-
-
-def _get_coordinates(
-    variable_id: str,
-    stac_asset: pystac.Asset,
-    arco_data_metadata_producer_valid_start_date: Optional[str],
-) -> Optional[list[CopernicusMarineCoordinates]]:
-    extra_fields_asset = stac_asset.extra_fields
-    dimensions = extra_fields_asset.get("viewDims")
-    if dimensions:
-        coordinates = []
-        for dimension, dimension_metadata in dimensions.items():
-            coordinates_info = dimension_metadata.get("coords", {})
-            if (
-                arco_data_metadata_producer_valid_start_date
-                and dimension == "time"
-            ):
-                minimum_value = (
-                    _format_arco_data_metadata_producer_valid_start_date(
-                        arco_data_metadata_producer_valid_start_date,
-                        to_timestamp=isinstance(
-                            coordinates_info.get("min"), int
-                        ),
-                    )
-                )
-            else:
-                minimum_value = coordinates_info.get("min")
-            chunking_length = dimension_metadata.get("chunkLen")
-            if isinstance(chunking_length, dict):
-                chunking_length = chunking_length.get(variable_id)
-            coordinate = CopernicusMarineCoordinates(
-                coordinates_id=(
-                    "depth" if dimension == "elevation" else dimension
-                ),
-                units=dimension_metadata.get("units") or "",
-                minimum_value=minimum_value,  # type: ignore
-                maximum_value=coordinates_info.get("max"),
-                step=coordinates_info.get("step"),
-                values=coordinates_info.get("values"),
-                chunking_length=chunking_length,
-                chunk_type=dimension_metadata.get("chunkType"),
-                chunk_reference_coordinate=dimension_metadata.get(
-                    "chunkRefCoord"
-                ),
-                chunk_geometric_factor=dimension_metadata.get(
-                    "chunkGeometricFactor", {}
-                ).get(variable_id),
-            )
-            if dimension == "elevation":
-                coordinate.convert_elevation_to_depth()
-            coordinates.append(coordinate)
-        return coordinates
-    else:
-        return None
-
-
-def _construct_marine_data_store_dataset(
-    datacubes_by_id: List,
-) -> Optional[ProductDatasetFromMarineDataStore]:
-    dataset_id = datacubes_by_id[0]
-    datacubes = list(datacubes_by_id[1])
-    dataset_name = (
-        datacubes[0].properties["title"] if len(datacubes) == 1 else dataset_id
-    )
-    if datacubes:
-        versions = _get_versions_from_marine_datastore(datacubes)
-        if versions:
-            return ProductDatasetFromMarineDataStore(
-                dataset_id=dataset_id,
-                dataset_name=dataset_name,
-                versions=versions,
-            )
+        if exception.args[0] != message:
+            logger.error(exception)
+            raise pystac.STACError(exception.args)
     return None
+
+
+def _parse_product_json_to_pystac_collection(
+    metadata_json: dict,
+) -> Optional[pystac.Collection]:
+    try:
+        return pystac.Collection.from_dict(metadata_json)
+    except KeyError as exception:
+        messages = ["spatial", "temporal"]
+        if exception.args[0] not in messages:
+            logger.error(exception)
+        return None
+
+
+def _parse_and_sort_dataset_items(
+    dataset_items: list[pystac.Item],
+) -> Optional[CopernicusMarineProductDataset]:
+    """
+    Return all dataset metadata parsed and sorted.
+    The first version and part are the default.
+    """
+    dataset_item_example = dataset_items[0]
+    dataset_id, _, _ = get_version_and_part_from_full_dataset_id(
+        dataset_item_example.id
+    )
+    dataset_part_version_merged = CopernicusMarineProductDataset(
+        dataset_id=dataset_id,
+        dataset_name=dataset_item_example.properties.get("title", dataset_id),
+        versions=[],
+    )
+    dataset_part_version_merged.parse_dataset_metadata_items(dataset_items)
+
+    if dataset_part_version_merged.versions == []:
+        return None
+
+    dataset_part_version_merged.sort_versions()
+    return dataset_part_version_merged
 
 
 def _construct_marine_data_store_product(
     stac_tuple: Tuple[pystac.Collection, List[pystac.Item]],
-) -> ProductFromMarineDataStore:
+) -> CopernicusMarineProduct:
     stac_product, stac_datasets = stac_tuple
     stac_datasets_sorted = sorted(stac_datasets, key=lambda x: x.id)
-    datacubes_by_id = groupby(
+    dataset_items_by_dataset_id = groupby(
         stac_datasets_sorted,
         key=lambda x: get_version_and_part_from_full_dataset_id(x.id)[0],
     )
 
-    datasets = map(
-        _construct_marine_data_store_dataset,  # type: ignore
-        datacubes_by_id,  # type: ignore
-    )
+    datasets = [
+        dataset_metadata
+        for _, dataset_items in dataset_items_by_dataset_id
+        if (
+            dataset_metadata := _parse_and_sort_dataset_items(
+                list(dataset_items)
+            )
+        )
+    ]
 
     production_center = [
         provider.name
         for provider in stac_product.providers or []
-        if "producer" in provider.roles
+        if provider.roles and "producer" in provider.roles
     ]
 
     production_center_name = production_center[0] if production_center else ""
 
+    if stac_product.assets:
+        thumbnail = stac_product.assets.get("thumbnail")
+        if thumbnail:
+            thumbnail_url = thumbnail.get_absolute_href()
+        else:
+            thumbnail_url = None
     thumbnail = stac_product.assets and stac_product.assets.get("thumbnail")
     digital_object_identifier = (
         stac_product.extra_fields.get("sci:doi", None)
@@ -748,20 +230,17 @@ def _construct_marine_data_store_product(
         stac_product, "processingLevel"
     )
 
-    return ProductFromMarineDataStore(
+    return CopernicusMarineProduct(
         title=stac_product.title or stac_product.id,
         product_id=stac_product.id,
-        thumbnail_url=thumbnail.get_absolute_href() if thumbnail else "",
+        thumbnail_url=thumbnail_url or "",
         description=stac_product.description,
         digital_object_identifier=digital_object_identifier,
         sources=sources,
         processing_level=processing_level,
         production_center=production_center_name,
         keywords=stac_product.keywords,
-        datasets=sorted(
-            [dataset for dataset in datasets if dataset],
-            key=lambda dataset: dataset.dataset_id,
-        ),
+        datasets=datasets,
     )
 
 
@@ -776,7 +255,7 @@ def _get_stac_product_property(
     return properties.get(property_key)
 
 
-async def async_fetch_items_from_collection(
+async def async_fetch_dataset_items(
     root_url: str,
     connection: CatalogParserConnection,
     collection: pystac.Collection,
@@ -787,39 +266,29 @@ async def async_fetch_items_from_collection(
             logger.warning(f"Invalid Item, no owner for: {link.href}")
             continue
         url = root_url + "/" + link.owner.id + "/" + link.href
-        try:
-            item_json = await connection.get_json_file(url)
-            items.append(pystac.Item.from_dict(item_json))
-        except pystac.STACError as exception:
-            message = (
-                "Invalid Item: If datetime is None, a start_datetime "
-                + "and end_datetime must be supplied."
-            )
-            if exception.args[0] != message:
-                logger.error(exception)
-                raise pystac.STACError(exception.args)
+        item_json = await connection.get_json_file(url)
+        item = _parse_dataset_json_to_pystac_item(item_json)
+        if item:
+            items.append(item)
     return items
 
 
 async def async_fetch_collection(
-    root_url: str, connection: CatalogParserConnection, url: str
+    root_url: str,
+    connection: CatalogParserConnection,
+    url: str,
 ) -> Optional[Tuple[pystac.Collection, List[pystac.Item]]]:
     json_collection = await connection.get_json_file(url)
-    try:
-        collection = pystac.Collection.from_dict(json_collection)
-        items = await async_fetch_items_from_collection(
+    collection = _parse_product_json_to_pystac_collection(json_collection)
+    if collection:
+        items = await async_fetch_dataset_items(
             root_url, connection, collection
         )
         return (collection, items)
-
-    except KeyError as exception:
-        messages = ["spatial", "temporal"]
-        if exception.args[0] not in messages:
-            logger.error(exception)
-        return None
+    return None
 
 
-async def async_fetch_childs(
+async def async_fetch_product_items(
     root_url: str,
     connection: CatalogParserConnection,
     child_links: List[pystac.Link],
@@ -835,10 +304,10 @@ async def async_fetch_childs(
     )
 
 
-async def async_fetch_catalog(
+async def async_fetch_all_products_items(
     connection: CatalogParserConnection,
-    staging: bool = False,
-) -> Iterator[pystac.Collection]:
+    staging: bool,
+) -> Iterator[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
     catalog_root_url = (
         MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL
         if not staging
@@ -853,87 +322,47 @@ async def async_fetch_catalog(
         if not staging
         else (MARINE_DATA_STORE_STAC_BASE_URL_STAGING)
     )
-    childs = await async_fetch_childs(root_url, connection, child_links)
+    childs = await async_fetch_product_items(root_url, connection, child_links)
     return childs
 
 
-def _retrieve_marine_data_store_products(
-    connection: CatalogParserConnection,
-    staging: bool = False,
-) -> list[ProductFromMarineDataStore]:
-    nest_asyncio.apply()
-    loop = asyncio.get_event_loop()
-    marine_data_store_root_collections = loop.run_until_complete(
-        async_fetch_catalog(connection=connection, staging=staging)
-    )
-
-    products = map_reject_none(
-        _construct_marine_data_store_product,
-        marine_data_store_root_collections,
-    )
-
-    return list(products)
-
-
 def parse_catalogue(
-    no_metadata_cache: bool,
     disable_progress_bar: bool,
     staging: bool = False,
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
-    try:
-        catalog = _parse_catalogue(
-            ignore_cache=no_metadata_cache,
-            _versions=package_version("copernicusmarine"),
-            disable_progress_bar=disable_progress_bar,
-            staging=staging,
-        )
-    except ValueError as e:
-        logger.debug(f"Error while parsing catalogue: {e}")
-        logger.debug(
-            "Now retrying without cache. If the problem with "
-            "the cache persists, try running "
-            "copernicusmarine describe --overwrite-metadata-cache"
-        )
-        catalog = _parse_catalogue(
-            ignore_cache=True,
-            _versions=package_version("copernicusmarine"),
-            disable_progress_bar=disable_progress_bar,
-            staging=staging,
-        )
-    logger.debug("Catalogue parsed")
-    return catalog
-
-
-@cachier(cache_dir=CACHE_BASE_DIRECTORY, stale_after=timedelta(hours=24))
-def _parse_catalogue(
-    _versions: str,  # force cachier to overwrite cache in case of version update
-    disable_progress_bar: bool,
-    staging: bool = False,
-) -> CopernicusMarineCatalogue:
     progress_bar = tqdm(
-        total=3, desc="Fetching catalog", disable=disable_progress_bar
+        total=2, desc="Fetching catalog", disable=disable_progress_bar
     )
+
     connection = CatalogParserConnection()
-
-    marine_data_store_products = _retrieve_marine_data_store_products(
-        connection=connection, staging=staging
+    nest_asyncio.apply()
+    loop = asyncio.get_event_loop()
+    marine_data_store_root_collections = loop.run_until_complete(
+        async_fetch_all_products_items(connection=connection, staging=staging)
     )
     progress_bar.update()
 
-    products_merged: List[CopernicusMarineProduct] = [
-        marine_data_store_product.to_copernicus_marine_product()
-        for marine_data_store_product in marine_data_store_products
-        if marine_data_store_product.datasets
+    products_metadata = [
+        product_metadata
+        for product_item in marine_data_store_root_collections
+        if product_item
+        and (
+            (
+                product_metadata := _construct_marine_data_store_product(
+                    product_item
+                )
+            ).datasets
+        )
     ]
-    products_merged.sort(key=lambda x: x.product_id)
+    products_metadata.sort(key=lambda x: x.product_id)
+
+    full_catalog = CopernicusMarineCatalogue(products=products_metadata)
+
+    loop.run_until_complete(connection.close())
+
     progress_bar.update()
-
-    full_catalog = CopernicusMarineCatalogue(products=products_merged)
-
-    progress_bar.update()
-    asyncio.run(connection.close())
-
+    logger.debug("Catalogue parsed")
     return full_catalog
 
 
@@ -947,48 +376,9 @@ class DistinctDatasetVersionPart:
     stac_items_values: Optional[Dict]
 
 
-REGEX_PATTERN_DATE_YYYYMM = r"[12]\d{3}(0[1-9]|1[0-2])"
-PART_SEPARATOR = "--ext--"
-
-
-def get_version_and_part_from_full_dataset_id(
-    full_dataset_id: str,
-) -> Tuple[str, str, str]:
-    if PART_SEPARATOR in full_dataset_id:
-        name_with_maybe_version, part = full_dataset_id.split(PART_SEPARATOR)
-    else:
-        name_with_maybe_version = full_dataset_id
-        part = PART_DEFAULT
-    pattern = rf"^(.*?)(?:_({REGEX_PATTERN_DATE_YYYYMM}))?$"
-    match = re.match(pattern, name_with_maybe_version)
-    if match:
-        dataset_name = match.group(1)
-        version = match.group(2) or VERSION_DEFAULT
-    else:
-        raise Exception(f"Could not parse dataset id: {full_dataset_id}")
-    return dataset_name, version, part
-
-
 # ---------------------------------------
 # --- Utils function on any catalogue ---
 # ---------------------------------------
-
-
-def get_product_from_url(
-    catalogue: CopernicusMarineCatalogue, dataset_url: str
-) -> CopernicusMarineProduct:
-    """
-    Return the product object, with its dataset list filtered
-    """
-    filtered_catalogue = filter_catalogue_with_strings(
-        catalogue, [dataset_url]
-    )
-    if filtered_catalogue is None:
-        error = TypeError("filtered catalogue is empty")
-        raise error
-    if isinstance(filtered_catalogue, CopernicusMarineCatalogue):
-        return filtered_catalogue.products[0]
-    return filtered_catalogue["products"][0]
 
 
 def filter_catalogue_with_strings(

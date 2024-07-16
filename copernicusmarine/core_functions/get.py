@@ -4,11 +4,9 @@ import os
 import pathlib
 from typing import List, Optional
 
-from copernicusmarine.catalogue_parser.catalogue_parser import parse_catalogue
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     filter_to_regex,
-    get_request_from_file,
     overload_regex_with_additionnal_filter,
 )
 from copernicusmarine.core_functions.credentials_utils import (
@@ -19,11 +17,7 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import (
-    create_cache_directory,
-    delete_cache_folder,
-    get_unique_filename,
-)
+from copernicusmarine.core_functions.utils import get_unique_filename
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_original_files import (
     download_original_files,
@@ -33,7 +27,6 @@ logger = logging.getLogger("copernicus_marine_root_logger")
 
 
 def get_function(
-    dataset_url: Optional[str],
     dataset_id: Optional[str],
     force_dataset_version: Optional[str],
     force_dataset_part: Optional[str],
@@ -47,8 +40,6 @@ def get_function(
     overwrite_output_data: bool,
     request_file: Optional[pathlib.Path],
     force_service: Optional[str],
-    overwrite_metadata_cache: bool,
-    no_metadata_cache: bool,
     filter: Optional[str],
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
@@ -67,23 +58,17 @@ def get_function(
             "Data will come from the staging environment."
         )
 
-    if overwrite_metadata_cache:
-        delete_cache_folder()
-
-    get_request = GetRequest()
+    get_request = GetRequest(dataset_id=dataset_id or "")
     if request_file:
-        get_request = get_request_from_file(request_file)
+        get_request.from_file(request_file)
+    if not get_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a get request.")
     request_update_dict = {
-        "dataset_url": dataset_url,
-        "dataset_id": dataset_id,
         "force_dataset_version": force_dataset_version,
         "output_directory": output_directory,
         "force_service": force_service,
     }
     get_request.update(request_update_dict)
-
-    if not no_metadata_cache:
-        create_cache_directory()
 
     # Specific treatment for default values:
     # In order to not overload arguments with default values
@@ -141,7 +126,6 @@ def get_function(
         get_request=get_request,
         create_file_list=create_file_list,
         credentials_file=credentials_file,
-        no_metadata_cache=no_metadata_cache,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
@@ -153,32 +137,24 @@ def _run_get_request(
     get_request: GetRequest,
     create_file_list: Optional[str],
     credentials_file: Optional[pathlib.Path],
-    no_metadata_cache: bool,
     disable_progress_bar: bool,
     staging: bool = False,
 ) -> List[pathlib.Path]:
+    logger.debug("Checking username and password...")
     username, password = get_and_check_username_password(
-        username,
-        password,
-        credentials_file,
-        no_metadata_cache=no_metadata_cache,
+        username, password, credentials_file
     )
+    logger.debug("Checking dataset metadata...")
 
-    catalogue = parse_catalogue(
-        no_metadata_cache=no_metadata_cache,
-        disable_progress_bar=disable_progress_bar,
-        staging=staging,
-    )
     retrieval_service: RetrievalService = get_retrieval_service(
-        catalogue,
         get_request.dataset_id,
-        get_request.dataset_url,
         get_request.force_dataset_version,
         get_request.force_dataset_part,
         get_request.force_service,
         CommandType.GET,
         get_request.index_parts,
         dataset_sync=get_request.sync,
+        staging=staging,
     )
     get_request.dataset_url = retrieval_service.uri
     logger.info(
@@ -221,8 +197,6 @@ def create_get_template() -> None:
                 "index_parts": False,
                 "disable_progress_bar": False,
                 "overwrite_output_data": False,
-                "overwrite_metadata_cache": False,
-                "no_metadata_cache": False,
                 "log_level": "INFO",
             },
             output_file,
