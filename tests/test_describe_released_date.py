@@ -17,7 +17,6 @@ class TestDescribe:
         include_versions=False,
     ):
         return describe(
-            no_metadata_cache=True,
             include_versions=include_versions,
             include_datasets=True,
         )

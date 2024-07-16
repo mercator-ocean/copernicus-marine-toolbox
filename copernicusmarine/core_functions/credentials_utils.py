@@ -2,7 +2,6 @@ import base64
 import configparser
 import logging
 import pathlib
-from datetime import timedelta
 from netrc import netrc
 from platform import system
 from typing import Literal, Optional, Tuple
@@ -10,26 +9,31 @@ from typing import Literal, Optional, Tuple
 import click
 import lxml.html
 import requests
-from cachier.core import cachier
 
 from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_CREDENTIALS_DIRECTORY,
     COPERNICUSMARINE_SERVICE_PASSWORD,
     COPERNICUSMARINE_SERVICE_USERNAME,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
 )
-from copernicusmarine.core_functions.utils import (
-    CACHE_BASE_DIRECTORY,
-    DEFAULT_CLIENT_BASE_DIRECTORY,
-)
 
 logger = logging.getLogger("copernicus_marine_root_logger")
 
+USER_DEFINED_CACHE_DIRECTORY: str = (
+    COPERNICUSMARINE_CREDENTIALS_DIRECTORY or ""
+)
+DEFAULT_CLIENT_BASE_DIRECTORY: pathlib.Path = (
+    pathlib.Path(USER_DEFINED_CACHE_DIRECTORY)
+    if USER_DEFINED_CACHE_DIRECTORY
+    else pathlib.Path.home()
+) / ".copernicusmarine"
 DEFAULT_CLIENT_CREDENTIALS_FILENAME = ".copernicusmarine-credentials"
 DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
     DEFAULT_CLIENT_BASE_DIRECTORY / DEFAULT_CLIENT_CREDENTIALS_FILENAME
 )
+# TODO: handle cache of the credentials without cachier
 
 
 class CredentialCannotBeNone(Exception):
@@ -94,10 +98,10 @@ def _retrieve_credential_from_environment_variable(
     credential_type: Literal["username", "password"]
 ) -> Optional[str]:
     if credential_type == "username":
-        logger.debug("username loaded from environment variable")
+        logger.debug("Tried to load username from environment variable")
         return COPERNICUSMARINE_SERVICE_USERNAME
     if credential_type == "password":
-        logger.debug("password loaded from environment variable")
+        logger.debug("Tried to load password from environment variable")
         return COPERNICUSMARINE_SERVICE_PASSWORD
 
 
@@ -255,12 +259,11 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     return login_success
 
 
-@cachier(stale_after=timedelta(hours=48), cache_dir=CACHE_BASE_DIRECTORY)
 def _are_copernicus_marine_credentials_valid(
     username: str, password: str
 ) -> Optional[bool]:
     number_of_retry = 3
-    user_is_active = None  # Not cached by cachier
+    user_is_active = None
     while (user_is_active not in [True, False]) and number_of_retry > 0:
         try:
             user_is_active = _check_credentials_with_cas(
@@ -310,14 +313,14 @@ def get_and_check_username_password(
     username: Optional[str],
     password: Optional[str],
     credentials_file: Optional[pathlib.Path],
-    no_metadata_cache: bool,
 ) -> Tuple[str, str]:
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
     )
     copernicus_marine_credentials_are_valid = (
         _are_copernicus_marine_credentials_valid(
-            username, password, ignore_cache=no_metadata_cache
+            username,
+            password,
         )
     )
     if not copernicus_marine_credentials_are_valid:
@@ -380,9 +383,7 @@ def credentials_file_builder(
         password, "password", True
     )
     copernicus_marine_credentials_are_valid = (
-        _are_copernicus_marine_credentials_valid(
-            username, password, ignore_cache=False
-        )
+        _are_copernicus_marine_credentials_valid(username, password)
     )
     if copernicus_marine_credentials_are_valid:
         configuration_file = create_copernicusmarine_configuration_file(

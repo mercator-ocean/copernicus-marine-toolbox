@@ -1,8 +1,10 @@
 import pathlib
 from typing import Optional
 
+from copernicusmarine.core_functions.credentials_utils import (
+    DEFAULT_CLIENT_BASE_DIRECTORY,
+)
 from copernicusmarine.core_functions.login import login_function
-from copernicusmarine.core_functions.utils import DEFAULT_CLIENT_BASE_DIRECTORY
 
 
 def login(
