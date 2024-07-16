@@ -557,8 +557,6 @@ class TestCommandLineInterface:
 
         assert dataset.latitude.attrs["valid_min"] >= 0
         assert dataset.latitude.attrs["valid_max"] <= 0.1
-        assert dataset.longitude.attrs["valid_min"] >= 0.2
-        assert dataset.longitude.attrs["valid_max"] <= 0.3
         assert dataset.depth.attrs["valid_min"] >= 0
         assert dataset.depth.attrs["valid_max"] <= 5
         assert dataset.time.attrs["valid_min"] == 648672
@@ -1093,26 +1091,24 @@ class TestCommandLineInterface:
             assert dataset.elevation.min() >= -10
             assert dataset.elevation.max() <= 0
 
-    def then_I_have_correct_attribute_value(
-        self, output_path, dimention_name, attribute_value
-    ):
+    def then_I_have_correct_attribute_value(self, output_path, dimention_name):
         filepath = pathlib.Path(output_path, "data.zarr")
         dataset = xarray.open_dataset(filepath, engine="zarr")
-        assert dataset[dimention_name].attrs["positive"] == attribute_value
+        assert dataset[dimention_name].attrs["standard_name"] == dimention_name
 
     def test_conversion_between_elevation_and_depth(self, tmp_path):
         self.when_I_request_subset_dataset_with_zarr_service(tmp_path, True)
         self.then_I_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "positive"
         )
-        self.then_I_have_correct_attribute_value(tmp_path, "depth", "down")
+        self.then_I_have_correct_attribute_value(tmp_path, "depth")
 
     def test_force_no_conversion_between_elevation_and_depth(self, tmp_path):
         self.when_I_request_subset_dataset_with_zarr_service(tmp_path, False)
         self.then_I_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "negative"
         )
-        self.then_I_have_correct_attribute_value(tmp_path, "elevation", "up")
+        self.then_I_have_correct_attribute_value(tmp_path, "elevation")
 
     def when_I_run_copernicus_marine_command_using_no_directories_option(
         self, tmp_path, force_service: GetServiceToTest, output_directory=None

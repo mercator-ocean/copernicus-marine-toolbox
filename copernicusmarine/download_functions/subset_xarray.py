@@ -42,6 +42,36 @@ COORDINATES_LABEL = {
     "depth": ["depth", "deptht", "elevation"],
 }
 
+NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
+    "standard_name",
+    "long_name",
+    "units",
+    "unit_long",
+    "valid_min",
+    "valid_max",
+]
+NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
+    "standard_name",
+    "long_name",
+    "units",
+    "unit_long",
+    "axis",
+    "valid_min",
+    "valid_max",
+]
+NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
+    "title",
+    "institution",
+    "source",
+    "history",
+    "references",
+    "comment",
+    "Conventions",
+    "producer",
+    "credit",
+    "contact",
+]
+
 
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
@@ -280,6 +310,16 @@ def _get_variable_name_from_standard_name(
     return None
 
 
+def _update_variables_attributes(
+    dataset: xarray.Dataset, variables: List[str]
+) -> xarray.Dataset:
+    for variable in variables:
+        dataset[variable].attrs = _filter_attributes(
+            dataset[variable].attrs, NETCDF_CONVENTION_VARIABLE_ATTRIBUTES
+        )
+    return dataset
+
+
 def _variables_subset(
     dataset: xarray.Dataset, variables: List[str]
 ) -> xarray.Dataset:
@@ -298,10 +338,16 @@ def _variables_subset(
                 )
             else:
                 raise VariableDoesNotExistInTheDataset(variable)
-    return dataset[numpy.array(dataset_variables_filter)]
+    dataset = dataset[numpy.array(dataset_variables_filter)]
+    return _update_variables_attributes(dataset, dataset_variables_filter)
 
 
-def _update_dataset_coordinate_valid_minmax_attributes(
+def _filter_attributes(attributes: dict, attributes_to_keep: List[str]):
+    attributes_that_exist = set(attributes).intersection(attributes_to_keep)
+    return {key: attributes[key] for key in attributes_that_exist}
+
+
+def _update_dataset_coordinate_attributes(
     dataset: xarray.Dataset,
 ) -> xarray.Dataset:
     for coordinate_label in COORDINATES_LABEL:
@@ -309,6 +355,9 @@ def _update_dataset_coordinate_valid_minmax_attributes(
             if coordinate_alias in dataset.sizes:
                 coord = dataset[coordinate_alias]
                 attrs = coord.attrs
+                coordinate_attributes = (
+                    NETCDF_CONVENTION_COORDINATE_ATTRIBUTES.copy()
+                )
                 if "time" in coordinate_label:
                     min_time_dimension = coord.values.min()
                     max_time_dimension = coord.values.max()
@@ -319,13 +368,26 @@ def _update_dataset_coordinate_valid_minmax_attributes(
                     valid_max = convert_datetime64_to_netcdf_timestamp(
                         max_time_dimension, netcdf_unit
                     )
+                    attrs["standard_name"] = "time"
+                    attrs["long_name"] = "Time"
                     attrs["valid_min"] = valid_min
                     attrs["valid_max"] = valid_max
-                else:
+                    attrs["axis"] = "T"
+                    attrs["unit_long"] = (
+                        coord.encoding["units"].replace("_", " ").title()
+                    )
+                    coordinate_attributes.remove("units")
+                elif coordinate_label in ["latitude", "depth", "elevation"]:
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
+                elif coordinate_label == "longitude":
+                    coordinate_attributes.remove("valid_min")
+                    coordinate_attributes.remove("valid_max")
+                coord.attrs = _filter_attributes(attrs, coordinate_attributes)
 
-                coord.attrs = attrs
+    dataset.attrs = _filter_attributes(
+        dataset.attrs, NETCDF_CONVENTION_DATASET_ATTRIBUTES
+    )
 
     return dataset
 
@@ -351,7 +413,7 @@ def subset(
 
     dataset = _depth_subset(dataset, depth_parameters)
 
-    dataset = _update_dataset_coordinate_valid_minmax_attributes(dataset)
+    dataset = _update_dataset_coordinate_attributes(dataset)
 
     return dataset
 

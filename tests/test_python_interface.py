@@ -206,7 +206,6 @@ class TestPythonInterface:
         dataset = open_dataset(
             dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1D-m"
         )
-        assert dataset.depth.attrs["positive"] == "down"
         assert dataset.depth.attrs["standard_name"] == "depth"
         assert dataset.depth.attrs["long_name"] == "Depth"
 
@@ -236,7 +235,10 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
         assert "_FillValue" not in subsetdata.depth.attrs
-        assert "valid_max" in subsetdata.longitude.attrs
+        assert "valid_max" not in subsetdata.longitude.attrs
+        assert "valid_min" not in subsetdata.longitude.attrs
+        assert "valid_max" in subsetdata.latitude.attrs
+        assert "valid_max" in subsetdata.latitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
@@ -267,7 +269,6 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
         assert "_FillValue" not in subsetdata.depth.attrs
-        assert "valid_max" in subsetdata.longitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
