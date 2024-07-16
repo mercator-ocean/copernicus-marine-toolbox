@@ -22,8 +22,7 @@ from copernicusmarine.python_interface.utils import homogenize_datetime
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def subset(
-    dataset_url: Optional[str] = None,
-    dataset_id: Optional[str] = None,
+    dataset_id: Optional[str],
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
     username: Optional[str] = None,
@@ -48,8 +47,6 @@ def subset(
     motu_api_request: Optional[str] = None,
     force_download: bool = False,
     overwrite_output_data: bool = False,
-    overwrite_metadata_cache: bool = False,
-    no_metadata_cache: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
     netcdf_compression_enabled: bool = False,
@@ -60,7 +57,6 @@ def subset(
     Extracts a subset of data from a specified dataset using given parameters.
 
     Args:
-        dataset_url (str, optional): The URL of the dataset to retrieve.
         dataset_id (str, optional): The unique identifier of the dataset.
         dataset_version (str, optional): Force the use of a specific dataset version.
         dataset_part (str, optional): Force the use of a specific dataset part.
@@ -72,8 +68,6 @@ def subset(
         overwrite_output_data (bool, optional): If True, overwrite existing output files.
         request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters. For more information please refer to the README.
         service (str, optional): Force the use of a specific service.
-        overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
-        no_metadata_cache (bool, optional): If True, do not use the metadata cache.
         variables (List[str], optional): List of variable names to extract.
         minimum_longitude (float, optional): Minimum longitude value for spatial subset.
         maximum_longitude (float, optional): Maximum longitude value for spatial subset.
@@ -106,7 +100,6 @@ def subset(
     end_datetime = homogenize_datetime(end_datetime)
 
     return subset_function(
-        dataset_url,
         dataset_id,
         dataset_version,
         dataset_part,
@@ -132,8 +125,6 @@ def subset(
         motu_api_request,
         force_download,
         overwrite_output_data,
-        overwrite_metadata_cache,
-        no_metadata_cache,
         disable_progress_bar,
         staging=staging,
         netcdf_compression_enabled=netcdf_compression_enabled,

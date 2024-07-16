@@ -47,8 +47,7 @@ def load_xarray_dataset(*args, **kwargs):
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def open_dataset(
-    dataset_url: Optional[str] = None,
-    dataset_id: Optional[str] = None,
+    dataset_id: str,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
     username: Optional[str] = None,
@@ -66,9 +65,6 @@ def open_dataset(
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-    overwrite_metadata_cache: bool = False,
-    no_metadata_cache: bool = False,
-    disable_progress_bar: bool = False,
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using "lazy-loading" mode from a Copernicus Marine data source using either the ARCO series protocol.
@@ -76,8 +72,7 @@ def open_dataset(
     It supports various parameters for customization, such as specifying ge ographical bounds, temporal range, depth range, and more.
 
     Args:
-        dataset_url (str, optional): The URL of the dataset. Either `dataset_url` or `dataset_id` should be provided.
-        dataset_id (str, optional): The ID of the dataset. Either `dataset_url` or `dataset_id` should be provided.
+        dataset_id (str, optional): The ID of the dataset. `dataset_id` is mandatory.
         dataset_version (str, optional): Force the use of a specific dataset version.
         dataset_part (str, optional): Force the use of a specific dataset part.
         username (str, optional): Username for authentication, if required.
@@ -95,8 +90,6 @@ def open_dataset(
         end_datetime (datetime, optional): The end datetime for temporal subsetting.
         service (str, optional): Force the use of a specific service (ARCO geo series or time series).
         credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
-        overwrite_metadata_cache (bool, optional): If True, overwrite the metadata cache.
-        no_metadata_cache (bool, optional): If True, do not use the metadata cache.
 
     Returns:
         xarray.Dataset: The loaded xarray dataset.
@@ -107,7 +100,6 @@ def open_dataset(
         pathlib.Path(credentials_file) if credentials_file else None
     )
     load_request = LoadRequest(
-        dataset_url=dataset_url,
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -136,12 +128,9 @@ def open_dataset(
         subset_method=subset_method,
         force_service=service,
         credentials_file=credentials_file,
-        overwrite_metadata_cache=overwrite_metadata_cache,
-        no_metadata_cache=no_metadata_cache,
     )
     dataset = load_data_object_from_load_request(
         load_request,
-        disable_progress_bar,
         open_dataset_from_arco_series,
     )
     return dataset

@@ -7,8 +7,10 @@ import click
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
+from copernicusmarine.core_functions.credentials_utils import (
+    DEFAULT_CLIENT_BASE_DIRECTORY,
+)
 from copernicusmarine.core_functions.login import login_function
-from copernicusmarine.core_functions.utils import DEFAULT_CLIENT_BASE_DIRECTORY
 
 logger = logging.getLogger("copernicus_marine_root_logger")
 

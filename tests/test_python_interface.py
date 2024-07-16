@@ -119,9 +119,7 @@ class TestPythonInterface:
         assert non_existing_directory.is_dir() is False
 
     def test_signature_inspection_is_working(self):
-        assert inspect.signature(describe).parameters[
-            "overwrite_metadata_cache"
-        ]
+        assert inspect.signature(describe).parameters["contains"]
 
         common_key_parameter = "username"
         assert inspect.signature(login).parameters[common_key_parameter]
