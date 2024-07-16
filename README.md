@@ -453,7 +453,7 @@ copernicusmarine get --dataset-id cmems_obs-ins_blk_phybgcwav_mynrt_na_irr --ind
 
 Returns:
 
-```txt
+```text
 INFO - 2024-04-03T12:58:40Z - Dataset version was not specified, the latest one was selected: "202311"
 INFO - 2024-04-03T12:58:40Z - Dataset part was not specified, the first one was selected: "history"
 INFO - 2024-04-03T12:58:40Z - You forced selection of service: original-files
