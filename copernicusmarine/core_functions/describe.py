@@ -27,6 +27,7 @@ def describe_function(
     disable_progress_bar: bool,
     staging: bool,
 ) -> str:
+
     VersionVerifier.check_version_describe(staging)
     if staging:
         logger.warning(
