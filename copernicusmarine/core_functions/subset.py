@@ -4,15 +4,13 @@ import pathlib
 from datetime import datetime
 from typing import List, Optional
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
+from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
     CopernicusMarineServiceFormat,
-    parse_catalogue,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     SubsetRequest,
     convert_motu_api_request_to_structure,
-    subset_request_from_file,
 )
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
@@ -22,12 +20,9 @@ from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
     get_retrieval_service,
-    parse_dataset_id_and_service_and_suffix_path_from_url,
 )
 from copernicusmarine.core_functions.utils import (
     ServiceNotSupported,
-    create_cache_directory,
-    delete_cache_folder,
     get_unique_filename,
 )
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
@@ -43,7 +38,6 @@ logger = logging.getLogger("copernicus_marine_root_logger")
 
 
 def subset_function(
-    dataset_url: Optional[str],
     dataset_id: Optional[str],
     force_dataset_version: Optional[str],
     force_dataset_part: Optional[str],
@@ -69,8 +63,6 @@ def subset_function(
     motu_api_request: Optional[str],
     force_download: bool,
     overwrite_output_data: bool,
-    overwrite_metadata_cache: bool,
-    no_metadata_cache: bool,
     disable_progress_bar: bool,
     staging: bool,
     netcdf_compression_enabled: bool,
@@ -84,12 +76,6 @@ def subset_function(
             "Data will come from the staging environment."
         )
 
-    if overwrite_metadata_cache:
-        delete_cache_folder()
-
-    if not no_metadata_cache:
-        create_cache_directory()
-
     if (
         netcdf_compression_level is not None
         and netcdf_compression_enabled is False
@@ -99,17 +85,15 @@ def subset_function(
             "--netcdf-compression-level option"
         )
 
-    subset_request = SubsetRequest()
+    subset_request = SubsetRequest(dataset_id=dataset_id or "")
     if request_file:
-        subset_request = subset_request_from_file(request_file)
+        subset_request.from_file(request_file)
     if motu_api_request:
         motu_api_subset_request = convert_motu_api_request_to_structure(
             motu_api_request
         )
         subset_request.update(motu_api_subset_request.__dict__)
     request_update_dict = {
-        "dataset_url": dataset_url,
-        "dataset_id": dataset_id,
         "force_dataset_version": force_dataset_version,
         "force_dataset_part": force_dataset_part,
         "variables": variables,
@@ -132,11 +116,12 @@ def subset_function(
         "netcdf3_compatible": netcdf3_compatible,
     }
     subset_request.update(request_update_dict)
+    if not subset_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a subset request.")
     username, password = get_and_check_username_password(
         username,
         password,
         credentials_file,
-        no_metadata_cache=no_metadata_cache,
     )
     if all(
         e is None
@@ -152,31 +137,9 @@ def subset_function(
             subset_request.end_datetime,
         ]
     ):
-        if not subset_request.dataset_id:
-            if subset_request.dataset_url:
-                catalogue = parse_catalogue(
-                    no_metadata_cache=no_metadata_cache,
-                    disable_progress_bar=disable_progress_bar,
-                    staging=staging,
-                )
-                (
-                    dataset_id,
-                    _,
-                    _,
-                ) = parse_dataset_id_and_service_and_suffix_path_from_url(
-                    catalogue, subset_request.dataset_url
-                )
-            else:
-                syntax_error = SyntaxError(
-                    "Must specify at least one of "
-                    "'dataset_url' or 'dataset_id' options"
-                )
-                raise syntax_error
-        else:
-            dataset_id = subset_request.dataset_id
         logger.info(
             "To retrieve a complete dataset, please use instead: "
-            f"copernicusmarine get --dataset-id {dataset_id}"
+            f"copernicusmarine get --dataset-id {subset_request.dataset_id}"
         )
         raise ValueError(
             "Missing subset option. Try 'copernicusmarine subset --help'."
@@ -188,15 +151,8 @@ def subset_function(
     if overwrite_output_data:
         subset_request.overwrite_output_data = overwrite_output_data
 
-    catalogue = parse_catalogue(
-        no_metadata_cache=no_metadata_cache,
-        disable_progress_bar=disable_progress_bar,
-        staging=staging,
-    )
     retrieval_service: RetrievalService = get_retrieval_service(
-        catalogue,
         subset_request.dataset_id,
-        subset_request.dataset_url,
         subset_request.force_dataset_version,
         subset_request.force_dataset_part,
         subset_request.force_service,
@@ -263,8 +219,6 @@ def create_subset_template() -> None:
                 "request_file": False,
                 "motu_api_request": False,
                 "overwrite_output_data": False,
-                "overwrite_metadata_cache": False,
-                "no_metadata_cache": False,
             },
             output_file,
             indent=4,

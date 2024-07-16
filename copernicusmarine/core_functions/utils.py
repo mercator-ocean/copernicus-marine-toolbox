@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 import pathlib
 import re
 from datetime import datetime, timezone
@@ -25,9 +24,6 @@ import xarray
 from requests import PreparedRequest
 
 from copernicusmarine import __version__ as copernicusmarine_version
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_CACHE_DIRECTORY,
-)
 
 logger = logging.getLogger("copernicus_marine_root_logger")
 
@@ -40,14 +36,6 @@ OVERWRITE_OPTION_HELP_TEXT = (
 
 FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE = "Do you want to proceed with download?"
 
-USER_DEFINED_CACHE_DIRECTORY: str = COPERNICUSMARINE_CACHE_DIRECTORY
-DEFAULT_CLIENT_BASE_DIRECTORY: pathlib.Path = (
-    pathlib.Path(USER_DEFINED_CACHE_DIRECTORY)
-    if USER_DEFINED_CACHE_DIRECTORY
-    else pathlib.Path.home()
-) / ".copernicusmarine"
-
-CACHE_BASE_DIRECTORY: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY / "cache"
 
 DATETIME_SUPPORTED_FORMATS = [
     "%Y",
@@ -160,23 +148,6 @@ def add_copernicusmarine_version_in_dataset_attributes(
 ) -> xarray.Dataset:
     dataset.attrs["copernicusmarine_version"] = version("copernicusmarine")
     return dataset
-
-
-def create_cache_directory():
-    pathlib.Path(CACHE_BASE_DIRECTORY).mkdir(parents=True, exist_ok=True)
-
-
-def delete_cache_folder(quiet: bool = False):
-    try:
-        elements = pathlib.Path(CACHE_BASE_DIRECTORY).glob("*")
-        files = [x for x in elements if x.is_file()]
-        for file in files:
-            os.remove(file)
-        if not quiet:
-            logger.info("Old cache successfully deleted")
-    except Exception as exc:
-        logger.warning("Error occurred while deleting old cache files")
-        raise exc
 
 
 async def rolling_batch_gather(

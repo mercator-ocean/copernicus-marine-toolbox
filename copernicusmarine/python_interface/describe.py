@@ -20,8 +20,6 @@ def describe(
     include_versions: bool = False,
     include_all: bool = False,
     contains: list[str] = [],
-    overwrite_metadata_cache: bool = False,
-    no_metadata_cache: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
 ) -> dict[str, Any]:
@@ -38,8 +36,6 @@ def describe(
         include_versions (bool, optional): Whether to include all versions of each dataset. Defaults to False.
         include_all (bool, optional): Whether to include all metadata information. Defaults to False.
         contains (list[str], optional): List of strings to filter items containing these values. Defaults to [].
-        overwrite_metadata_cache (bool, optional): Whether to overwrite the metadata cache. Defaults to False.
-        no_metadata_cache (bool, optional): Whether to skip using the metadata cache. Defaults to False.
 
     Returns:
         dict[str, Any]: A dictionary containing the retrieved metadata information.
@@ -60,8 +56,6 @@ def describe(
         include_keywords,
         include_versions,
         contains,
-        overwrite_metadata_cache,
-        no_metadata_cache,
         disable_progress_bar,
         staging=staging,
     )

@@ -8,7 +8,7 @@ import numpy
 import xarray
 from pandas import Timestamp
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
+from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
 )
 from copernicusmarine.catalogue_parser.request_structure import (

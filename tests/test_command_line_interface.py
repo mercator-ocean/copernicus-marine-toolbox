@@ -11,10 +11,9 @@ from json import loads
 from pathlib import Path
 from typing import List, Optional, Union
 
-import pytest
 import xarray
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
+from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     REGEX_PATTERN_DATE_YYYYMM,
     VERSION_DEFAULT,
@@ -54,13 +53,9 @@ def get_file_size(filepath):
 
 
 class TestCommandLineInterface:
-    @pytest.mark.order(1)
-    def test_describe_overwrite_metadata_cache(self):
-        self.when_I_run_copernicus_marine_describe_with_overwrite_cache()
-        self.then_stdout_can_be_load_as_json()
-
     def test_describe_default(self):
         self.when_I_run_copernicus_marine_describe_with_default_arguments()
+        self.then_stdout_can_be_load_as_json()
         self.then_I_can_read_the_default_json()
         self.and_there_are_no_warnings_about_backend_versions()
 
@@ -80,17 +75,9 @@ class TestCommandLineInterface:
         self.when_I_use_staging_environment_in_debug_logging_level()
         self.then_I_check_that_the_urls_contains_only_dta()
 
-    def when_I_run_copernicus_marine_describe_with_overwrite_cache(self):
-        command = [
-            "copernicusmarine",
-            "describe",
-            "--overwrite-metadata-cache",
-        ]
-        self.output = execute_in_terminal(command)
-
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, timeout_second=30)
 
     def then_stdout_can_be_load_as_json(self):
         loads(self.output.stdout.decode("utf-8"))
@@ -222,7 +209,7 @@ class TestCommandLineInterface:
             "--contains",
             f"{filter_token}",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, timeout_second=30)
 
     def then_I_can_read_the_filtered_json(self):
         json_result = loads(self.output.stdout)
@@ -261,7 +248,7 @@ class TestCommandLineInterface:
             "describe",
             "--include-datasets",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, timeout_second=30)
 
     def then_I_can_read_it_does_not_contain_weird_symbols(self):
         assert b"__" not in self.output.stdout
@@ -385,7 +372,6 @@ class TestCommandLineInterface:
             "--staging",
             "--log-level",
             "DEBUG",
-            "--no-metadata-cache",
         ]
         self.output = execute_in_terminal(command)
 
@@ -454,11 +440,6 @@ class TestCommandLineInterface:
         self.check_default_subset_request(
             subset_service_to_test.subpath, tmp_path
         )
-        self.check_subset_request_with_dataseturl(
-            subset_service_to_test.subpath,
-            subset_service_to_test.dataset_url,
-            tmp_path,
-        )
         self.check_subset_request_with_dataset_not_in_catalog()
         self.check_subset_request_with_no_subsetting()
 
@@ -466,25 +447,6 @@ class TestCommandLineInterface:
         folder = pathlib.Path(tmp_path, function_name)
         if not folder.is_dir():
             pathlib.Path.mkdir(folder, parents=True)
-
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--force-download",
-        ] + self.flatten_request_dict(self.base_request_dict)
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
-
-    def check_subset_request_with_dataseturl(
-        self, function_name, dataset_url, tmp_path
-    ):
-        folder = pathlib.Path(tmp_path, function_name)
-        if not folder.is_dir():
-            pathlib.Path.mkdir(folder, parents=True)
-
-        self.base_request_dict.pop("--dataset-id")
-        self.base_request_dict["--dataset-url"] = f"{dataset_url}"
 
         command = [
             "copernicusmarine",
@@ -996,48 +958,6 @@ class TestCommandLineInterface:
             b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco']"
         ) in self.output.stderr
 
-    def test_mutual_exclusivity_of_cache_options_for_describe(self):
-        self.when_I_run_copernicus_marine_command_with_both_cache_options(
-            "describe"
-        )
-        self.then_I_got_an_error_regarding_mutual_exclusivity()
-
-    def test_mutual_exclusivity_of_cache_options_for_get(self):
-        self.when_I_run_copernicus_marine_command_with_both_cache_options(
-            "get"
-        )
-        self.then_I_got_an_error_regarding_mutual_exclusivity()
-
-    def test_mutual_exclusivity_of_cache_options_for_subset(self):
-        self.when_I_run_copernicus_marine_command_with_both_cache_options(
-            "subset"
-        )
-        self.then_I_got_an_error_regarding_mutual_exclusivity()
-
-    def when_I_run_copernicus_marine_command_with_both_cache_options(
-        self, command_option
-    ):
-        command = [
-            "copernicusmarine",
-            f"{command_option}",
-            "--overwrite-metadata-cache",
-            "--no-metadata-cache",
-        ]
-        self.output = execute_in_terminal(command)
-
-    def then_I_got_an_error_regarding_mutual_exclusivity(self):
-        assert self.output.returncode == 2
-        assert self.output.stdout == b""
-        assert self.output.stderr == (
-            b"Error: Illegal usage: `overwrite-metadata-cache` is mutually "
-            b"exclusive with arguments `no-metadata-cache`.\n"
-        )
-
-    def test_describe_without_using_cache(self):
-        command = ["copernicusmarine", "describe", "--no-metadata-cache"]
-        self.output = execute_in_terminal(command=command, timeout_second=30)
-        assert self.output.returncode == 0
-
     def when_I_request_subset_dataset_with_zarr_service(
         self, output_path, vertical_dimension_as_originally_produced
     ):
@@ -1240,40 +1160,6 @@ class TestCommandLineInterface:
             in self.output.stderr
         )
 
-    def test_subset_with_dataset_id_and_url(self):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            "cmems_mod_arc_bgc_anfc_ecosmo_P1M-m",
-            "-u",
-            "https://nrt.cmems-du.eu/thredds/dodsC/METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2",
-            "--variable",
-            "thetao",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert self.output.returncode == 1
-        assert (
-            b"Must specify only one of 'dataset_url' or 'dataset_id' options"
-        ) in self.output.stderr
-
-    def test_no_traceback_is_printed_on_dataset_url_error(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-url",
-            "https://s3.waw3-1.cloudferro.com/mdl-arco-time-013/arco/"
-            "GLOBAL_ANALYSISFORECAST_PHY_XXXXXXX/"
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m/2023",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert self.output.returncode == 1
-        assert not (b"Traceback") in self.output.stderr
-
     def test_get_2023_08_original_files(self):
         command = [
             "copernicusmarine",
@@ -1286,7 +1172,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert not (b"No data to download") in self.output.stderr
+        assert b"No data to download" not in self.output.stderr
 
     def test_subset_with_chunking(self, tmp_path):
         command = [
@@ -1320,20 +1206,6 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
-
-    def test_dataset_url_suffix_path_are_used_as_filter(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-url",
-            "https://s3.waw3-1.cloudferro.com/mdl-native-14/native/"
-            "GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202211/2023/11",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert b"Printed 20 out of 30 files" in self.output.stderr
 
     def test_short_option_for_copernicus_marine_command_helper(self):
         short_option_command = [
@@ -1918,50 +1790,6 @@ class TestCommandLineInterface:
         assert dataset.uo.encoding["complevel"] == forced_comp_level
         assert dataset.uo.encoding["contiguous"] is False
         assert dataset.uo.encoding["shuffle"] is True
-
-    def test_that_cache_folder_isnt_created_when_no_metadata_cache_option_was_provided(
-        self, tmp_path
-    ):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        output_filename = "test_subset_output_file_as_netcdf.nc"
-        cache_directory = f"{tmp_path}"
-
-        os.environ["COPERNICUSMARINE_CACHE_DIRECTORY"] = cache_directory
-
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--dataset-id",
-            f"{dataset_id}",
-            "--variable",
-            "thetao",
-            "--minimum-longitude",
-            "-9.9",
-            "--maximum-longitude",
-            "-9.6",
-            "--minimum-latitude",
-            "33.96",
-            "--maximum-latitude",
-            "34.2",
-            "--minimum-depth",
-            "0.5",
-            "--maximum-depth",
-            "1.6",
-            "-o",
-            f"{tmp_path}",
-            "-f",
-            f"{output_filename}",
-            "--force-download",
-        ]
-
-        execute_in_terminal(command + ["--no-metadata-cache"])
-        cache_path = Path(tmp_path) / Path(".copernicusmarine") / Path("cache")
-        assert cache_path.is_dir() is False
-
-        execute_in_terminal(command)
-        assert cache_path.is_dir() is True
-
-        del os.environ["COPERNICUSMARINE_CACHE_DIRECTORY"]
 
     def test_file_list_filter(self, tmp_path):
         dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"

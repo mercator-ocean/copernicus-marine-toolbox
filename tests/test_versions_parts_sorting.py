@@ -1,4 +1,4 @@
-from copernicusmarine.catalogue_parser.catalogue_parser import (
+from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     VERSION_DEFAULT,
     CopernicusMarineDatasetVersion,
