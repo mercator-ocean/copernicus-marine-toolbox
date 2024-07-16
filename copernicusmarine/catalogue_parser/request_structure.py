@@ -45,8 +45,8 @@ class DatasetTimeAndGeographicalSubset:
 
 @dataclass
 class SubsetRequest:
+    dataset_id: str
     dataset_url: Optional[str] = None
-    dataset_id: Optional[str] = None
     force_dataset_version: Optional[str] = None
     force_dataset_part: Optional[str] = None
     variables: Optional[List[str]] = None
@@ -112,10 +112,6 @@ class SubsetRequest:
             type_enforced_dict[key] = new_value
         self.__dict__.update(type_enforced_dict)
 
-    def from_file(self, filepath: pathlib.Path):
-        self.update(subset_request_from_file(filepath).__dict__)
-        return self
-
     def get_time_and_geographical_subset(
         self,
     ) -> DatasetTimeAndGeographicalSubset:
@@ -128,28 +124,26 @@ class SubsetRequest:
             end_datetime=self.end_datetime,
         )
 
+    def from_file(self, filepath: pathlib.Path):
+        json_file = open(filepath)
+        json_content = load(json_file)
 
-def subset_request_from_file(filepath: pathlib.Path) -> SubsetRequest:
-    json_file = open(filepath)
-    json_content = load(json_file)
+        json_with_deprecated_options_replace = {}
 
-    json_with_deprecated_options_replace = {}
+        for key, val in json_content.items():
+            if key in DEPRECATED_OPTIONS:
+                deprecated_option = DEPRECATED_OPTIONS[key]
+                json_with_deprecated_options_replace[
+                    deprecated_option.new_name
+                ] = val
+            elif key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
+                new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
+                json_with_deprecated_options_replace[new_key] = val
+            else:
+                json_with_deprecated_options_replace[key] = val
 
-    for key, val in json_content.items():
-        if key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
-            new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
-            json_with_deprecated_options_replace[new_key] = val
-        elif key in DEPRECATED_OPTIONS:
-            deprecated_option = DEPRECATED_OPTIONS[key]
-            json_with_deprecated_options_replace[
-                deprecated_option.new_name
-            ] = val
-        else:
-            json_with_deprecated_options_replace[key] = val
-    subset_request = SubsetRequest()
-    subset_request.__dict__.update(json_with_deprecated_options_replace)
-    subset_request.enforce_types()
-    return subset_request
+        self.__dict__.update(json_with_deprecated_options_replace)
+        self.enforce_types()
 
 
 def convert_motu_api_request_to_structure(
@@ -171,6 +165,7 @@ def convert_motu_api_request_to_structure(
         else:
             motu_api_request_dict[arg] = value
     subset_request = SubsetRequest(
+        dataset_id="",
         output_directory=pathlib.Path("."),
         force_download=False,
         output_filename=None,
@@ -197,8 +192,8 @@ def convert_motu_api_request_to_structure(
 
 @dataclass
 class GetRequest:
+    dataset_id: str
     dataset_url: Optional[str] = None
-    dataset_id: Optional[str] = None
     force_dataset_version: Optional[str] = None
     force_dataset_part: Optional[str] = None
     no_directories: bool = False
@@ -240,43 +235,34 @@ class GetRequest:
         self.__dict__.update(type_enforced_dict)
 
     def from_file(self, filepath: pathlib.Path):
-        self = get_request_from_file(filepath)
-        logger.info(filepath)
-        return self
-
-
-def get_request_from_file(filepath: pathlib.Path) -> GetRequest:
-    json_file = load(open(filepath))
-    json_with_mapped_options = {}
-    for key, val in json_file.items():
-        if key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
-            new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
-            json_with_mapped_options[new_key] = val
-        else:
-            json_with_mapped_options[key] = val
-    get_request = GetRequest()
-    get_request.__dict__.update(json_with_mapped_options)
-    get_request.enforce_types()
-    full_regex = get_request.regex
-    if get_request.filter:
-        filter_regex = filter_to_regex(get_request.filter)
-        full_regex = overload_regex_with_additionnal_filter(
-            filter_regex, full_regex
-        )
-    if get_request.file_list:
-        file_list_regex = file_list_to_regex(get_request.file_list)
-        full_regex = overload_regex_with_additionnal_filter(
-            file_list_regex, full_regex
-        )
-    get_request.regex = full_regex
-
-    return get_request
+        json_file = load(open(filepath))
+        json_with_mapped_options = {}
+        for key, val in json_file.items():
+            if key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
+                new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
+                json_with_mapped_options[new_key] = val
+            else:
+                json_with_mapped_options[key] = val
+        self.__dict__.update(json_with_mapped_options)
+        self.enforce_types()
+        full_regex = self.regex
+        if self.filter:
+            filter_regex = filter_to_regex(self.filter)
+            full_regex = overload_regex_with_additionnal_filter(
+                filter_regex, full_regex
+            )
+        if self.file_list:
+            file_list_regex = file_list_to_regex(self.file_list)
+            full_regex = overload_regex_with_additionnal_filter(
+                file_list_regex, full_regex
+            )
+        self.regex = full_regex
 
 
 @dataclass
 class LoadRequest:
+    dataset_id: str
     dataset_url: Optional[str] = None
-    dataset_id: Optional[str] = None
     force_dataset_version: Optional[str] = None
     force_dataset_part: Optional[str] = None
     username: Optional[str] = None
@@ -292,8 +278,6 @@ class LoadRequest:
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None
-    overwrite_metadata_cache: bool = False
-    no_metadata_cache: bool = False
 
     def get_time_and_geographical_subset(
         self,

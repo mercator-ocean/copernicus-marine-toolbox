@@ -72,15 +72,6 @@ python -m pip install copernicusmarine --upgrade
 
 For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
 
-### General configuration
-
-#### Cache Usage
-
-Cachier library is used for caching part of the requests (as result of `describe` or `login`). By default, the cache will be located in the home folder. If you need to change the location of the cache, you can set the environment variable `COPERNICUSMARINE_CACHE_DIRECTORY` to point to the desired directory:
-
-- on **UNIX** platforms: `export COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
-- on **Windows** platforms: `set COPERNICUSMARINE_CACHE_DIRECTORY=<PATH>`
-
 ### Network configuration
 
 #### Disable SSL
@@ -543,10 +534,8 @@ copernicusmarine subset --request-file template_subset_data_request.json
     "force_download": false,
     "log_level": "INFO",
     "no_directories": false,
-    "no_metadata_cache": false,
     "output_directory": "./data/",
     "overwrite_output_data": false,
-    "overwrite_metadata_cache": false,
     "show_outputnames": true
 }
 ```

@@ -3,9 +3,8 @@ from typing import Callable, Union
 import pandas
 import xarray
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
+from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
-    parse_catalogue,
 )
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.credentials_utils import (
@@ -16,10 +15,7 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import (
-    ServiceNotSupported,
-    delete_cache_folder,
-)
+from copernicusmarine.core_functions.utils import ServiceNotSupported
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
     date_to_datetime,
@@ -28,20 +24,10 @@ from copernicusmarine.download_functions.subset_xarray import (
 
 def load_data_object_from_load_request(
     load_request: LoadRequest,
-    disable_progress_bar: bool,
     arco_series_load_function: Callable,
 ) -> Union[xarray.Dataset, pandas.DataFrame]:
-    if load_request.overwrite_metadata_cache:
-        delete_cache_folder()
-
-    catalogue = parse_catalogue(
-        no_metadata_cache=load_request.no_metadata_cache,
-        disable_progress_bar=disable_progress_bar,
-    )
     retrieval_service: RetrievalService = get_retrieval_service(
-        catalogue=catalogue,
         dataset_id=load_request.dataset_id,
-        dataset_url=load_request.dataset_url,
         force_dataset_version_label=load_request.force_dataset_version,
         force_dataset_part_label=load_request.force_dataset_part,
         force_service_type_string=load_request.force_service,
