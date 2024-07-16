@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Optional
+
+from pendulum import DateTime
 
 
 @dataclass
@@ -27,8 +28,8 @@ class GeographicalParameters:
 
 @dataclass
 class TemporalParameters:
-    start_datetime: Optional[datetime] = None
-    end_datetime: Optional[datetime] = None
+    start_datetime: Optional[DateTime] = None
+    end_datetime: Optional[DateTime] = None
 
 
 @dataclass

@@ -1,14 +1,16 @@
 import logging
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 import xarray
-from pandas import Timestamp
+from pendulum import DateTime
 
 from copernicusmarine.core_functions.models import (
     DEFAULT_FILE_EXTENSIONS,
     FileFormat,
+)
+from copernicusmarine.core_functions.utils import (
+    timestamp_or_datestring_to_datetime,
 )
 from copernicusmarine.download_functions.subset_xarray import COORDINATES_LABEL
 
@@ -63,15 +65,14 @@ def _build_filename_from_dataset(
 
     min_time_coordinate = _get_min_coordinate(dataset, "time")
     max_time_coordinate = _get_max_coordinate(dataset, "time")
-
     datetimes = _format_datetimes(
         (
-            Timestamp(min_time_coordinate).to_pydatetime()
+            timestamp_or_datestring_to_datetime(min_time_coordinate)
             if min_time_coordinate is not None
             else None
         ),
         (
-            Timestamp(max_time_coordinate).to_pydatetime()
+            timestamp_or_datestring_to_datetime(max_time_coordinate)
             if max_time_coordinate is not None
             else None
         ),
@@ -154,17 +155,17 @@ def _format_depths(
 
 
 def _format_datetimes(
-    minimum_datetime: Optional[datetime], maximum_datetime: Optional[datetime]
+    minimum_datetime: Optional[DateTime], maximum_datetime: Optional[DateTime]
 ) -> str:
     if minimum_datetime is None or maximum_datetime is None:
         return ""
     else:
         if minimum_datetime == maximum_datetime:
-            formatted_datetime = f"{minimum_datetime.strftime('%Y-%m-%d')}"
+            formatted_datetime = f"{minimum_datetime.format('YYYY-MM-DD')}"
         else:
             formatted_datetime = (
-                f"{minimum_datetime.strftime('%Y-%m-%d')}-"
-                f"{maximum_datetime.strftime('%Y-%m-%d')}"
+                f"{minimum_datetime.format('YYYY-MM-DD')}-"
+                f"{maximum_datetime.format('YYYY-MM-DD')}"
             )
         return formatted_datetime
 

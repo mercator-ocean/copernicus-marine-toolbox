@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List, Optional
 
 import click
+import pendulum
 
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
@@ -404,8 +405,12 @@ def subset(
         minimum_depth,
         maximum_depth,
         vertical_dimension_as_originally_produced,
-        start_datetime,
-        end_datetime,
+        (
+            start_datetime
+            if not start_datetime
+            else pendulum.instance(start_datetime)
+        ),
+        end_datetime if not end_datetime else pendulum.instance(end_datetime),
         subset_method,
         output_filename,
         file_format,
