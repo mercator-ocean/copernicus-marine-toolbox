@@ -6,7 +6,7 @@
         'datasets': list([
           dict({
             'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m',
-            'dataset_name': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m',
+            'dataset_name': 'daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily',
             'versions': list([
               dict({
                 'label': '202211',
@@ -2606,7 +2606,7 @@
         'datasets': list([
           dict({
             'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m',
-            'dataset_name': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m',
+            'dataset_name': 'daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily',
             'versions': list([
               dict({
                 'label': '202211',

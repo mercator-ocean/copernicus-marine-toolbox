@@ -16,3 +16,6 @@ ignore =
 
     # Unused imports - pb with import_and_args.py
     # F401
+per-file-ignores =
+    # __init__ files
+    dataset_product_mapping.py: E501

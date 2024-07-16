@@ -2,14 +2,12 @@ import json
 import logging
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
-    CopernicusMarineCatalogue,
-    CopernicusMarineDatasetServiceType,
     filter_catalogue_with_strings,
     parse_catalogue,
 )
-from copernicusmarine.core_functions.utils import (
-    create_cache_directory,
-    delete_cache_folder,
+from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineCatalogue,
+    CopernicusMarineDatasetServiceType,
 )
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 
@@ -22,8 +20,6 @@ def describe_function(
     include_keywords: bool,
     include_versions: bool,
     contains: list[str],
-    overwrite_metadata_cache: bool,
-    no_metadata_cache: bool,
     disable_progress_bar: bool,
     staging: bool,
 ) -> str:
@@ -35,14 +31,7 @@ def describe_function(
             "Data will come from the staging environment."
         )
 
-    if overwrite_metadata_cache:
-        delete_cache_folder(quiet=True)
-
-    if not no_metadata_cache:
-        create_cache_directory()
-
     base_catalogue: CopernicusMarineCatalogue = parse_catalogue(
-        no_metadata_cache=no_metadata_cache,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

@@ -1,11 +1,14 @@
+import asyncio
 import logging
 from dataclasses import dataclass
 from enum import Enum
 from itertools import chain
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Literal, Optional, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
-    CopernicusMarineCatalogue,
+    get_dataset_metadata,
+)
+from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
     CopernicusMarineDatasetVersion,
     CopernicusMarineProductDataset,
@@ -258,39 +261,6 @@ def _select_service_by_priority(
     return first_available_service
 
 
-def parse_dataset_id_and_service_and_suffix_path_from_url(
-    catalogue: CopernicusMarineCatalogue,
-    dataset_url: Optional[str],
-) -> Tuple[str, CopernicusMarineDatasetServiceType, str,]:
-    if dataset_url is None:
-        syntax_error = SyntaxError(
-            "Must specify at least one of "
-            "'dataset_url' or 'dataset_id' options"
-        )
-        raise syntax_error
-    return next_or_raise_exception(
-        (
-            (
-                dataset.dataset_id,
-                service.service_type,
-                dataset_url.split(service.uri)[1],
-            )
-            for product in catalogue.products
-            for dataset in product.datasets
-            for dataset_version in dataset.versions
-            for dataset_part in dataset_version.parts
-            for service in dataset_part.services
-            if dataset_url.startswith(service.uri)
-        ),
-        KeyError(
-            f"The requested dataset URL '{dataset_url}' "
-            "was not found in the catalogue, "
-            "you can use 'copernicusmarine describe --include-datasets "
-            "--contains <search_token>' to find datasets"
-        ),
-    )
-
-
 @dataclass
 class RetrievalService:
     dataset_id: str
@@ -301,9 +271,7 @@ class RetrievalService:
 
 
 def get_retrieval_service(
-    catalogue: CopernicusMarineCatalogue,
-    dataset_id: Optional[str],
-    dataset_url: Optional[str],
+    dataset_id: str,
     force_dataset_version_label: Optional[str],
     force_dataset_part_label: Optional[str],
     force_service_type_string: Optional[str],
@@ -312,75 +280,27 @@ def get_retrieval_service(
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset] = None,
     dataset_sync: bool = False,
     username: Optional[str] = None,
+    staging: bool = False,
 ) -> RetrievalService:
+    loop = asyncio.get_event_loop()
+    dataset_metadata = loop.run_until_complete(
+        get_dataset_metadata(dataset_id, staging=staging),
+    )
+    # logger.debug(dataset_metadata)
+    if not dataset_metadata:
+        raise KeyError(
+            f"The requested dataset '{dataset_id}' was not found in the catalogue,"
+            " you can use 'copernicusmarine describe --include-datasets "
+            "--contains <search_token>' to find datasets"
+        )
     force_service_type: Optional[CopernicusMarineDatasetServiceType] = (
         _service_type_from_string(force_service_type_string, command_type)
         if force_service_type_string
         else None
     )
-    if dataset_id is None:
-        (
-            dataset_id,
-            service_type,
-            suffix_path,
-        ) = parse_dataset_id_and_service_and_suffix_path_from_url(
-            catalogue, dataset_url
-        )
-        force_service_type = (
-            service_type if not force_service_type else force_service_type
-        )
-    else:
-        if dataset_url is not None:
-            syntax_error = SyntaxError(
-                "Must specify only one of 'dataset_url' or 'dataset_id' options"
-            )
-            raise syntax_error
-        suffix_path = ""
 
-    return _get_retrieval_service_from_dataset_id(
-        catalogue=catalogue,
-        dataset_id=dataset_id,
-        suffix_path=suffix_path,
-        force_dataset_version_label=force_dataset_version_label,
-        force_dataset_part_label=force_dataset_part_label,
-        force_service_type=force_service_type,
-        command_type=command_type,
-        index_parts=index_parts,
-        dataset_subset=dataset_subset,
-        dataset_sync=dataset_sync,
-        username=username,
-    )
-
-
-def _get_retrieval_service_from_dataset_id(
-    catalogue: CopernicusMarineCatalogue,
-    dataset_id: str,
-    suffix_path: str,
-    force_dataset_version_label: Optional[str],
-    force_dataset_part_label: Optional[str],
-    force_service_type: Optional[CopernicusMarineDatasetServiceType],
-    command_type: CommandType,
-    index_parts: bool,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
-    dataset_sync: bool,
-    username: Optional[str],
-) -> RetrievalService:
-    dataset: CopernicusMarineProductDataset = next_or_raise_exception(
-        (
-            dataset
-            for product in catalogue.products
-            for dataset in product.datasets
-            if dataset_id == dataset.dataset_id
-        ),
-        KeyError(
-            f"The requested dataset '{dataset_id}' was not found in the catalogue,"
-            " you can use 'copernicusmarine describe --include-datasets "
-            "--contains <search_token>' to find datasets"
-        ),
-    )
     return _get_retrieval_service_from_dataset(
-        dataset=dataset,
-        suffix_path=suffix_path,
+        dataset=dataset_metadata,
         force_dataset_version_label=force_dataset_version_label,
         force_dataset_part_label=force_dataset_part_label,
         force_service_type=force_service_type,
@@ -394,7 +314,6 @@ def _get_retrieval_service_from_dataset_id(
 
 def _get_retrieval_service_from_dataset(
     dataset: CopernicusMarineProductDataset,
-    suffix_path: str,
     force_dataset_version_label: Optional[str],
     force_dataset_part_label: Optional[str],
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
@@ -419,7 +338,6 @@ def _get_retrieval_service_from_dataset(
         dataset_id=dataset.dataset_id,
         dataset_version=dataset_version,
         force_dataset_part_label=force_dataset_part_label,
-        suffix_path=suffix_path,
         force_service_type=force_service_type,
         command_type=command_type,
         index_parts=index_parts,
@@ -433,7 +351,6 @@ def _get_retrieval_service_from_dataset_version(
     dataset_id: str,
     dataset_version: CopernicusMarineDatasetVersion,
     force_dataset_part_label: Optional[str],
-    suffix_path: str,
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
     index_parts: bool,
@@ -505,7 +422,7 @@ def _get_retrieval_service_from_dataset_version(
     return RetrievalService(
         dataset_id=dataset_id,
         service_type=service.service_type,
-        uri=service.uri + suffix_path,
+        uri=service.uri,
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
     )
