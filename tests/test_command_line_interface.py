@@ -1133,6 +1133,40 @@ class TestCommandLineInterface:
             in self.output.stderr
         )
 
+    def test_subset_with_dataset_id_and_url(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_anfc_ecosmo_P1M-m",
+            "-u",
+            "https://nrt.cmems-du.eu/thredds/dodsC/METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2",
+            "--variable",
+            "thetao",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+        assert self.output.returncode == 1
+        assert (
+            b"Must specify only one of 'dataset_url' or 'dataset_id' options"
+        ) in self.output.stderr
+
+    def test_no_traceback_is_printed_on_dataset_url_error(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-url",
+            "https://s3.waw3-1.cloudferro.com/mdl-arco-time-013/arco/"
+            "GLOBAL_ANALYSISFORECAST_PHY_XXXXXXX/"
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m/2023",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+        assert self.output.returncode == 1
+        assert b"Traceback" not in self.output.stderr
+
     def test_get_2023_08_original_files(self):
         command = [
             "copernicusmarine",
@@ -1179,6 +1213,20 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
+
+    def test_dataset_url_suffix_path_are_used_as_filter(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-url",
+            "https://s3.waw3-1.cloudferro.com/mdl-native-14/native/"
+            "GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202406/2023/11",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+        assert b"Printed 20 out of 30 files" in self.output.stderr
 
     def test_short_option_for_copernicus_marine_command_helper(self):
         short_option_command = [
