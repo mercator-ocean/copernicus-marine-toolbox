@@ -44,7 +44,6 @@ class TestPythonInterface:
     def test_permission_denied_for_modification_date(
         self, mock_utime, tmp_path, caplog
     ):
-        # sys.stderr = StringIO()
         get(
             dataset_id="METOFFICE-GLO-SST-L4-REP-OBS-SST",
             force_download=True,
