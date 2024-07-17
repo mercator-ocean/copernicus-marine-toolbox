@@ -29,7 +29,7 @@ from copernicusmarine.download_functions.subset_xarray import (
     get_size_of_coordinate_subset,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 class _Command(Enum):

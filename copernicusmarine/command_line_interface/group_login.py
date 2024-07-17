@@ -12,7 +12,7 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from copernicusmarine.core_functions.login import login_function
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 @click.group()

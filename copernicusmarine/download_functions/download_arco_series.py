@@ -34,7 +34,7 @@ from copernicusmarine.download_functions.utils import (
     get_formatted_dataset_size_estimation,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def _rechunk(dataset: xarray.Dataset) -> xarray.Dataset:
