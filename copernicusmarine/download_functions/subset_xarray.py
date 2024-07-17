@@ -444,15 +444,9 @@ def check_dataset_subset_bounds(
                 if dataset_subset.maximum_longitude is not None
                 else longitudes.max()
             )
-            if (
-                not _window_is_needed(
-                    dataset_coordinates[coordinate_label],
-                    user_minimum_coordinate_value,
-                    user_maximum_coordinate_value,
-                )
-                or subset_method == "strict"
+            if not _all_longitude_covered(
+                dataset_coordinates[coordinate_label],
             ):
-                logger.info("passem per aquí")
                 _check_coordinate_overlap(
                     dimension="longitude",
                     user_minimum_coordinate_value=user_minimum_coordinate_value,
@@ -497,19 +491,19 @@ def date_to_datetime(date: Union[str, int]) -> datetime:
         return Timestamp(date).to_pydatetime()
 
 
-def _window_is_needed(
-    longitude: xarray.DataArray,
-    user_minimum_coordinate_value: float,
-    user_maximum_coordinate_value: float,
-) -> bool:
+def _all_longitude_covered(longitude: xarray.DataArray) -> bool:
     longitudes = longitude.values
-    if longitudes.min() == -180 and longitudes.max() >= (180 - longitude.step):
-        if (
-            user_maximum_coordinate_value - user_minimum_coordinate_value
-            >= 360
-        ):
-            return False
+    if "step" in longitude.attrs:
+        longitude_step = longitude.step
+    else:
+        longitude_step = longitude.max() - longitude.values[-2]
+        longitude_step = longitude_step.values
+
+    if longitudes.min() == -180 and longitudes.max() >= (180 - longitude_step):
         return True
+    if longitudes.min() + 360 == longitudes.max() + longitude_step:
+        return True
+
     return False
 
 

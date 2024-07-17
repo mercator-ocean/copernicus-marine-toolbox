@@ -1,5 +1,29 @@
 from tests.test_utils import execute_in_terminal
 
+DATASETS_IDS = {
+    # [-180, 180[ v = thetao
+    "full_lon": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+    # [-179.9791717529297, 179.9791717529297] v = CHL
+    "not_centered": "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D",
+    "mediterranean": "med-cmcc-cur-rean-h",  # [-6.0, 36.29166793823242] v = uo
+    # [-30.0625, 42.0625] v = sla
+    "euro": "cmems_obs-sl_eur_phy-ssh_my_allsat-l4-duacs-0.125deg_P1D",
+    # [-20.975, 12.975] v = analysed_sst
+    "IBI": "cmems-IFREMER-ATL-SST-L4-REP-OBS_FULL_TIME_SERIE",
+    # [-179.75, 180] v = eastward_sea_ice_velocity
+    "antartic": "cmems_obs-si_ant_physic_my_drift-amsr_P2D",
+}
+
+
+DATASETS_VARS = {
+    "full_lon": "thetao",
+    "not_centered": "CHL",
+    "mediterranean": "uo",
+    "euro": "sla",
+    "IBI": "analysed_sst",
+    "antartic": "eastward_sea_ice_velocity",
+}
+
 
 class TestWarningsSubsetBounds:
     def _build_custom_command(
@@ -25,98 +49,68 @@ class TestWarningsSubsetBounds:
             f"{subset_method}",
         ]
 
-    def test_subset_send_warning_with_method_nearest(self):
-        dataset_id = (
-            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-        )
-        command = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "nearest"
-        )
-        self.output = execute_in_terminal(command, input=b"n")
-
-        assert b"WARNING" in self.output.stderr
-        assert (
-            b"Some or all of your subset selection [-180.0, 180.0]"
-            b" for the longitude dimension  exceed the dataset"
-            b" coordinates [-179.9791717529297, 179.9791717529297]"
-        ) in self.output.stderr
-
-    def test_subset_warnings_differently(self):
-        # Dataset with longitude bounds from -180 to 179.91668701171875
-        # The first call should return a warning, the second one should not
-        dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
+    def test_subset_longitude_warns(
+        self, key, min_lon, max_lon, expected_output
+    ):
+        dataset_id = DATASETS_IDS[key]
 
         command1 = self._build_custom_command(
-            dataset_id, "thetao", -180, 180, "nearest"
+            dataset_id, DATASETS_VARS[key], min_lon, max_lon, "nearest"
         )
         command2 = self._build_custom_command(
-            dataset_id, "thetao", -179.9, 179.9, "nearest"
+            dataset_id, DATASETS_VARS[key], min_lon, max_lon, "strict"
         )
         self.output1 = execute_in_terminal(command1, input=b"n")
         self.output2 = execute_in_terminal(command2, input=b"n")
 
-        assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
-        ) in self.output1.stderr
-        assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
-        ) not in self.output2.stderr
+        string = (
+            f"Some or all of your subset selection [{min_lon:.{1}f},"
+            f" {max_lon:.{1}f}] for the longitude dimension  exceed the dataset"
+        ).encode(encoding="utf-8")
+        if expected_output == "no_warns":
+            assert (
+                string not in self.output1.stderr
+            )  # should there still be some kind of warning?
+            assert string not in self.output2.stderr
+        else:
+            assert b"WARNING" in self.output1.stderr
+            assert (
+                string in self.output1.stderr
+            )  # should there still be some kind of warning?
+            assert b"ERROR" in self.output2.stderr
+            assert string in self.output2.stderr
 
-    def test_subset_warnings_when_surpassing(self):
-        # Dataset with longitude bounds from [-179.9791717529297, 179.9791717529297]
-        # Both calls should return the same warning
-        dataset_id = (
-            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-        )
-
-        command1 = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "nearest"
-        )
-        command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.99, 179.99, "nearest"
-        )
-        self.output1 = execute_in_terminal(command1, input=b"n")
-        self.output2 = execute_in_terminal(command2, input=b"n")
-
-        assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
-        ) in self.output1.stderr
-        assert (
-            b"Some or all of your subset selection [-179.99, 179.99] for the longitude "
-            b"dimension  exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
-        ) in self.output2.stderr
-
-    def test_subset_strict_error(self):
-        dataset_id = (
-            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
+    def test_subset_all_longitudes_prova(self):
+        self.test_subset_longitude_warns(
+            "mediterranean", -180.0, 180.0, "warn"
         )
 
-        command1 = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "strict"
+    def test_subset_all_longitudes(self):
+        self.test_subset_longitude_warns("full_lon", -180.0, 180.0, "no_warns")
+        self.test_subset_longitude_warns("full_lon", -40.0, 70.0, "no_warns")
+        self.test_subset_longitude_warns("full_lon", -150.0, 180.0, "no_warns")
+        self.test_subset_longitude_warns(
+            "full_lon", -149.99, 180.0, "no_warns"
         )
-        command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.9, 179.9, "strict"
+        self.test_subset_longitude_warns("full_lon", -179.9, 179.9, "no_warns")
+        self.test_subset_longitude_warns(
+            "not_centered", -180.0, 180.0, "no_warns"
         )
-        self.output1 = execute_in_terminal(command1, input=b"n")
-        self.output2 = execute_in_terminal(command2, input=b"n")
-        assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
-        ) in self.output1.stderr
-        assert (
-            b"Some or all of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension  exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
-        ) in self.output1.stderr
-        assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
-        ) not in self.output2.stderr
-        assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
-        ) not in self.output2.stderr
+        self.test_subset_longitude_warns(
+            "not_centered", -179.9, 179.9, "no_warns"
+        )
+        self.test_subset_longitude_warns("antartic", -180.0, 180.0, "no_warns")
+        self.test_subset_longitude_warns(
+            "mediterranean", -180.0, 180.0, "warn"
+        )
+        self.test_subset_longitude_warns("mediterranean", -7.0, 40.0, "warn")
+        self.test_subset_longitude_warns(
+            "mediterranean", -5.0, 30.0, "no_warns"
+        )
+        self.test_subset_longitude_warns("euro", -180.0, 170.0, "warn")
+        self.test_subset_longitude_warns("euro", -20.0, 170.0, "warn")
+        self.test_subset_longitude_warns("euro", -25.0, 30.0, "no_warns")
+        self.test_subset_longitude_warns("IBI", -179.9, 170.0, "warn")
+        self.test_subset_longitude_warns("IBI", -25.0, 5.0, "warn")
+        self.test_subset_longitude_warns("IBI", 5.0, 13.0, "warn")
+        self.test_subset_longitude_warns("IBI", -20.0, 13.0, "no_warns")
