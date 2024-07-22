@@ -11,7 +11,7 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def describe_function(

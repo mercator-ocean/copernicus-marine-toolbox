@@ -33,7 +33,7 @@ from copernicusmarine.download_functions.subset_parameters import (
     TemporalParameters,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 COORDINATES_LABEL = {
     "latitude": ["latitude", "nav_lat", "x", "lat"],

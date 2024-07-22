@@ -33,7 +33,7 @@ from copernicusmarine.core_functions.utils import (
     rolling_batch_gather,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 MARINE_DATA_STORE_STAC_BASE_URL = (

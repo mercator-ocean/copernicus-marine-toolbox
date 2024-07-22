@@ -26,7 +26,7 @@ from requests import PreparedRequest
 
 from copernicusmarine import __version__ as copernicusmarine_version
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 OVERWRITE_SHORT_OPTION = "--overwrite"
 OVERWRITE_LONG_OPTION = "--overwrite-output-data"
