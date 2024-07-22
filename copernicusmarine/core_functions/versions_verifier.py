@@ -10,7 +10,7 @@ from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 class VersionVerifier:

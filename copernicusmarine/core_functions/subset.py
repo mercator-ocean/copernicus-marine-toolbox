@@ -34,7 +34,7 @@ from copernicusmarine.download_functions.subset_xarray import (
 )
 from copernicusmarine.download_functions.utils import FileFormat
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def subset_function(

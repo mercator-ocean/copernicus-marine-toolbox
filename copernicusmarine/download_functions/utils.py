@@ -12,7 +12,7 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.download_functions.subset_xarray import COORDINATES_LABEL
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def get_file_extension(file_format: FileFormat) -> str:
