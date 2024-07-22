@@ -1,7 +1,7 @@
 import logging
 import os
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 COPERNICUSMARINE_SERVICE_USERNAME = os.getenv(
     "COPERNICUSMARINE_SERVICE_USERNAME"

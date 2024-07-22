@@ -23,7 +23,7 @@ from copernicusmarine.download_functions.download_original_files import (
     download_original_files,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def get_function(

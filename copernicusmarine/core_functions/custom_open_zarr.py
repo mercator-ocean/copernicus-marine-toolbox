@@ -16,7 +16,7 @@ from copernicusmarine.core_functions.sessions import (
 )
 from copernicusmarine.core_functions.utils import parse_access_dataset_url
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 class CustomS3Store(MutableMapping):
