@@ -2,6 +2,7 @@ import inspect
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
+from unittest import mock
 
 import xarray
 
@@ -38,6 +39,28 @@ class TestPythonInterface:
         )
         assert get_result is not None
         assert all(map(lambda x: x.exists(), get_result))
+
+    @mock.patch("os.utime", side_effect=PermissionError)
+    def test_permission_denied_for_modification_date(
+        self, mock_utime, tmp_path, caplog
+    ):
+        get(
+            dataset_id="METOFFICE-GLO-SST-L4-REP-OBS-SST",
+            force_download=True,
+            filter="*2022053112000*",
+            output_directory=f"{tmp_path}",
+            no_directories=True,
+        )
+        assert "Permission to modify the last modified date" in caplog.text
+        assert "is denied" in caplog.text
+        output_file = Path(
+            tmp_path,
+            "20220531120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.nc",
+        )
+        five_minutes_ago = datetime.now() - timedelta(minutes=5)
+        assert datetime.fromtimestamp(os.path.getmtime(output_file)) > (
+            five_minutes_ago
+        )
 
     def test_subset_function(self, tmp_path):
         subset_result = subset(
