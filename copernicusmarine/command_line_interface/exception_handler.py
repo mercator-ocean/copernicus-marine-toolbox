@@ -5,7 +5,7 @@ from re import finditer
 from sys import exit
 from typing import Callable
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def _log_exception(log_function: Callable, exception: Exception):

@@ -12,8 +12,8 @@ from copernicusmarine.core_functions.deprecated import (
 )
 from copernicusmarine.core_functions.describe import describe_function
 
-logger = logging.getLogger("copernicus_marine_root_logger")
-blank_logger = logging.getLogger("copernicus_marine_blank_logger")
+logger = logging.getLogger("copernicusmarine")
+blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
 
 @click.group()
