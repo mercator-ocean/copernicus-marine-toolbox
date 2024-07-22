@@ -1925,8 +1925,6 @@ class TestCommandLineInterface:
             "--force-download",
             "--filter",
             "*2022053112000*",
-            "--force-service",
-            "original-files",
             "--output-directory",
             f"{tmp_path}",
             "--no-directories",

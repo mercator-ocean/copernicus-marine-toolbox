@@ -536,7 +536,7 @@ def _download_files(
         endpoint_url: str, bucket: str, file_in: str, file_out: pathlib.Path
     ) -> pathlib.Path:
         """
-        Download ONE file and return a string of the result
+        Download ONE file and return the path of the result
         """
         s3_client, s3_resource = get_configured_boto3_session(
             endpoint_url,
@@ -554,9 +554,15 @@ def _download_files(
             file_out,
         )
 
-        os.utime(
-            file_out, (last_modified_date_epoch, last_modified_date_epoch)
-        )
+        try:
+            os.utime(
+                file_out, (last_modified_date_epoch, last_modified_date_epoch)
+            )
+        except PermissionError:
+            logger.warning(
+                f"Permission to modify the last modified date "
+                f"of the file {file_out} is denied."
+            )
 
         return file_out
 
