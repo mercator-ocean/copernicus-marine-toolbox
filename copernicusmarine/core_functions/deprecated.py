@@ -10,7 +10,7 @@ from copernicusmarine.core_functions.deprecated_options import (
     DeprecatedOptionMapping,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def get_deprecated_message(

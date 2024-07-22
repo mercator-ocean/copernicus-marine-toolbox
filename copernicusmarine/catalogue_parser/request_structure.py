@@ -23,7 +23,7 @@ from copernicusmarine.download_functions.subset_parameters import (
     TemporalParameters,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
