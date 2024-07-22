@@ -38,7 +38,7 @@ from copernicusmarine.core_functions.utils import (
     OVERWRITE_SHORT_OPTION,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 @click.group()

@@ -11,7 +11,7 @@ from copernicusmarine.core_functions.exceptions import (
     NetCDFCompressionNotAvailable,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def get_delayed_download(
