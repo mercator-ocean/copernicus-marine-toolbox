@@ -8,7 +8,7 @@ from copernicusmarine.core_functions.credentials_utils import (
     credentials_file_builder,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def login_function(

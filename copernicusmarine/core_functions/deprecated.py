@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict
 
 import click
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 
 def get_deprecated_message(old_value, preferred_value):

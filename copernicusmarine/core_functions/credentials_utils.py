@@ -19,7 +19,7 @@ from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
 )
 
-logger = logging.getLogger("copernicus_marine_root_logger")
+logger = logging.getLogger("copernicusmarine")
 
 USER_DEFINED_CACHE_DIRECTORY: str = (
     COPERNICUSMARINE_CREDENTIALS_DIRECTORY or ""

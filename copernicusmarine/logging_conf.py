@@ -22,12 +22,12 @@ logging_configuration_dict = {
         },
     },
     "loggers": {
-        "copernicus_marine_blank_logger": {
+        "copernicusmarine_blank_logger": {
             "handlers": ["console_blank"],
             "level": "INFO",
             "propagate": False,
         },
-        "copernicus_marine_root_logger": {
+        "copernicusmarine": {
             "handlers": ["console"],
             "level": "INFO",
         },
