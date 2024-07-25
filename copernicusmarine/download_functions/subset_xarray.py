@@ -98,7 +98,7 @@ def get_size_of_coordinate_subset(
         )
 
 
-def _update_dataset_attributes(
+def _shift_longitude_dimension(
     dataset: xarray.Dataset,
     minimum_longitude_modulus: float,
 ):
@@ -174,7 +174,7 @@ def _longitude_subset(
                 )
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
-                    dataset = _update_dataset_attributes(
+                    dataset = _shift_longitude_dimension(
                         dataset, minimum_longitude_modulus
                     )
                 longitude_selection = slice(
@@ -493,6 +493,11 @@ def _check_coordinate_overlap(
         f"[{dataset_minimum_coordinate_value}, "
         f"{dataset_maximum_coordinate_value}]"
     )
+    if dimension == "longitude":
+        if dataset_minimum_coordinate_value == -180:
+            dataset_maximum_coordinate_value = 180
+        if dataset_maximum_coordinate_value == 180:
+            dataset_minimum_coordinate_value = -180
     if (
         user_maximum_coordinate_value < dataset_minimum_coordinate_value
         or user_minimum_coordinate_value > dataset_maximum_coordinate_value
