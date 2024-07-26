@@ -213,7 +213,6 @@ class TestPythonInterface:
     def test_subset_keeps_fillvalue_empty(self, tmp_path):
         subset(
             dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-            dataset_version="202211",
             variables=["thetao"],
             minimum_longitude=-28.10,
             maximum_longitude=-27.94,
@@ -243,7 +242,6 @@ class TestPythonInterface:
     def test_subset_keeps_fillvalue_empty_w_compression(self, tmp_path):
         subset(
             dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-            dataset_version="202211",
             variables=["thetao"],
             minimum_longitude=-28.10,
             maximum_longitude=-27.94,
