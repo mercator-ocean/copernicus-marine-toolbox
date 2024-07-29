@@ -1276,7 +1276,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert not (b"Traceback") in self.output.stderr
+        assert b"Traceback" not in self.output.stderr
 
     def test_get_2023_08_original_files(self):
         command = [
@@ -1290,7 +1290,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert not (b"No data to download") in self.output.stderr
+        assert b"No data to download" not in self.output.stderr
 
     def test_subset_with_chunking(self, tmp_path):
         command = [
