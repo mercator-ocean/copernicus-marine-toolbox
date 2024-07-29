@@ -1332,7 +1332,7 @@ class TestCommandLineInterface:
             "--dataset-url",
             "https://s3.waw3-1.cloudferro.com/mdl-native-14/native/"
             "GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202211/2023/11",
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202406/2023/11",
         ]
 
         self.output = execute_in_terminal(command)

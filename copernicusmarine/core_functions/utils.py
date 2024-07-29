@@ -3,7 +3,7 @@ import logging
 import os
 import pathlib
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from importlib.metadata import version
 from typing import (
     Any,
@@ -21,6 +21,7 @@ from typing import (
 
 import cftime
 import numpy
+import pandas as pd
 import xarray
 from requests import PreparedRequest
 
@@ -148,11 +149,8 @@ def convert_datetime64_to_netcdf_timestamp(
     datetime_value: numpy.datetime64,
     cftime_unit: str,
 ) -> int:
-    nanosecond = 1e-9
-    date = datetime.fromtimestamp(
-        datetime_value.astype(datetime) * nanosecond, tz=timezone.utc
-    )
-    return cftime.date2num(date, cftime_unit)
+    pandas_datetime = pd.to_datetime(datetime_value)
+    return cftime.date2num(pandas_datetime, cftime_unit)
 
 
 def add_copernicusmarine_version_in_dataset_attributes(
