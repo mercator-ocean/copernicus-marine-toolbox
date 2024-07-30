@@ -21,10 +21,7 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import SubsetMethod
-from copernicusmarine.core_functions.utils import (
-    ServiceNotSupported,
-    convert_datetime64_to_netcdf_timestamp,
-)
+from copernicusmarine.core_functions.utils import ServiceNotSupported
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -47,8 +44,6 @@ NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
     "long_name",
     "units",
     "unit_long",
-    "valid_min",
-    "valid_max",
 ]
 NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
     "standard_name",
@@ -359,34 +354,15 @@ def _update_dataset_coordinate_attributes(
                     NETCDF_CONVENTION_COORDINATE_ATTRIBUTES.copy()
                 )
                 if "time" in coordinate_label:
-                    min_time_dimension = coord.values.min()
-                    max_time_dimension = coord.values.max()
-                    netcdf_unit = coord.encoding["units"]
-                    valid_min = convert_datetime64_to_netcdf_timestamp(
-                        min_time_dimension, netcdf_unit
-                    )
-                    valid_max = convert_datetime64_to_netcdf_timestamp(
-                        max_time_dimension, netcdf_unit
-                    )
                     attrs["standard_name"] = "time"
                     attrs["long_name"] = "Time"
-                    attrs["valid_min"] = valid_min
-                    attrs["valid_max"] = valid_max
                     attrs["axis"] = "T"
                     attrs["unit_long"] = (
                         coord.encoding["units"].replace("_", " ").title()
                     )
                     coordinate_attributes.remove("units")
                 elif coordinate_label in ["depth", "elevation"]:
-                    attrs["valid_min"] = coord.values.min()
-                    attrs["valid_max"] = coord.values.max()
                     coordinate_attributes.append("positive")
-                elif coordinate_label == "latitude":
-                    attrs["valid_min"] = coord.values.min()
-                    attrs["valid_max"] = coord.values.max()
-                elif coordinate_label == "longitude":
-                    coordinate_attributes.remove("valid_min")
-                    coordinate_attributes.remove("valid_max")
                 coord.attrs = _filter_attributes(attrs, coordinate_attributes)
 
     dataset.attrs = _filter_attributes(
