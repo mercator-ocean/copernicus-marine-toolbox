@@ -44,6 +44,8 @@ NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
     "long_name",
     "units",
     "unit_long",
+    "valid_min",
+    "valid_max",
 ]
 NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
     "standard_name",
@@ -51,8 +53,6 @@ NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
     "units",
     "unit_long",
     "axis",
-    "valid_min",
-    "valid_max",
 ]
 NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
     "title",
