@@ -227,6 +227,7 @@ class TestPythonInterface:
         dataset = open_dataset(
             dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1D-m"
         )
+        assert dataset.depth.attrs["positive"] == "down"
         assert dataset.depth.attrs["standard_name"] == "depth"
         assert dataset.depth.attrs["long_name"] == "Depth"
 
