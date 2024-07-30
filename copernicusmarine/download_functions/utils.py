@@ -1,10 +1,13 @@
 import logging
+import math
 from pathlib import Path
 from typing import Optional
 
+import pandas as pd
 import xarray
 from pendulum import DateTime
 
+from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.core_functions.models import (
     DEFAULT_FILE_EXTENSIONS,
     FileFormat,
@@ -170,7 +173,12 @@ def _format_datetimes(
         return formatted_datetime
 
 
-def get_formatted_dataset_size_estimation(dataset: xarray.Dataset) -> str:
+def get_message_formatted_dataset_size_estimation(
+    dataset: xarray.Dataset,
+    variables: Optional[list[str]],
+    service: CopernicusMarineService,
+) -> str:
+    estimated_size_message = "Estimated size of the dataset file is "
     coordinates_size = 1
     for coordinate in dataset.sizes:
         coordinates_size *= dataset[coordinate].size
@@ -180,4 +188,91 @@ def get_formatted_dataset_size_estimation(dataset: xarray.Dataset) -> str:
         * dataset[list(dataset.data_vars)[0]].dtype.itemsize
         / 1048e3
     )
-    return f"{estimate_size:.3f} MB"
+    estimated_size_message += f"{estimate_size:.3f} MB"
+    number_chunks_to_download = _get_number_of_chunks_to_download(
+        dataset, variables, service
+    )
+    if number_chunks_to_download > 1:
+        estimated_size_message += "\n"
+        estimated_size_message += "Estimated data that needs to be downloaded "
+        estimated_size_message += "in total to obtain the result: "
+        estimated_size_message += f"{number_chunks_to_download*2} MB"
+    return estimated_size_message
+
+
+def _get_number_of_chunks_to_download(
+    dataset: xarray.Dataset,
+    variables_names: Optional[list[str]],
+    service: CopernicusMarineService,
+) -> int:
+    total_chunks = 0
+    variables = service.variables
+    for variable in variables:
+        total_chunks_variable = 1
+        if (
+            variables_names is not None
+            and variable.short_name in variables_names
+        ):
+            coordinates = variable.coordinates
+            for coordinate in coordinates:
+                maximum_value = coordinate.maximum_value
+                minimum_value = coordinate.minimum_value
+                chunking_length = coordinate.chunking_length
+                if not chunking_length:
+                    continue
+                values = coordinate.values
+                step_value = coordinate.step
+                if values:
+                    minimum_value = min(values)
+                    maximum_value = max(values)
+                    number_values_in_total = len(values)
+                    step_value = (maximum_value - minimum_value) / len(values)
+                elif (
+                    maximum_value is not None
+                    and minimum_value is not None
+                    and step_value is not None
+                ):
+                    number_values_in_total = math.ceil(
+                        (maximum_value - minimum_value) / step_value
+                    )
+                else:
+                    continue
+
+                number_chunks_in_total = (
+                    number_values_in_total / chunking_length
+                )
+
+                chunking_step = step_value * chunking_length
+
+                if coordinate.coordinates_id == "time":
+                    requested_maximum = (
+                        dataset[coordinate.coordinates_id].max().values
+                    )
+                    requested_minimum = (
+                        dataset[coordinate.coordinates_id].min().values
+                    )
+                    requested_maximum = (
+                        pd.to_datetime(requested_maximum).timestamp() * 10e2
+                    )
+                    requested_minimum = (
+                        pd.to_datetime(requested_minimum).timestamp() * 10e2
+                    )
+                else:
+                    requested_maximum = (
+                        dataset[coordinate.coordinates_id].max().values
+                    )
+                    requested_minimum = (
+                        dataset[coordinate.coordinates_id].min().values
+                    )
+
+                id_min = math.floor(
+                    (requested_minimum - minimum_value) / chunking_step
+                )
+                id_max = math.floor(
+                    (requested_maximum - minimum_value) / chunking_step
+                )
+                if id_max == number_chunks_in_total:
+                    id_max -= 1
+                total_chunks_variable *= id_max - id_min + 1
+            total_chunks += total_chunks_variable
+    return total_chunks

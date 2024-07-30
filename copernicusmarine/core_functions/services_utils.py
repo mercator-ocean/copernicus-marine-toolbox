@@ -276,6 +276,7 @@ class RetrievalService:
     service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
     dataset_valid_start_date: Optional[Union[str, int]]
+    service: CopernicusMarineService
 
 
 def get_retrieval_service(
@@ -433,6 +434,7 @@ def _get_retrieval_service_from_dataset_version(
         uri=service.uri,
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
+        service=service,
     )
 
 
