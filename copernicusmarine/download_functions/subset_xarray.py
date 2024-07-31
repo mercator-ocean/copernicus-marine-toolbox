@@ -377,7 +377,11 @@ def _update_dataset_coordinate_attributes(
                         coord.encoding["units"].replace("_", " ").title()
                     )
                     coordinate_attributes.remove("units")
-                elif coordinate_label in ["latitude", "depth", "elevation"]:
+                elif coordinate_label in ["depth", "elevation"]:
+                    attrs["valid_min"] = coord.values.min()
+                    attrs["valid_max"] = coord.values.max()
+                    coordinate_attributes.append("positive")
+                elif coordinate_label == "latitude":
                     attrs["valid_min"] = coord.values.min()
                     attrs["valid_max"] = coord.values.max()
                 elif coordinate_label == "longitude":
