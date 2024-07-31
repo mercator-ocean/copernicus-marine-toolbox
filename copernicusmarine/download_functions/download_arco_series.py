@@ -6,6 +6,9 @@ import click
 import pandas
 import xarray
 
+from copernicusmarine.catalogue_parser.catalogue_parser import (
+    CopernicusMarineService,
+)
 from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.utils import (
@@ -31,7 +34,7 @@ from copernicusmarine.download_functions.subset_xarray import (
 from copernicusmarine.download_functions.utils import (
     FileFormat,
     get_filename,
-    get_formatted_dataset_size_estimation,
+    get_message_formatted_dataset_size_estimation,
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
@@ -75,6 +78,7 @@ def download_dataset(
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
     netcdf3_compatible: bool,
+    service: CopernicusMarineService,
     force_download: bool = False,
     overwrite_output_data: bool = False,
 ):
@@ -101,8 +105,9 @@ def download_dataset(
     if not force_download:
         logger.info(dataset)
         logger.info(
-            "Estimated size of the dataset file is "
-            f"{get_formatted_dataset_size_estimation(dataset)}."
+            get_message_formatted_dataset_size_estimation(
+                dataset, variables, service
+            )
         )
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
@@ -112,8 +117,9 @@ def download_dataset(
         )
     else:
         logger.info(
-            "Estimated size of the dataset file is "
-            f"{get_formatted_dataset_size_estimation(dataset)}."
+            get_message_formatted_dataset_size_estimation(
+                dataset, variables, service
+            )
         )
     logger.info("Writing to local storage. Please wait...")
 
@@ -141,6 +147,7 @@ def download_zarr(
     dataset_id: str,
     disable_progress_bar: bool,
     dataset_valid_start_date: Optional[Union[str, int]],
+    service: CopernicusMarineService,
 ):
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
@@ -197,6 +204,7 @@ def download_zarr(
         netcdf_compression_enabled=subset_request.netcdf_compression_enabled,
         netcdf_compression_level=subset_request.netcdf_compression_level,
         netcdf3_compatible=subset_request.netcdf3_compatible,
+        service=service,
     )
     return output_path
 

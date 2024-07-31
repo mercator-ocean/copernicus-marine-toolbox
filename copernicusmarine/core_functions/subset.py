@@ -234,6 +234,7 @@ def subset_function(
                 retrieval_service.dataset_id,
                 disable_progress_bar,
                 retrieval_service.dataset_valid_start_date,
+                service=retrieval_service.service,
             )
     else:
         raise ServiceNotSupported(retrieval_service.service_type)
