@@ -1941,8 +1941,5 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-<<<<<<< HEAD
-content-hash = "df93116d25a101d3f319a1e497b4436a09702719616a853437524aa68acf47bd"
-=======
+
 content-hash = "f781539aa6604250d8715e3c6ef09165d031fbb95565f65e4368e41db7c50290"
->>>>>>> 95d6892 (chore: refactor to stop using the cache (#95))
