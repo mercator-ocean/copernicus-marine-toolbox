@@ -11,7 +11,9 @@
 
 ## Features
 
+
 The `copernicusmarine` offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
+
 
 - **Metadata Information**: List and retrieve metadata information on all variables, datasets, products, and their associated documentation.
 - **Subset Datasets**: Subset datasets to extract only the parts of interest, in preferred format, such as Analysis-Ready Cloud-Optimized (ARCO) Zarr or NetCDF file format.
@@ -20,13 +22,16 @@ The `copernicusmarine` offers capabilities through both **Command Line Interface
 
 ## Installation
 
+
 For installation, multiple options are available depending on your setup:
 
 ### Mamba | Conda
 
+
 A `conda` package is available on [Anaconda](https://anaconda.org/conda-forge/copernicusmarine).
 
 You can install it using `mamba` (or conda) through the `conda-forge` channel with the following command:
+
 
 ```bash
 mamba install conda-forge::copernicusmarine --yes
@@ -34,15 +39,18 @@ mamba install conda-forge::copernicusmarine --yes
 
 To upgrade the Toolbox with mamba (or conda):
 
+
 ```bash
 mamba update --name copernicusmarine copernicusmarine --yes
 ```
 
 ### Docker
 
+
 A docker image is also available here: [https://hub.docker.com/r/copernicusmarine/copernicusmarine](https://hub.docker.com/r/copernicusmarine/copernicusmarine)
 
 First step is to pull the container image:
+
 
 ```bash
 docker pull copernicusmarine/copernicusmarine:latest
@@ -50,13 +58,16 @@ docker pull copernicusmarine/copernicusmarine:latest
 
 Then run it:
 
+
 ```bash
 docker run -it --rm copernicusmarine/copernicusmarine --version
 ```
 
 ### Pip
 
+
 Otherwise, if you already have an environment (safer to clone it), the package can be installed using the `pip` command:
+
 
 ```bash
 python -m pip install copernicusmarine
@@ -64,11 +75,13 @@ python -m pip install copernicusmarine
 
 And to **upgrade the package** to the newest available version, run:
 
+
 ```bash
 python -m pip install copernicusmarine --upgrade
 ```
 
 ## User Guide
+
 
 For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
 
@@ -160,6 +173,7 @@ If `.copernicusmarine-credentials` already exists, the user is asked for confirm
 You can use the `--skip-if-user-logged-in` option to skip the configuration file overwrite if the user is already logged in.
 
 #### Access points migration and evolution
+
 
 If you still have a configuration for legacy services (e.g. `~/motuclient/motuclient-python.ini`, `~/.netrc` or `~/_netrc`) in your home directory, it will automatically be taken into account with commands `get` and `subset` without the need for running the `login` command.
 If the configuration files are already available in another directory, when running commands `subset` or `get`, you can use the `--credentials-file` option to point to the files.
