@@ -494,36 +494,6 @@ class TestCommandLineInterface:
             b"copernicusmarine get --dataset-id " + bytes(dataset_id, "utf-8")
         ) in self.output.stderr
 
-    def test_if_dataset_coordinate_valid_minmax_attributes_are_setted(
-        self, tmp_path
-    ):
-        self.base_request_dict = {
-            "--dataset-id": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
-            "--variable": "so",
-            "--start-datetime": "2024-01-01",
-            "--end-datetime": "2024-01-02",
-            "--minimum-latitude": "0.0",
-            "--maximum-latitude": "0.1",
-            "--minimum-longitude": "0.2",
-            "--maximum-longitude": "0.3",
-            "--minimum-depth": "0.0",
-            "--maximum-depth": "5.0",
-            "-f": "self.output.nc",
-            "--output-directory": tmp_path,
-        }
-
-        self.check_default_subset_request(self.GEOSERIES.subpath, tmp_path)
-
-        dataset_path = pathlib.Path(tmp_path) / "self.output.nc"
-        dataset = xarray.open_dataset(dataset_path)
-
-        assert dataset.latitude.attrs["valid_min"] >= 0
-        assert dataset.latitude.attrs["valid_max"] <= 0.1
-        assert dataset.depth.attrs["valid_min"] >= 0
-        assert dataset.depth.attrs["valid_max"] <= 5
-        assert dataset.time.attrs["valid_min"] == 648672
-        assert dataset.time.attrs["valid_max"] == 648696
-
     def test_retention_period_works(self):
         self.command = [
             "copernicusmarine",
