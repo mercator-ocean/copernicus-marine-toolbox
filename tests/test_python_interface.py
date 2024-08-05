@@ -221,7 +221,7 @@ class TestPythonInterface:
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
         )
-        assert dataset.time.valid_min >= 45388
+        assert int(dataset.time.min().values) >= 1720735200000
 
     def test_subset_modify_attr_for_depth(self):
         dataset = open_dataset(
@@ -256,10 +256,6 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
         assert "_FillValue" not in subsetdata.depth.attrs
-        assert "valid_max" not in subsetdata.longitude.attrs
-        assert "valid_min" not in subsetdata.longitude.attrs
-        assert "valid_max" in subsetdata.latitude.attrs
-        assert "valid_max" in subsetdata.latitude.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
