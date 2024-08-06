@@ -166,7 +166,7 @@ class TestWarningsSubsetBounds:
             f"{output_filename}",
             "--force-download",
         ]
-        output = subprocess.run(command, capture_output=True)
+        output = execute_in_terminal(command, capture_output=True)
 
         assert (
             b"Some of your subset selection [0.4, 50.0] for the depth "
