@@ -513,20 +513,18 @@ def check_dataset_subset_bounds(
     for coordinate_label in COORDINATES_LABEL["depth"]:
         if coordinate_label in dataset.sizes:
             depths = -1 * dataset_coordinates[coordinate_label].values
-            user_minimum_coordinate_value = (
-                dataset_subset.minimum_depth
-                if dataset_subset.minimum_depth is not None
-                else depths.min()
-            )
-            user_maximum_coordinate_value = (
-                dataset_subset.maximum_depth
-                if dataset_subset.maximum_depth is not None
-                else depths.max()
-            )
             _check_coordinate_overlap(
                 dimension="depth",
-                user_minimum_coordinate_value=user_minimum_coordinate_value,
-                user_maximum_coordinate_value=user_maximum_coordinate_value,
+                user_minimum_coordinate_value=(
+                    dataset_subset.minimum_depth
+                    if dataset_subset.minimum_depth is not None
+                    else depths.min()
+                ),
+                user_maximum_coordinate_value=(
+                    dataset_subset.maximum_depth
+                    if dataset_subset.maximum_depth is not None
+                    else depths.max()
+                ),
                 dataset_minimum_coordinate_value=depths.min(),
                 dataset_maximum_coordinate_value=depths.max(),
                 is_strict=subset_method == "strict",

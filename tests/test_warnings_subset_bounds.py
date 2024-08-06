@@ -129,6 +129,7 @@ class TestWarningsSubsetBounds:
 
     def test_warn_depth_out_of_dataset_bounds(self, tmp_path):
         output_filename = "output.nc"
+        dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
         min_longitude = 29.0
         max_longitude = 30.0
         min_latitude = 30
@@ -137,37 +138,30 @@ class TestWarningsSubsetBounds:
         max_depth = 50.0
         start_datetime = "2023-11-03"
         end_datetime = "2023-11-03"
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--dataset-id",
-            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-            "--variable",
-            "thetao",
-            "--minimum-longitude",
-            f"{min_longitude}",
-            "--maximum-longitude",
-            f"{max_longitude}",
-            "--minimum-latitude",
-            f"{min_latitude}",
-            "--maximum-latitude",
-            f"{max_latitude}",
-            "--start-datetime",
-            f"{start_datetime}",
-            "--end-datetime",
-            f"{end_datetime}",
-            "--minimum-depth",
-            f"{min_depth}",
-            "--maximum-depth",
-            f"{max_depth}",
-            "-o",
-            f"{tmp_path}",
-            "-f",
-            f"{output_filename}",
-            "--force-download",
-        ]
-        output = execute_in_terminal(command)
-        print(output.stderr)
+        command = self._build_custom_command(
+            dataset_id, "thetao", min_longitude, max_longitude, "nearest"
+        )
+        command.extend(
+            [
+                "--minimum-latitude",
+                f"{min_latitude}",
+                "--maximum-latitude",
+                f"{max_latitude}",
+                "--start-datetime",
+                f"{start_datetime}",
+                "--end-datetime",
+                f"{end_datetime}",
+                "--minimum-depth",
+                f"{min_depth}",
+                "--maximum-depth",
+                f"{max_depth}",
+                "-o",
+                f"{tmp_path}",
+                "-f",
+                f"{output_filename}",
+            ]
+        )
+        output = execute_in_terminal(command, input=b"n")
 
         assert (
             b"Some of your subset selection [0.4, 50.0] for the depth "
