@@ -4,6 +4,7 @@ from copernicusmarine import core_functions, subset
 from tests.test_utils import execute_in_terminal
 
 
+# command to change the commit
 class TestWarningsSubsetBounds:
     def _build_custom_command(
         self,
