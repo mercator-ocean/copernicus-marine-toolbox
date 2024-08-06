@@ -124,15 +124,17 @@ class WrongDatetimeFormat(Exception):
 
 def datetime_parser(string: str) -> datetime:
     if string == "now":
-        return datetime.now(tz=timezone.utc)
+        return datetime.now(tz=timezone.utc).replace(tzinfo=None)
     try:
-        return datetime.fromisoformat(string)
+        return (
+            datetime.fromisoformat(string)
+            .astimezone(timezone.utc)
+            .replace(tzinfo=None)
+        )
     except ValueError:
         for format in DATETIME_SUPPORTED_FORMATS:
             try:
-                return datetime.strptime(string, format).replace(
-                    tzinfo=timezone.utc
-                )
+                return datetime.strptime(string, format)
             except ValueError:
                 pass
     raise WrongDatetimeFormat(string)
