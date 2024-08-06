@@ -1496,9 +1496,9 @@ class TestCommandLineInterface:
             "-T",
             "2023-11-20 00:00:00",
             "-z",
-            "0",
+            "0.5",
             "-Z",
-            "0",
+            "0.5",
             "-o",
             f"{tmp_path}",
             "-f",
@@ -1550,16 +1550,16 @@ class TestCommandLineInterface:
         assert self.output.returncode == 1
         assert b"ERROR" in self.output.stderr
         assert (
-            b"Some or all of your subset selection [-19.0, -17.0] for "
-            b"the longitude dimension  exceed the dataset coordinates"
+            b"Some of your subset selection [-19.0, -17.0] for "
+            b"the longitude dimension exceed the dataset coordinates"
         ) in self.output.stderr
 
     def then_I_can_read_a_warning_in_stdout(self):
         assert self.output.returncode == 0
         assert b"WARNING" in self.output.stderr
         assert (
-            b"Some or all of your subset selection [-19.0, -17.0] for "
-            b"the longitude dimension  exceed the dataset coordinates"
+            b"Some of your subset selection [-19.0, -17.0] for "
+            b"the longitude dimension exceed the dataset coordinates"
         ) in self.output.stderr
 
     def test_subset_strict_method(self):

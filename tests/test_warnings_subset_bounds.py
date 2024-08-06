@@ -135,8 +135,8 @@ class TestWarningsSubsetBounds:
         max_latitude = 32
         min_depth = 0.4
         max_depth = 50.0
-        start_datetime = "2021-11-03"
-        end_datetime = "2021-11-03"
+        start_datetime = "2023-11-03"
+        end_datetime = "2023-11-03"
         command = [
             "copernicusmarine",
             "subset",
@@ -166,10 +166,11 @@ class TestWarningsSubsetBounds:
             f"{output_filename}",
             "--force-download",
         ]
-        output = execute_in_terminal(command, capture_output=True)
+        output = execute_in_terminal(command)
+        print(output.stderr)
 
         assert (
             b"Some of your subset selection [0.4, 50.0] for the depth "
             b"dimension exceed the dataset coordinates "
             b"[0.49402499198913574, 5727.9169921875]"
-        ) in output.stdout
+        ) in output.stderr
