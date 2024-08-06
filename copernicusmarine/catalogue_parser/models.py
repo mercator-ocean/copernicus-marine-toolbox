@@ -375,7 +375,7 @@ class CopernicusMarineDatasetVersion:
             for part in self.parts
             if part.retired_date
         }
-        max_retired_timestamp = 0
+        max_retired_timestamp = 0.0
         if will_be_retired_parts:
             max_retired_timestamp = max(will_be_retired_parts.values()) + 1
         self.parts = sorted(

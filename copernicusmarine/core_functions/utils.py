@@ -2,7 +2,7 @@ import asyncio
 import logging
 import pathlib
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from importlib.metadata import version
 from typing import (
     Any,
@@ -122,14 +122,19 @@ class WrongDatetimeFormat(Exception):
     ...
 
 
-def datetime_parser(string: str):
+def datetime_parser(string: str) -> datetime:
     if string == "now":
-        return datetime.now()
-    for format in DATETIME_SUPPORTED_FORMATS:
-        try:
-            return datetime.strptime(string, format)
-        except ValueError:
-            pass
+        return datetime.now(tz=timezone.utc)
+    try:
+        return datetime.fromisoformat(string)
+    except ValueError:
+        for format in DATETIME_SUPPORTED_FORMATS:
+            try:
+                return datetime.strptime(string, format).replace(
+                    tzinfo=timezone.utc
+                )
+            except ValueError:
+                pass
     raise WrongDatetimeFormat(string)
 
 
