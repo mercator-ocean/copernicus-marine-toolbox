@@ -7,7 +7,6 @@ from unittest import mock
 import xarray
 
 from copernicusmarine import (
-    core_functions,
     describe,
     get,
     login,
@@ -287,15 +286,3 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.depth.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
-
-    def test_error_Coord_out_of_dataset_bounds(self):
-        try:
-            _ = subset(
-                dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
-                start_datetime=datetime.today() + timedelta(10),
-                force_download=True,
-                end_datetime=datetime.today()
-                + timedelta(days=10, hours=23, minutes=59),
-            )
-        except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
-            assert "Some of your subset selection" in e.__str__()

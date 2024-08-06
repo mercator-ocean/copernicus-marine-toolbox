@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+from copernicusmarine import core_functions, subset
 from tests.test_utils import execute_in_terminal
 
 
@@ -168,3 +171,115 @@ class TestWarningsSubsetBounds:
             b"dimension exceed the dataset coordinates "
             b"[0.49402499198913574, 5727.9169921875]"
         ) in output.stderr
+
+    def test_warn_elevation_out_of_dataset_bounds(self, tmp_path):
+        output_filename = "output.nc"
+        dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
+        min_longitude = 29.0
+        max_longitude = 30.0
+        min_latitude = 30
+        max_latitude = 32
+        min_depth = 0.4
+        max_depth = 50.0
+        start_datetime = "2023-11-03"
+        end_datetime = "2023-11-03"
+        command = self._build_custom_command(
+            dataset_id, "thetao", min_longitude, max_longitude, "nearest"
+        )
+        command.extend(
+            [
+                "--minimum-latitude",
+                f"{min_latitude}",
+                "--maximum-latitude",
+                f"{max_latitude}",
+                "--start-datetime",
+                f"{start_datetime}",
+                "--end-datetime",
+                f"{end_datetime}",
+                "--minimum-depth",
+                f"{min_depth}",
+                "--maximum-depth",
+                f"{max_depth}",
+                "--vertical-dimension-as-originally-produced",
+                "False",
+                "-o",
+                f"{tmp_path}",
+                "-f",
+                f"{output_filename}",
+            ]
+        )
+        output = execute_in_terminal(command, input=b"n")
+
+        assert (
+            b"Some of your subset selection [0.4, 50.0] for the depth "
+            b"dimension exceed the dataset coordinates "
+            b"[0.49402499198913574, 5727.9169921875]"
+        ) in output.stderr
+        assert (
+            b"* elevation  (elevation) float32 72B -47.37 -40.34"
+        ) in output.stderr
+
+    def test_error_Coord_out_of_dataset_bounds(self):
+        try:
+            _ = subset(
+                dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+                start_datetime=datetime.today() + timedelta(10),
+                force_download=True,
+                end_datetime=datetime.today()
+                + timedelta(days=10, hours=23, minutes=59),
+            )
+        except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
+            assert "Some of your subset selection" in e.__str__()
+
+    def when_I_request_a_dataset_with_subset_method_option(
+        self, subset_method
+    ):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "med-hcmr-wav-rean-h",
+            "-x",
+            "-19",
+            "-X",
+            "-17",
+            "-y",
+            "38.007",
+            "-Y",
+            "38.028",
+            "-t",
+            "1993-01-01T00:00:00",
+            "-T",
+            "1993-01-01T06:00:00",
+            "-v",
+            "VHM0",
+            "--force-download",
+            "--subset-method",
+            f"{subset_method}",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+    def then_I_can_read_an_error_in_stdout(self):
+        assert self.output.returncode == 1
+        assert b"ERROR" in self.output.stderr
+        assert (
+            b"Some of your subset selection [-19.0, -17.0] for "
+            b"the longitude dimension exceed the dataset coordinates"
+        ) in self.output.stderr
+
+    def then_I_can_read_a_warning_in_stdout(self):
+        assert self.output.returncode == 0
+        assert b"WARNING" in self.output.stderr
+        assert (
+            b"Some of your subset selection [-19.0, -17.0] for "
+            b"the longitude dimension exceed the dataset coordinates"
+        ) in self.output.stderr
+
+    def test_subset_strict_method(self):
+        self.when_I_request_a_dataset_with_subset_method_option("strict")
+        self.then_I_can_read_an_error_in_stdout()
+
+    def test_subset_nearest_method(self):
+        self.when_I_request_a_dataset_with_subset_method_option("nearest")
+        self.then_I_can_read_a_warning_in_stdout()
