@@ -443,7 +443,8 @@ def _get_dataset_start_date_from_service(
     return None
 
 
-class ServiceNotAvailable(Exception): ...
+class ServiceNotAvailable(Exception):
+    ...
 
 
 def _warning_dataset_will_be_deprecated(
@@ -496,7 +497,8 @@ def _service_not_available_error(
     )
 
 
-class NoServiceAvailable(Exception): ...
+class NoServiceAvailable(Exception):
+    ...
 
 
 def _no_service_available_for_command(

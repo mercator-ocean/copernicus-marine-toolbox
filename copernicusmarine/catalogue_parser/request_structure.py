@@ -114,7 +114,7 @@ class SubsetRequest:
             type_enforced_dict[key] = new_value
         self.__dict__.update(type_enforced_dict)
 
-    def get_time_and_geographical_subset(
+    def get_time_and_space_subset(
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
