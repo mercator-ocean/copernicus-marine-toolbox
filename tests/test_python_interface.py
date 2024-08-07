@@ -15,8 +15,6 @@ from copernicusmarine import (
     subset,
 )
 
-# changing commits
-
 
 class TestPythonInterface:
     def test_describe_function(self):
