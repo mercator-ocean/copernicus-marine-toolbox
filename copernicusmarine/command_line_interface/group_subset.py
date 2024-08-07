@@ -19,10 +19,13 @@ from copernicusmarine.core_functions.deprecated import (
     DeprecatedClickOptionsCommand,
 )
 from copernicusmarine.core_functions.models import (
+    DEFAULT_BOUNDING_BOX_METHOD,
+    DEFAULT_BOUNDING_BOX_METHODS,
     DEFAULT_FILE_FORMAT,
     DEFAULT_FILE_FORMATS,
     DEFAULT_SUBSET_METHOD,
     DEFAULT_SUBSET_METHODS,
+    BoundingBoxMethod,
     FileFormat,
     SubsetMethod,
 )
@@ -201,6 +204,17 @@ def cli_group_subset() -> None:
     + 'with " " to ensure valid expression for format "%Y-%m-%d %H:%M:%S".',
 )
 @click.option(
+    "--bounding-box-method",
+    type=click.Choice(DEFAULT_BOUNDING_BOX_METHODS),
+    default=DEFAULT_BOUNDING_BOX_METHOD,
+    help=(
+        """The bounding box method when requesting the dataset. If "inside", """
+        """(by default) it will return all points inside the requested intervals. """
+        """If "outside", it will return all the data such that the requested """
+        """interval is fully included. Check the documentation for more details."""
+    ),
+)
+@click.option(
     "--subset-method",
     type=click.Choice(DEFAULT_SUBSET_METHODS),
     default=DEFAULT_SUBSET_METHOD,
@@ -352,6 +366,7 @@ def subset(
     vertical_dimension_as_originally_produced: bool,
     start_datetime: Optional[datetime],
     end_datetime: Optional[datetime],
+    bounding_box_method: BoundingBoxMethod,
     subset_method: SubsetMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -402,6 +417,7 @@ def subset(
         vertical_dimension_as_originally_produced,
         start_datetime,
         end_datetime,
+        bounding_box_method,
         subset_method,
         output_filename,
         file_format,
