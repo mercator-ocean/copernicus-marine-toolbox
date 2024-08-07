@@ -16,8 +16,6 @@ from copernicusmarine import (
     subset,
 )
 
-# comment to differentiate commit
-
 
 class TestPythonInterface:
     def test_describe_function(self):
@@ -312,8 +310,8 @@ class TestPythonInterface:
         max_latitude = 1.1
         min_depth = 30.5
         max_depth = 50.0
-        start_datetime = "2021-12-01T01:00:00"
-        end_datetime = "2021-12-12T01:00:00"
+        start_datetime = "2023-12-01T01:00:00"
+        end_datetime = "2023-12-12T01:00:00"
         command = [
             "copernicusmarine",
             "subset",
