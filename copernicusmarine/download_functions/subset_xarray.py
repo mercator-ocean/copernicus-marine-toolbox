@@ -12,7 +12,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
-    DatasetTimeAndGeographicalSubset,
+    DatasetTimeAndSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
@@ -425,7 +425,7 @@ def check_dataset_subset_bounds(
     password: str,
     dataset_url: str,
     service_type: CopernicusMarineDatasetServiceType,
-    dataset_subset: DatasetTimeAndGeographicalSubset,
+    dataset_subset: DatasetTimeAndSpaceSubset,
     subset_method: SubsetMethod,
     dataset_valid_date: Optional[Union[str, int]],
 ) -> None:
@@ -510,6 +510,25 @@ def check_dataset_subset_bounds(
                 dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
                 is_strict=subset_method == "strict",
             )
+    for coordinate_label in COORDINATES_LABEL["depth"]:
+        if coordinate_label in dataset.sizes:
+            depths = -1 * dataset_coordinates[coordinate_label].values
+            _check_coordinate_overlap(
+                dimension="depth",
+                user_minimum_coordinate_value=(
+                    dataset_subset.minimum_depth
+                    if dataset_subset.minimum_depth is not None
+                    else depths.min()
+                ),
+                user_maximum_coordinate_value=(
+                    dataset_subset.maximum_depth
+                    if dataset_subset.maximum_depth is not None
+                    else depths.max()
+                ),
+                dataset_minimum_coordinate_value=depths.min(),
+                dataset_maximum_coordinate_value=depths.max(),
+                is_strict=subset_method == "strict",
+            )
 
 
 def date_to_datetime(date: Union[str, int]) -> datetime:
@@ -529,9 +548,9 @@ def _check_coordinate_overlap(
     is_strict: bool,
 ) -> None:
     message = (
-        f"Some or all of your subset selection "
+        f"Some of your subset selection "
         f"[{user_minimum_coordinate_value}, {user_maximum_coordinate_value}] "
-        f"for the {dimension} dimension  exceed the dataset coordinates "
+        f"for the {dimension} dimension exceed the dataset coordinates "
         f"[{dataset_minimum_coordinate_value}, "
         f"{dataset_maximum_coordinate_value}]"
     )

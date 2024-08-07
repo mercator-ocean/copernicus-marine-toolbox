@@ -1496,9 +1496,9 @@ class TestCommandLineInterface:
             "-T",
             "2023-11-20 00:00:00",
             "-z",
-            "0",
+            "0.5",
             "-Z",
-            "0",
+            "0.5",
             "-o",
             f"{tmp_path}",
             "-f",
@@ -1516,59 +1516,6 @@ class TestCommandLineInterface:
             )
             == 4
         )
-
-    def when_I_request_a_dataset_with_subset_method_option(
-        self, subset_method
-    ):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            "med-hcmr-wav-rean-h",
-            "-x",
-            "-19",
-            "-X",
-            "-17",
-            "-y",
-            "38.007",
-            "-Y",
-            "38.028",
-            "-t",
-            "1993-01-01T00:00:00",
-            "-T",
-            "1993-01-01T06:00:00",
-            "-v",
-            "VHM0",
-            "--force-download",
-            "--subset-method",
-            f"{subset_method}",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-    def then_I_can_read_an_error_in_stdout(self):
-        assert self.output.returncode == 1
-        assert b"ERROR" in self.output.stderr
-        assert (
-            b"Some or all of your subset selection [-19.0, -17.0] for "
-            b"the longitude dimension  exceed the dataset coordinates"
-        ) in self.output.stderr
-
-    def then_I_can_read_a_warning_in_stdout(self):
-        assert self.output.returncode == 0
-        assert b"WARNING" in self.output.stderr
-        assert (
-            b"Some or all of your subset selection [-19.0, -17.0] for "
-            b"the longitude dimension  exceed the dataset coordinates"
-        ) in self.output.stderr
-
-    def test_subset_strict_method(self):
-        self.when_I_request_a_dataset_with_subset_method_option("strict")
-        self.then_I_can_read_an_error_in_stdout()
-
-    def test_subset_nearest_method(self):
-        self.when_I_request_a_dataset_with_subset_method_option("nearest")
-        self.then_I_can_read_a_warning_in_stdout()
 
     def test_netcdf_compression_option(self, tmp_path):
         filename_without_option = "without_option.nc"

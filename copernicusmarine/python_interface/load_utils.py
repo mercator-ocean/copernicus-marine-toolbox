@@ -32,7 +32,7 @@ def load_data_object_from_load_request(
         force_dataset_part_label=load_request.force_dataset_part,
         force_service_type_string=load_request.force_service,
         command_type=CommandType.LOAD,
-        dataset_subset=load_request.get_time_and_geographical_subset(),
+        dataset_subset=load_request.get_time_and_space_subset(),
     )
     username, password = get_username_password(
         load_request.username,
@@ -45,7 +45,7 @@ def load_data_object_from_load_request(
         password=password,
         dataset_url=load_request.dataset_url,
         service_type=retrieval_service.service_type,
-        dataset_subset=load_request.get_time_and_geographical_subset(),
+        dataset_subset=load_request.get_time_and_space_subset(),
         subset_method=load_request.subset_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
     )

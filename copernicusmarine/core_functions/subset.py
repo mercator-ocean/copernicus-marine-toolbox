@@ -157,7 +157,7 @@ def subset_function(
         subset_request.force_dataset_part,
         subset_request.force_service,
         CommandType.SUBSET,
-        dataset_subset=subset_request.get_time_and_geographical_subset(),
+        dataset_subset=subset_request.get_time_and_space_subset(),
     )
     subset_request.dataset_url = retrieval_service.uri
     check_dataset_subset_bounds(
@@ -165,7 +165,7 @@ def subset_function(
         password=password,
         dataset_url=subset_request.dataset_url,
         service_type=retrieval_service.service_type,
-        dataset_subset=subset_request.get_time_and_geographical_subset(),
+        dataset_subset=subset_request.get_time_and_space_subset(),
         subset_method=subset_request.subset_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
     )
