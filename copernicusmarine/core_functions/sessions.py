@@ -36,7 +36,6 @@ def _get_ssl_context() -> Optional[ssl.SSLContext]:
 def get_configured_aiohttp_session() -> aiohttp.ClientSession:
     nest_asyncio.apply()
     connector = aiohttp.TCPConnector(ssl=_get_ssl_context(), timeout=COPERNICUSMARINE_GET_TIMEOUT)
-    print(f"Setting timeout {COPERNICUSMARINE_GET_TIMEOUT}s")
     return aiohttp.ClientSession(connector=connector, trust_env=TRUST_ENV, timeout=COPERNICUSMARINE_GET_TIMEOUT)
 
 
