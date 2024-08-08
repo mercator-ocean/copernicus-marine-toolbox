@@ -43,6 +43,13 @@ DATETIME_SUPPORTED_FORMATS = [
     "%Y-%m-%d",
     "%Y-%m-%dT%H:%M:%S",
     "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%dT%H:%M:%S.%f",
+    "%Y-%m-%dT%H:%M:%S.%fZ",
+    "%Y-%m-%d %H:%M:%S.%f%Z",
+]
+
+DATETIME_NON_ISO_FORMATS = [
+    "%Y",
     "%Y-%m-%dT%H:%M:%S.%fZ",
 ]
 
@@ -126,15 +133,17 @@ def datetime_parser(string: str) -> datetime:
     if string == "now":
         return datetime.now(tz=timezone.utc).replace(tzinfo=None)
     try:
-        return (
-            datetime.fromisoformat(string)
-            .astimezone(timezone.utc)
-            .replace(tzinfo=None)
-        )
+        parsed_datetime = datetime.fromisoformat(string)
+        if parsed_datetime.tzinfo is None:
+            return parsed_datetime
+        else:
+            return parsed_datetime.astimezone(timezone.utc).replace(
+                tzinfo=None
+            )
     except ValueError:
-        for format in DATETIME_SUPPORTED_FORMATS:
+        for datetime_format in DATETIME_NON_ISO_FORMATS:
             try:
-                return datetime.strptime(string, format)
+                return datetime.strptime(string, datetime_format)
             except ValueError:
                 pass
     raise WrongDatetimeFormat(string)
