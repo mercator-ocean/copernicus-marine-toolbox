@@ -26,11 +26,11 @@ If you ping only one person (or pick only one official reviewer), it is possible
 
 Create a test conda environment:
 ```
-make conda-create-test-env
+make create-test-environment
 ```
 Then activate this test environment:
 ```
-conda activate {name_of_the_test_environment}
+conda activate copernicusmarine_test
 ```
 Export credentials to local variables (if you don't use `moi`, simply put your own credentials):
 ```
