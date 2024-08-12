@@ -37,7 +37,6 @@ def get_configured_aiohttp_session() -> aiohttp.ClientSession:
     nest_asyncio.apply()
     connector = aiohttp.TCPConnector(ssl=_get_ssl_context())
     client_timeout = aiohttp.ClientTimeout(total=COPERNICUSMARINE_GET_TIMEOUT)
-    print(f"Debug: Setting timeout {COPERNICUSMARINE_GET_TIMEOUT}s")
     return aiohttp.ClientSession(
         connector=connector, trust_env=TRUST_ENV, timeout=client_timeout
     )
