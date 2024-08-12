@@ -12,10 +12,10 @@ from requests.adapters import HTTPAdapter, Retry
 
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
+    COPERNICUSMARINE_GET_TIMEOUT,
     COPERNICUSMARINE_TRUST_ENV,
     PROXY_HTTP,
     PROXY_HTTPS,
-    COPERNICUSMARINE_GET_TIMEOUT,
 )
 from copernicusmarine.core_functions.utils import create_custom_query_function
 
@@ -35,8 +35,12 @@ def _get_ssl_context() -> Optional[ssl.SSLContext]:
 
 def get_configured_aiohttp_session() -> aiohttp.ClientSession:
     nest_asyncio.apply()
-    connector = aiohttp.TCPConnector(ssl=_get_ssl_context(), timeout=COPERNICUSMARINE_GET_TIMEOUT)
-    return aiohttp.ClientSession(connector=connector, trust_env=TRUST_ENV, timeout=COPERNICUSMARINE_GET_TIMEOUT)
+    connector = aiohttp.TCPConnector(ssl=_get_ssl_context())
+    client_timeout = aiohttp.ClientTimeout(total=COPERNICUSMARINE_GET_TIMEOUT)
+    print(f"Debug: Setting timeout {COPERNICUSMARINE_GET_TIMEOUT}s")
+    return aiohttp.ClientSession(
+        connector=connector, trust_env=TRUST_ENV, timeout=client_timeout
+    )
 
 
 def get_https_proxy() -> Optional[str]:
