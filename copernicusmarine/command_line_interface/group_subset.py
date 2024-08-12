@@ -75,14 +75,6 @@ def cli_group_subset() -> None:
     """,  # noqa
 )
 @click.option(
-    "--timeout",
-    type=int,
-    is_flag=False,
-    default=30,
-    help="Timeout of requests. If not set, search for environment variable"
-     + " COPERNICUSMARINE_GET_TIMEOUT",
-)
-@click.option(
     "--dataset-url",
     "-u",
     type=str,
