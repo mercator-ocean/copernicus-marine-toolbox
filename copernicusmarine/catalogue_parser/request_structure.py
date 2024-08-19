@@ -34,11 +34,13 @@ MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
 
 
 @dataclass
-class DatasetTimeAndGeographicalSubset:
+class DatasetTimeAndSpaceSubset:
     minimum_longitude: Optional[float] = None
     maximum_longitude: Optional[float] = None
     minimum_latitude: Optional[float] = None
     maximum_latitude: Optional[float] = None
+    minimum_depth: Optional[float] = None
+    maximum_depth: Optional[float] = None
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
 
@@ -112,14 +114,16 @@ class SubsetRequest:
             type_enforced_dict[key] = new_value
         self.__dict__.update(type_enforced_dict)
 
-    def get_time_and_geographical_subset(
+    def get_time_and_space_subset(
         self,
-    ) -> DatasetTimeAndGeographicalSubset:
-        return DatasetTimeAndGeographicalSubset(
+    ) -> DatasetTimeAndSpaceSubset:
+        return DatasetTimeAndSpaceSubset(
             minimum_longitude=self.minimum_longitude,
             maximum_longitude=self.maximum_longitude,
             minimum_latitude=self.minimum_latitude,
             maximum_latitude=self.maximum_latitude,
+            minimum_depth=self.minimum_depth,
+            maximum_depth=self.maximum_depth,
             start_datetime=self.start_datetime,
             end_datetime=self.end_datetime,
         )
@@ -279,14 +283,16 @@ class LoadRequest:
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None
 
-    def get_time_and_geographical_subset(
+    def get_time_and_space_subset(
         self,
-    ) -> DatasetTimeAndGeographicalSubset:
-        return DatasetTimeAndGeographicalSubset(
+    ) -> DatasetTimeAndSpaceSubset:
+        return DatasetTimeAndSpaceSubset(
             minimum_longitude=self.geographical_parameters.longitude_parameters.minimum_longitude,  # noqa
             maximum_longitude=self.geographical_parameters.longitude_parameters.maximum_longitude,  # noqa
             minimum_latitude=self.geographical_parameters.latitude_parameters.minimum_latitude,  # noqa
             maximum_latitude=self.geographical_parameters.latitude_parameters.maximum_latitude,  # noqa
+            minimum_depth=self.depth_parameters.minimum_depth,
+            maximum_depth=self.depth_parameters.maximum_depth,
             start_datetime=self.temporal_parameters.start_datetime,
             end_datetime=self.temporal_parameters.end_datetime,
         )
