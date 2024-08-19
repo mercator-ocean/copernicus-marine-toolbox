@@ -16,7 +16,7 @@ if [ -z `git status --porcelain` ] && [ ! -z "${BUMP_TYPE}" ] && [[ "${BUMP_TYPE
   RELEASE_TITLE="Copernicus Marine Pre-Release ${VERSION}"
   git commit -am "$RELEASE_TITLE"
   git push --set-upstream origin $RELEASE_BRANCH_NAME
-  PR_LINK=$(gh pr create --title "$RELEASE_TITLE" --body "")
+  PR_LINK=$(gh pr create --title "$RELEASE_TITLE" --body "" --base "${PRE_RELEASE_BRANCH}")
   gh pr view $PR_LINK --web
 else
   git status
