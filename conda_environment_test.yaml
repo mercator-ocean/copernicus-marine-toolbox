@@ -9,3 +9,4 @@ dependencies:
   - syrupy==4.6.1
   - pip:
     - pytest-order==1.2.1
+    - freezegun==1.5.1
