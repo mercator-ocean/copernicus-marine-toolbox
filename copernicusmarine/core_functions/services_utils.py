@@ -17,7 +17,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineVersionPart,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
-    DatasetTimeAndGeographicalSubset,
+    DatasetTimeAndSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.utils import (
@@ -155,7 +155,7 @@ def _select_forced_service(
 
 
 def _get_best_arco_service_type(
-    dataset_subset: DatasetTimeAndGeographicalSubset,
+    dataset_subset: DatasetTimeAndSpaceSubset,
     dataset_url: str,
     username: Optional[str],
 ) -> Literal[
@@ -222,7 +222,7 @@ def _get_first_available_service_type(
 def _select_service_by_priority(
     dataset_version_part: CopernicusMarineVersionPart,
     command_type: CommandType,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
 ) -> CopernicusMarineService:
     dataset_available_service_types = [
@@ -277,7 +277,7 @@ def get_retrieval_service(
     force_service_type_string: Optional[str],
     command_type: CommandType,
     index_parts: bool = False,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset] = None,
+    dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
     dataset_sync: bool = False,
     username: Optional[str] = None,
     staging: bool = False,
@@ -319,7 +319,7 @@ def _get_retrieval_service_from_dataset(
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
     index_parts: bool,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
@@ -354,7 +354,7 @@ def _get_retrieval_service_from_dataset_version(
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
     index_parts: bool,
-    dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
+    dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
