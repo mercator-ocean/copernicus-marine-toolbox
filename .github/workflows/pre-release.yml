@@ -1,0 +1,54 @@
+name: Pre Release
+
+on:
+  push:
+    branches: 'pre-releases/**'
+
+jobs:
+  pre-release:
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release')
+    runs-on: self-hosted
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment.yaml
+          environment-name: copernicusmarine
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Build and publish Pypi package
+        shell: micromamba-shell {0}
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
+
+      - name: Set VERSION environment variable
+        id: set-version
+        shell: micromamba-shell {0}
+        run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag v${{ steps.set-version.outputs.VERSION }}
+          git push origin --tags
+
+      - name: Create Github release
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create v${{ steps.set-version.outputs.VERSION }} --generate-notes --prerelease
