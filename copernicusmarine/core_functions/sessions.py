@@ -12,7 +12,7 @@ from requests.adapters import HTTPAdapter, Retry
 
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
-    COPERNICUSMARINE_GET_TIMEOUT,
+    COPERNICUSMARINE_CONNECTION_TIMEOUT,
     COPERNICUSMARINE_TRUST_ENV,
     PROXY_HTTP,
     PROXY_HTTPS,
@@ -36,7 +36,7 @@ def _get_ssl_context() -> Optional[ssl.SSLContext]:
 def get_configured_aiohttp_session() -> aiohttp.ClientSession:
     nest_asyncio.apply()
     connector = aiohttp.TCPConnector(ssl=_get_ssl_context())
-    client_timeout = aiohttp.ClientTimeout(total=COPERNICUSMARINE_GET_TIMEOUT)
+    client_timeout = aiohttp.ClientTimeout(total=COPERNICUSMARINE_CONNECTION_TIMEOUT)
     return aiohttp.ClientSession(
         connector=connector, trust_env=TRUST_ENV, timeout=client_timeout
     )
@@ -56,6 +56,7 @@ def get_configured_boto3_session(
         s3={"addressing_style": "virtual"},
         signature_version=botocore.UNSIGNED,
         retries={"max_attempts": 10, "mode": "standard"},
+        read_timeout=COPERNICUSMARINE_CONNECTION_TIMEOUT,
     )
     s3_session = boto3.Session()
     s3_client = s3_session.client(
@@ -95,4 +96,6 @@ def get_configured_requests_session() -> requests.Session:
             )
         ),
     )
+    # Set a timeout for all requests using this session
+    session.request = functools.partial(session.request, timeout=COPERNICUSMARINE_CONNECTION_TIMEOUT)
     return session

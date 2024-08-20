@@ -10,7 +10,7 @@ from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
 )
 from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_GET_TIMEOUT,
+    COPERNICUSMARINE_CONNECTION_TIMEOUT,
 )
 
 logger = logging.getLogger("copernicus_marine_root_logger")
@@ -73,6 +73,6 @@ class VersionVerifier:
             url_mds_versions,
             params=construct_query_params_for_marine_data_store_monitoring(),
             proxies=session.proxies,
-            timeout=COPERNICUSMARINE_GET_TIMEOUT,
+            timeout=COPERNICUSMARINE_CONNECTION_TIMEOUT,
         ).json()["clientVersions"]
         return mds_versions
