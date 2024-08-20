@@ -68,6 +68,23 @@ release-minor: release
 release-major: BUMP_TYPE = major
 release-major: release
 
+pre-release:
+	${ACTIVATE_ENVIRONMENT}
+	BUMP_TYPE=${BUMP_TYPE} ./pre-release.sh
+
+pre-release-patch: BUMP_TYPE = prepatch
+pre-release-patch: pre-release
+
+pre-release-minor: BUMP_TYPE = preminor
+pre-release-minor: pre-release
+
+pre-release-major: BUMP_TYPE = premajor
+pre-release-major: pre-release
+
+pre-release-bump-release: BUMP_TYPE = prerelease
+pre-release-bump-release: pre-release
+
+
 build-and-publish-dockerhub-image:
 	docker login --username $${DOCKER_HUB_USERNAME} --password $${DOCKER_HUB_PUSH_TOKEN}
 	docker build --ulimit nofile=65536:65536 --tag copernicusmarine/copernicusmarine:$${VERSION} --tag copernicusmarine/copernicusmarine:latest -f Dockerfile.dockerhub --build-arg VERSION="$${VERSION}" .
