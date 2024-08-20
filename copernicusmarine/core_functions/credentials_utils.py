@@ -15,7 +15,6 @@ from cachier.core import cachier
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_SERVICE_PASSWORD,
     COPERNICUSMARINE_SERVICE_USERNAME,
-    COPERNICUSMARINE_CONNECTION_TIMEOUT,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
@@ -236,7 +235,6 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     conn_session = get_configured_requests_session()
     login_session = conn_session.get(
         cmems_cas_login_url, proxies=conn_session.proxies,
-        timeout=COPERNICUSMARINE_CONNECTION_TIMEOUT,
     )
     login_from_html = lxml.html.fromstring(login_session.text)
     hidden_elements_from_html = login_from_html.xpath(

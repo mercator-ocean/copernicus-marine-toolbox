@@ -1,5 +1,6 @@
 import ssl
 from typing import Any, List, Literal, Optional, Tuple
+import functools
 
 import aiohttp
 import boto3
@@ -96,4 +97,6 @@ def get_configured_requests_session() -> requests.Session:
             )
         ),
     )
+
+    session.request = functools.partial(session.request, timeout=COPERNICUSMARINE_CONNECTION_TIMEOUT)
     return session
