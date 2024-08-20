@@ -81,6 +81,9 @@ pre-release-minor: pre-release
 pre-release-major: BUMP_TYPE = premajor
 pre-release-major: pre-release
 
+pre-release-bump-release: BUMP_TYPE = prerelease
+pre-release-bump-release: pre-release
+
 
 build-and-publish-dockerhub-image:
 	docker login --username $${DOCKER_HUB_USERNAME} --password $${DOCKER_HUB_PUSH_TOKEN}
