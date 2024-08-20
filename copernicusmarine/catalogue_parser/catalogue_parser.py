@@ -21,6 +21,7 @@ from copernicusmarine.command_line_interface.exception_handler import (
 )
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS,
+    COPERNICUSMARINE_GET_TIMEOUT,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_aiohttp_session,
@@ -474,6 +475,7 @@ class CatalogParserConnection:
             url,
             params=construct_query_params_for_marine_data_store_monitoring(),
             proxy=self.proxy,
+            timeout=COPERNICUSMARINE_GET_TIMEOUT,
         ) as response:
             return await response.json()
 
