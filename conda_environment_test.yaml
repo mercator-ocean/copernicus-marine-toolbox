@@ -1,12 +1,6 @@
 dependencies:
   - python==3.12
-  - pytest==8.1.1
   - pip
-  - xarray==2024.3.0
-  - pystac==1.8.3
-  - tox==4.11.4
-  - netcdf4==1.6.5
-  - syrupy==4.6.1
   - pip:
-    - pytest-order==1.2.1
-    - freezegun==1.5.1
+    - shinx==7.4.7
+    - sphinx-click==6.0.0

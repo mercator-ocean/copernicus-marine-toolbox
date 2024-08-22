@@ -58,3 +58,9 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-requests==2.27.11, types-pyyaml==6.0.5]
+  - repo: local
+    hooks:
+      - id: build-doc
+        name: build-doc
+        language: system
+        entry: cd doc && make html && cd ..

@@ -56,37 +56,65 @@ def subset(
     """
     Extracts a subset of data from a specified dataset using given parameters.
 
-    Args:
-        dataset_id (str, optional): The unique identifier of the dataset.
-        dataset_version (str, optional): Force the use of a specific dataset version.
-        dataset_part (str, optional): Force the use of a specific dataset part.
-        username (str, optional): The username for authentication.
-        password (str, optional): The password for authentication.
-        output_directory (Union[pathlib.Path, str], optional): The directory where downloaded files will be saved.
-        credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
-        force_download (bool, optional): Skip confirmation before download.
-        overwrite_output_data (bool, optional): If True, overwrite existing output files.
-        request_file (Union[pathlib.Path, str], optional): Path to a file containing request parameters. For more information please refer to the README.
-        service (str, optional): Force the use of a specific service.
-        variables (List[str], optional): List of variable names to extract.
-        minimum_longitude (float, optional): Minimum longitude value for spatial subset.
-        maximum_longitude (float, optional): Maximum longitude value for spatial subset.
-        minimum_latitude (float, optional): Minimum latitude value for spatial subset.
-        maximum_latitude (float, optional): Maximum latitude value for spatial subset.
-        minimum_depth (float, optional): Minimum depth value for vertical subset.
-        maximum_depth (float, optional): Maximum depth value for vertical subset.
-        vertical_dimension_as_originally_produced (bool, optional): Use original vertical dimension.
-        start_datetime (datetime, optional): Start datetime for temporal subset.
-        end_datetime (datetime, optional): End datetime for temporal subset.
-        subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
-        output_filename (str, optional): Output filename for the subsetted data.
-        file_format (str, optional): Extension format for the filename.
-        motu_api_request (str, optional): MOTU API request string.
-        netcdf_compression_enabled (bool, optional): Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the compression level.
-        netcdf_compression_level (int, optional): Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
-        netcdf3_compatible (bool, optional): Enable downloading the dataset in a netCDF 3 compatible format.
-    Returns:
-        pathlib.Path: Path to the generated subsetted data file.
+    :param dataset_id: The unique identifier of the dataset.
+    :type dataset_id: str, optional
+    :param dataset_version: Force the use of a specific dataset version.
+    :type dataset_version: str, optional
+    :param dataset_part: Force the use of a specific dataset part.
+    :type dataset_part: str, optional
+    :param username: The username for authentication. See also :func:`~copernicusmarine.login`.
+    :type username: str, optional
+    :param password: The password for authentication. See also :func:`~copernicusmarine.login`.
+    :type password: str, optional
+    :param output_directory: The directory where downloaded files will be saved.
+    :type output_directory: Union[pathlib.Path, str], optional
+    :param credentials_file: Path to a file containing authentication credentials.
+    :type credentials_file: Union[pathlib.Path, str], optional
+    :param force_download: Skip confirmation before download.
+    :type force_download: bool, optional
+    :param overwrite_output_data: If True, overwrite existing output files.
+    :type overwrite_output_data: bool, optional
+    :param request_file: Path to a file containing request parameters. For more information, please refer to the README.
+    :type request_file: Union[pathlib.Path, str], optional
+    :param service: Force the use of a specific service.
+    :type service: str, optional
+    :param variables: List of variable names to extract.
+    :type variables: List[str], optional
+    :param minimum_longitude: Minimum longitude value for spatial subset.
+    :type minimum_longitude: float, optional
+    :param maximum_longitude: Maximum longitude value for spatial subset.
+    :type maximum_longitude: float, optional
+    :param minimum_latitude: Minimum latitude value for spatial subset.
+    :type minimum_latitude: float, optional
+    :param maximum_latitude: Maximum latitude value for spatial subset.
+    :type maximum_latitude: float, optional
+    :param minimum_depth: Minimum depth value for vertical subset.
+    :type minimum_depth: float, optional
+    :param maximum_depth: Maximum depth value for vertical subset.
+    :type maximum_depth: float, optional
+    :param vertical_dimension_as_originally_produced: Use original vertical dimension.
+    :type vertical_dimension_as_originally_produced: bool, optional
+    :param start_datetime: Start datetime for temporal subset.
+    :type start_datetime: datetime, optional
+    :param end_datetime: End datetime for temporal subset.
+    :type end_datetime: datetime, optional
+    :param subset_method: The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
+    :type subset_method: str, optional
+    :param output_filename: Output filename for the subsetted data.
+    :type output_filename: str, optional
+    :param file_format: Extension format for the filename.
+    :type file_format: str, optional
+    :param motu_api_request: MOTU API request string.
+    :type motu_api_request: str, optional
+    :param netcdf_compression_enabled: Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the compression level.
+    :type netcdf_compression_enabled: bool, optional
+    :param netcdf_compression_level: Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
+    :type netcdf_compression_level: int, optional
+    :param netcdf3_compatible: Enable downloading the dataset in a netCDF 3 compatible format.
+    :type netcdf3_compatible: bool, optional
+
+    :returns: Path to the generated subsetted data file.
+    :rtype: pathlib.Path
     """  # noqa
     request_file = pathlib.Path(request_file) if request_file else None
     output_directory = (

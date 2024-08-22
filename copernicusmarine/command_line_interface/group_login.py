@@ -16,31 +16,32 @@ logger = logging.getLogger("copernicusmarine")
 
 
 @click.group()
-def cli_group_login() -> None:
+def cli_login() -> None:
     pass
 
 
-@cli_group_login.command(
+@cli_login.command(
     "login",
     short_help="Create a configuration file with your Copernicus Marine credentials.",
     help="""
     Create a configuration file with your Copernicus Marine credentials.
 
-    Create a configuration file under the $HOME/.copernicusmarine directory (overwritable with option --credentials-file).
+    Create a configuration file under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``--credentials-file`` option).
     """,  # noqa
     epilog="""
-    Examples:
+    .. code-block:: bash
 
-    \b
-    COPERNICUSMARINE_SERVICE_USERNAME=<USERNAME> COPERNICUSMARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
+        COPERNICUSMARINE_SERVICE_USERNAME=<USERNAME> COPERNICUSMARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
 
-    \b
-    copernicusmarine login --username <USERNAME> --password <PASSWORD>
+    .. code-block:: bash
 
-    \b
-    copernicusmarine login
-    > Username: [USER-INPUT]
-    > Password: [USER-INPUT]
+        copernicusmarine login --username <USERNAME> --password <PASSWORD>
+
+    .. code-block:: bash
+
+        copernicusmarine login
+        > Username: [USER-INPUT]
+        > Password: [USER-INPUT]
     """,  # noqa
 )
 @click.option(

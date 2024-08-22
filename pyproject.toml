@@ -24,6 +24,7 @@ nest-asyncio = ">=1.5.8"
 pystac = ">=1.8.3"
 lxml = ">=4.9.0"
 numpy = ">=1.23.0,<2.0.0"
+sphinx-click = "^6.0.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"
