@@ -43,16 +43,23 @@ class VersionVerifier:
             function_name
         ]:
             required_version = marine_data_store_versions[service]
-            if not semver.Version.parse(client_version).match(
-                required_version
-            ):
-                logger.debug(
-                    f"Client version {client_version} is not compatible with "
-                    f"{service}. Service needs version {required_version}."
-                )
-                logger.error(
-                    f"Client version {client_version} is not compatible with current "
-                    "backend service. Please update to the latest client version."
+            try:
+                if not semver.Version.parse(client_version).match(
+                    required_version
+                ):
+                    logger.debug(
+                        f"Client version {client_version} is not compatible with "
+                        f"{service}. Service needs version {required_version}."
+                    )
+                    logger.error(
+                        f"Client version {client_version} is not "
+                        f"compatible with current backend service. "
+                        f"Please update to the latest client version."
+                    )
+            except ValueError:
+                logger.warning(
+                    f"Using a pre-release or a non-official version "
+                    f"of the client. Client version: {client_version}"
                 )
 
     @staticmethod
