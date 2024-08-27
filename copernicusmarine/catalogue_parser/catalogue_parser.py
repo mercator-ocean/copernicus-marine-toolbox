@@ -616,7 +616,7 @@ def _format_arco_data_metadata_producer_valid_start_date(
             ).timestamp()
             * 1000
         )
-    return arco_data_metadata_producer_valid_start_date.split(".")[0]
+    return arco_data_metadata_producer_valid_start_date
 
 
 def _get_variables(
