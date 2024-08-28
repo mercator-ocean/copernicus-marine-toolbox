@@ -474,7 +474,7 @@ def date_to_datetime(date: Union[str, int]) -> datetime:
     if isinstance(date, int):
         return Timestamp(date * 1e6).to_pydatetime()
     else:
-        return Timestamp(date).to_pydatetime()
+        return Timestamp(date).to_pydatetime().replace(tzinfo=None)
 
 
 @typing.no_type_check
