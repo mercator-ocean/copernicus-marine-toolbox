@@ -99,7 +99,8 @@ def _service_type_from_web_api_string(
     )
 
 
-class ServiceNotHandled(Exception): ...
+class ServiceNotHandled(Exception):
+    pass
 
 
 # service formats
@@ -505,10 +506,12 @@ class CopernicusMarineCatalogue:
 
 
 # Errors
-class DatasetVersionPartNotFound(Exception): ...
+class DatasetVersionPartNotFound(Exception):
+    pass
 
 
-class DatasetVersionNotFound(Exception): ...
+class DatasetVersionNotFound(Exception):
+    pass
 
 
 def dataset_version_part_not_found_exception(
