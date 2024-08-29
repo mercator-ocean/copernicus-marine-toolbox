@@ -1,7 +1,3 @@
-"""
-.
-"""
-
 import logging.config
 import time
 from importlib.metadata import version

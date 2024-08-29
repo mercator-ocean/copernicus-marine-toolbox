@@ -74,31 +74,48 @@ def open_dataset(
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using "lazy-loading" mode from a Copernicus Marine data source using either the ARCO series protocol.
-    This means that data is only loaded into memory when a computation is called, optimizing RAM usage by avoiding immediate loading.
-    It supports various parameters for customization, such as specifying ge ographical bounds, temporal range, depth range, and more.
 
-    Args:
-        dataset_id (str, optional): The ID of the dataset. `dataset_id` is mandatory.
-        dataset_version (str, optional): Force the use of a specific dataset version.
-        dataset_part (str, optional): Force the use of a specific dataset part.
-        username (str, optional): Username for authentication, if required.
-        password (str, optional): Password for authentication, if required.
-        variables (List[str], optional): List of variable names to be loaded from the dataset.
-        minimum_longitude (float, optional): The minimum longitude for subsetting the data.
-        maximum_longitude (float, optional): The maximum longitude for subsetting the data.
-        minimum_latitude (float, optional): The minimum latitude for subsetting the data.
-        maximum_latitude (float, optional): The maximum latitude for subsetting the data.
-        minimum_depth (float, optional): The minimum depth for subsetting the data.
-        maximum_depth (float, optional): The maximum depth for subsetting the data.
-        subset_method (str, optional): The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
-        vertical_dimension_as_originally_produced (bool, optional): If True, use the vertical dimension as originally produced.
-        start_datetime (datetime, optional): The start datetime for temporal subsetting.
-        end_datetime (datetime, optional): The end datetime for temporal subsetting.
-        service (str, optional): Force the use of a specific service (ARCO geo series or time series).
-        credentials_file (Union[pathlib.Path, str], optional): Path to a file containing authentication credentials.
+    This means that data is only loaded into memory when a computation is called, optimizing RAM usage by avoiding immediate loading. It supports various parameters for customization, such as specifying geographical bounds, temporal range, depth range, and more.
 
-    Returns:
-        xarray.Dataset: The loaded xarray dataset.
+    :param dataset_id: The ID of the dataset. `dataset_id` is mandatory.
+    :type dataset_id: str, optional
+    :param dataset_version: Force the use of a specific dataset version.
+    :type dataset_version: str, optional
+    :param dataset_part: Force the use of a specific dataset part.
+    :type dataset_part: str, optional
+    :param username: Username for authentication, if required.
+    :type username: str, optional
+    :param password: Password for authentication, if required.
+    :type password: str, optional
+    :param variables: List of variable names to be loaded from the dataset.
+    :type variables: List[str], optional
+    :param minimum_longitude: The minimum longitude for subsetting the data.
+    :type minimum_longitude: float, optional
+    :param maximum_longitude: The maximum longitude for subsetting the data.
+    :type maximum_longitude: float, optional
+    :param minimum_latitude: The minimum latitude for subsetting the data.
+    :type minimum_latitude: float, optional
+    :param maximum_latitude: The maximum latitude for subsetting the data.
+    :type maximum_latitude: float, optional
+    :param minimum_depth: The minimum depth for subsetting the data.
+    :type minimum_depth: float, optional
+    :param maximum_depth: The maximum depth for subsetting the data.
+    :type maximum_depth: float, optional
+    :param subset_method: The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
+    :type subset_method: str, optional
+    :param vertical_dimension_as_originally_produced: If True, use the vertical dimension as originally produced.
+    :type vertical_dimension_as_originally_produced: bool, optional
+    :param start_datetime: The start datetime for temporal subsetting.
+    :type start_datetime: datetime, optional
+    :param end_datetime: The end datetime for temporal subsetting.
+    :type end_datetime: datetime, optional
+    :param service: Force the use of a specific service (ARCO geo series or time series).
+    :type service: str, optional
+    :param credentials_file: Path to a file containing authentication credentials.
+    :type credentials_file: Union[pathlib.Path, str], optional
+
+    :returns: The loaded xarray dataset.
+    :rtype: `xarray.Dataset`
     """  # noqa
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)

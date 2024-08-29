@@ -126,7 +126,7 @@ def construct_query_params_for_marine_data_store_monitoring(
 
 
 class WrongDatetimeFormat(Exception):
-    ...
+    pass
 
 
 def datetime_parser(string: str) -> datetime:

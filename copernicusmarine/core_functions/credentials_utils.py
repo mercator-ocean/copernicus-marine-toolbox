@@ -37,11 +37,11 @@ DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
 
 
 class CredentialCannotBeNone(Exception):
-    ...
+    pass
 
 
 class InvalidUsernameOrPassword(Exception):
-    ...
+    pass
 
 
 def _load_credential_from_copernicus_marine_configuration_file(
