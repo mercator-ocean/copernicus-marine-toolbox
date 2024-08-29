@@ -33,7 +33,7 @@ class MutuallyExclusiveOption(Option):
 
 
 class OtherOptionsPassedWithCreateTemplate(Exception):
-    ...
+    pass
 
 
 def assert_cli_args_are_not_set_except_create_template(

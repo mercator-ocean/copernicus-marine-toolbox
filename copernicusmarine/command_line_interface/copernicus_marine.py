@@ -1,22 +1,18 @@
 import click
 
-from copernicusmarine.command_line_interface.group_describe import (
-    cli_group_describe,
-)
-from copernicusmarine.command_line_interface.group_get import cli_group_get
-from copernicusmarine.command_line_interface.group_login import cli_group_login
-from copernicusmarine.command_line_interface.group_subset import (
-    cli_group_subset,
-)
+from copernicusmarine.command_line_interface.group_describe import cli_describe
+from copernicusmarine.command_line_interface.group_get import cli_get
+from copernicusmarine.command_line_interface.group_login import cli_login
+from copernicusmarine.command_line_interface.group_subset import cli_subset
 
 
 @click.command(
     cls=click.CommandCollection,
     sources=[
-        cli_group_describe,
-        cli_group_login,
-        cli_group_subset,
-        cli_group_get,
+        cli_describe,
+        cli_login,
+        cli_subset,
+        cli_get,
     ],
     context_settings=dict(help_option_names=["-h", "--help"]),
 )

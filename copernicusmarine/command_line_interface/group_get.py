@@ -33,26 +33,24 @@ logger = logging.getLogger("copernicusmarine")
 
 
 @click.group()
-def cli_group_get() -> None:
+def cli_get() -> None:
     pass
 
 
-@cli_group_get.command(
+@cli_get.command(
     "get",
     cls=DeprecatedClickOptionsCommand,
     short_help="Download originally produced data files.",
     help="""
     Download originally produced data files.
 
-    --dataset-id is required (can be found via the "describe" command).
-    The function fetches the files recursively if a folder path is passed as URL.
-    When provided a datasetID, all the files in the corresponding folder will be downloaded if none of the --filter or --regex options is specified.
+    The ``--dataset-id`` is required (can be found via the "describe" command). The function fetches the files recursively if a folder path is passed as a URL. When provided a dataset ID, all the files in the corresponding folder will be downloaded if none of the ``--filter`` or ``--regex`` options is specified.
     """,  # noqa
     epilog="""
-    Examples:
+    .. code-block:: bash
 
-    \b
-    copernicusmarine get -nd -o data_folder --dataset-id cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
+        # Example: Download all files from a dataset
+        copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
     """,  # noqa
 )
 @click.option(
