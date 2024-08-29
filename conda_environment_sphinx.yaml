@@ -1,0 +1,6 @@
+dependencies:
+  - python==3.9.18
+  - pip
+  - pip:
+    - shinx==7.4.7
+    - sphinx-click==6.0.0

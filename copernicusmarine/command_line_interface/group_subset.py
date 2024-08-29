@@ -42,35 +42,39 @@ logger = logging.getLogger("copernicusmarine")
 
 
 @click.group()
-def cli_group_subset() -> None:
+def cli_subset() -> None:
     pass
 
 
-@cli_group_subset.command(
+@cli_subset.command(
     "subset",
     cls=DeprecatedClickOptionsCommand,
     short_help="Download subsets of datasets as NetCDF files or Zarr stores.",
     help="""
     Download subsets of datasets as NetCDF files or Zarr stores.
 
-    --dataset-id is required (can be found via the "describe" command).
-    The argument values passed individually through the CLI take precedence over the values from the --motu-api-request option,
-    which takes precedence over the ones from the --request-file option.
+    The ``--dataset-id`` is required (can be found via the "describe" command). The argument values passed individually through the CLI take precedence over the values from the ``--motu-api-request`` option, which takes precedence over the ones from the ``--request-file`` option.
     """,  # noqa
     epilog="""
-    Examples:
+    .. code-block:: bash
 
-    \b
-    copernicusmarine subset
-    --dataset-id cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i
-    --variable thetao
-    --start-datetime 2022-01-01T00:00:00 --end-datetime 2022-12-31T23:59:59
-    --minimum-longitude -6.17 --maximum-longitude -5.08
-    --minimum-latitude 35.75 --maximum-latitude 36.30
-    --minimum-depth 0.0 --maximum-depth 5.0
+        copernicusmarine subset
+        --dataset-id cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i
+        --variable thetao
+        --start-datetime 2022-01-01T00:00:00
+        --end-datetime 2022-12-31T23:59:59
+        --minimum-longitude -6.17
+        --maximum-longitude -5.08
+        --minimum-latitude 35.75
+        --maximum-latitude 36.30
+        --minimum-depth 0.0
+        --maximum-depth 5.0
 
-    \b
-    copernicusmarine subset -i cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i -v thetao -t 2022-01-01T00:00:00 -T 2022-12-31T23:59:59 -x -6.17 -X -5.08 -y 35.75 -Y 36.30 -z 0.0 -Z 5.0
+    Equivalent to:
+
+    .. code-block:: bash
+
+        copernicusmarine subset -i cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i -v thetao -t 2022-01-01T00:00:00 -T 2022-12-31T23:59:59 -x -6.17 -X -5.08 -y 35.75 -Y 36.30 -z 0.0 -Z 5.0
     """,  # noqa
 )
 @click.option(
