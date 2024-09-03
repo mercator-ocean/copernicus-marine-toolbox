@@ -181,8 +181,16 @@ def _get_best_arco_service_type(
     time_size = get_size_of_coordinate_subset(
         dataset,
         "time",
-        dataset_subset.start_datetime,
-        dataset_subset.end_datetime,
+        (
+            dataset_subset.start_datetime.in_tz("UTC").naive()
+            if dataset_subset.start_datetime
+            else dataset_subset.start_datetime
+        ),
+        (
+            dataset_subset.end_datetime.in_tz("UTC").naive()
+            if dataset_subset.end_datetime
+            else dataset_subset.end_datetime
+        ),
     )
     dataset_coordinates = dataset.coords
 

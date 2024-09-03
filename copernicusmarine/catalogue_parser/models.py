@@ -175,11 +175,11 @@ class CopernicusMarineCoordinate:
         if to_timestamp:
             return int(
                 datetime_parser(
-                    arco_data_metadata_producer_valid_start_date.split(".")[0]
+                    arco_data_metadata_producer_valid_start_date
                 ).timestamp()
                 * 1000
             )
-        return arco_data_metadata_producer_valid_start_date.split(".")[0]
+        return arco_data_metadata_producer_valid_start_date
 
     def _convert_elevation_to_depth(self):
         self.coordinates_id = "depth"

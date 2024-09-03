@@ -1,6 +1,5 @@
 import logging
 import pathlib
-from datetime import datetime
 from typing import List, Optional
 
 import click
@@ -32,10 +31,10 @@ from copernicusmarine.core_functions.subset import (
     subset_function,
 )
 from copernicusmarine.core_functions.utils import (
-    DATETIME_SUPPORTED_FORMATS,
     OVERWRITE_LONG_OPTION,
     OVERWRITE_OPTION_HELP_TEXT,
     OVERWRITE_SHORT_OPTION,
+    datetime_parser,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -192,17 +191,21 @@ def cli_subset() -> None:
 @click.option(
     "--start-datetime",
     "-t",
-    type=click.DateTime(DATETIME_SUPPORTED_FORMATS),
+    type=str,
     help="The start datetime of the temporal subset. "
     "Caution: encapsulate date "
-    + 'with " " to ensure valid expression for format "%Y-%m-%d %H:%M:%S".',
+    + 'with " " to ensure valid expression for format "%Y-%m-%d %H:%M:%S". '
+    + "Supports common format parsed by pendulum. "
+    + "See https://pendulum.eustace.io/docs/#parsing",
 )
 @click.option(
     "--end-datetime",
     "-T",
-    type=click.DateTime(DATETIME_SUPPORTED_FORMATS),
+    type=str,
     help="The end datetime of the temporal subset. Caution: encapsulate date "
-    + 'with " " to ensure valid expression for format "%Y-%m-%d %H:%M:%S".',
+    + 'with " " to ensure valid expression for format "%Y-%m-%d %H:%M:%S". '
+    + "Supports common format parsed by pendulum. "
+    + "See https://pendulum.eustace.io/docs/#parsing",
 )
 @click.option(
     "--subset-method",
@@ -354,8 +357,8 @@ def subset(
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
     vertical_dimension_as_originally_produced: bool,
-    start_datetime: Optional[datetime],
-    end_datetime: Optional[datetime],
+    start_datetime: Optional[str],
+    end_datetime: Optional[str],
     subset_method: SubsetMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -404,8 +407,8 @@ def subset(
         minimum_depth,
         maximum_depth,
         vertical_dimension_as_originally_produced,
-        start_datetime,
-        end_datetime,
+        datetime_parser(start_datetime) if start_datetime else None,
+        datetime_parser(end_datetime) if end_datetime else None,
         subset_method,
         output_filename,
         file_format,

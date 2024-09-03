@@ -2,7 +2,6 @@ import asyncio
 import logging
 import pathlib
 import re
-from datetime import datetime, timezone
 from importlib.metadata import version
 from typing import (
     Any,
@@ -12,6 +11,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
     Tuple,
     TypeVar,
@@ -21,7 +21,10 @@ from typing import (
 import cftime
 import numpy
 import pandas as pd
+import pendulum
+import pendulum.exceptions
 import xarray
+from pendulum import DateTime
 from requests import PreparedRequest
 
 from copernicusmarine import __version__ as copernicusmarine_version
@@ -46,11 +49,6 @@ DATETIME_SUPPORTED_FORMATS = [
     "%Y-%m-%dT%H:%M:%S.%f",
     "%Y-%m-%dT%H:%M:%S.%fZ",
     "%Y-%m-%d %H:%M:%S.%f%Z",
-]
-
-DATETIME_NON_ISO_FORMATS = [
-    "%Y",
-    "%Y-%m-%dT%H:%M:%S.%fZ",
 ]
 
 
@@ -129,24 +127,41 @@ class WrongDatetimeFormat(Exception):
     pass
 
 
-def datetime_parser(string: str) -> datetime:
-    if string == "now":
-        return datetime.now(tz=timezone.utc).replace(tzinfo=None)
+def datetime_parser(date: Union[str, numpy.datetime64]) -> DateTime:
+    if date == "now":
+        return pendulum.now(tz="UTC")
     try:
-        parsed_datetime = datetime.fromisoformat(string)
-        if parsed_datetime.tzinfo is None:
-            return parsed_datetime
-        else:
-            return parsed_datetime.astimezone(timezone.utc).replace(
-                tzinfo=None
-            )
-    except ValueError:
-        for datetime_format in DATETIME_NON_ISO_FORMATS:
-            try:
-                return datetime.strptime(string, datetime_format)
-            except ValueError:
-                pass
-    raise WrongDatetimeFormat(string)
+        if isinstance(date, numpy.datetime64):
+            date = str(date)
+        parsed_datetime = pendulum.parse(date)
+        # ignoring types because one needs to pass
+        # `exact=True` to `parse` method to get
+        # something else than `pendulum.DateTime`
+        return parsed_datetime  # type: ignore
+    except pendulum.exceptions.ParserError:
+        pass
+    raise WrongDatetimeFormat(date)
+
+
+def timestamp_parser(
+    timestamp: Union[int, float], unit: Literal["s", "ms"] = "ms"
+) -> DateTime:
+    """
+    Convert a timestamp in milliseconds to a pendulum DateTime object
+    by default. The unit can be changed to seconds by passing "s" as
+    the unit.
+    """
+    conversion_factor = 1 if unit == "s" else 10e3
+    return pendulum.from_timestamp(timestamp / conversion_factor, tz="UTC")
+
+
+def timestamp_or_datestring_to_datetime(
+    date: Union[str, int, numpy.datetime64]
+) -> DateTime:
+    if isinstance(date, int):
+        return timestamp_parser(date)
+    else:
+        return datetime_parser(date)
 
 
 def convert_datetime64_to_netcdf_timestamp(
