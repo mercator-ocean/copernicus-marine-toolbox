@@ -1,12 +1,11 @@
 import logging
 import typing
-from datetime import datetime
 from decimal import Decimal
 from typing import List, Literal, Optional, Union
 
 import numpy
 import xarray
-from pandas import Timestamp
+from pendulum import DateTime
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDatasetServiceType,
@@ -21,7 +20,10 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import SubsetMethod
-from copernicusmarine.core_functions.utils import ServiceNotSupported
+from copernicusmarine.core_functions.utils import (
+    ServiceNotSupported,
+    timestamp_or_datestring_to_datetime,
+)
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -71,7 +73,7 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
     coord_type: Literal["latitude", "longitude", "depth", "time"],
-    coord_selection: Union[float, slice, datetime, None],
+    coord_selection: Union[float, slice, DateTime, None],
     method: Union[str, None] = None,
 ) -> xarray.Dataset:
     for coord_label in COORDINATES_LABEL[coord_type]:
@@ -105,8 +107,8 @@ def _dataset_custom_sel(
 def get_size_of_coordinate_subset(
     dataset: xarray.Dataset,
     coordinate: str,
-    minimum: Optional[Union[float, datetime]],
-    maximum: Optional[Union[float, datetime]],
+    minimum: Optional[Union[float, DateTime]],
+    maximum: Optional[Union[float, DateTime]],
 ) -> int:
     for label in COORDINATES_LABEL[coordinate]:
         if label in dataset.sizes:
@@ -220,8 +222,16 @@ def _temporal_subset(
     dataset: xarray.Dataset,
     temporal_parameters: TemporalParameters,
 ) -> xarray.Dataset:
-    start_datetime = temporal_parameters.start_datetime
-    end_datetime = temporal_parameters.end_datetime
+    start_datetime = (
+        temporal_parameters.start_datetime.in_tz("UTC").naive()
+        if temporal_parameters.start_datetime
+        else temporal_parameters.start_datetime
+    )
+    end_datetime = (
+        temporal_parameters.end_datetime.in_tz("UTC").naive()
+        if temporal_parameters.end_datetime
+        else temporal_parameters.end_datetime
+    )
     if start_datetime is not None or end_datetime is not None:
         temporal_selection = (
             start_datetime
@@ -490,8 +500,12 @@ def check_dataset_subset_bounds(
                 times_min = dataset_valid_date
             else:
                 times_min = times.min()
-            dataset_minimum_coordinate_value = date_to_datetime(times_min)
-            dataset_maximum_coordinate_value = date_to_datetime(times.max())
+            dataset_minimum_coordinate_value = (
+                timestamp_or_datestring_to_datetime(times_min)
+            )
+            dataset_maximum_coordinate_value = (
+                timestamp_or_datestring_to_datetime(times.max())
+            )
             user_minimum_coordinate_value = (
                 dataset_subset.start_datetime
                 if dataset_subset.start_datetime is not None
@@ -531,20 +545,13 @@ def check_dataset_subset_bounds(
             )
 
 
-def date_to_datetime(date: Union[str, int]) -> datetime:
-    if isinstance(date, int):
-        return Timestamp(date * 1e6).to_pydatetime()
-    else:
-        return Timestamp(date).to_pydatetime().replace(tzinfo=None)
-
-
 @typing.no_type_check
 def _check_coordinate_overlap(
     dimension: str,
-    user_minimum_coordinate_value: Union[float, datetime],
-    user_maximum_coordinate_value: Union[float, datetime],
-    dataset_minimum_coordinate_value: Union[float, datetime],
-    dataset_maximum_coordinate_value: Union[float, datetime],
+    user_minimum_coordinate_value: Union[float, DateTime],
+    user_maximum_coordinate_value: Union[float, DateTime],
+    dataset_minimum_coordinate_value: Union[float, DateTime],
+    dataset_maximum_coordinate_value: Union[float, DateTime],
     is_strict: bool,
 ) -> None:
     message = (

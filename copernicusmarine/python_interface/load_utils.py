@@ -18,7 +18,7 @@ from copernicusmarine.core_functions.services_utils import (
 from copernicusmarine.core_functions.utils import ServiceNotSupported
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
-    date_to_datetime,
+    timestamp_or_datestring_to_datetime,
 )
 
 
@@ -56,7 +56,7 @@ def load_data_object_from_load_request(
         CopernicusMarineDatasetServiceType.STATIC_ARCO,
     ]:
         if retrieval_service.dataset_valid_start_date:
-            parsed_start_datetime = date_to_datetime(
+            parsed_start_datetime = timestamp_or_datestring_to_datetime(
                 retrieval_service.dataset_valid_start_date
             )
             if (

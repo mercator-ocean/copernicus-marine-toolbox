@@ -1,4 +1,3 @@
-import datetime
 import logging
 import os
 import pathlib
@@ -9,8 +8,10 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple
 
 import click
+import pendulum
 from botocore.client import ClientError
 from numpy import append, arange
+from pendulum import DateTime
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.request_structure import (
@@ -28,6 +29,7 @@ from copernicusmarine.core_functions.utils import (
     flatten,
     get_unique_filename,
     parse_access_dataset_url,
+    timestamp_parser,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -51,7 +53,7 @@ def download_original_files(
     filenames_in_sync_ignored: list[str] = []
     total_size: float = 0.0
     sizes: list[float] = []
-    last_modified_datetimes: list[datetime.datetime] = []
+    last_modified_datetimes: list[DateTime] = []
     filenames_in: list[str] = []
     if get_request.direct_download:
         (
@@ -269,7 +271,7 @@ def _download_header(
         Tuple[str, str],
         list[str],
         List[float],
-        List[datetime.datetime],
+        List[DateTime],
         float,
         list[str],
     ]
@@ -281,7 +283,7 @@ def _download_header(
     filenames: list[str] = []
     sizes: list[float] = []
     total_size = 0.0
-    last_modified_datetimes: list[datetime.datetime] = []
+    last_modified_datetimes: list[DateTime] = []
     etags: list[str] = []
     raw_filenames = _list_files_on_marine_data_lake_s3(
         username, endpoint_url, bucket, path, not only_list_root_path
@@ -290,6 +292,7 @@ def _download_header(
     for filename, size, last_modified_datetime, etag in raw_filenames:
         if not regex or re.search(regex, filename):
             filenames_without_sync.append(filename)
+            last_modified_datetime = pendulum.instance(last_modified_datetime)
             if not sync or _check_needs_to_be_synced(
                 filename, size, last_modified_datetime, directory_out
             ):
@@ -345,7 +348,7 @@ def _download_header_for_direct_download(
     Tuple[str, str],
     List[str],
     List[float],
-    List[datetime.datetime],
+    List[DateTime],
     float,
     list[str],
     list[str],
@@ -410,7 +413,7 @@ def _download_header_for_direct_download(
 def _check_needs_to_be_synced(
     filename: str,
     size: int,
-    last_modified_datetime: datetime.datetime,
+    last_modified_datetime: DateTime,
     directory_out: pathlib.Path,
 ) -> bool:
     filename_out = _local_path_from_s3_url(filename, directory_out)
@@ -421,16 +424,19 @@ def _check_needs_to_be_synced(
         if file_stats.st_size != size:
             return True
         else:
-            last_created_datetime_out = datetime.datetime.fromtimestamp(
-                file_stats.st_ctime, tz=datetime.timezone.utc
+            last_created_datetime_out = timestamp_parser(
+                file_stats.st_mtime, unit="s"
             )
+            # boto3.s3_resource.Object.last_modified is without microsecond
+            # boto3.paginate s3_object["LastModified"] is with microsecond
+            last_modified_datetime = last_modified_datetime.set(microsecond=0)
             return last_modified_datetime > last_created_datetime_out
 
 
 def _create_information_message_before_download(
     filenames: list[str],
     sizes: list[float],
-    last_modified_datetimes: list[datetime.datetime],
+    last_modified_datetimes: list[DateTime],
     total_size: float,
 ) -> str:
     message = "You requested the download of the following files:\n"
@@ -438,13 +444,7 @@ def _create_information_message_before_download(
         filenames[:20], sizes[:20], last_modified_datetimes[:20]
     ):
         message += str(filename)
-        datetime_iso = re.sub(
-            r"\+00:00$",
-            "Z",
-            last_modified_datetime.astimezone(datetime.timezone.utc).isoformat(
-                timespec="seconds"
-            ),
-        )
+        datetime_iso = last_modified_datetime.in_tz("UTC").to_iso8601_string()
         message += f" - {format_file_size(float(size))} - {datetime_iso}\n"
     if len(filenames) > 20:
         message += f"Printed 20 out of {len(filenames)} files\n"
@@ -466,7 +466,7 @@ def _list_files_on_marine_data_lake_s3(
     bucket: str,
     prefix: str,
     recursive: bool,
-) -> list[tuple[str, int, datetime.datetime, str]]:
+) -> list[tuple[str, int, DateTime, str]]:
 
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["ListObjects"], username
@@ -483,7 +483,7 @@ def _list_files_on_marine_data_lake_s3(
         *map(lambda page: page.get("Contents", []), page_iterator)
     )
 
-    files_already_found: list[tuple[str, int, datetime.datetime, str]] = []
+    files_already_found: list[tuple[str, int, DateTime, str]] = []
     for s3_object in s3_objects:
         files_already_found.append(
             (
@@ -498,7 +498,7 @@ def _list_files_on_marine_data_lake_s3(
 
 def _get_file_size_and_last_modified(
     endpoint_url: str, bucket: str, file_in: str, username: str
-) -> Optional[Tuple[int, datetime.datetime]]:
+) -> Optional[Tuple[int, DateTime]]:
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["HeadObject"], username
     )
@@ -508,7 +508,9 @@ def _get_file_size_and_last_modified(
             Bucket=bucket,
             Key=file_in.replace(f"s3://{bucket}/", ""),
         )
-        return s3_object["ContentLength"], s3_object["LastModified"]
+        return s3_object["ContentLength"], pendulum.instance(
+            s3_object["LastModified"]
+        )
     except ClientError as e:
         if "404" in str(e):
             logger.warning(
