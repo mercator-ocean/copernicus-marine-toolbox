@@ -76,9 +76,9 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 def _nearest_neighbor_coordinates(
     dataset: xarray.Dataset,
     dimension: str,
-    target_value: Union[float, datetime],
+    target_value: Union[float, DateTime],
 ):
-    if isinstance(target_value, datetime):
+    if isinstance(target_value, DateTime):
         target_value = numpy.datetime64(target_value)
     coordinates = dataset[dimension].values
     index = numpy.searchsorted(coordinates, target_value)
@@ -111,8 +111,8 @@ def _enlarge_point_min_max(
             {coord_label: actual_extreme}, method=method
         )[coord_label].values
         if coord_label == "time":
-            external_point = datetime.fromtimestamp(
-                external_point.astype(int) * nanosecond, tz=timezone.utc
+            external_point = DateTime.fromtimestamp(
+                external_point.astype(int) * nanosecond
             ).replace(tzinfo=None)
     except KeyError:
         external_point = actual_extreme
