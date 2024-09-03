@@ -99,15 +99,14 @@ def _move_point_min_max(
     actual_extreme: Union[float, DateTime],
     method: Literal["pad", "backfill"],
 ):
-    nanosecond = 1e-9
     try:
         external_point = dataset.sel(
             {coord_label: actual_extreme}, method=method
         )[coord_label].values
         if coord_label == "time":
-            external_point = DateTime.fromtimestamp(
-                external_point.astype(int) * nanosecond
-            ).replace(tzinfo="UTC")
+            external_point = timestamp_or_datestring_to_datetime(
+                external_point
+            ).naive()
     except KeyError:
         external_point = actual_extreme
     return external_point
