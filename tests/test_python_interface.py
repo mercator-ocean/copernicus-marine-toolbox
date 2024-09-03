@@ -15,6 +15,7 @@ from copernicusmarine import (
     read_dataframe,
     subset,
 )
+from copernicusmarine.core_functions import exceptions
 
 
 class TestPythonInterface:
@@ -297,7 +298,7 @@ class TestPythonInterface:
                 end_datetime=datetime.today()
                 + timedelta(days=10, hours=23, minutes=59),
             )
-        except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
+        except exceptions.CoordinatesOutOfDatasetBounds as e:
             assert "Some or all of your subset selection" in e.__str__()
 
     def test_that_requested_interval_fully_included_with_bounding_box_method_outside(
