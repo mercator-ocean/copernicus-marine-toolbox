@@ -93,18 +93,12 @@ def _nearest_neighbor_coordinates(
         return coordinates[index]
 
 
-def _enlarge_point_min_max(
+def _move_point_min_max(
     dataset: xarray.Dataset,
     coord_label: str,
-    coord_selection: slice,
-    which_extreme: Literal["min", "max"],
+    actual_extreme: Union[float, DateTime],
+    method: Literal["pad", "backfill"],
 ):
-    if which_extreme == "min":
-        actual_extreme = coord_selection.start
-        method = "pad"
-    else:
-        actual_extreme = coord_selection.stop
-        method = "backfill"
     nanosecond = 1e-9
     try:
         external_point = dataset.sel(
@@ -113,7 +107,7 @@ def _enlarge_point_min_max(
         if coord_label == "time":
             external_point = DateTime.fromtimestamp(
                 external_point.astype(int) * nanosecond
-            ).replace(tzinfo=None)
+            ).replace(tzinfo="UTC")
     except KeyError:
         external_point = actual_extreme
     return external_point
@@ -124,12 +118,28 @@ def _enlarge_selection(
     coord_label: str,
     coord_selection: slice,
 ):
-    external_minimum = _enlarge_point_min_max(
-        dataset, coord_label, coord_selection, "min"
+    external_minimum = _move_point_min_max(
+        dataset, coord_label, coord_selection.start, "pad"
     )
 
-    external_maximum = _enlarge_point_min_max(
-        dataset, coord_label, coord_selection, "max"
+    external_maximum = _move_point_min_max(
+        dataset, coord_label, coord_selection.stop, "backfill"
+    )
+
+    return slice(external_minimum, external_maximum)
+
+
+def _narrow_selection(
+    dataset: xarray.Dataset,
+    coord_label: str,
+    coord_selection: slice,
+):
+    external_minimum = _move_point_min_max(
+        dataset, coord_label, coord_selection.start, "backfill"
+    )
+
+    external_maximum = _move_point_min_max(
+        dataset, coord_label, coord_selection.stop, "pad"
     )
 
     return slice(external_minimum, external_maximum)
@@ -150,6 +160,14 @@ def _dataset_custom_sel(
                     and coord_selection.stop is not None
                 ):
                     coord_selection = _enlarge_selection(
+                        dataset, coord_label, coord_selection
+                    )
+            if bounding_box_method == "inside":
+                if (
+                    isinstance(coord_selection, slice)
+                    and coord_selection.stop is not None
+                ):
+                    coord_selection = _narrow_selection(
                         dataset, coord_label, coord_selection
                     )
             tmp_dataset = dataset.sel(
@@ -282,14 +300,11 @@ def _longitude_subset(
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
                     if bounding_box_method == "outside":
-                        minimum_longitude_modulus = _enlarge_point_min_max(
+                        minimum_longitude_modulus = _move_point_min_max(
                             dataset,
                             "longitude",
-                            slice(
-                                minimum_longitude_modulus,
-                                maximum_longitude_modulus,
-                            ),
-                            "min",
+                            minimum_longitude_modulus,
+                            "pad",
                         )
                     dataset = _shift_longitude_dimension(
                         dataset, minimum_longitude_modulus
