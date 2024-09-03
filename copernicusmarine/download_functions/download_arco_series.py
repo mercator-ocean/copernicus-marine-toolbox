@@ -24,14 +24,12 @@ from copernicusmarine.download_functions.subset_parameters import (
     LongitudeParameters,
     TemporalParameters,
 )
-from copernicusmarine.download_functions.subset_xarray import (
-    date_to_datetime,
-    subset,
-)
+from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
     FileFormat,
     get_filename,
     get_formatted_dataset_size_estimation,
+    timestamp_or_datestring_to_datetime,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -153,7 +151,9 @@ def download_zarr(
     )
     start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
-        minimum_start_date = date_to_datetime(dataset_valid_start_date)
+        minimum_start_date = timestamp_or_datestring_to_datetime(
+            dataset_valid_start_date
+        )
         if (
             not subset_request.start_datetime
             or subset_request.start_datetime < minimum_start_date
