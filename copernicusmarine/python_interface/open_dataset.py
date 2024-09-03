@@ -98,7 +98,7 @@ def open_dataset(
     :type minimum_depth: float, optional
     :param maximum_depth: The maximum depth for subsetting the data.
     :type maximum_depth: float, optional
-    :param bounding_box_method: The bounding box method ('inside' or 'outside') when requesting the dataset. Check the documentation for more information.
+    :param bounding_box_method: The bounding box method ('nearest', 'inside' or 'outside') when requesting the dataset. Check the documentation for more information.
     :type bounding_box_method: str, optional
     :param subset_method: The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
     :type subset_method: str, optional
