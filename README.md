@@ -253,18 +253,6 @@ For example, when requesting for **longitude** values in the range (0.01, 2.92) 
 
 If asked for a single point (not an interval) in one of the dimensions, it will return the nearest point (a single one) in that dimension.
 
-When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered (it always does so). For example, when requesting for **longitude** values in the range (0.0, 40) from a dataset which covers `[-17.29166603088379, 36.29166793823242]`, so that we are requesting a point which is higher than the maximum of the dataset:
-
->* --bounding-box-method **outside**
->
->will return a dataset with loongitude: [0.0 0.04167 0.08333 ... 36.21 36.25 36.29]
-
-and it will raise a warning :
-```
-WARNING - 2024-05-15T10:05:06Z - Some or all of your subset selection [0.0, 40.0] for the longitude dimension  exceed the dataset coordinates [-17.29166603088379, 36.29166793823242]
-```
-Note that here the returned interval isn't covering all the requested interval because the points don't exist.
-
 
 ### Command `get`
 

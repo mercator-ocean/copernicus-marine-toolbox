@@ -1902,12 +1902,12 @@ class TestCommandLineInterface:
         assert dataset.latitude.values.max() >= max_latitude
         assert dataset.depth.values.min() <= min_depth
         assert dataset.depth.values.max() >= max_depth
-        assert datetime.strptime(
+        assert datetime.datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
-        assert datetime.strptime(
+        ) <= datetime.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+        ) >= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
     def test_that_requested_interval_is_correct_with_bounding_box_method_inside(
         self, tmp_path
@@ -1962,12 +1962,12 @@ class TestCommandLineInterface:
         assert dataset.latitude.values.max() <= max_latitude
         assert dataset.depth.values.min() >= min_depth
         assert dataset.depth.values.max() <= max_depth
-        assert datetime.strptime(
+        assert datetime.datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
-        assert datetime.strptime(
+        ) >= datetime.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+        ) <= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
     def test_that_requested_interval_is_correct_with_bounding_box_method_nearest(
         self, tmp_path

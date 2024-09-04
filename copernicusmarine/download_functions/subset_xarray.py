@@ -79,7 +79,10 @@ def _choose_extreme_point(
     actual_extreme: Union[float, DateTime],
     method: Literal["pad", "backfill", "nearest"],
 ) -> Union[float, DateTime]:
-    try:
+    if (
+        actual_extreme > dataset[coord_label].min()
+        and actual_extreme < dataset[coord_label].max()
+    ):
         external_point = dataset.sel(
             {coord_label: actual_extreme}, method=method
         )[coord_label].values
@@ -87,7 +90,7 @@ def _choose_extreme_point(
             external_point = timestamp_or_datestring_to_datetime(
                 external_point
             ).naive()
-    except KeyError:
+    else:
         external_point = actual_extreme
     return external_point
 
