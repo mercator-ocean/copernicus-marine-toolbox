@@ -1,6 +1,13 @@
+import datetime
 import random
 
-from copernicusmarine.download_functions.subset_xarray import longitude_modulus
+import pendulum
+
+import copernicusmarine as cm
+from copernicusmarine.download_functions.subset_xarray import (
+    _dataset_custom_sel,
+    longitude_modulus,
+)
 
 
 class TestSubfunctions:
@@ -25,3 +32,79 @@ class TestSubfunctions:
         for random_value in random_values:
             modulus_value = longitude_modulus(random_value)
             assert modulus_value >= -180 and modulus_value < 180
+
+    def test_custom_dataset_selection(self, tmp_path):
+        dataset = cm.open_dataset(
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            minimum_longitude=0,
+            maximum_longitude=50,
+            minimum_latitude=0,
+            maximum_latitude=50,
+            minimum_depth=0,
+            maximum_depth=100,
+            start_datetime="2023-01-01",
+            end_datetime="2023-01-03",
+        )
+        min_value = 1
+        max_value = 49
+        coord_selection = slice(min_value, max_value)
+        dataset_1 = _dataset_custom_sel(
+            dataset, "longitude", coord_selection, "inside", None
+        )
+        assert dataset_1.longitude.values.min() >= min_value
+        assert dataset_1.longitude.max().values <= max_value
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "latitude", coord_selection, "inside", None
+        )
+        assert dataset_1.latitude.values.min() >= min_value
+        assert dataset_1.latitude.values.max() <= max_value
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "depth", coord_selection, "inside", None
+        )
+        assert dataset_1.depth.values.min() >= min_value
+        assert dataset_1.depth.values.max() <= max_value
+        coord_selection = slice(
+            pendulum.datetime(2023, 1, 1).naive(),
+            pendulum.datetime(2023, 1, 3).naive(),
+        )
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "time", coord_selection, "inside", None
+        )
+        assert datetime.datetime.strptime(
+            str(dataset_1.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) >= datetime.datetime.strptime("2023-01-01", "%Y-%m-%d")
+        assert datetime.datetime.strptime(
+            str(dataset_1.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) <= datetime.datetime.strptime("2023-01-03", "%Y-%m-%d")
+
+        min_value = 20
+        max_value = 40
+        coord_selection = slice(min_value, max_value)
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "longitude", coord_selection, "outside", None
+        )
+        assert dataset_1.longitude.values.min() <= min_value
+        assert dataset_1.longitude.max().values >= max_value
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "latitude", coord_selection, "outside", None
+        )
+        assert dataset_1.latitude.values.min() <= min_value
+        assert dataset_1.latitude.values.max() >= max_value
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "depth", coord_selection, "outside", None
+        )
+        assert dataset_1.depth.values.min() <= min_value
+        assert dataset_1.depth.values.max() >= max_value
+        coord_selection = slice(
+            pendulum.datetime(2023, 1, 2).naive(),
+            pendulum.datetime(2023, 1, 2).naive(),
+        )
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "time", coord_selection, "outside", None
+        )
+        assert datetime.datetime.strptime(
+            str(dataset_1.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) >= datetime.datetime.strptime("2023-01-02", "%Y-%m-%d")
+        assert datetime.datetime.strptime(
+            str(dataset_1.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) <= datetime.datetime.strptime("2023-01-02", "%Y-%m-%d")

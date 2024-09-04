@@ -2015,8 +2015,7 @@ class TestCommandLineInterface:
         output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
-        print(float(dataset.depth.values.min()))
-        print(float(dataset.depth.max().values))
+
         assert output.returncode == 0
         assert dataset.longitude.values.min() == 0.083343505859375
         assert dataset.longitude.max().values == 1.583343505859375
