@@ -1848,3 +1848,185 @@ class TestCommandLineInterface:
         )
         assert output_netcdf_format.returncode == 0
         assert output_netcdf_format.stdout == b"classic\n"
+
+    def test_that_requested_interval_fully_included_with_bounding_box_method_outside(
+        self, tmp_path
+    ):
+        output_filename = "output.nc"
+        min_longitude = 0.01
+        max_longitude = 1.55
+        min_latitude = 0.01
+        max_latitude = 1.1
+        min_depth = 30.5
+        max_depth = 50.0
+        start_datetime = "2023-12-01T01:00:00"
+        end_datetime = "2023-12-12T01:00:00"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
+            "--bounding-box-method",
+            "outside",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = execute_in_terminal(command)
+
+        dataset = xarray.open_dataset(Path(tmp_path, output_filename))
+        assert output.returncode == 0
+        assert dataset.longitude.values.min() <= min_longitude
+        assert dataset.longitude.values.max() >= max_longitude
+        assert dataset.latitude.values.min() <= min_latitude
+        assert dataset.latitude.values.max() >= max_latitude
+        assert dataset.depth.values.min() <= min_depth
+        assert dataset.depth.values.max() >= max_depth
+        assert datetime.strptime(
+            str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) <= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.strptime(
+            str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) >= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+
+    def test_that_requested_interval_is_correct_with_bounding_box_method_inside(
+        self, tmp_path
+    ):
+        output_filename = "output.nc"
+        min_longitude = 0.01
+        max_longitude = 1.567
+        min_latitude = 0.013
+        max_latitude = 1.123
+        min_depth = 30.554
+        max_depth = 50.023
+        start_datetime = "2023-12-01T01:00:23"
+        end_datetime = "2023-12-12T01:10:03"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
+            "--bounding-box-method",
+            "inside",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = execute_in_terminal(command)
+
+        dataset = xarray.open_dataset(Path(tmp_path, output_filename))
+        assert output.returncode == 0
+        assert dataset.longitude.values.min() >= min_longitude
+        assert dataset.longitude.values.max() <= max_longitude
+        assert dataset.latitude.values.min() >= min_latitude
+        assert dataset.latitude.values.max() <= max_latitude
+        assert dataset.depth.values.min() >= min_depth
+        assert dataset.depth.values.max() <= max_depth
+        assert datetime.strptime(
+            str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) >= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.strptime(
+            str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) <= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+
+    def test_that_requested_interval_is_correct_with_bounding_box_method_nearest(
+        self, tmp_path
+    ):
+        output_filename = "output.nc"
+        min_longitude = 0.08
+        max_longitude = 1.567
+        min_latitude = 0.013
+        max_latitude = 1.123
+        min_depth = 30.554
+        max_depth = 50.023
+        start_datetime = "2023-01-01T00:00:00"
+        end_datetime = "2023-01-03T23:04:00"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
+            "--bounding-box-method",
+            "nearest",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--force-download",
+        ]
+        output = execute_in_terminal(command)
+
+        dataset = xarray.open_dataset(Path(tmp_path, output_filename))
+        print(dataset.longitude.values.min())
+        print(dataset.longitude.max().values)
+        assert output.returncode == 0
+        assert dataset.longitude.values.min() == 0.083343506
+        assert dataset.longitude.max().values == 1.583
+        assert dataset.latitude.values.min() == 0.0
+        assert dataset.latitude.values.max() == 1.083
+        assert dataset.depth.values.min() == 29.44
+        assert dataset.depth.values.max() == 47.37
+        assert datetime.strptime(
+            str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) == datetime.strptime("2023-01-01", "%Y-%m-%d")
+        assert datetime.strptime(
+            str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
+        ) == datetime.strptime("2023-01-04", "%Y-%m-%d")

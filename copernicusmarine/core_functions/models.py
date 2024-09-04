@@ -12,6 +12,6 @@ SubsetMethod = Literal["nearest", "strict"]
 DEFAULT_SUBSET_METHOD: SubsetMethod = "nearest"
 DEFAULT_SUBSET_METHODS = list(get_args(SubsetMethod))
 
-BoundingBoxMethod = Literal["nearest", "inside", "outside"]
-DEFAULT_BOUNDING_BOX_METHOD: BoundingBoxMethod = "nearest"
+BoundingBoxMethod = Literal["inside", "nearest", "outside"]
+DEFAULT_BOUNDING_BOX_METHOD: BoundingBoxMethod = "inside"
 DEFAULT_BOUNDING_BOX_METHODS = list(get_args(BoundingBoxMethod))

@@ -104,7 +104,7 @@ def read_dataframe(
     :type start_datetime: datetime, optional
     :param end_datetime: End datetime for temporal subset.
     :type end_datetime: datetime, optional
-    :param bounding_box_method: The bounding box method ('nearest', 'inside' or 'outside') when requesting the dataset. Check the documentation for more information.
+    :param bounding_box_method: The bounding box method when requesting the dataset. If 'inside' (by default), it will returned the inside interval. If 'nearest', the limits of the requested interval will be the nearest points of the dataset. If 'outside', it will return all the data such that the requested interval is fully included. Check the documentation for more details.
     :type bounding_box_method: str, optional
     :param subset_method: The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
     :type subset_method: str, optional

@@ -215,12 +215,12 @@ def cli_subset() -> None:
     type=click.Choice(DEFAULT_BOUNDING_BOX_METHODS),
     default=DEFAULT_BOUNDING_BOX_METHOD,
     help=(
-        """The bounding box method when requesting the dataset. If "nearest", """
-        """(by default) it will return, as with the latter versions, the limits of"""
-        """the requested interval will be the nearest points of the dataset. """
-        """If inside, it will returned the inside interval. """
-        """If "outside", it will return all the data such that the requested """
-        """interval is fully included. Check the documentation for more details."""
+        "The bounding box method when requesting the dataset."
+        "If 'inside' (by default), it will returned the inside interval. "
+        "If 'nearest', the limits of"
+        "the requested interval will be the nearest points of the dataset. "
+        "If 'outside', it will return all the data such that the requested "
+        "interval is fully included. Check the documentation for more details."
     ),
 )
 @click.option(

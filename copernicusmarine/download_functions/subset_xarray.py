@@ -73,32 +73,12 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 ]
 
 
-def _nearest_neighbor_coordinates(
-    dataset: xarray.Dataset,
-    dimension: str,
-    target_value: Union[float, DateTime],
-):
-    if isinstance(target_value, DateTime):
-        target_value = numpy.datetime64(target_value)
-    coordinates = dataset[dimension].values
-    index = numpy.searchsorted(coordinates, target_value)
-    index = numpy.clip(index, 0, len(coordinates) - 1)
-    if index > 0 and (
-        index == len(coordinates)
-        or abs(target_value - coordinates[index - 1])
-        < abs(target_value - coordinates[index])
-    ):
-        return coordinates[index - 1]
-    else:
-        return coordinates[index]
-
-
-def _move_point_min_max(
+def _choose_extreme_point(
     dataset: xarray.Dataset,
     coord_label: str,
     actual_extreme: Union[float, DateTime],
-    method: Literal["pad", "backfill"],
-):
+    method: Literal["pad", "backfill", "nearest"],
+) -> Union[float, DateTime]:
     try:
         external_point = dataset.sel(
             {coord_label: actual_extreme}, method=method
@@ -116,29 +96,29 @@ def _enlarge_selection(
     dataset: xarray.Dataset,
     coord_label: str,
     coord_selection: slice,
-):
-    external_minimum = _move_point_min_max(
+) -> slice:
+    external_minimum = _choose_extreme_point(
         dataset, coord_label, coord_selection.start, "pad"
     )
 
-    external_maximum = _move_point_min_max(
+    external_maximum = _choose_extreme_point(
         dataset, coord_label, coord_selection.stop, "backfill"
     )
 
     return slice(external_minimum, external_maximum)
 
 
-def _narrow_selection(
+def _nearest_selection(
     dataset: xarray.Dataset,
     coord_label: str,
     coord_selection: slice,
-):
-    external_minimum = _move_point_min_max(
-        dataset, coord_label, coord_selection.start, "backfill"
+) -> slice:
+    external_minimum = _choose_extreme_point(
+        dataset, coord_label, coord_selection.start, "nearest"
     )
 
-    external_maximum = _move_point_min_max(
-        dataset, coord_label, coord_selection.stop, "pad"
+    external_maximum = _choose_extreme_point(
+        dataset, coord_label, coord_selection.stop, "nearest"
     )
 
     return slice(external_minimum, external_maximum)
@@ -161,12 +141,12 @@ def _dataset_custom_sel(
                     coord_selection = _enlarge_selection(
                         dataset, coord_label, coord_selection
                     )
-            if bounding_box_method == "inside":
+            if bounding_box_method == "nearest":
                 if (
                     isinstance(coord_selection, slice)
                     and coord_selection.stop is not None
                 ):
-                    coord_selection = _narrow_selection(
+                    coord_selection = _nearest_selection(
                         dataset, coord_label, coord_selection
                     )
             tmp_dataset = dataset.sel(
@@ -180,9 +160,9 @@ def _dataset_custom_sel(
                     if isinstance(coord_selection, slice)
                     else coord_selection
                 )
-                nearest_neighbor_value = _nearest_neighbor_coordinates(
-                    dataset, coord_label, target
-                )
+                nearest_neighbor_value = dataset.sel(
+                    {coord_label: target}, method="nearest"
+                )[coord_label].values
                 dataset = dataset.sel(
                     {
                         coord_label: slice(
@@ -299,7 +279,7 @@ def _longitude_subset(
                 if maximum_longitude_modulus < minimum_longitude_modulus:
                     maximum_longitude_modulus += 360
                     if bounding_box_method == "outside":
-                        minimum_longitude_modulus = _move_point_min_max(
+                        minimum_longitude_modulus = _choose_extreme_point(
                             dataset,
                             "longitude",
                             minimum_longitude_modulus,

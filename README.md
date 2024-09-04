@@ -233,26 +233,27 @@ In addition to this option, you can also provide the `--netcdf-compression-level
 The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
 
 #### Note about the `--bounding-box-method` option
-The `--bounding-box-method` option lets the user choose how the requested interval on dimensions selects the data points in the dataset. If `inside` is specified (default) then the command returns all data points that are included within the requested area. If `outside` is specified then the command returns all data points such that all the area requested is returned.
+The `--bounding-box-method` option lets the user choose how the requested interval on dimensions selects the data points in the dataset. If `inside` (default option) is specified then the command returns all data points that are included within the requested area. If `nearest` is specified then the returned interval has as limiting points the closest to the ones defined in the required interval. If `outside` is specified then the command returns all data points such that all the area requested is returned.
 
 It works for all 4 dimensions: that is **longitude**, **latitude**, **time** and **depth**.
 
-
-For example, when requesting for **longitude** values in the range (0.01, 2.98) for the two different cases from a dataset which has all data points `[-180, 180[`.
+For example, when requesting for **longitude** values in the range (0.01, 2.92) for the two different cases from a dataset which has all data points `[-180, 180[`.
 
 >* --bounding-box-method **inside**
 >
 > will return a dataset with longitudes: [0.08334 0.1667 0.25 ... 2.75 2.833 2.917]
 >
+>* --bounding-box-method **nearest**
+>
+> will return a dataset with longitudes: [0.0 0.08334 0.1667 ... 2.75 2.833 2.917]
+>
 >* --bounding-box-method **outside**
 >
->will output a dataset with longitude: [0.0 0.08334 0.1667 0.25 ... 2.833 2.917 3.0]
+> will output a dataset with longitude: [0.0 0.08334 0.1667 0.25 ... 2.833 2.917 3.0]
 
-Note that when the flag is `outside` the returned interval fully covers the requested area.
+If asked for a single point (not an interval) in one of the dimensions, it will return the nearest point (a single one) in that dimension.
 
-It will apply to all 4 dimensions at the same time. If asked for a single point (not an interval) in one of the dimensions, it will return the nearest point (a single one) in that dimension.
-
-When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered. For example, when requesting for **longitude** values in the range (0.0, 40) from a dataset which covers `[-17.29166603088379, 36.29166793823242]`, so that we are requesting a point which is higher than the maximum of the dataset:
+When asking for a dimension out of dataset bounds, the procedure will raise a flag indicating that the area could not be fully covered (it always does so). For example, when requesting for **longitude** values in the range (0.0, 40) from a dataset which covers `[-17.29166603088379, 36.29166793823242]`, so that we are requesting a point which is higher than the maximum of the dataset:
 
 >* --bounding-box-method **outside**
 >
@@ -263,8 +264,6 @@ and it will raise a warning :
 WARNING - 2024-05-15T10:05:06Z - Some or all of your subset selection [0.0, 40.0] for the longitude dimension  exceed the dataset coordinates [-17.29166603088379, 36.29166793823242]
 ```
 Note that here the returned interval isn't covering all the requested interval because the points don't exist.
-
-
 
 
 ### Command `get`
