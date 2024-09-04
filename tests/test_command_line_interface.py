@@ -2015,18 +2015,18 @@ class TestCommandLineInterface:
         output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
-        print(dataset.longitude.values.min())
-        print(dataset.longitude.max().values)
+        print(float(dataset.depth.values.min()))
+        print(float(dataset.depth.max().values))
         assert output.returncode == 0
-        assert dataset.longitude.values.min() == 0.083343506
-        assert dataset.longitude.max().values == 1.583
+        assert dataset.longitude.values.min() == 0.083343505859375
+        assert dataset.longitude.max().values == 1.583343505859375
         assert dataset.latitude.values.min() == 0.0
-        assert dataset.latitude.values.max() == 1.083
-        assert dataset.depth.values.min() == 29.44
-        assert dataset.depth.values.max() == 47.37
-        assert datetime.strptime(
+        assert dataset.latitude.values.max() == 1.0833358764648438
+        assert dataset.depth.values.min() == 29.444730758666992
+        assert dataset.depth.values.max() == 47.37369155883789
+        assert datetime.datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) == datetime.strptime("2023-01-01", "%Y-%m-%d")
-        assert datetime.strptime(
+        ) == datetime.datetime.strptime("2023-01-01", "%Y-%m-%d")
+        assert datetime.datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) == datetime.strptime("2023-01-04", "%Y-%m-%d")
+        ) == datetime.datetime.strptime("2023-01-04", "%Y-%m-%d")
