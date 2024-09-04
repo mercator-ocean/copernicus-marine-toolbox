@@ -103,9 +103,7 @@ def download_dataset(
     if not force_download:
         logger.info(dataset)
         logger.info(
-            get_message_formatted_dataset_size_estimation(
-                dataset, variables, service
-            )
+            get_message_formatted_dataset_size_estimation(dataset, service)
         )
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
@@ -115,9 +113,7 @@ def download_dataset(
         )
     else:
         logger.info(
-            get_message_formatted_dataset_size_estimation(
-                dataset, variables, service
-            )
+            get_message_formatted_dataset_size_estimation(dataset, service)
         )
     logger.info("Writing to local storage. Please wait...")
 

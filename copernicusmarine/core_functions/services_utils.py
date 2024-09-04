@@ -5,6 +5,8 @@ from enum import Enum
 from itertools import chain
 from typing import List, Literal, Optional, Union
 
+import nest_asyncio
+
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
@@ -291,6 +293,7 @@ def get_retrieval_service(
     username: Optional[str] = None,
     staging: bool = False,
 ) -> RetrievalService:
+    nest_asyncio.apply()
     loop = asyncio.get_event_loop()
     dataset_metadata = loop.run_until_complete(
         get_dataset_metadata(dataset_id, staging=staging),
@@ -443,10 +446,7 @@ def _get_dataset_start_date_from_service(
 ) -> Optional[Union[str, int]]:
     for variable in service.variables:
         for coordinate in variable.coordinates:
-            if (
-                coordinate.coordinates_id == "time"
-                and coordinate.minimum_value
-            ):
+            if coordinate.coordinate_id == "time" and coordinate.minimum_value:
                 if isinstance(coordinate.minimum_value, str):
                     return coordinate.minimum_value.replace("Z", "")
                 return int(coordinate.minimum_value)

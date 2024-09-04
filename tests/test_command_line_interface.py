@@ -901,6 +901,8 @@ class TestCommandLineInterface:
         output_with_skip = execute_in_terminal(command_with_skip)
         assert output_with_skip.returncode == 0
 
+    # TODO: separate tests for each service
+    # SUBSET, GET, LOGIN, DESCRIBE
     def test_subset_error_when_forced_service_does_not_exist(self):
         self.when_I_run_copernicus_marine_subset_forcing_a_service_not_available()
         self.then_I_got_a_clear_output_with_available_service_for_subset()
@@ -1710,6 +1712,74 @@ class TestCommandLineInterface:
         assert dataset.uo.encoding["complevel"] == forced_comp_level
         assert dataset.uo.encoding["contiguous"] is False
         assert dataset.uo.encoding["shuffle"] is True
+
+    def test_subset_approximation_of_data_that_needs_to_be_downloaded(
+        self,
+    ):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "-v",
+            "thetao",
+            "-x",
+            "-100.0",
+            "-X",
+            "-70.0",
+            "-y",
+            "-80.0",
+            "-Y",
+            "-65.0",
+            "-t",
+            "2023-03-20",
+            "-T",
+            "2023-03-20",
+        ]
+        self.output = execute_in_terminal(command, input=b"n")
+        assert (
+            b"Estimated size of the data that needs"
+            b" to be downloaded to obtain the result: 200 MB"
+            in self.output.stderr
+        )
+
+    def test_subset_approximation_of_big_data_that_needs_to_be_downloaded(
+        self,
+    ):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+            "-v",
+            "thetao_oras",
+            "-v",
+            "uo_oras",
+            "-v",
+            "vo_oras",
+            "-v",
+            "so_oras",
+            "-v",
+            "zos_oras",
+            "-x",
+            "50",
+            "-X",
+            "110",
+            "-y",
+            "-10.0",
+            "-Y",
+            "30.0",
+            "-t",
+            "2010-03-01T00:00:00",
+            "-T",
+            "2010-06-30T00:00:00",
+        ]
+        self.output = execute_in_terminal(command, input=b"n")
+        assert (
+            b"Estimated size of the data that needs"
+            b" to be downloaded to obtain the result: 71692 MB"
+            in self.output.stderr
+        )
 
     def test_file_list_filter(self, tmp_path):
         dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"
