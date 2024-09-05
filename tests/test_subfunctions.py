@@ -78,11 +78,13 @@ class TestSubfunctions:
         ) <= datetime.datetime.strptime("2023-01-03", "%Y-%m-%d")
 
         min_value = 20
-        max_value = 40
+        max_value = 39.9
         coord_selection = slice(min_value, max_value)
         dataset_1 = _dataset_custom_sel(
             dataset_1, "longitude", coord_selection, "outside", None
         )
+        print(dataset_1.longitude.values.min())
+        print(dataset_1.longitude.values.max())
         assert dataset_1.longitude.values.min() <= min_value
         assert dataset_1.longitude.max().values >= max_value
         dataset_1 = _dataset_custom_sel(
@@ -108,3 +110,13 @@ class TestSubfunctions:
         assert datetime.datetime.strptime(
             str(dataset_1.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) <= datetime.datetime.strptime("2023-01-02", "%Y-%m-%d")
+
+        # Check also that when asking for values outside the dataset,
+        # the returned makes sense
+
+        coord_selection = slice(10, 45)
+        dataset_1 = _dataset_custom_sel(
+            dataset_1, "longitude", coord_selection, "outside", None
+        )
+        assert dataset_1.longitude.values.min() >= 20  # the old values
+        assert dataset_1.longitude.max().values <= 39.92
