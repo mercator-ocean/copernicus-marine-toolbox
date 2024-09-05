@@ -18,10 +18,13 @@ from copernicusmarine.core_functions.deprecated import (
     DeprecatedClickOptionsCommand,
 )
 from copernicusmarine.core_functions.models import (
+    DEFAULT_BOUNDING_BOX_METHOD,
+    DEFAULT_BOUNDING_BOX_METHODS,
     DEFAULT_FILE_FORMAT,
     DEFAULT_FILE_FORMATS,
     DEFAULT_SUBSET_METHOD,
     DEFAULT_SUBSET_METHODS,
+    BoundingBoxMethod,
     FileFormat,
     SubsetMethod,
 )
@@ -208,6 +211,19 @@ def cli_subset() -> None:
     + "See https://pendulum.eustace.io/docs/#parsing",
 )
 @click.option(
+    "--bounding-box-method",
+    type=click.Choice(DEFAULT_BOUNDING_BOX_METHODS),
+    default=DEFAULT_BOUNDING_BOX_METHOD,
+    help=(
+        "The bounding box method when requesting the dataset."
+        "If 'inside' (by default), it will returned the inside interval. "
+        "If 'nearest', the limits of"
+        "the requested interval will be the nearest points of the dataset. "
+        "If 'outside', it will return all the data such that the requested "
+        "interval is fully included. Check the documentation for more details."
+    ),
+)
+@click.option(
     "--subset-method",
     type=click.Choice(DEFAULT_SUBSET_METHODS),
     default=DEFAULT_SUBSET_METHOD,
@@ -359,6 +375,7 @@ def subset(
     vertical_dimension_as_originally_produced: bool,
     start_datetime: Optional[str],
     end_datetime: Optional[str],
+    bounding_box_method: BoundingBoxMethod,
     subset_method: SubsetMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -409,6 +426,7 @@ def subset(
         vertical_dimension_as_originally_produced,
         datetime_parser(start_datetime) if start_datetime else None,
         datetime_parser(end_datetime) if end_datetime else None,
+        bounding_box_method,
         subset_method,
         output_filename,
         file_format,

@@ -75,6 +75,7 @@ def load_data_object_from_load_request(
             geographical_parameters=load_request.geographical_parameters,
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
+            bounding_box_method=load_request.bounding_box_method,
             chunks=None,
         )
     else:

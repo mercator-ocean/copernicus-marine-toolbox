@@ -7,8 +7,10 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
+    DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_FILE_FORMAT,
     DEFAULT_SUBSET_METHOD,
+    BoundingBoxMethod,
     FileFormat,
     SubsetMethod,
 )
@@ -37,6 +39,7 @@ def subset(
     vertical_dimension_as_originally_produced: bool = True,
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
+    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
     subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
     output_filename: Optional[str] = None,
     file_format: FileFormat = DEFAULT_FILE_FORMAT,
@@ -98,6 +101,8 @@ def subset(
     :type start_datetime: datetime, optional
     :param end_datetime: End datetime for temporal subset.
     :type end_datetime: datetime, optional
+    :param bounding_box_method: The bounding box method when requesting the dataset. If 'inside' (by default), it will returned the inside interval. If 'nearest', the limits of the requested interval will be the nearest points of the dataset. If 'outside', it will return all the data such that the requested interval is fully included. Check the documentation for more details.
+    :type bounding_box_method: str, optional
     :param subset_method: The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
     :type subset_method: str, optional
     :param output_filename: Output filename for the subsetted data.
@@ -143,6 +148,7 @@ def subset(
         vertical_dimension_as_originally_produced,
         start_datetime,
         end_datetime,
+        bounding_box_method,
         subset_method,
         output_filename,
         file_format,
