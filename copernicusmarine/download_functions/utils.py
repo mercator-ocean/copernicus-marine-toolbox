@@ -194,10 +194,23 @@ def get_message_formatted_dataset_size_estimation(
     )
     estimated_size_message += f"{estimate_size:.3f} MB"
 
+    temp_dataset = dataset.copy()
+    if "elevation" in dataset.sizes:
+        temp_dataset["elevation"] = temp_dataset.elevation * (-1)
+        temp_dataset = temp_dataset.rename({"elevation": "depth"})
+
     download_estimated_size = 0
-    for variable_name in dataset.data_vars:
+    for variable_name in temp_dataset.data_vars:
         coordinates_size = 1
-        for coordinate_name in dataset.sizes:
+        for coordinate_name in temp_dataset.sizes:
+            if coordinate_name == "elevation":
+                coordinate_name = "depth"
+                temp_dataset["elevation"] = temp_dataset.elevation * (-1)
+            possible_coordinate_id = [
+                coordinate_names
+                for coordinate_names in COORDINATES_LABEL.values()
+                if coordinate_name in coordinate_names
+            ][0]
             coordinate = [
                 coord
                 for coord in [
@@ -205,20 +218,20 @@ def get_message_formatted_dataset_size_estimation(
                     for var in service.variables
                     if var.short_name == variable_name
                 ][0].coordinates
-                if coord.coordinate_id == coordinate_name
+                if coord.coordinate_id in possible_coordinate_id
             ][0]
             chunking_length = coordinate.chunking_length
             if not chunking_length:
                 continue
             number_of_chunks_needed = get_number_of_chunks_for_coordinate(
-                dataset, coordinate, chunking_length
+                temp_dataset, coordinate, chunking_length
             )
             if number_of_chunks_needed is None:
                 return early_exit_message(estimated_size_message)
             coordinates_size *= number_of_chunks_needed * chunking_length
         download_estimated_size += (
             coordinates_size
-            * dataset[list(dataset.data_vars)[0]].dtype.itemsize
+            * temp_dataset[list(temp_dataset.data_vars)[0]].dtype.itemsize
             / 1048e3
         )
 

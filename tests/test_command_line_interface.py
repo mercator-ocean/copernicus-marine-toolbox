@@ -1773,6 +1773,10 @@ class TestCommandLineInterface:
             "2010-03-01T00:00:00",
             "-T",
             "2010-06-30T00:00:00",
+            "-z",
+            "0.5057600140571594",
+            "-Z",
+            "500",
         ]
         self.output = execute_in_terminal(command, input=b"n")
         assert (
