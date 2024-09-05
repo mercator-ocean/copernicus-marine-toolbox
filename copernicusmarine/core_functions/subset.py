@@ -16,7 +16,10 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
-from copernicusmarine.core_functions.models import SubsetMethod
+from copernicusmarine.core_functions.models import (
+    BoundingBoxMethod,
+    SubsetMethod,
+)
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
@@ -54,6 +57,7 @@ def subset_function(
     vertical_dimension_as_originally_produced: bool,
     start_datetime: Optional[DateTime],
     end_datetime: Optional[DateTime],
+    bounding_box_method: BoundingBoxMethod,
     subset_method: SubsetMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -107,6 +111,7 @@ def subset_function(
         "vertical_dimension_as_originally_produced": vertical_dimension_as_originally_produced,  # noqa
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
+        "bounding_box_method": bounding_box_method,
         "subset_method": subset_method,
         "output_filename": output_filename,
         "file_format": file_format,
