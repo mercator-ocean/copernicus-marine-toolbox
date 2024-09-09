@@ -1,10 +1,16 @@
+import bisect
 import logging
+import math
 from pathlib import Path
 from typing import Optional
 
 import xarray
 from pendulum import DateTime
 
+from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineCoordinate,
+    CopernicusMarineService,
+)
 from copernicusmarine.core_functions.models import (
     DEFAULT_FILE_EXTENSIONS,
     FileFormat,
@@ -170,14 +176,151 @@ def _format_datetimes(
         return formatted_datetime
 
 
-def get_formatted_dataset_size_estimation(dataset: xarray.Dataset) -> str:
+def get_message_formatted_dataset_size_estimation(
+    dataset: xarray.Dataset,
+    service: CopernicusMarineService,
+) -> str:
+    # TODO: probably should try except this
+    # We don't want this to block the user if it fails
+    estimated_size_message = "Estimated size of the dataset file is "
     coordinates_size = 1
-    for coordinate in dataset.sizes:
-        coordinates_size *= dataset[coordinate].size
+    for coordinate_name in dataset.sizes:
+        coordinates_size *= dataset[coordinate_name].size
     estimate_size = (
         coordinates_size
         * len(list(dataset.data_vars))
         * dataset[list(dataset.data_vars)[0]].dtype.itemsize
         / 1048e3
     )
-    return f"{estimate_size:.3f} MB"
+    estimated_size_message += f"{estimate_size:.3f} MB"
+
+    temp_dataset = dataset.copy()
+    if "elevation" in dataset.sizes:
+        temp_dataset["elevation"] = temp_dataset.elevation * (-1)
+        temp_dataset = temp_dataset.rename({"elevation": "depth"})
+
+    download_estimated_size = 0
+    for variable_name in temp_dataset.data_vars:
+        coordinates_size = 1
+        for coordinate_name in temp_dataset.sizes:
+            if coordinate_name == "elevation":
+                coordinate_name = "depth"
+                temp_dataset["elevation"] = temp_dataset.elevation * (-1)
+            possible_coordinate_id = [
+                coordinate_names
+                for coordinate_names in COORDINATES_LABEL.values()
+                if coordinate_name in coordinate_names
+            ][0]
+            coordinate = [
+                coord
+                for coord in [
+                    var
+                    for var in service.variables
+                    if var.short_name == variable_name
+                ][0].coordinates
+                if coord.coordinate_id in possible_coordinate_id
+            ][0]
+            chunking_length = coordinate.chunking_length
+            if not chunking_length:
+                continue
+            number_of_chunks_needed = get_number_of_chunks_for_coordinate(
+                temp_dataset, coordinate, chunking_length
+            )
+            if number_of_chunks_needed is None:
+                return early_exit_message(estimated_size_message)
+            coordinates_size *= number_of_chunks_needed * chunking_length
+        download_estimated_size += (
+            coordinates_size
+            * temp_dataset[list(temp_dataset.data_vars)[0]].dtype.itemsize
+            / 1048e3
+        )
+
+    estimated_size_message += (
+        f"\nEstimated size of the data that needs "
+        f"to be downloaded to obtain the result:"
+        f" {download_estimated_size:.0f} MB"
+    )
+    estimated_size_message += (
+        "\nThis a very rough estimation and usually"
+        " its higher than the actual size of the"
+        " data that needs to be downloaded."
+    )
+    return estimated_size_message
+
+
+def get_number_of_chunks_for_coordinate(
+    dataset: xarray.Dataset,
+    coordinate: CopernicusMarineCoordinate,
+    chunking_length: int,
+) -> Optional[int]:
+    maximum_value = coordinate.maximum_value
+    minimum_value = coordinate.minimum_value
+    values = coordinate.values
+    step_value = coordinate.step
+    if not values and (
+        maximum_value is not None
+        and minimum_value is not None
+        and step_value is not None
+    ):
+        values = [minimum_value]
+        for _ in range(
+            0, math.ceil((maximum_value - minimum_value) / step_value)
+        ):
+            values.append(values[-1] + step_value)
+    elif not values:
+        return None
+
+    if coordinate.coordinate_id == "time":
+        requested_maximum = (
+            timestamp_or_datestring_to_datetime(
+                dataset[coordinate.coordinate_id].values.max()
+            ).timestamp()
+            * 1e3
+        )
+        requested_minimum = (
+            timestamp_or_datestring_to_datetime(
+                dataset[coordinate.coordinate_id].values.min()
+            ).timestamp()
+            * 1e3
+        )
+    else:
+        requested_maximum = float(
+            dataset[coordinate.coordinate_id].max().values
+        )
+        requested_minimum = float(
+            dataset[coordinate.coordinate_id].min().values
+        )
+
+    values.sort()
+    index_left = bisect.bisect_left(values, requested_minimum)
+    if index_left == len(values) - 1:
+        chunk_of_requested_minimum = math.floor((index_left) / chunking_length)
+    elif abs(values[index_left] - requested_minimum) <= abs(
+        values[index_left + 1] - requested_minimum
+    ):
+        chunk_of_requested_minimum = math.floor(index_left / chunking_length)
+    else:
+        chunk_of_requested_minimum = math.floor(
+            (index_left + 1) / chunking_length
+        )
+
+    index_left = bisect.bisect_left(values, requested_maximum)
+    if index_left == len(values) - 1 or index_left == len(values):
+        chunk_of_requested_maximum = math.floor((index_left) / chunking_length)
+    elif abs(values[index_left] - requested_maximum) <= abs(
+        values[index_left + 1] - requested_maximum
+    ):
+        chunk_of_requested_maximum = math.floor(index_left / chunking_length)
+    else:
+        chunk_of_requested_maximum = math.floor(
+            (index_left + 1) / chunking_length
+        )
+    return chunk_of_requested_maximum - chunk_of_requested_minimum + 1
+
+
+def early_exit_message(message: str) -> str:
+    return (
+        message
+        + "\n Couldn't compute the approximation "
+        + "of the downloaded data size."
+    )
