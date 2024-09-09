@@ -111,7 +111,7 @@ class CopernicusMarineServiceFormat(str, Enum):
 
 @dataclass
 class CopernicusMarineCoordinate:
-    coordinates_id: str
+    coordinate_id: str
     units: str
     minimum_value: Optional[float]
     maximum_value: Optional[float]
@@ -150,7 +150,7 @@ class CopernicusMarineCoordinate:
             chunking_length = chunking_length.get(variable_id)
 
         coordinate = cls(
-            coordinates_id=dimension,
+            coordinate_id=dimension,
             units=dimension_metadata.get("units") or "",
             minimum_value=minimum_value,  # type: ignore
             maximum_value=coordinates_info.get("max"),
@@ -182,7 +182,7 @@ class CopernicusMarineCoordinate:
         return arco_data_metadata_producer_valid_start_date
 
     def _convert_elevation_to_depth(self):
-        self.coordinates_id = "depth"
+        self.coordinate_id = "depth"
         minimum_elevation = self.minimum_value
         maximum_elevation = self.maximum_value
         if minimum_elevation is not None:
