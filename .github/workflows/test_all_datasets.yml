@@ -1,0 +1,39 @@
+# name: Run tests
+
+# on:
+#   pull_request:
+#     branches:
+#       - "main"
+#       - "copernicusmarine-toolbox-v2"
+#       - "pre-releases/**"
+
+# jobs:
+#   tests:
+#     if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
+#     runs-on: self-hosted
+#     timeout-minutes: 30
+
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v4
+
+#       - uses: mamba-org/setup-micromamba@v1
+#         with:
+#           micromamba-version: '1.5.6-0'
+#           micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+#           environment-file: conda_environment_test_all_datasets.yaml
+#           environment-name: copernicusmarine_test
+#           condarc-file: .condarc
+#           cache-environment: true
+#           post-cleanup: 'all'
+
+#       - name: Install netcdf
+#         run: sudo apt-get install netcdf-bin
+#         shell: bash
+
+#       - name: Run tests
+#         env:
+#           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+#           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+#         run: make run-tests-all-datasets
+#         shell: micromamba-shell {0}

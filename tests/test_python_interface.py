@@ -82,6 +82,22 @@ class TestPythonInterface:
             force_download=True,
         )
 
+        # subset(
+        #     dataset_id="cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+        #     variables=["chl"],
+        #     output_filename="cmems_mod_arc_bgc_anfc_ecosmo_P1D-m_chl.nc",
+        #     start_datetime=DateTime(2019, 3, 22, 0, 0, 0),
+        #     end_datetime=DateTime(2019, 3, 22, 0, 0, 0),
+        #     minimum_depth=4000,
+        #     maximum_depth=4000,
+        #     minimum_latitude=50,
+        #     maximum_latitude=50,
+        #     minimum_longitude=-180,
+        #     maximum_longitude=-180,
+        #     snapshot=SnapshotAssertion(name="snapshot", num_executions=0),
+        # )
+        # TODO: putting naive pendulum datetime will fail
+
         assert subset_result is not None
         assert subset_result.output.exists()
 

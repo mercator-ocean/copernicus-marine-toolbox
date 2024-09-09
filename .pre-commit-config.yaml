@@ -9,6 +9,7 @@ repos:
       - id: check-ast
       - id: fix-byte-order-marker
       - id: check-added-large-files
+        exclude: ^tests/tests_exhaustively_output_data/__snapshots__/test_datasets.ambr
       - id: check-case-conflict
       - id: check-docstring-first
       - id: check-executables-have-shebangs
