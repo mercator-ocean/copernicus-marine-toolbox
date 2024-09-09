@@ -30,6 +30,7 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicusmarine")
+blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
 
 @click.group()
@@ -224,6 +225,14 @@ def cli_get() -> None:
     default=False,
     help="Option to get the index files of an INSITU dataset. Temporary option.",
 )
+@click.option(
+    "--dry-run",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Runs get query of the copernicusmarine"
+    " toolbox without downloading anything.",
+)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -265,6 +274,7 @@ def get(
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
+    dry_run: bool,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
@@ -285,7 +295,7 @@ def get(
         create_get_template()
         return
 
-    return get_function(
+    result = get_function(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -307,6 +317,8 @@ def get(
         sync=sync,
         sync_delete=sync_delete,
         index_parts=index_parts,
+        dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
+    blank_logger.info(result.model_dump_json(indent=2))

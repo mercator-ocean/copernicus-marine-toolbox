@@ -75,6 +75,7 @@ class SubsetRequest:
     netcdf_compression_enabled: bool = False
     netcdf_compression_level: Optional[int] = None
     netcdf3_compatible: bool = False
+    dry_run: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in SubsetRequest object.
@@ -217,6 +218,7 @@ class GetRequest:
     sync_delete: bool = False
     index_parts: bool = False
     direct_download: Optional[list[str]] = None
+    dry_run: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in GetRequest object.

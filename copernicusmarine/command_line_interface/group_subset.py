@@ -41,6 +41,7 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicusmarine")
+blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
 
 @click.group()
@@ -314,6 +315,14 @@ def cli_subset() -> None:
         "quotes ' in the request."
     ),
 )
+@click.option(
+    "--dry-run",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Runs get query of the copernicusmarine"
+    " toolbox without downloading anything.",
+)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -390,6 +399,7 @@ def subset(
     motu_api_request: Optional[str],
     force_download: bool,
     overwrite_output_data: bool,
+    dry_run: bool,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool = False,
@@ -410,7 +420,7 @@ def subset(
         create_subset_template()
         return
 
-    subset_function(
+    response = subset_function(
         dataset_id,
         dataset_version,
         dataset_part,
@@ -437,9 +447,11 @@ def subset(
         motu_api_request,
         force_download,
         overwrite_output_data,
+        dry_run,
         disable_progress_bar,
         staging,
         netcdf_compression_enabled,
         netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
     )
+    blank_logger.info(response.model_dump_json(indent=2))

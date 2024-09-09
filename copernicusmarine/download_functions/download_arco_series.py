@@ -9,7 +9,10 @@ import xarray
 from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
 from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.models import BoundingBoxMethod
+from copernicusmarine.core_functions.models import (
+    BoundingBoxMethod,
+    ResponseSubset,
+)
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     add_copernicusmarine_version_in_dataset_attributes,
@@ -29,6 +32,9 @@ from copernicusmarine.download_functions.subset_parameters import (
 from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
     FileFormat,
+    get_approximation_size_data_downloaded,
+    get_approximation_size_final_result,
+    get_dataset_coordinates_extent,
     get_filename,
     get_message_formatted_dataset_size_estimation,
     timestamp_or_datestring_to_datetime,
@@ -77,9 +83,10 @@ def download_dataset(
     netcdf_compression_level: Optional[int],
     netcdf3_compatible: bool,
     service: CopernicusMarineService,
-    force_download: bool = False,
-    overwrite_output_data: bool = False,
-):
+    dry_run: bool,
+    force_download: bool,
+    overwrite_output_data: bool,
+) -> ResponseSubset:
     dataset = _rechunk(
         open_dataset_from_arco_series(
             username=username,
@@ -98,13 +105,20 @@ def download_dataset(
 
     filename = get_filename(output_filename, dataset, dataset_id, file_format)
     output_path = pathlib.Path(output_directory, filename)
+    final_result_size_estimation = get_approximation_size_final_result(dataset)
+    data_needed_approximation = get_approximation_size_data_downloaded(
+        dataset, service
+    )
+    message_formatted_dataset_size_estimation = (
+        get_message_formatted_dataset_size_estimation(
+            final_result_size_estimation, data_needed_approximation
+        )
+    )
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
     if not force_download:
         logger.info(dataset)
-        logger.info(
-            get_message_formatted_dataset_size_estimation(dataset, service)
-        )
+        logger.info(message_formatted_dataset_size_estimation)
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
             default=True,
@@ -112,15 +126,17 @@ def download_dataset(
             err=True,
         )
     else:
-        logger.info(
-            get_message_formatted_dataset_size_estimation(dataset, service)
-        )
-    logger.info("Writing to local storage. Please wait...")
+        logger.info(message_formatted_dataset_size_estimation)
 
     output_path = get_unique_filename(
         filepath=output_path, overwrite_option=overwrite_output_data
     )
-
+    response = ResponseSubset(
+        output=str(output_path),
+        size=final_result_size_estimation,
+        data_needed=data_needed_approximation,
+        coodinates_extent=get_dataset_coordinates_extent(dataset),
+    )
     delayed = get_delayed_download(
         dataset,
         output_path,
@@ -128,10 +144,13 @@ def download_dataset(
         netcdf_compression_level,
         netcdf3_compatible,
     )
+    if dry_run:
+        return response
+    logger.info("Writing to local storage. Please wait...")
     download_delayed_dataset(delayed, disable_progress_bar)
     logger.info(f"Successfully downloaded to {output_path}")
 
-    return output_path
+    return response
 
 
 def download_zarr(
@@ -142,7 +161,7 @@ def download_zarr(
     disable_progress_bar: bool,
     dataset_valid_start_date: Optional[Union[str, int]],
     service: CopernicusMarineService,
-):
+) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
             minimum_latitude=subset_request.minimum_latitude,
@@ -182,7 +201,7 @@ def download_zarr(
     variables = subset_request.variables
     force_download = subset_request.force_download
 
-    output_path = download_dataset(
+    response = download_dataset(
         username=username,
         password=password,
         dataset_id=dataset_id,
@@ -201,9 +220,10 @@ def download_zarr(
         netcdf_compression_enabled=subset_request.netcdf_compression_enabled,
         netcdf_compression_level=subset_request.netcdf_compression_level,
         netcdf3_compatible=subset_request.netcdf3_compatible,
+        dry_run=subset_request.dry_run,
         service=service,
     )
-    return output_path
+    return response
 
 
 def open_dataset_from_arco_series(

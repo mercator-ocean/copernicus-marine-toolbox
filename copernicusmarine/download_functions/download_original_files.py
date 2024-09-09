@@ -21,12 +21,12 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS,
 )
+from copernicusmarine.core_functions.models import FileGet, ResponseGet
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
 )
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
-    flatten,
     get_unique_filename,
     parse_access_dataset_url,
     timestamp_parser,
@@ -48,7 +48,7 @@ def download_original_files(
     get_request: GetRequest,
     disable_progress_bar: bool,
     create_file_list: Optional[str],
-) -> list[pathlib.Path]:
+) -> ResponseGet:
     files_not_found: list[str] = []
     filenames_in_sync_ignored: list[str] = []
     total_size: float = 0.0
@@ -110,7 +110,7 @@ def download_original_files(
         elif not get_request.direct_download or len(files_not_found) == len(
             get_request.direct_download
         ):
-            return []
+            return ResponseGet(files=[])
     message = _create_information_message_before_download(
         filenames_in, sizes, last_modified_datetimes, total_size
     )
@@ -123,6 +123,22 @@ def download_original_files(
             if not get_request.sync
             else False
         ),
+    )
+    response = ResponseGet(
+        files=[
+            FileGet(
+                url=s3_url,
+                size=size,
+                last_modified=last_modified.to_iso8601_string(),
+                output=str(filename_out),
+            )
+            for s3_url, size, last_modified, filename_out in zip(
+                filenames_in,
+                sizes,
+                last_modified_datetimes,
+                filenames_out,
+            )
+        ]
     )
     if not get_request.force_download and total_size:
         logger.info(message)
@@ -150,7 +166,7 @@ def download_original_files(
     if not total_size:
         logger.info("No data to download")
         if not files_to_delete:
-            return []
+            return ResponseGet(files=[])
     if not get_request.force_download:
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
@@ -164,7 +180,9 @@ def download_original_files(
     if get_request.sync_delete and files_to_delete:
         for file_to_delete in files_to_delete:
             file_to_delete.unlink()
-    return download_files(
+    if get_request.dry_run:
+        return response
+    download_files(
         username,
         endpoint,
         bucket,
@@ -172,6 +190,7 @@ def download_original_files(
         filenames_out,
         disable_progress_bar,
     )
+    return response
 
 
 def _get_files_to_delete_with_sync(
@@ -199,7 +218,7 @@ def download_files(
     filenames_in: List[str],
     filenames_out: List[pathlib.Path],
     disable_progress_bar: bool,
-) -> list[pathlib.Path]:
+) -> None:
     nfiles_per_process, nfiles = 1, len(filenames_in)
     indexes = append(
         arange(0, nfiles, nfiles_per_process, dtype=int),
@@ -246,14 +265,11 @@ def download_files(
                 groups_out_files,
             ),
         )
-    download_summary = list(
-        tqdm(
-            download_summary_list,
-            total=len(groups_in_files),
-            disable=disable_progress_bar,
-        )
+    tqdm(
+        download_summary_list,
+        total=len(groups_in_files),
+        disable=disable_progress_bar,
     )
-    return flatten(download_summary)
 
 
 def _download_header(

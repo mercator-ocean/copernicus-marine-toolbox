@@ -18,6 +18,7 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from copernicusmarine.core_functions.models import (
     BoundingBoxMethod,
+    ResponseSubset,
     SubsetMethod,
 )
 from copernicusmarine.core_functions.services_utils import (
@@ -68,12 +69,13 @@ def subset_function(
     motu_api_request: Optional[str],
     force_download: bool,
     overwrite_output_data: bool,
+    dry_run: bool,
     disable_progress_bar: bool,
     staging: bool,
     netcdf_compression_enabled: bool,
     netcdf_compression_level: Optional[int],
     netcdf3_compatible: bool,
-) -> pathlib.Path:
+) -> ResponseSubset:
     VersionVerifier.check_version_subset(staging)
     if staging:
         logger.warning(
@@ -120,6 +122,7 @@ def subset_function(
         "netcdf_compression_enabled": netcdf_compression_enabled,
         "netcdf_compression_level": netcdf_compression_level,
         "netcdf3_compatible": netcdf3_compatible,
+        "dry_run": dry_run,
     }
     subset_request.update(request_update_dict)
     if not subset_request.dataset_id:
@@ -189,7 +192,7 @@ def subset_function(
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.ZARR
         ):
-            output_path = download_zarr(
+            response = download_zarr(
                 username,
                 password,
                 subset_request,
@@ -200,7 +203,7 @@ def subset_function(
             )
     else:
         raise ServiceNotSupported(retrieval_service.service_type)
-    return output_path
+    return response
 
 
 def create_subset_template() -> None:

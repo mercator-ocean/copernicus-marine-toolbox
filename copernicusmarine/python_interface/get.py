@@ -1,5 +1,5 @@
 import pathlib
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from copernicusmarine.core_functions.deprecated import (
     deprecated_python_option,
@@ -10,6 +10,7 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.get import get_function
+from copernicusmarine.core_functions.models import ResponseGet
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -39,9 +40,10 @@ def get(
     index_parts: bool = False,
     sync: bool = False,
     sync_delete: bool = False,
+    dry_run: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
-) -> List[pathlib.Path]:
+) -> ResponseGet:
     """
     Fetches data from the Copernicus Marine server based on the provided parameters.
 
@@ -85,6 +87,10 @@ def get(
     :type sync: bool, optional
     :param sync_delete: If True, delete local files that are not present on the remote server while applying sync.
     :type sync_delete: bool, optional
+    :param dry_run: If True, runs get query of the copernicusmarine toolbox without downloading anything.
+    :type dry_run: bool, optional
+    :param disable_progress_bar: Flag to hide progress bar.
+    :type disable_progress_bar: bool, optional
 
     :returns: A list of paths to the downloaded files.
     :rtype: List[pathlib.Path]
@@ -125,6 +131,7 @@ def get(
         index_parts=index_parts,
         sync=sync,
         sync_delete=sync_delete,
+        dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
