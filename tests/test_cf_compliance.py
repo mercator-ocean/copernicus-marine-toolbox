@@ -57,5 +57,14 @@ class TestCFCompliance:
         f = open(f"{tmp_path}/{output_filename}_checked.json")
         data = json.load(f)
 
-        assert data["cf:1.7"]["all_priorities"] == snapshot
-        assert data["cf:1.7"]["high_priorities"] == snapshot
+        list_msgs = []
+        for diccionari in data["cf:1.7"]["all_priorities"]:
+            print(type(diccionari))
+            if len(diccionari["msgs"]) > 0:
+                list_msgs.append(diccionari["name"])
+                list_msgs.append(diccionari["msgs"])
+
+        assert dataset_id == snapshot
+        assert data["cf:1.7"]["scored_points"] == snapshot
+        assert data["cf:1.7"]["possible_points"] == snapshot
+        assert list_msgs == snapshot
