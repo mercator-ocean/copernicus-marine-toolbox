@@ -142,7 +142,8 @@ class TestGetDirectDownload:
             overwrite_output_data=True,
             output_directory=tmp_path,
         )
-        assert set(get_result) == {
+        result_paths = [result.output for result in get_result.files]
+        assert set(result_paths) == {
             pathlib.Path(
                 f"{tmp_path}/"
                 f"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
@@ -156,7 +157,7 @@ class TestGetDirectDownload:
                 f"history/BO/AR_PR_BO_58US.nc"
             ),
         }
-        for file_path in get_result:
+        for file_path in result_paths:
             assert os.path.exists(file_path)
 
     def _assert_insitu_file_exists_locally(

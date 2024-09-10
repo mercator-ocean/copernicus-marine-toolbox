@@ -53,4 +53,9 @@ class TestGetIndexInsituFiles:
             force_download=True,
         )
         assert get_result is not None
-        assert all(map(lambda x: x.exists(), get_result))
+        assert all(
+            map(
+                lambda x: x.exists(),
+                [result.output for result in get_result.files],
+            )
+        )

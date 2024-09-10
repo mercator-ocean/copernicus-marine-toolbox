@@ -1,3 +1,4 @@
+import pathlib
 from typing import Literal, Optional, get_args
 
 from pydantic import BaseModel, model_serializer
@@ -27,7 +28,7 @@ class FileGet(BaseModel):
     #: Last modified date.
     last_modified: str
     #: Path to the local downloaded file
-    output: str
+    output: pathlib.Path
 
 
 class ResponseGet(BaseModel):
@@ -79,7 +80,7 @@ class ResponseSubset(BaseModel):
     """Metadata returned when using :func:`~copernicusmarine.subset`"""
 
     #: Path to the result file.
-    output: str
+    output: pathlib.Path
     #: Estimation of the size of the final result file.
     size: Optional[float]
     #: Estimation of the maximum amount of data needed to

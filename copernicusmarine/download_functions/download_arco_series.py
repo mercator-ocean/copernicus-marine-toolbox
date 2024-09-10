@@ -132,11 +132,16 @@ def download_dataset(
         filepath=output_path, overwrite_option=overwrite_output_data
     )
     response = ResponseSubset(
-        output=str(output_path),
+        output=output_path,
         size=final_result_size_estimation,
         data_needed=data_needed_approximation,
         coodinates_extent=get_dataset_coordinates_extent(dataset),
     )
+
+    if dry_run:
+        return response
+
+    logger.info("Writing to local storage. Please wait...")
     delayed = get_delayed_download(
         dataset,
         output_path,
@@ -144,9 +149,6 @@ def download_dataset(
         netcdf_compression_level,
         netcdf3_compatible,
     )
-    if dry_run:
-        return response
-    logger.info("Writing to local storage. Please wait...")
     download_delayed_dataset(delayed, disable_progress_bar)
     logger.info(f"Successfully downloaded to {output_path}")
 

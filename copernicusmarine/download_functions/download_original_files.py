@@ -130,7 +130,7 @@ def download_original_files(
                 url=s3_url,
                 size=size,
                 last_modified=last_modified.to_iso8601_string(),
-                output=str(filename_out),
+                output=filename_out,
             )
             for s3_url, size, last_modified, filename_out in zip(
                 filenames_in,
