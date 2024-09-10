@@ -265,10 +265,12 @@ def download_files(
                 groups_out_files,
             ),
         )
-    tqdm(
-        download_summary_list,
-        total=len(groups_in_files),
-        disable=disable_progress_bar,
+    list(
+        tqdm(
+            download_summary_list,
+            total=len(groups_in_files),
+            disable=disable_progress_bar,
+        )
     )
 
 

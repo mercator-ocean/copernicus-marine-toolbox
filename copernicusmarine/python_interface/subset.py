@@ -113,7 +113,7 @@ def subset(
     :type file_format: str, optional
     :param motu_api_request: MOTU API request string.
     :type motu_api_request: str, optional
-    :param dry_run: If True, runs get query of the copernicusmarine toolbox without downloading anything.
+    :param dry_run: If True, runs query without downloading data.
     :type dry_run: bool, optional
     :param netcdf_compression_enabled: Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the compression level.
     :type netcdf_compression_enabled: bool, optional

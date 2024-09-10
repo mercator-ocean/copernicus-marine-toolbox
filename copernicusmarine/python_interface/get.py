@@ -87,7 +87,7 @@ def get(
     :type sync: bool, optional
     :param sync_delete: If True, delete local files that are not present on the remote server while applying sync.
     :type sync_delete: bool, optional
-    :param dry_run: If True, runs get query of the copernicusmarine toolbox without downloading anything.
+    :param dry_run: If True, runs query without downloading data..
     :type dry_run: bool, optional
     :param disable_progress_bar: Flag to hide progress bar.
     :type disable_progress_bar: bool, optional

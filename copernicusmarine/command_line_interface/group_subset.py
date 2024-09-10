@@ -320,8 +320,7 @@ def cli_subset() -> None:
     type=bool,
     is_flag=True,
     default=False,
-    help="Runs get query of the copernicusmarine"
-    " toolbox without downloading anything.",
+    help="Runs query without downloading data.",
 )
 @tqdm_disable_option
 @click.option(
