@@ -59,7 +59,6 @@ class TestCFCompliance:
 
         list_msgs = []
         for diccionari in data["cf:1.7"]["all_priorities"]:
-            print(type(diccionari))
             if len(diccionari["msgs"]) > 0:
                 list_msgs.append(diccionari["name"])
                 list_msgs.append(diccionari["msgs"])
