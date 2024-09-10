@@ -128,7 +128,7 @@ def download_original_files(
         files=[
             FileGet(
                 url=s3_url,
-                size=size,
+                size=size_to_MB(size),
                 last_modified=last_modified.to_iso8601_string(),
                 output=filename_out,
             )
@@ -655,3 +655,7 @@ def format_file_size(
         size /= step
 
     return ("%." + str(decimals) + "f %s") % (size, largest_unit)
+
+
+def size_to_MB(size: float) -> float:
+    return size / 1024**2

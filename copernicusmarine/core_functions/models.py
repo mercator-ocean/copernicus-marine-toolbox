@@ -81,10 +81,10 @@ class ResponseSubset(BaseModel):
 
     #: Path to the result file.
     output: pathlib.Path
-    #: Estimation of the size of the final result file.
+    #: Estimation of the size of the final result file in MB.
     size: Optional[float]
     #: Estimation of the maximum amount of data needed to
-    #: get the final result.
+    #: get the final result in MB.
     data_needed: Optional[float]
     #: The bounds of the subsetted dataset.
     coodinates_extent: DatasetCoordinatesExtent
