@@ -1,7 +1,11 @@
 name: Run tests on all datasets
 
 on:
-  workflow_dispatch: # Triggered manually
+    pull_request:
+      branches:
+        - "copernicusmarine-toolbox-v2"
+
+# to change to be triggered manually
 
 jobs:
   tests:
