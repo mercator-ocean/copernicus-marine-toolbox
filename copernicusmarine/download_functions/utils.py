@@ -2,7 +2,7 @@ import bisect
 import logging
 import math
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import xarray
 from pendulum import DateTime
@@ -13,7 +13,10 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_FILE_EXTENSIONS,
+    DatasetCoordinatesExtent,
     FileFormat,
+    GeographicalExtent,
+    TimeExtent,
 )
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
@@ -95,14 +98,14 @@ def _build_filename_from_dataset(
     return filename + get_file_extension(file_format)
 
 
-def _get_min_coordinate(dataset: xarray.Dataset, coordinate: str):
+def _get_min_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
     for coord_label in COORDINATES_LABEL[coordinate]:
         if coord_label in dataset.sizes:
             return min(dataset[coord_label].values)
     return None
 
 
-def _get_max_coordinate(dataset: xarray.Dataset, coordinate: str):
+def _get_max_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
     for coord_label in COORDINATES_LABEL[coordinate]:
         if coord_label in dataset.sizes:
             return max(dataset[coord_label].values)
@@ -176,13 +179,65 @@ def _format_datetimes(
         return formatted_datetime
 
 
-def get_message_formatted_dataset_size_estimation(
+def get_dataset_coordinates_extent(
     dataset: xarray.Dataset,
-    service: CopernicusMarineService,
+) -> DatasetCoordinatesExtent:
+    minimum_time = _get_min_coordinate(dataset, "time")
+    if minimum_time:
+        minimum_time = timestamp_or_datestring_to_datetime(
+            minimum_time
+        ).to_iso8601_string()
+    maximum_time = _get_max_coordinate(dataset, "time")
+    if maximum_time:
+        maximum_time = timestamp_or_datestring_to_datetime(
+            maximum_time
+        ).to_iso8601_string()
+    coordinates_extent = DatasetCoordinatesExtent(
+        longitude=GeographicalExtent(
+            minimum=_get_min_coordinate(dataset, "longitude"),
+            maximum=_get_max_coordinate(dataset, "longitude"),
+        ),
+        latitude=GeographicalExtent(
+            minimum=_get_min_coordinate(dataset, "latitude"),
+            maximum=_get_max_coordinate(dataset, "latitude"),
+        ),
+        time=TimeExtent(
+            minimum=minimum_time,
+            maximum=maximum_time,
+        ),
+    )
+    if "depth" in dataset.sizes:
+        coordinates_extent.depth = GeographicalExtent(
+            minimum=_get_min_coordinate(dataset, "depth"),
+            maximum=_get_max_coordinate(dataset, "depth"),
+        )
+    elif "elevation" in dataset.sizes:
+        coordinates_extent.elevation = GeographicalExtent(
+            minimum=_get_min_coordinate(dataset, "depth"),
+            maximum=_get_max_coordinate(dataset, "depth"),
+        )
+    return coordinates_extent
+
+
+def get_message_formatted_dataset_size_estimation(
+    estimation_size_final_result: Optional[float],
+    estimation_data_downloaded: Optional[float],
 ) -> str:
-    # TODO: probably should try except this
-    # We don't want this to block the user if it fails
-    estimated_size_message = "Estimated size of the dataset file is "
+    return (
+        f"Estimated size of the dataset file is "
+        f"{estimation_size_final_result:.3f} MB"
+        f"\nEstimated size of the data that needs "
+        f"to be downloaded to obtain the result:"
+        f" {estimation_data_downloaded:.0f} MB"
+        "\nThis a very rough estimation and usually"
+        " its higher than the actual size of the"
+        " data that needs to be downloaded."
+    )
+
+
+def get_approximation_size_final_result(
+    dataset: xarray.Dataset,
+) -> Optional[float]:
     coordinates_size = 1
     for coordinate_name in dataset.sizes:
         coordinates_size *= dataset[coordinate_name].size
@@ -192,8 +247,12 @@ def get_message_formatted_dataset_size_estimation(
         * dataset[list(dataset.data_vars)[0]].dtype.itemsize
         / 1048e3
     )
-    estimated_size_message += f"{estimate_size:.3f} MB"
+    return estimate_size
 
+
+def get_approximation_size_data_downloaded(
+    dataset: xarray.Dataset, service: CopernicusMarineService
+) -> Optional[float]:
     temp_dataset = dataset.copy()
     if "elevation" in dataset.sizes:
         temp_dataset["elevation"] = temp_dataset.elevation * (-1)
@@ -227,7 +286,7 @@ def get_message_formatted_dataset_size_estimation(
                 temp_dataset, coordinate, chunking_length
             )
             if number_of_chunks_needed is None:
-                return early_exit_message(estimated_size_message)
+                return None
             coordinates_size *= number_of_chunks_needed * chunking_length
         download_estimated_size += (
             coordinates_size
@@ -235,17 +294,7 @@ def get_message_formatted_dataset_size_estimation(
             / 1048e3
         )
 
-    estimated_size_message += (
-        f"\nEstimated size of the data that needs "
-        f"to be downloaded to obtain the result:"
-        f" {download_estimated_size:.0f} MB"
-    )
-    estimated_size_message += (
-        "\nThis a very rough estimation and usually"
-        " its higher than the actual size of the"
-        " data that needs to be downloaded."
-    )
-    return estimated_size_message
+    return download_estimated_size
 
 
 def get_number_of_chunks_for_coordinate(

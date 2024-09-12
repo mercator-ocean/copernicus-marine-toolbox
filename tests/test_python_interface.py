@@ -37,7 +37,12 @@ class TestPythonInterface:
             force_download=True,
         )
         assert get_result is not None
-        assert all(map(lambda x: x.exists(), get_result))
+        assert all(
+            map(
+                lambda x: x.exists(),
+                [result.output for result in get_result.files],
+            )
+        )
 
     @mock.patch("os.utime", side_effect=PermissionError)
     def test_permission_denied_for_modification_date(
@@ -78,7 +83,7 @@ class TestPythonInterface:
         )
 
         assert subset_result is not None
-        assert subset_result.exists()
+        assert subset_result.output.exists()
 
     def test_open_dataset(self):
         dataset = open_dataset(

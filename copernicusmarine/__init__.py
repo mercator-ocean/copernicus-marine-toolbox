@@ -9,6 +9,14 @@ __version__ = version("copernicusmarine")
 logging.config.dictConfig(logging_configuration_dict)
 logging.Formatter.converter = time.gmtime
 
+from copernicusmarine.core_functions.models import (
+    DatasetCoordinatesExtent,
+    FileGet,
+    GeographicalExtent,
+    ResponseGet,
+    ResponseSubset,
+    TimeExtent,
+)
 from copernicusmarine.python_interface.describe import describe
 from copernicusmarine.python_interface.get import get
 from copernicusmarine.python_interface.login import login
