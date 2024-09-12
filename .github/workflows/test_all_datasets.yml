@@ -1,39 +1,34 @@
-# name: Run tests
+name: Run tests on all datasets
 
-# on:
-#   pull_request:
-#     branches:
-#       - "main"
-#       - "copernicusmarine-toolbox-v2"
-#       - "pre-releases/**"
+on:
+  workflow_dispatch: # Triggered manually
 
-# jobs:
-#   tests:
-#     if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
-#     runs-on: self-hosted
-#     timeout-minutes: 30
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
 
-#     steps:
-#       - name: Check out code
-#         uses: actions/checkout@v4
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
 
-#       - uses: mamba-org/setup-micromamba@v1
-#         with:
-#           micromamba-version: '1.5.6-0'
-#           micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-#           environment-file: conda_environment_test_all_datasets.yaml
-#           environment-name: copernicusmarine_test
-#           condarc-file: .condarc
-#           cache-environment: true
-#           post-cleanup: 'all'
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment_test_all_datasets.yaml
+          environment-name: copernicusmarine_test
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
 
-#       - name: Install netcdf
-#         run: sudo apt-get install netcdf-bin
-#         shell: bash
+      - name: Install netcdf
+        run: sudo apt-get install netcdf-bin
+        shell: bash
 
-#       - name: Run tests
-#         env:
-#           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-#           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-#         run: make run-tests-all-datasets
-#         shell: micromamba-shell {0}
+      - name: Run tests
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        run: make run-tests-all-datasets
+        shell: micromamba-shell {0}
