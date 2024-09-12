@@ -18,7 +18,9 @@ author = "Mercator Ocean International"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx_click",
+    "numpydoc",
 ]
+numpydoc_show_class_members = False
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

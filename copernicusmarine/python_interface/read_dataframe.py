@@ -72,50 +72,62 @@ def read_dataframe(
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
 
-    Unlike “lazy-loading”, the data is loaded as soon as this function is executed, which may be preferable when rapid access to the entire dataset is required, but may require careful memory management.
+    Unlike "lazy-loading," the data is loaded as soon as this function is executed,
+    which may be preferable when rapid access to the entire dataset is required,
+    but may require careful memory management.
 
-    :param dataset_id: The identifier of the dataset.
-    :type dataset_id: str, optional
-    :param dataset_version: Force a specific dataset version.
-    :type dataset_version: str, optional
-    :param dataset_part: Force a specific dataset part.
-    :type dataset_part: str, optional
-    :param username: Username for authentication.
-    :type username: str, optional
-    :param password: Password for authentication.
-    :type password: str, optional
-    :param variables: List of variable names to load.
-    :type variables: List[str], optional
-    :param minimum_longitude: Minimum longitude for spatial subset.
-    :type minimum_longitude: float, optional
-    :param maximum_longitude: Maximum longitude for spatial subset.
-    :type maximum_longitude: float, optional
-    :param minimum_latitude: Minimum latitude for spatial subset.
-    :type minimum_latitude: float, optional
-    :param maximum_latitude: Maximum latitude for spatial subset.
-    :type maximum_latitude: float, optional
-    :param minimum_depth: Minimum depth for vertical subset.
-    :type minimum_depth: float, optional
-    :param maximum_depth: Maximum depth for vertical subset.
-    :type maximum_depth: float, optional
-    :param vertical_dimension_as_originally_produced: If True, use the vertical dimension as originally produced.
-    :type vertical_dimension_as_originally_produced: bool, optional
-    :param start_datetime: Start datetime for temporal subset.
-    :type start_datetime: datetime, optional
-    :param end_datetime: End datetime for temporal subset.
-    :type end_datetime: datetime, optional
-    :param bounding_box_method: The bounding box method when requesting the dataset. If 'inside' (by default), it will returned the inside interval. If 'nearest', the limits of the requested interval will be the nearest points of the dataset. If 'outside', it will return all the data such that the requested interval is fully included. Check the documentation for more details.
-    :type bounding_box_method: str, optional
-    :param subset_method: The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.
-    :type subset_method: str, optional
-    :param force_service: Force a specific service for data download.
-    :type force_service: str, optional
-    :param credentials_file: Path to a credentials file for authentication.
-    :type credentials_file: Union[pathlib.Path, str], optional
+    Parameters
+    ----------
+    dataset_id : str, optional
+        The identifier of the dataset.
+    dataset_version : str, optional
+        Force a specific dataset version.
+    dataset_part : str, optional
+        Force a specific dataset part.
+    username : str, optional
+        Username for authentication.
+    password : str, optional
+        Password for authentication.
+    variables : List[str], optional
+        List of variable names to load.
+    minimum_longitude : float, optional
+        Minimum longitude for spatial subset.
+    maximum_longitude : float, optional
+        Maximum longitude for spatial subset.
+    minimum_latitude : float, optional
+        Minimum latitude for spatial subset.
+    maximum_latitude : float, optional
+        Maximum latitude for spatial subset.
+    minimum_depth : float, optional
+        Minimum depth for vertical subset.
+    maximum_depth : float, optional
+        Maximum depth for vertical subset.
+    vertical_dimension_as_originally_produced : bool, optional
+        If True, use the vertical dimension as originally produced.
+    start_datetime : datetime, optional
+        Start datetime for temporal subset.
+    end_datetime : datetime, optional
+        End datetime for temporal subset.
+    bounding_box_method : str, optional
+        The bounding box method when requesting the dataset. If 'inside' (by default),
+        it will return the inside interval. If 'nearest', the limits of the requested
+        interval will be the nearest points of the dataset. If 'outside', it will return
+        all the data such that the requested interval is fully included. Check the documentation
+        for more details.
+    subset_method : str, optional
+        The subset method ('nearest' or 'strict') when requesting the dataset.
+        If strict, you can only request dimensions strictly inside the dataset.
+    force_service : str, optional
+        Force a specific service for data download.
+    credentials_file : Union[pathlib.Path, str], optional
+        Path to a credentials file for authentication.
 
-    :returns: A DataFrame containing the loaded Copernicus Marine data.
-    :rtype: pandas.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the loaded Copernicus Marine data.
     """  # noqa
+
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
     credentials_file = (

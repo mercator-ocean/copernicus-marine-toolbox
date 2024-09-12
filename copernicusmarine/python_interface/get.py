@@ -47,53 +47,61 @@ def get(
     """
     Fetches data from the Copernicus Marine server based on the provided parameters.
 
-    :param dataset_id: The unique identifier of the dataset.
-    :type dataset_id: str, optional
-    :param dataset_version: Force the use of a specific dataset version.
-    :type dataset_version: str, optional
-    :param dataset_part: Force the use of a specific dataset part.
-    :type dataset_part: str, optional
-    :param username: The username for authentication. See also :func:`~copernicusmarine.login`.
-    :type username: str, optional
-    :param password: The password for authentication. See also :func:`~copernicusmarine.login`.
-    :type password: str, optional
-    :param output_directory: The directory where downloaded files will be saved.
-    :type output_directory: Union[pathlib.Path, str], optional
-    :param credentials_file: Path to a file containing authentication credentials.
-    :type credentials_file: Union[pathlib.Path, str], optional
-    :param force_download: Skip confirmation before download.
-    :type force_download: bool, optional
-    :param overwrite_output_data: If True, overwrite existing output files.
-    :type overwrite_output_data: bool, optional
-    :param request_file: Path to a file containing request parameters. For more information, please refer to the README.
-    :type request_file: Union[pathlib.Path, str], optional
-    :param service: Force the use of a specific service.
-    :type service: str, optional
-    :param no_directories: If True, downloaded files will not be organized into directories.
-    :type no_directories: bool, optional
-    :param show_outputnames: If True, display the names of the downloaded files.
-    :type show_outputnames: bool, optional
-    :param filter: Apply a filter to the downloaded data.
-    :type filter: str, optional
-    :param regex: Apply a regular expression filter to the downloaded data.
-    :type regex: str, optional
-    :param file_list: Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the --dataset-id. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
-    :type file_list: Union[pathlib.Path, str], optional
-    :param create_file_list: Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file in the directory specified with the --output-directory option (default to current directory). If specified, no other action will be performed.
-    :type create_file_list: str, optional
-    :param index_parts: If True, download index files. Only for INSITU datasets. Temporary option.
-    :type index_parts: bool, optional
-    :param sync: If True, synchronize the local directory with the remote directory.
-    :type sync: bool, optional
-    :param sync_delete: If True, delete local files that are not present on the remote server while applying sync.
-    :type sync_delete: bool, optional
-    :param dry_run: If True, runs query without downloading data..
-    :type dry_run: bool, optional
-    :param disable_progress_bar: Flag to hide progress bar.
-    :type disable_progress_bar: bool, optional
+    Parameters
+    ----------
+    dataset_id : str, optional
+        The unique identifier of the dataset.
+    dataset_version : str, optional
+        Force the use of a specific dataset version.
+    dataset_part : str, optional
+        Force the use of a specific dataset part.
+    username : str, optional
+        The username for authentication. See also :func:`~copernicusmarine.login`.
+    password : str, optional
+        The password for authentication. See also :func:`~copernicusmarine.login`.
+    output_directory : Union[pathlib.Path, str], optional
+        The directory where downloaded files will be saved.
+    credentials_file : Union[pathlib.Path, str], optional
+        Path to a file containing authentication credentials.
+    force_download : bool, optional
+        Skip confirmation before download.
+    overwrite_output_data : bool, optional
+        If True, overwrite existing output files.
+    request_file : Union[pathlib.Path, str], optional
+        Path to a file containing request parameters. For more information, please refer to the README.
+    service : str, optional
+        Force the use of a specific service.
+    no_directories : bool, optional
+        If True, downloaded files will not be organized into directories.
+    show_outputnames : bool, optional
+        If True, display the names of the downloaded files.
+    filter : str, optional
+        Apply a filter to the downloaded data.
+    regex : str, optional
+        Apply a regular expression filter to the downloaded data.
+    file_list : Union[pathlib.Path, str], optional
+        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly.
+        These files must be from the specified dataset using the --dataset-id. If no files can be found,
+        the Toolbox will list all files on the remote server and attempt to find a match.
+    create_file_list : str, optional
+        Option to only create a file containing the names of the targeted files instead of downloading them.
+        It writes the file in the directory specified with the --output-directory option (default to current directory).
+        If specified, no other action will be performed.
+    index_parts : bool, optional
+        If True, download index files. Only for INSITU datasets. Temporary option.
+    sync : bool, optional
+        If True, synchronize the local directory with the remote directory.
+    sync_delete : bool, optional
+        If True, delete local files that are not present on the remote server while applying sync.
+    dry_run : bool, optional
+        If True, runs query without downloading data.
+    disable_progress_bar : bool, optional
+        Flag to hide progress bar.
 
-    :returns: A list of paths to the downloaded files.
-    :rtype: List[pathlib.Path]
+    Returns
+    -------
+    ResponseGet
+        A list of files that were downloaded and some metadata.
     """  # noqa
     output_directory = (
         pathlib.Path(output_directory) if output_directory else None

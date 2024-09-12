@@ -11,8 +11,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=9dd21eaa" />
-    
-    
+
+
 
 
 <style>
@@ -20,29 +20,29 @@
     --color-code-background: #eeffcc;
   --color-code-foreground: black;
   --color-brand-primary: #607fad;
-  
+
   }
   @media not print {
     body[data-theme="dark"] {
       --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
-  
+
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
         --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
-  
+
       }
     }
   }
 </style></head>
   <body>
-    
+
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
-    
+
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
@@ -188,15 +188,15 @@
   </header>
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
-      
+
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
-  
+
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../_static/favicon_cmems.ico" alt="Logo"/>
   </div>
-  
+
   <span class="sidebar-brand-text">Copernicus Marine Toolbox  documentation</span>
-  
+
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -217,7 +217,7 @@
     <a href="https://github.com/mercator-ocean/copernicus-marine-toolbox"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.49933 0.25C3.49635 0.25 0.25 3.49593 0.25 7.50024C0.25 10.703 2.32715 13.4206 5.2081 14.3797C5.57084 14.446 5.70302 14.2222 5.70302 14.0299C5.70302 13.8576 5.69679 13.4019 5.69323 12.797C3.67661 13.235 3.25112 11.825 3.25112 11.825C2.92132 10.9874 2.44599 10.7644 2.44599 10.7644C1.78773 10.3149 2.49584 10.3238 2.49584 10.3238C3.22353 10.375 3.60629 11.0711 3.60629 11.0711C4.25298 12.1788 5.30335 11.8588 5.71638 11.6732C5.78225 11.205 5.96962 10.8854 6.17658 10.7043C4.56675 10.5209 2.87415 9.89918 2.87415 7.12104C2.87415 6.32925 3.15677 5.68257 3.62053 5.17563C3.54576 4.99226 3.29697 4.25521 3.69174 3.25691C3.69174 3.25691 4.30015 3.06196 5.68522 3.99973C6.26337 3.83906 6.8838 3.75895 7.50022 3.75583C8.1162 3.75895 8.73619 3.83906 9.31523 3.99973C10.6994 3.06196 11.3069 3.25691 11.3069 3.25691C11.7026 4.25521 11.4538 4.99226 11.3795 5.17563C11.8441 5.68257 12.1245 6.32925 12.1245 7.12104C12.1245 9.9063 10.4292 10.5192 8.81452 10.6985C9.07444 10.9224 9.30633 11.3648 9.30633 12.0413C9.30633 13.0102 9.29742 13.7922 9.29742 14.0299C9.29742 14.2239 9.42828 14.4496 9.79591 14.3788C12.6746 13.4179 14.75 10.7025 14.75 7.50024C14.75 3.49593 11.5036 0.25 7.49933 0.25Z" fill="black" fill-rule="evenodd" clip-rule="evenodd"></path></svg> Source Code</a>
 </div>
       </div>
-      
+
     </div>
   </aside>
   <div class="main">
@@ -261,20 +261,26 @@
 based on specified parameters and options.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>include_description</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include description for each product. Defaults to False.</p></li>
-<li><p><strong>include_datasets</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include dataset information. Defaults to False.</p></li>
-<li><p><strong>include_keywords</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include keywords for each product. Defaults to False.</p></li>
-<li><p><strong>include_versions</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include all versions of each dataset. Defaults to False.</p></li>
-<li><p><strong>include_all</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include all metadata information. Defaults to False.</p></li>
-<li><p><strong>contains</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of strings to filter items containing these values. Defaults to [].</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>include_description</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to include description for each product. Defaults to False.</p>
+</dd>
+<dt><strong>include_datasets</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to include dataset information. Defaults to False.</p>
+</dd>
+<dt><strong>include_keywords</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to include keywords for each product. Defaults to False.</p>
+</dd>
+<dt><strong>include_versions</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to include all versions of each dataset. Defaults to False.</p>
+</dd>
+<dt><strong>include_all</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to include all metadata information. Defaults to False.</p>
+</dd>
+<dt><strong>contains</strong><span class="classifier">list[str], optional</span></dt><dd><p>List of strings to filter items containing these values. Defaults to [].</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary containing the retrieved metadata information.</p>
+<dd class="field-even"><dl class="simple">
+<dt>dict[str, Any]</dt><dd><p>A dictionary containing the retrieved metadata information.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict[str, Any]</p>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -285,36 +291,62 @@ based on specified parameters and options.</p>
 <dd><p>Fetches data from the Copernicus Marine server based on the provided parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The unique identifier of the dataset.</p></li>
-<li><p><strong>dataset_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific dataset version.</p></li>
-<li><p><strong>dataset_part</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific dataset part.</p></li>
-<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p></li>
-<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – The password for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p></li>
-<li><p><strong>output_directory</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The directory where downloaded files will be saved.</p></li>
-<li><p><strong>credentials_file</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a file containing authentication credentials.</p></li>
-<li><p><strong>force_download</strong> (<em>bool</em><em>, </em><em>optional</em>) – Skip confirmation before download.</p></li>
-<li><p><strong>overwrite_output_data</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, overwrite existing output files.</p></li>
-<li><p><strong>request_file</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a file containing request parameters. For more information, please refer to the README.</p></li>
-<li><p><strong>service</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific service.</p></li>
-<li><p><strong>no_directories</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, downloaded files will not be organized into directories.</p></li>
-<li><p><strong>show_outputnames</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, display the names of the downloaded files.</p></li>
-<li><p><strong>filter</strong> (<em>str</em><em>, </em><em>optional</em>) – Apply a filter to the downloaded data.</p></li>
-<li><p><strong>regex</strong> (<em>str</em><em>, </em><em>optional</em>) – Apply a regular expression filter to the downloaded data.</p></li>
-<li><p><strong>file_list</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the –dataset-id. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.</p></li>
-<li><p><strong>create_file_list</strong> (<em>str</em><em>, </em><em>optional</em>) – Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file in the directory specified with the –output-directory option (default to current directory). If specified, no other action will be performed.</p></li>
-<li><p><strong>index_parts</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, download index files. Only for INSITU datasets. Temporary option.</p></li>
-<li><p><strong>sync</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, synchronize the local directory with the remote directory.</p></li>
-<li><p><strong>sync_delete</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, delete local files that are not present on the remote server while applying sync.</p></li>
-<li><p><strong>dry_run</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, runs query without downloading data..</p></li>
-<li><p><strong>disable_progress_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to hide progress bar.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dataset_id</strong><span class="classifier">str, optional</span></dt><dd><p>The unique identifier of the dataset.</p>
+</dd>
+<dt><strong>dataset_version</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific dataset version.</p>
+</dd>
+<dt><strong>dataset_part</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific dataset part.</p>
+</dd>
+<dt><strong>username</strong><span class="classifier">str, optional</span></dt><dd><p>The username for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p>
+</dd>
+<dt><strong>password</strong><span class="classifier">str, optional</span></dt><dd><p>The password for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p>
+</dd>
+<dt><strong>output_directory</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>The directory where downloaded files will be saved.</p>
+</dd>
+<dt><strong>credentials_file</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a file containing authentication credentials.</p>
+</dd>
+<dt><strong>force_download</strong><span class="classifier">bool, optional</span></dt><dd><p>Skip confirmation before download.</p>
+</dd>
+<dt><strong>overwrite_output_data</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, overwrite existing output files.</p>
+</dd>
+<dt><strong>request_file</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a file containing request parameters. For more information, please refer to the README.</p>
+</dd>
+<dt><strong>service</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific service.</p>
+</dd>
+<dt><strong>no_directories</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, downloaded files will not be organized into directories.</p>
+</dd>
+<dt><strong>show_outputnames</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, display the names of the downloaded files.</p>
+</dd>
+<dt><strong>filter</strong><span class="classifier">str, optional</span></dt><dd><p>Apply a filter to the downloaded data.</p>
+</dd>
+<dt><strong>regex</strong><span class="classifier">str, optional</span></dt><dd><p>Apply a regular expression filter to the downloaded data.</p>
+</dd>
+<dt><strong>file_list</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly.
+These files must be from the specified dataset using the –dataset-id. If no files can be found,
+the Toolbox will list all files on the remote server and attempt to find a match.</p>
+</dd>
+<dt><strong>create_file_list</strong><span class="classifier">str, optional</span></dt><dd><p>Option to only create a file containing the names of the targeted files instead of downloading them.
+It writes the file in the directory specified with the –output-directory option (default to current directory).
+If specified, no other action will be performed.</p>
+</dd>
+<dt><strong>index_parts</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, download index files. Only for INSITU datasets. Temporary option.</p>
+</dd>
+<dt><strong>sync</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, synchronize the local directory with the remote directory.</p>
+</dd>
+<dt><strong>sync_delete</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, delete local files that are not present on the remote server while applying sync.</p>
+</dd>
+<dt><strong>dry_run</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, runs query without downloading data.</p>
+</dd>
+<dt><strong>disable_progress_bar</strong><span class="classifier">bool, optional</span></dt><dd><p>Flag to hide progress bar.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of paths to the downloaded files.</p>
+<dd class="field-even"><dl class="simple">
+<dt>ResponseGet</dt><dd><p>A list of files that were downloaded and some metadata.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[pathlib.Path]</p>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -325,13 +357,20 @@ based on specified parameters and options.</p>
 <dd><p>Create a configuration file with your Copernicus Marine credentials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, or else ask for user input.</p></li>
-<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, or else ask for user input.</p></li>
-<li><p><strong>configuration_file_directory</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em>) – Path to the directory where the configuration file is stored.</p></li>
-<li><p><strong>overwrite_configuration_file</strong> (<em>bool</em>) – Flag to skip confirmation before overwriting configuration file.</p></li>
-<li><p><strong>skip_if_user_logged_in</strong> (<em>bool</em>) – Flag to skip the logging process if the user is already logged in.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>username</strong><span class="classifier">str, optional</span></dt><dd><p>If not set, searches for the environment variable <cite>COPERNICUSMARINE_SERVICE_USERNAME</cite>,
+or else asks for user input.</p>
+</dd>
+<dt><strong>password</strong><span class="classifier">str, optional</span></dt><dd><p>If not set, searches for the environment variable <cite>COPERNICUSMARINE_SERVICE_PASSWORD</cite>,
+or else asks for user input.</p>
+</dd>
+<dt><strong>configuration_file_directory</strong><span class="classifier">Union[pathlib.Path, str]</span></dt><dd><p>Path to the directory where the configuration file is stored.</p>
+</dd>
+<dt><strong>overwrite_configuration_file</strong><span class="classifier">bool</span></dt><dd><p>Flag to skip confirmation before overwriting the configuration file.</p>
+</dd>
+<dt><strong>skip_if_user_logged_in</strong><span class="classifier">bool</span></dt><dd><p>Flag to skip the logging process if the user is already logged in.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -340,36 +379,59 @@ based on specified parameters and options.</p>
 <dt class="sig sig-object py" id="copernicusmarine.open_dataset">
 <span class="sig-prename descclassname"><span class="pre">copernicusmarine.</span></span><span class="sig-name descname"><span class="pre">open_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_longitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_longitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_dimension_as_originally_produced</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'inside'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nearest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outside'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'inside'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'nearest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#copernicusmarine.open_dataset" title="Link to this definition">¶</a></dt>
 <dd><p>Load an xarray dataset using “lazy-loading” mode from a Copernicus Marine data source using either the ARCO series protocol.</p>
-<p>This means that data is only loaded into memory when a computation is called, optimizing RAM usage by avoiding immediate loading. It supports various parameters for customization, such as specifying geographical bounds, temporal range, depth range, and more.</p>
+<p>This means that data is only loaded into memory when a computation is called, optimizing RAM usage by avoiding immediate loading.
+It supports various parameters for customization, such as specifying geographical bounds, temporal range, depth range, and more.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The ID of the dataset. <cite>dataset_id</cite> is mandatory.</p></li>
-<li><p><strong>dataset_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific dataset version.</p></li>
-<li><p><strong>dataset_part</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific dataset part.</p></li>
-<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – Username for authentication, if required.</p></li>
-<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – Password for authentication, if required.</p></li>
-<li><p><strong>variables</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of variable names to be loaded from the dataset.</p></li>
-<li><p><strong>minimum_longitude</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum longitude for subsetting the data.</p></li>
-<li><p><strong>maximum_longitude</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum longitude for subsetting the data.</p></li>
-<li><p><strong>minimum_latitude</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum latitude for subsetting the data.</p></li>
-<li><p><strong>maximum_latitude</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum latitude for subsetting the data.</p></li>
-<li><p><strong>minimum_depth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum depth for subsetting the data.</p></li>
-<li><p><strong>maximum_depth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum depth for subsetting the data.</p></li>
-<li><p><strong>bounding_box_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The bounding box method when requesting the dataset. If ‘inside’ (by default), it will returned the inside interval. If ‘nearest’, the limits of the requested interval will be the nearest points of the dataset. If ‘outside’, it will return all the data such that the requested interval is fully included. Check the documentation for more details.</p></li>
-<li><p><strong>subset_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The subset method (‘nearest’ or ‘strict’) when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.</p></li>
-<li><p><strong>vertical_dimension_as_originally_produced</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, use the vertical dimension as originally produced.</p></li>
-<li><p><strong>start_datetime</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The start datetime for temporal subsetting.</p></li>
-<li><p><strong>end_datetime</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The end datetime for temporal subsetting.</p></li>
-<li><p><strong>service</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific service (ARCO geo series or time series).</p></li>
-<li><p><strong>credentials_file</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a file containing authentication credentials.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dataset_id</strong><span class="classifier">str</span></dt><dd><p>The ID of the dataset. <cite>dataset_id</cite> is mandatory.</p>
+</dd>
+<dt><strong>dataset_version</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific dataset version.</p>
+</dd>
+<dt><strong>dataset_part</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific dataset part.</p>
+</dd>
+<dt><strong>username</strong><span class="classifier">str, optional</span></dt><dd><p>Username for authentication, if required.</p>
+</dd>
+<dt><strong>password</strong><span class="classifier">str, optional</span></dt><dd><p>Password for authentication, if required.</p>
+</dd>
+<dt><strong>variables</strong><span class="classifier">List[str], optional</span></dt><dd><p>List of variable names to be loaded from the dataset.</p>
+</dd>
+<dt><strong>minimum_longitude</strong><span class="classifier">float, optional</span></dt><dd><p>The minimum longitude for subsetting the data.</p>
+</dd>
+<dt><strong>maximum_longitude</strong><span class="classifier">float, optional</span></dt><dd><p>The maximum longitude for subsetting the data.</p>
+</dd>
+<dt><strong>minimum_latitude</strong><span class="classifier">float, optional</span></dt><dd><p>The minimum latitude for subsetting the data.</p>
+</dd>
+<dt><strong>maximum_latitude</strong><span class="classifier">float, optional</span></dt><dd><p>The maximum latitude for subsetting the data.</p>
+</dd>
+<dt><strong>minimum_depth</strong><span class="classifier">float, optional</span></dt><dd><p>The minimum depth for subsetting the data.</p>
+</dd>
+<dt><strong>maximum_depth</strong><span class="classifier">float, optional</span></dt><dd><p>The maximum depth for subsetting the data.</p>
+</dd>
+<dt><strong>bounding_box_method</strong><span class="classifier">str, optional</span></dt><dd><p>The bounding box method when requesting the dataset. If ‘inside’ (by default), it will return the inside interval.
+If ‘nearest’, the limits of the requested interval will be the nearest points of the dataset. If ‘outside’, it will
+return all the data such that the requested interval is fully included. Check the documentation for more details.</p>
+</dd>
+<dt><strong>subset_method</strong><span class="classifier">str, optional</span></dt><dd><p>The subset method (‘nearest’ or ‘strict’) when requesting the dataset. If strict, you can only request dimensions
+strictly inside the dataset.</p>
+</dd>
+<dt><strong>vertical_dimension_as_originally_produced</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, use the vertical dimension as originally produced.</p>
+</dd>
+<dt><strong>start_datetime</strong><span class="classifier">datetime, optional</span></dt><dd><p>The start datetime for temporal subsetting.</p>
+</dd>
+<dt><strong>end_datetime</strong><span class="classifier">datetime, optional</span></dt><dd><p>The end datetime for temporal subsetting.</p>
+</dd>
+<dt><strong>service</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific service (ARCO geo series or time series).</p>
+</dd>
+<dt><strong>credentials_file</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a file containing authentication credentials.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The loaded xarray dataset.</p>
+<dd class="field-even"><dl class="simple">
+<dt>xarray.Dataset</dt><dd><p>The loaded xarray dataset.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>xarray.Dataset</cite></p>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -378,36 +440,62 @@ based on specified parameters and options.</p>
 <dt class="sig sig-object py" id="copernicusmarine.read_dataframe">
 <span class="sig-prename descclassname"><span class="pre">copernicusmarine.</span></span><span class="sig-name descname"><span class="pre">read_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_longitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_longitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_dimension_as_originally_produced</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounding_box_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'inside'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'nearest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outside'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'inside'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'nearest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#copernicusmarine.read_dataframe" title="Link to this definition">¶</a></dt>
 <dd><p>Immediately loads a Pandas DataFrame into memory from a specified dataset.</p>
-<p>Unlike “lazy-loading”, the data is loaded as soon as this function is executed, which may be preferable when rapid access to the entire dataset is required, but may require careful memory management.</p>
+<p>Unlike “lazy-loading,” the data is loaded as soon as this function is executed,
+which may be preferable when rapid access to the entire dataset is required,
+but may require careful memory management.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The identifier of the dataset.</p></li>
-<li><p><strong>dataset_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Force a specific dataset version.</p></li>
-<li><p><strong>dataset_part</strong> (<em>str</em><em>, </em><em>optional</em>) – Force a specific dataset part.</p></li>
-<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – Username for authentication.</p></li>
-<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – Password for authentication.</p></li>
-<li><p><strong>variables</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of variable names to load.</p></li>
-<li><p><strong>minimum_longitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum longitude for spatial subset.</p></li>
-<li><p><strong>maximum_longitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum longitude for spatial subset.</p></li>
-<li><p><strong>minimum_latitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum latitude for spatial subset.</p></li>
-<li><p><strong>maximum_latitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum latitude for spatial subset.</p></li>
-<li><p><strong>minimum_depth</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum depth for vertical subset.</p></li>
-<li><p><strong>maximum_depth</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum depth for vertical subset.</p></li>
-<li><p><strong>vertical_dimension_as_originally_produced</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, use the vertical dimension as originally produced.</p></li>
-<li><p><strong>start_datetime</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Start datetime for temporal subset.</p></li>
-<li><p><strong>end_datetime</strong> (<em>datetime</em><em>, </em><em>optional</em>) – End datetime for temporal subset.</p></li>
-<li><p><strong>bounding_box_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The bounding box method when requesting the dataset. If ‘inside’ (by default), it will returned the inside interval. If ‘nearest’, the limits of the requested interval will be the nearest points of the dataset. If ‘outside’, it will return all the data such that the requested interval is fully included. Check the documentation for more details.</p></li>
-<li><p><strong>subset_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The subset method (‘nearest’ or ‘strict’) when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.</p></li>
-<li><p><strong>force_service</strong> (<em>str</em><em>, </em><em>optional</em>) – Force a specific service for data download.</p></li>
-<li><p><strong>credentials_file</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a credentials file for authentication.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dataset_id</strong><span class="classifier">str, optional</span></dt><dd><p>The identifier of the dataset.</p>
+</dd>
+<dt><strong>dataset_version</strong><span class="classifier">str, optional</span></dt><dd><p>Force a specific dataset version.</p>
+</dd>
+<dt><strong>dataset_part</strong><span class="classifier">str, optional</span></dt><dd><p>Force a specific dataset part.</p>
+</dd>
+<dt><strong>username</strong><span class="classifier">str, optional</span></dt><dd><p>Username for authentication.</p>
+</dd>
+<dt><strong>password</strong><span class="classifier">str, optional</span></dt><dd><p>Password for authentication.</p>
+</dd>
+<dt><strong>variables</strong><span class="classifier">List[str], optional</span></dt><dd><p>List of variable names to load.</p>
+</dd>
+<dt><strong>minimum_longitude</strong><span class="classifier">float, optional</span></dt><dd><p>Minimum longitude for spatial subset.</p>
+</dd>
+<dt><strong>maximum_longitude</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum longitude for spatial subset.</p>
+</dd>
+<dt><strong>minimum_latitude</strong><span class="classifier">float, optional</span></dt><dd><p>Minimum latitude for spatial subset.</p>
+</dd>
+<dt><strong>maximum_latitude</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum latitude for spatial subset.</p>
+</dd>
+<dt><strong>minimum_depth</strong><span class="classifier">float, optional</span></dt><dd><p>Minimum depth for vertical subset.</p>
+</dd>
+<dt><strong>maximum_depth</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum depth for vertical subset.</p>
+</dd>
+<dt><strong>vertical_dimension_as_originally_produced</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, use the vertical dimension as originally produced.</p>
+</dd>
+<dt><strong>start_datetime</strong><span class="classifier">datetime, optional</span></dt><dd><p>Start datetime for temporal subset.</p>
+</dd>
+<dt><strong>end_datetime</strong><span class="classifier">datetime, optional</span></dt><dd><p>End datetime for temporal subset.</p>
+</dd>
+<dt><strong>bounding_box_method</strong><span class="classifier">str, optional</span></dt><dd><p>The bounding box method when requesting the dataset. If ‘inside’ (by default),
+it will return the inside interval. If ‘nearest’, the limits of the requested
+interval will be the nearest points of the dataset. If ‘outside’, it will return
+all the data such that the requested interval is fully included. Check the documentation
+for more details.</p>
+</dd>
+<dt><strong>subset_method</strong><span class="classifier">str, optional</span></dt><dd><p>The subset method (‘nearest’ or ‘strict’) when requesting the dataset.
+If strict, you can only request dimensions strictly inside the dataset.</p>
+</dd>
+<dt><strong>force_service</strong><span class="classifier">str, optional</span></dt><dd><p>Force a specific service for data download.</p>
+</dd>
+<dt><strong>credentials_file</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a credentials file for authentication.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DataFrame containing the loaded Copernicus Marine data.</p>
+<dd class="field-even"><dl class="simple">
+<dt>pandas.DataFrame</dt><dd><p>A DataFrame containing the loaded Copernicus Marine data.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -418,44 +506,79 @@ based on specified parameters and options.</p>
 <dd><p>Extracts a subset of data from a specified dataset using given parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The unique identifier of the dataset.</p></li>
-<li><p><strong>dataset_version</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific dataset version.</p></li>
-<li><p><strong>dataset_part</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific dataset part.</p></li>
-<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p></li>
-<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – The password for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p></li>
-<li><p><strong>output_directory</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The directory where downloaded files will be saved.</p></li>
-<li><p><strong>credentials_file</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a file containing authentication credentials.</p></li>
-<li><p><strong>force_download</strong> (<em>bool</em><em>, </em><em>optional</em>) – Skip confirmation before download.</p></li>
-<li><p><strong>overwrite_output_data</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, overwrite existing output files.</p></li>
-<li><p><strong>request_file</strong> (<em>Union</em><em>[</em><em>pathlib.Path</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Path to a file containing request parameters. For more information, please refer to the README.</p></li>
-<li><p><strong>service</strong> (<em>str</em><em>, </em><em>optional</em>) – Force the use of a specific service.</p></li>
-<li><p><strong>variables</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of variable names to extract.</p></li>
-<li><p><strong>minimum_longitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum longitude value for spatial subset.</p></li>
-<li><p><strong>maximum_longitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum longitude value for spatial subset.</p></li>
-<li><p><strong>minimum_latitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum latitude value for spatial subset.</p></li>
-<li><p><strong>maximum_latitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum latitude value for spatial subset.</p></li>
-<li><p><strong>minimum_depth</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum depth value for vertical subset.</p></li>
-<li><p><strong>maximum_depth</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum depth value for vertical subset.</p></li>
-<li><p><strong>vertical_dimension_as_originally_produced</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use original vertical dimension.</p></li>
-<li><p><strong>start_datetime</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Start datetime for temporal subset.</p></li>
-<li><p><strong>end_datetime</strong> (<em>datetime</em><em>, </em><em>optional</em>) – End datetime for temporal subset.</p></li>
-<li><p><strong>bounding_box_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The bounding box method when requesting the dataset. If ‘inside’ (by default), it will returned the inside interval. If ‘nearest’, the limits of the requested interval will be the nearest points of the dataset. If ‘outside’, it will return all the data such that the requested interval is fully included. Check the documentation for more details.</p></li>
-<li><p><strong>subset_method</strong> (<em>str</em><em>, </em><em>optional</em>) – The subset method (‘nearest’ or ‘strict’) when requesting the dataset. If strict, you can only request dimension strictly inside the dataset.</p></li>
-<li><p><strong>output_filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Output filename for the subsetted data.</p></li>
-<li><p><strong>file_format</strong> (<em>str</em><em>, </em><em>optional</em>) – Extension format for the filename.</p></li>
-<li><p><strong>motu_api_request</strong> (<em>str</em><em>, </em><em>optional</em>) – MOTU API request string.</p></li>
-<li><p><strong>dry_run</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, runs query without downloading data.</p></li>
-<li><p><strong>netcdf_compression_enabled</strong> (<em>bool</em><em>, </em><em>optional</em>) – Enable compression level 1 to the NetCDF output file. Use ‘netcdf_compression_level’ option to customize the compression level.</p></li>
-<li><p><strong>netcdf_compression_level</strong> (<em>int</em><em>, </em><em>optional</em>) – Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.</p></li>
-<li><p><strong>netcdf3_compatible</strong> (<em>bool</em><em>, </em><em>optional</em>) – Enable downloading the dataset in a netCDF 3 compatible format.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dataset_id</strong><span class="classifier">str, optional</span></dt><dd><p>The unique identifier of the dataset.</p>
+</dd>
+<dt><strong>dataset_version</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific dataset version.</p>
+</dd>
+<dt><strong>dataset_part</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific dataset part.</p>
+</dd>
+<dt><strong>username</strong><span class="classifier">str, optional</span></dt><dd><p>The username for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p>
+</dd>
+<dt><strong>password</strong><span class="classifier">str, optional</span></dt><dd><p>The password for authentication. See also <a class="reference internal" href="#copernicusmarine.login" title="copernicusmarine.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">login()</span></code></a>.</p>
+</dd>
+<dt><strong>output_directory</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>The directory where downloaded files will be saved.</p>
+</dd>
+<dt><strong>credentials_file</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a file containing authentication credentials.</p>
+</dd>
+<dt><strong>force_download</strong><span class="classifier">bool, optional</span></dt><dd><p>Skip confirmation before download.</p>
+</dd>
+<dt><strong>overwrite_output_data</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, overwrite existing output files.</p>
+</dd>
+<dt><strong>request_file</strong><span class="classifier">Union[pathlib.Path, str], optional</span></dt><dd><p>Path to a file containing request parameters. For more information, please refer to the README.</p>
+</dd>
+<dt><strong>service</strong><span class="classifier">str, optional</span></dt><dd><p>Force the use of a specific service.</p>
+</dd>
+<dt><strong>variables</strong><span class="classifier">List[str], optional</span></dt><dd><p>List of variable names to extract.</p>
+</dd>
+<dt><strong>minimum_longitude</strong><span class="classifier">float, optional</span></dt><dd><p>Minimum longitude value for spatial subset.</p>
+</dd>
+<dt><strong>maximum_longitude</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum longitude value for spatial subset.</p>
+</dd>
+<dt><strong>minimum_latitude</strong><span class="classifier">float, optional</span></dt><dd><p>Minimum latitude value for spatial subset.</p>
+</dd>
+<dt><strong>maximum_latitude</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum latitude value for spatial subset.</p>
+</dd>
+<dt><strong>minimum_depth</strong><span class="classifier">float, optional</span></dt><dd><p>Minimum depth value for vertical subset.</p>
+</dd>
+<dt><strong>maximum_depth</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum depth value for vertical subset.</p>
+</dd>
+<dt><strong>vertical_dimension_as_originally_produced</strong><span class="classifier">bool, optional</span></dt><dd><p>Use original vertical dimension.</p>
+</dd>
+<dt><strong>start_datetime</strong><span class="classifier">datetime, optional</span></dt><dd><p>Start datetime for temporal subset.</p>
+</dd>
+<dt><strong>end_datetime</strong><span class="classifier">datetime, optional</span></dt><dd><p>End datetime for temporal subset.</p>
+</dd>
+<dt><strong>bounding_box_method</strong><span class="classifier">str, optional</span></dt><dd><p>The bounding box method when requesting the dataset. If ‘inside’ (by default), it will return the inside interval.
+If ‘nearest’, the limits of the requested interval will be the nearest points of the dataset. If ‘outside’, it
+will return all the data such that the requested interval is fully included. Check the documentation for more details.</p>
+</dd>
+<dt><strong>subset_method</strong><span class="classifier">str, optional</span></dt><dd><p>The subset method (‘nearest’ or ‘strict’) when requesting the dataset. If strict, you can only request dimensions
+strictly inside the dataset.</p>
+</dd>
+<dt><strong>output_filename</strong><span class="classifier">str, optional</span></dt><dd><p>Output filename for the subsetted data.</p>
+</dd>
+<dt><strong>file_format</strong><span class="classifier">str, optional</span></dt><dd><p>Extension format for the filename.</p>
+</dd>
+<dt><strong>motu_api_request</strong><span class="classifier">str, optional</span></dt><dd><p>MOTU API request string.</p>
+</dd>
+<dt><strong>dry_run</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, runs query without downloading data.</p>
+</dd>
+<dt><strong>netcdf_compression_enabled</strong><span class="classifier">bool, optional</span></dt><dd><p>Enable compression level 1 to the NetCDF output file. Use ‘netcdf_compression_level’ option to customize the
+compression level.</p>
+</dd>
+<dt><strong>netcdf_compression_level</strong><span class="classifier">int, optional</span></dt><dd><p>Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the
+highest level of compression available.</p>
+</dd>
+<dt><strong>netcdf3_compatible</strong><span class="classifier">bool, optional</span></dt><dd><p>Enable downloading the dataset in a netCDF 3 compatible format.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A description of the downloaded data and its destination</p>
+<dd class="field-even"><dl class="simple">
+<dt>ResponseSubset</dt><dd><p>A description of the downloaded data and its destination.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="response_types.html#copernicusmarine.ResponseSubset" title="copernicusmarine.ResponseSubset">ResponseSubset</a></p>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -465,7 +588,7 @@ based on specified parameters and options.</p>
         </article>
       </div>
       <footer>
-        
+
         <div class="related-pages">
           <a class="next-page" href="response_types.html">
               <div class="page-info">
@@ -482,9 +605,9 @@ based on specified parameters and options.</p>
                 <div class="context">
                   <span>Previous</span>
                 </div>
-                
+
                 <div class="title">CLI</div>
-                
+
               </div>
             </a>
         </div>
@@ -494,20 +617,20 @@ based on specified parameters and options.</p>
                 Copyright &#169; 2024, Mercator Ocean International
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-            
+
             <a href="https://github.com/pradyunsg/furo">Furo</a>
-            
+
           </div>
           <div class="right-details">
-            
+
           </div>
         </div>
-        
+
       </footer>
     </div>
     <aside class="toc-drawer">
-      
-      
+
+
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
@@ -531,8 +654,8 @@ based on specified parameters and options.</p>
           </div>
         </div>
       </div>
-      
-      
+
+
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
