@@ -101,10 +101,6 @@ def next_or_raise_exception(
         raise exception_to_raise from exception
 
 
-def flatten(list: list[list[_T]]) -> list[_T]:
-    return [item for sublist in list for item in sublist]
-
-
 def construct_url_with_query_params(url, query_params: dict) -> Optional[str]:
     req = PreparedRequest()
     req.prepare_url(url, query_params)

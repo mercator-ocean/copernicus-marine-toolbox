@@ -12,6 +12,7 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_SUBSET_METHOD,
     BoundingBoxMethod,
     FileFormat,
+    ResponseSubset,
     SubsetMethod,
 )
 from copernicusmarine.core_functions.subset import subset_function
@@ -50,12 +51,13 @@ def subset(
     motu_api_request: Optional[str] = None,
     force_download: bool = False,
     overwrite_output_data: bool = False,
+    dry_run: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
     netcdf_compression_enabled: bool = False,
     netcdf_compression_level: Optional[int] = None,
     netcdf3_compatible: bool = False,
-) -> pathlib.Path:
+) -> ResponseSubset:
     """
     Extracts a subset of data from a specified dataset using given parameters.
 
@@ -111,6 +113,8 @@ def subset(
     :type file_format: str, optional
     :param motu_api_request: MOTU API request string.
     :type motu_api_request: str, optional
+    :param dry_run: If True, runs query without downloading data.
+    :type dry_run: bool, optional
     :param netcdf_compression_enabled: Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the compression level.
     :type netcdf_compression_enabled: bool, optional
     :param netcdf_compression_level: Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
@@ -118,8 +122,8 @@ def subset(
     :param netcdf3_compatible: Enable downloading the dataset in a netCDF 3 compatible format.
     :type netcdf3_compatible: bool, optional
 
-    :returns: Path to the generated subsetted data file.
-    :rtype: pathlib.Path
+    :returns: A description of the downloaded data and its destination
+    :rtype: ResponseSubset
     """  # noqa
     request_file = pathlib.Path(request_file) if request_file else None
     output_directory = (
@@ -159,6 +163,7 @@ def subset(
         motu_api_request,
         force_download,
         overwrite_output_data,
+        dry_run,
         disable_progress_bar,
         staging=staging,
         netcdf_compression_enabled=netcdf_compression_enabled,

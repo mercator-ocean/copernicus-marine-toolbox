@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import pathlib
-from typing import List, Optional
+from typing import Optional
 
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
@@ -12,6 +12,7 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
+from copernicusmarine.core_functions.models import ResponseGet
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
@@ -48,9 +49,10 @@ def get_function(
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
+    dry_run: bool,
     disable_progress_bar: bool,
     staging: bool,
-) -> List[pathlib.Path]:
+) -> ResponseGet:
     VersionVerifier.check_version_get(staging)
     if staging:
         logger.warning(
@@ -119,6 +121,8 @@ def get_function(
         direct_download_files = get_direct_download_files(file_list_path)
         if direct_download_files:
             get_request.direct_download = direct_download_files
+    if create_file_list or dry_run:
+        get_request.dry_run = True
 
     return _run_get_request(
         username=username,
@@ -139,7 +143,7 @@ def _run_get_request(
     credentials_file: Optional[pathlib.Path],
     disable_progress_bar: bool,
     staging: bool = False,
-) -> List[pathlib.Path]:
+) -> ResponseGet:
     logger.debug("Checking username and password...")
     username, password = get_and_check_username_password(
         username, password, credentials_file
