@@ -78,7 +78,7 @@ class TestDatasets:
     #                             maximum_depth = None
     #                             for coordinate in variable["coordinates"]:
     #                                 coordinate_id = coordinate[
-    #                                     "coordinates_id"
+    #                                     "coordinate_id"
     #                                 ]
     #                                 if coordinate_id == "time":
     #                                     start_datetime = extract_minimum_value(
@@ -159,9 +159,7 @@ class TestDatasets:
                                     f"{dataset_id}_{variable_name}.nc"
                                 )
                                 for coordinate in variable["coordinates"]:
-                                    coordinate_id = coordinate[
-                                        "coordinates_id"
-                                    ]
+                                    coordinate_id = coordinate["coordinate_id"]
                                     if coordinate_id == "time":
                                         start_datetime = extract_minimum_value(
                                             coordinate
