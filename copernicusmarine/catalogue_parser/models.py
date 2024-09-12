@@ -236,6 +236,7 @@ class CopernicusMarineVariable:
                     metadata_item.properties.get("admp_valid_start_date"),
                 )
                 for dimension, dimension_metadata in dimensions.items()
+                if variable_id in dimension_metadata.get("chunkLen", {})
             ],
         )
 
