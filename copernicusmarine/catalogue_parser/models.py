@@ -1,4 +1,6 @@
 import re
+
+# TODO: change to pydantic
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Type, TypeVar, Union

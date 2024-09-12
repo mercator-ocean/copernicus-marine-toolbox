@@ -204,6 +204,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-interface.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response_types.html">Response Types</a></li>
 </ul>
 
 </div>
@@ -490,13 +491,24 @@
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-copernicusmarine-subset-t">
 <span id="cmdoption-copernicusmarine-subset-start-datetime"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--start-datetime</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;start_datetime&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-subset-t" title="Link to this definition">¶</a></dt>
-<dd><p>The start datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”.</p>
+<dd><p>The start datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports common format parsed by pendulum. See <a class="reference external" href="https://pendulum.eustace.io/docs/#parsing">https://pendulum.eustace.io/docs/#parsing</a></p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-copernicusmarine-subset-T">
 <span id="cmdoption-copernicusmarine-subset-end-datetime"></span><span class="sig-name descname"><span class="pre">-T</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--end-datetime</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;end_datetime&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-subset-T" title="Link to this definition">¶</a></dt>
-<dd><p>The end datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”.</p>
+<dd><p>The end datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports common format parsed by pendulum. See <a class="reference external" href="https://pendulum.eustace.io/docs/#parsing">https://pendulum.eustace.io/docs/#parsing</a></p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-copernicusmarine-subset-bounding-box-method">
+<span class="sig-name descname"><span class="pre">--bounding-box-method</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;bounding_box_method&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-subset-bounding-box-method" title="Link to this definition">¶</a></dt>
+<dd><p>The bounding box method when requesting the dataset.If ‘inside’ (by default), it will returned the inside interval. If ‘nearest’, the limits ofthe requested interval will be the nearest points of the dataset. If ‘outside’, it will return all the data such that the requested interval is fully included. Check the documentation for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>inside | nearest | outside</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
@@ -573,6 +585,12 @@
 <dt class="sig sig-object std" id="cmdoption-copernicusmarine-subset-motu-api-request">
 <span class="sig-name descname"><span class="pre">--motu-api-request</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;motu_api_request&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-subset-motu-api-request" title="Link to this definition">¶</a></dt>
 <dd><p>Option to pass a complete MOTU API request as a string. Caution, user has to replace double quotes “ with single quotes ‘ in the request.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-copernicusmarine-subset-dry-run">
+<span class="sig-name descname"><span class="pre">--dry-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-copernicusmarine-subset-dry-run" title="Link to this definition">¶</a></dt>
+<dd><p>Runs query without downloading data.</p>
 </dd></dl>
 
 <dl class="std option">
@@ -775,6 +793,12 @@
 <dt class="sig sig-object std" id="cmdoption-copernicusmarine-get-index-parts">
 <span class="sig-name descname"><span class="pre">--index-parts</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-copernicusmarine-get-index-parts" title="Link to this definition">¶</a></dt>
 <dd><p>Option to get the index files of an INSITU dataset. Temporary option.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-copernicusmarine-get-dry-run">
+<span class="sig-name descname"><span class="pre">--dry-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-copernicusmarine-get-dry-run" title="Link to this definition">¶</a></dt>
+<dd><p>Runs query without downloading data.</p>
 </dd></dl>
 
 <dl class="std option">

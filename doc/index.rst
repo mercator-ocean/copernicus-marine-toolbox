@@ -19,3 +19,4 @@ documentation for details.
    usage/quickstart
    usage/command-line-interface
    usage/python-interface
+   usage/response_types

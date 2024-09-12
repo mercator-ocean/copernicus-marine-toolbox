@@ -653,6 +653,55 @@ class TestCommandLineInterface:
             not in self.output.stderr
         )
 
+    def test_get_download_with_dry_run_option(self, tmp_path):
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--output-directory",
+            f"{tmp_path}",
+            "--dry-run",
+            "--force-download",
+        ]
+
+        self.output = execute_in_terminal(command)
+        # weirdly add \n at the end of the output
+        returned_value = loads(self.output.stdout[:-1])
+        assert self.output.returncode == 0
+        assert len(returned_value["files"]) != 0
+        for get_file in returned_value["files"]:
+            assert get_file["output"] is not None
+            assert get_file["size"] is not None
+            assert get_file["url"] is not None
+            assert get_file["last_modified"] is not None
+            assert str(tmp_path) in get_file["output"]
+            assert not os.path.exists(get_file["output"])
+
+    def test_subset_with_dry_run_option(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            "-9.9",
+            "--maximum-longitude",
+            "-9.6",
+            "--force-download",
+            "--dry-run",
+            "-o",
+            f"{tmp_path}",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout[:-1])
+        assert str(tmp_path) in returned_value["output"]
+        assert not os.path.exists(returned_value["output"])
+
     def test_subset_output_file_as_netcdf(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         output_filename = "test_subset_output_file_as_netcdf.nc"
