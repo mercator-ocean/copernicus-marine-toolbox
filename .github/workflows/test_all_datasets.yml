@@ -34,5 +34,5 @@ jobs:
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        run: make run-tests-all-datasets
+        run: make run-tests-all-datasets-and-update-snapshots
         shell: micromamba-shell {0}
