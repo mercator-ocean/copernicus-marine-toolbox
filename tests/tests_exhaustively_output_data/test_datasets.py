@@ -185,12 +185,16 @@ class TestDatasets:
                                         minimum_latitude = (
                                             extract_minimum_value(coordinate)
                                         )
-                                        maximum_latitude = minimum_latitude
+                                        maximum_latitude = (
+                                            extract_maximum_value(coordinate)
+                                        )
                                     if coordinate_id == "longitude":
                                         minimum_longitude = (
                                             extract_minimum_value(coordinate)
                                         )
-                                        maximum_longitude = minimum_longitude
+                                        maximum_longitude = (
+                                            extract_maximum_value(coordinate)
+                                        )
                             for arco_service in [
                                 "arco-geo-series",
                                 # "arco-time-series",
@@ -229,7 +233,7 @@ class TestDatasets:
         # with ThreadPoolExecutor(max_workers=20) as executor:
         #     executor.map(lambda x: x(), all_tasks)
         all_futures = [run_in_executor(task) for task in all_tasks]
-        asyncio.run(rolling_batch_gather(all_futures, per_batch=10))
+        asyncio.run(rolling_batch_gather(all_futures, per_batch=30))
         print(f"took: {time.time() - top} s")
 
 
@@ -241,6 +245,12 @@ def extract_minimum_value(coordinate):
     if coordinate["values"]:
         return coordinate["values"][0]
     return coordinate["minimum_value"]
+
+
+def extract_maximum_value(coordinate):
+    if coordinate["values"]:
+        return coordinate["values"][-1]
+    return coordinate["maximum_value"]
 
 
 def ncdump_custom(file_path: Path) -> str:
