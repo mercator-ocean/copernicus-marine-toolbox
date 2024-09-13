@@ -2,14 +2,14 @@ from unittest import mock
 
 from copernicusmarine import describe
 from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock import (
-    mocked_stac_aiohttp_get,
+    mocked_stac_requests_get,
 )
 
 
 class TestDescribe:
     @mock.patch(
-        "aiohttp.ClientSession.get",
-        side_effect=mocked_stac_aiohttp_get,
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
     )
     def when_I_describe_the_marine_data_store(
         self,
