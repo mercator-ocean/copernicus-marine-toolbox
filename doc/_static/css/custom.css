@@ -1,0 +1,18 @@
+.sidebar-brand-text {
+    font-size: 1.2rem;
+}
+
+.sidebar-logo {
+    max-width: 70%;
+}
+
+.github-link {
+    margin-bottom: 1em;
+}
+
+a:visited,
+a:active,
+a:hover,
+a:visited:hover {
+    color: var(--color-brand-primary);
+}
