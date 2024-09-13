@@ -19,6 +19,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx_click",
     "numpydoc",
+    "sphinx_copybutton",
 ]
 numpydoc_show_class_members = False
 
