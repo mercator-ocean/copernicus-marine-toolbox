@@ -16,9 +16,6 @@ from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     overload_regex_with_additionnal_filter,
 )
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS,
-)
 from copernicusmarine.core_functions.models import FileGet, ResponseGet
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
@@ -34,17 +31,12 @@ from copernicusmarine.core_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
-NUMBER_THREADS = (
-    int(COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS)
-    if COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS
-    else 20
-)
-
 
 def download_original_files(
     username: str,
     password: str,
     get_request: GetRequest,
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     create_file_list: Optional[str],
 ) -> ResponseGet:
@@ -187,6 +179,7 @@ def download_original_files(
         bucket,
         filenames_in,
         filenames_out,
+        max_concurrent_requests,
         disable_progress_bar,
     )
     return response
@@ -216,11 +209,12 @@ def download_files(
     bucket: str,
     filenames_in: list[str],
     filenames_out: list[pathlib.Path],
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
 ) -> None:
     # TODO: v2 probably better to use an argument for the number
     # of threads instead of using the environment variable
-    if NUMBER_THREADS:
+    if max_concurrent_requests:
         run_concurrently(
             _original_files_file_download,
             [
@@ -230,7 +224,7 @@ def download_files(
                     filenames_out,
                 )
             ],
-            NUMBER_THREADS,
+            max_concurrent_requests,
             tdqm_bar_configuration={
                 "disable": disable_progress_bar,
                 "desc": "Downloading files",

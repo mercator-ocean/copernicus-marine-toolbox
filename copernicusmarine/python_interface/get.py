@@ -41,6 +41,7 @@ def get(
     sync: bool = False,
     sync_delete: bool = False,
     dry_run: bool = False,
+    max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
     staging: bool = False,
 ) -> ResponseGet:
@@ -95,6 +96,9 @@ def get(
         If True, delete local files that are not present on the remote server while applying sync.
     dry_run : bool, optional
         If True, runs query without downloading data.
+    max_concurrent_requests : int, optional
+        Maximum number of concurrent requests. Defaults to 15. The get command
+        uses a thread pool executor to manage concurrent requests.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
 
@@ -140,6 +144,7 @@ def get(
         sync=sync,
         sync_delete=sync_delete,
         dry_run=dry_run,
+        max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

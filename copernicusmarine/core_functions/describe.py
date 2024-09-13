@@ -20,6 +20,7 @@ def describe_function(
     include_keywords: bool,
     include_versions: bool,
     contains: list[str],
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
 ) -> str:
@@ -32,6 +33,7 @@ def describe_function(
         )
 
     base_catalogue: CopernicusMarineCatalogue = parse_catalogue(
+        max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

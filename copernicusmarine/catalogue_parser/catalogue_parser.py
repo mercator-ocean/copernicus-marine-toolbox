@@ -16,9 +16,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineProductDataset,
     get_version_and_part_from_full_dataset_id,
 )
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS,
-)
 from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
 )
@@ -44,8 +41,6 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"
 )
 
-MAX_CONCURRENT_REQUESTS = int(COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS)
-
 
 class CatalogParserConnection:
     def __init__(self) -> None:
@@ -56,6 +51,7 @@ class CatalogParserConnection:
         with self.session.get(
             url,
             params=construct_query_params_for_marine_data_store_monitoring(),
+            proxies=self.session.proxies,
         ) as response:
             return response.json()
 
@@ -262,6 +258,7 @@ def fetch_product_items(
     root_url: str,
     connection: CatalogParserConnection,
     child_links: list[pystac.Link],
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
     tasks = []
@@ -277,7 +274,7 @@ def fetch_product_items(
         for result in run_concurrently(
             fetch_collection,
             tasks,
-            MAX_CONCURRENT_REQUESTS,
+            max_concurrent_requests,
             tdqm_bar_configuration,
         )
         if result is not None
@@ -286,6 +283,7 @@ def fetch_product_items(
 
 def fetch_all_products_items(
     connection: CatalogParserConnection,
+    max_concurrent_requests: int,
     staging: bool,
     disable_progress_bar: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
@@ -304,12 +302,17 @@ def fetch_all_products_items(
         else (MARINE_DATA_STORE_STAC_BASE_URL_STAGING)
     )
     childs = fetch_product_items(
-        root_url, connection, child_links, disable_progress_bar
+        root_url,
+        connection,
+        child_links,
+        max_concurrent_requests,
+        disable_progress_bar,
     )
     return childs
 
 
 def parse_catalogue(
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool = False,
 ) -> CopernicusMarineCatalogue:
@@ -321,6 +324,7 @@ def parse_catalogue(
     with CatalogParserConnection() as connection:
         marine_data_store_root_collections = fetch_all_products_items(
             connection=connection,
+            max_concurrent_requests=max_concurrent_requests,
             staging=staging,
             disable_progress_bar=disable_progress_bar,
         )

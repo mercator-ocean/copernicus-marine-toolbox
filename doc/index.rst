@@ -15,4 +15,5 @@ Copernicus Marine Toolbox documentation
    usage/quickstart
    usage/command-line-interface
    usage/python-interface
-   usage/response_types
+   usage/response-types
+   usage/network-configuration
