@@ -212,8 +212,10 @@ def download_files(
     max_concurrent_requests: int,
     disable_progress_bar: bool,
 ) -> None:
-    # TODO: v2 probably better to use an argument for the number
-    # of threads instead of using the environment variable
+    for filename_out in filenames_out:
+        parent_dir = Path(filename_out).parent
+        if not parent_dir.is_dir():
+            pathlib.Path.mkdir(parent_dir, parents=True)
     if max_concurrent_requests:
         run_concurrently(
             _original_files_file_download,
