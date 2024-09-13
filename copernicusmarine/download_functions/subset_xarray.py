@@ -449,7 +449,8 @@ def _update_variables_attributes(
         dataset[variable].attrs = _filter_attributes(
             dataset[variable].attrs, NETCDF_CONVENTION_VARIABLE_ATTRIBUTES
         )
-        _adequate_dtypes_of_valid_minmax(dataset, variable)
+        if "valid_min" in dataset[variable].attrs:
+            _adequate_dtypes_of_valid_minmax(dataset, variable)
     return dataset
 
 
