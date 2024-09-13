@@ -93,4 +93,4 @@ build-and-publish-dockerhub-image:
 
 
 update-snapshots-tests:
-	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_parses_the_right_coordinate
+	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
