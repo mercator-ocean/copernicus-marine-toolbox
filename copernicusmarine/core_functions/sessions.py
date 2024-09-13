@@ -1,17 +1,16 @@
 import ssl
 from typing import Any, List, Literal, Optional, Tuple
 
-import aiohttp
 import boto3
 import botocore
 import botocore.config
 import certifi
-import nest_asyncio
 import requests
 from requests.adapters import HTTPAdapter, Retry
 
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
+    COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
     COPERNICUSMARINE_TRUST_ENV,
     PROXY_HTTP,
     PROXY_HTTPS,
@@ -26,16 +25,10 @@ if PROXY_HTTPS:
     PROXIES["https"] = PROXY_HTTPS
 
 
-def _get_ssl_context() -> Optional[ssl.SSLContext]:
+def get_ssl_context() -> Optional[ssl.SSLContext]:
     if COPERNICUSMARINE_DISABLE_SSL_CONTEXT is not None:
         return None
     return ssl.create_default_context(cafile=certifi.where())
-
-
-def get_configured_aiohttp_session() -> aiohttp.ClientSession:
-    nest_asyncio.apply()
-    connector = aiohttp.TCPConnector(ssl=_get_ssl_context())
-    return aiohttp.ClientSession(connector=connector, trust_env=TRUST_ENV)
 
 
 def get_https_proxy() -> Optional[str]:
@@ -77,9 +70,19 @@ def get_configured_boto3_session(
 
 
 def get_configured_requests_session() -> requests.Session:
+    retry_http_codes = [
+        408,  # Request Timeout
+        429,  # Too Many Requests
+        500,  # Internal Server Error
+        502,  # Bad Gateway
+        503,  # Service Unavailable
+        504,  # Gateway Timeout
+    ]
     session = requests.Session()
     session.trust_env = TRUST_ENV
-    session.verify = certifi.where()
+    session.verify = (
+        COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
+    )
     session.proxies = PROXIES
     session.mount(
         "https://",
@@ -87,7 +90,7 @@ def get_configured_requests_session() -> requests.Session:
             max_retries=Retry(
                 total=5,
                 backoff_factor=1,
-                status_forcelist=[500, 502, 503, 504],
+                status_forcelist=retry_http_codes,
             )
         ),
     )
