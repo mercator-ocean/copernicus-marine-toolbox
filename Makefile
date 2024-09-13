@@ -90,3 +90,7 @@ build-and-publish-dockerhub-image:
 	docker build --ulimit nofile=65536:65536 --tag copernicusmarine/copernicusmarine:$${VERSION} --tag copernicusmarine/copernicusmarine:latest -f Dockerfile.dockerhub --build-arg VERSION="$${VERSION}" .
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
+
+
+update-snapshots-tests:
+	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_parses_the_right_coordinate

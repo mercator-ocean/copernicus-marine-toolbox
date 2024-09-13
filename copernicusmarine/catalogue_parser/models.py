@@ -220,7 +220,6 @@ class CopernicusMarineVariable:
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]
 
-        # to get coordinates
         extra_fields_asset = asset.extra_fields
         dimensions = extra_fields_asset.get("viewDims") or {}
         return cls(
@@ -236,7 +235,7 @@ class CopernicusMarineVariable:
                     metadata_item.properties.get("admp_valid_start_date"),
                 )
                 for dimension, dimension_metadata in dimensions.items()
-                if variable_id in dimension_metadata.get("chunkLen", {})
+                if dimension in cube_variable["dimensions"]
             ],
         )
 

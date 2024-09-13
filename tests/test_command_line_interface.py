@@ -71,6 +71,18 @@ class TestCommandLineInterface:
         self.when_I_run_copernicus_marine_describe_with_contains_option()
         self.then_I_can_read_the_filtered_json()
 
+    def test_describe_parses_the_right_coordinate(self, snapshot):
+        command = [
+            "copernicusmarine",
+            "describe",
+            "--include-datasets",
+            "--contains",
+            "GLOBAL_MULTIYEAR_PHY_ENS_001_031/"
+            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_202311",
+        ]
+        output = execute_in_terminal(command)
+        assert output.stdout.decode("utf-8") == snapshot
+
     def test_describe_with_staging_flag(self):
         self.when_I_use_staging_environment_in_debug_logging_level()
         self.then_I_check_that_the_urls_contains_only_dta()
