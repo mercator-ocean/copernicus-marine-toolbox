@@ -18,7 +18,10 @@ author = "Mercator Ocean International"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx_click",
+    "numpydoc",
+    "sphinx_copybutton",
 ]
+numpydoc_show_class_members = False
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -31,17 +34,29 @@ pygments_dark_style = "monokai"
 
 html_theme = "furo"
 html_static_path = ["_static"]
+html_favicon = "_static/favicon_cmems.ico"
+html_css_files = ["css/custom.css"]
 
 # -- Options for the furo theme -----------------------------------------------
-# https://pradyunsg.me/furo/settings/
+# https://pradyunsg.me/furo/customisation/
 
-# html_theme_options = {
-#     "light_css_variables": {
-#         "color-sidebar-background": "#5c7bd1",
-#         "color-sidebar-background-hover": "#4a6aa8",
-#         "link-color-sidebar-text": "#ffffff",
-#     },
-# }
+html_logo = "_static/favicon_cmems.ico"
+
+html_theme_options = {
+    "light_css_variables": {"color-brand-primary": "#607fad"},
+}
+
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "sidebar/scroll-start.html",
+        "sidebar/navigation.html",
+        "sidebar/ethical-ads.html",
+        "sidebar/scroll-end.html",
+        "sidebar/github.html",
+    ]
+}
 
 # -- Options for different image types -------------------------------------------
 # https://stackoverflow.com/questions/45969711/sphinx-doc-how-do-i-render-an-animated-gif-when-building-for-html-but-a-png-wh

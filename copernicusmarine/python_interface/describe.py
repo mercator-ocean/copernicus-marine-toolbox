@@ -29,21 +29,25 @@ def describe(
     This function fetches metadata information from the Copernicus Marine catalogue
     based on specified parameters and options.
 
-    :param include_description: Whether to include description for each product. Defaults to False.
-    :type include_description: bool, optional
-    :param include_datasets: Whether to include dataset information. Defaults to False.
-    :type include_datasets: bool, optional
-    :param include_keywords: Whether to include keywords for each product. Defaults to False.
-    :type include_keywords: bool, optional
-    :param include_versions: Whether to include all versions of each dataset. Defaults to False.
-    :type include_versions: bool, optional
-    :param include_all: Whether to include all metadata information. Defaults to False.
-    :type include_all: bool, optional
-    :param contains: List of strings to filter items containing these values. Defaults to [].
-    :type contains: list[str], optional
+    Parameters
+    ----------
+    include_description : bool, optional
+        Whether to include description for each product. Defaults to False.
+    include_datasets : bool, optional
+        Whether to include dataset information. Defaults to False.
+    include_keywords : bool, optional
+        Whether to include keywords for each product. Defaults to False.
+    include_versions : bool, optional
+        Whether to include all versions of each dataset. Defaults to False.
+    include_all : bool, optional
+        Whether to include all metadata information. Defaults to False.
+    contains : list[str], optional
+        List of strings to filter items containing these values. Defaults to [].
 
-    :returns: A dictionary containing the retrieved metadata information.
-    :rtype: dict[str, Any]
+    Returns
+    -------
+    dict[str, Any]
+        A dictionary containing the retrieved metadata information.
     """  # noqa
 
     if not isinstance(contains, list):
