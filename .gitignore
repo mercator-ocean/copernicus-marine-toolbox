@@ -8,3 +8,5 @@ copernicusmarine/**/__pycache__/
 **/.DS_Store
 __debug.py
 dist/
+
+_build/
