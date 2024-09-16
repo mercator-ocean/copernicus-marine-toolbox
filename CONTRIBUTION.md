@@ -143,9 +143,9 @@ To access admin rights, it you need to be added to the readthedocs project (afte
 
 Example: [toolbox documentation](https://copernicusmarine.readthedocs.io)
 
-Readthedocs have a webhook on the copernicusmarine repo and is triggered when a commit is pushed, a tag is created and other events.
+Readthedocs have a webhook on the copernicusmarine repo and is triggered when: a commit is pushed, a tag is created and other events.
 
-We defined some automatisation processes that listens to these events and trigger some actions.
+We defined some automatisation processes that listen to these events and trigger some actions.
 
 - If a tag of a release is pushed (eg v1.3.3) then the doc is built and the v1.3.3 will be available and the default documentation ie any user going to the root of the documentation [https://copernicusmarine.readthedocs.io](https://copernicusmarine.readthedocs.io) will be directed to the newest version: `copernicusmarine.readthedocs.io/en/v1.3.3`.
 - If a tag of a pre-release is pushed (eg v2.0.0a1) then the doc is built and the v2.0.0a1 is available but won't be the default one.
