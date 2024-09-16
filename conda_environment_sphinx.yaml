@@ -6,3 +6,4 @@ dependencies:
     - sphinx-click==6.0.0
     - numpydoc==1.8.0
     - sphinx-copybutton==0.5.2
+    - furo==2024.8.6
