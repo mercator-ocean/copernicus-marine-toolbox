@@ -139,7 +139,7 @@ make html
 
 Please see the admin page of the toolbox: [here](https://readthedocs.org/projects/copernicusmarine/).
 
-To access admin rights, it you need to be added to the readthedocs project (after creating an account). For the moment Mathis and Simon are the admin of this page.
+To access admin rights, you need to be added to the readthedocs project (after creating an account). For the moment Mathis and Simon are the admin of this page.
 
 Example: [toolbox documentation](https://copernicusmarine.readthedocs.io)
 
