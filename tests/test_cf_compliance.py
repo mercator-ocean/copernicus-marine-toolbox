@@ -15,12 +15,14 @@ class TestCFCompliance:
         )
 
     def test_subset_with_warns(self, tmp_path, snapshot):
-        dataset_id = "cmems_obs-sst_med_phy_my_l3s_P1D-m"
+        dataset_id = (
+            "cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m"
+        )
         self.if_I_subset_a_dataset(
             dataset_id,
             tmp_path,
             "output_2.nc",
-            "adjusted_sea_surface_temperature",
+            "analysed_sst",
         )
         self.then_it_is_cf_compliant(
             dataset_id, tmp_path, snapshot, "output_2"

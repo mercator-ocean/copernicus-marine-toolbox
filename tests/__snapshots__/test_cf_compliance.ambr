@@ -13,29 +13,19 @@
   ])
 # ---
 # name: TestCFCompliance.test_subset_with_warns
-  'cmems_obs-sst_med_phy_my_l3s_P1D-m'
+  'cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m'
 # ---
 # name: TestCFCompliance.test_subset_with_warns.1
-  132
+  135
 # ---
 # name: TestCFCompliance.test_subset_with_warns.2
   136
 # ---
 # name: TestCFCompliance.test_subset_with_warns.3
   list([
-    '§2.5 Variables',
-    list([
-      "Attribute 'valid_min' (type: <class 'numpy.float64'>) and parent variable 'adjusted_sea_surface_temperature' (type: <class 'numpy.int16'>) must have equivalent datatypes",
-      "Attribute 'valid_max' (type: <class 'numpy.float64'>) and parent variable 'adjusted_sea_surface_temperature' (type: <class 'numpy.int16'>) must have equivalent datatypes",
-    ]),
     '§2.6 Attributes',
     list([
       '§2.6.1 Conventions global attribute does not contain "CF-1.6"',
-    ]),
-    '§8.1 Packed Data',
-    list([
-      'Type of adjusted_sea_surface_temperaturevalid_min attribute (float64) does not match variable type (int16)',
-      'Type of adjusted_sea_surface_temperature:valid_max attribute (float64) does not match variable type (int16)',
     ]),
   ])
 # ---
