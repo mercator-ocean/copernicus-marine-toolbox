@@ -232,6 +232,14 @@ def cli_get() -> None:
     default=False,
     help="Runs query without downloading data.",
 )
+@click.option(
+    "--max-concurrent-requests",
+    type=int,
+    default=15,
+    help="Maximum number of concurrent requests. "
+    "Default 15. The get command uses a thread "
+    "pool executor to manage concurrent requests.",
+)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -274,6 +282,7 @@ def get(
     sync_delete: bool,
     index_parts: bool,
     dry_run: bool,
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
@@ -317,6 +326,7 @@ def get(
         sync_delete=sync_delete,
         index_parts=index_parts,
         dry_run=dry_run,
+        max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

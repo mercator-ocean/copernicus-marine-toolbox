@@ -1,16 +1,12 @@
-import asyncio
 import logging
 from dataclasses import dataclass
 from enum import Enum
 from itertools import groupby
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Optional
 
-import nest_asyncio
 import pystac
-from aiohttp import ContentTypeError, ServerDisconnectedError
 from tqdm import tqdm
 
-from copernicusmarine.aioretry import RetryInfo, RetryPolicyStrategy, retry
 from copernicusmarine.catalogue_parser.dataset_product_mapping import (
     dataset_product_mapping,
 )
@@ -20,17 +16,13 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineProductDataset,
     get_version_and_part_from_full_dataset_id,
 )
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS,
-)
 from copernicusmarine.core_functions.sessions import (
-    get_configured_aiohttp_session,
-    get_https_proxy,
+    get_configured_requests_session,
 )
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
     map_reject_none,
-    rolling_batch_gather,
+    run_concurrently,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -49,87 +41,63 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"
 )
 
-MAX_CONCURRENT_REQUESTS = int(COPERNICUSMARINE_MAX_CONCURRENT_REQUESTS)
-
 
 class CatalogParserConnection:
-    def __init__(self, proxy: Optional[str] = None) -> None:
-        self.proxy = proxy
-        self.session = get_configured_aiohttp_session()
-        self.proxy = get_https_proxy()
-        self.__max_retries = 5
-        self.__sleep_time = 1
+    def __init__(self) -> None:
+        self.session = get_configured_requests_session()
 
-    @retry("_retry_policy")
-    async def get_json_file(self, url: str) -> dict[str, Any]:
+    def get_json_file(self, url: str) -> dict[str, Any]:
         logger.debug(f"Fetching json file at this url: {url}")
-        async with self.session.get(
+        with self.session.get(
             url,
             params=construct_query_params_for_marine_data_store_monitoring(),
-            proxy=self.proxy,
+            proxies=self.session.proxies,
         ) as response:
-            return await response.json()
+            return response.json()
 
-    async def close(self) -> None:
-        await self.session.close()
+    def __enter__(self):
+        return self
 
-    def _retry_policy(self, info: RetryInfo) -> RetryPolicyStrategy:
-        if not isinstance(
-            info.exception,
-            (
-                TimeoutError,
-                ConnectionResetError,
-                ContentTypeError,
-                ServerDisconnectedError,
-            ),
-        ):
-            logger.error(
-                f"Unexpected error while downloading: {info.exception}"
-            )
-            return True, 0
-        logger.debug(
-            f"Retrying {info.fails} times after error: {info.exception}"
-        )
-        return info.fails >= self.__max_retries, info.fails * self.__sleep_time
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.session.close()
 
 
-async def get_dataset_metadata(
+def get_dataset_metadata(
     dataset_id: str, staging: bool
 ) -> Optional[CopernicusMarineProductDataset]:
-    connection = CatalogParserConnection()
-    product_id = dataset_product_mapping[dataset_id]  # here mds mapping
-    root_url = (
-        MARINE_DATA_STORE_STAC_BASE_URL
-        if not staging
-        else MARINE_DATA_STORE_STAC_BASE_URL_STAGING
-    )
-    url = f"{root_url}/{product_id}/product.stac.json"
-    product_json = await connection.get_json_file(url)
-    product_collection = pystac.Collection.from_dict(product_json)
-    product_datasets_metadata_links = product_collection.get_item_links()
-    datasets_metadata_links = [
-        dataset_metadata_link
-        for dataset_metadata_link in product_datasets_metadata_links
-        if dataset_id in dataset_metadata_link.href
-    ]
-    if not datasets_metadata_links:
-        return None
-    # TODO: check if we gain a lot of time by doing a gather here
-    # if not don't forget to add a retry policy
-
-    dataset_jsons: list[dict] = await asyncio.gather(
-        *[
+    with CatalogParserConnection() as connection:
+        product_id = dataset_product_mapping[dataset_id]  # here mds mapping
+        root_url = (
+            MARINE_DATA_STORE_STAC_BASE_URL
+            if not staging
+            else MARINE_DATA_STORE_STAC_BASE_URL_STAGING
+        )
+        url = f"{root_url}/{product_id}/product.stac.json"
+        product_json = connection.get_json_file(url)
+        product_collection = pystac.Collection.from_dict(product_json)
+        product_datasets_metadata_links = product_collection.get_item_links()
+        datasets_metadata_links = [
+            dataset_metadata_link
+            for dataset_metadata_link in product_datasets_metadata_links
+            if dataset_id in dataset_metadata_link.href
+        ]
+        if not datasets_metadata_links:
+            return None
+        dataset_jsons: list[dict] = [
             connection.get_json_file(f"{root_url}/{product_id}/{link.href}")
             for link in datasets_metadata_links
         ]
-    )
-    await connection.close()
-    dataset_items = [
-        dataset_item
-        for dataset_json in dataset_jsons
-        if (dataset_item := _parse_dataset_json_to_pystac_item(dataset_json))
-    ]
-    return _parse_and_sort_dataset_items(dataset_items)
+
+        dataset_items = [
+            dataset_item
+            for dataset_json in dataset_jsons
+            if (
+                dataset_item := _parse_dataset_json_to_pystac_item(
+                    dataset_json
+                )
+            )
+        ]
+        return _parse_and_sort_dataset_items(dataset_items)
 
 
 def _parse_dataset_json_to_pystac_item(
@@ -186,7 +154,7 @@ def _parse_and_sort_dataset_items(
 
 
 def _construct_marine_data_store_product(
-    stac_tuple: Tuple[pystac.Collection, List[pystac.Item]],
+    stac_tuple: tuple[pystac.Collection, list[pystac.Item]],
 ) -> CopernicusMarineProduct:
     stac_product, stac_datasets = stac_tuple
     stac_datasets_sorted = sorted(stac_datasets, key=lambda x: x.id)
@@ -247,7 +215,7 @@ def _construct_marine_data_store_product(
 def _get_stac_product_property(
     stac_product: pystac.Collection, property_key: str
 ) -> Optional[Any]:
-    properties: Dict[str, str] = (
+    properties: dict[str, str] = (
         stac_product.extra_fields.get("properties", {})
         if stac_product.extra_fields
         else {}
@@ -255,65 +223,76 @@ def _get_stac_product_property(
     return properties.get(property_key)
 
 
-async def async_fetch_dataset_items(
+def fetch_dataset_items(
     root_url: str,
     connection: CatalogParserConnection,
     collection: pystac.Collection,
-) -> List[pystac.Item]:
+) -> list[pystac.Item]:
     items = []
     for link in collection.get_item_links():
         if not link.owner:
             logger.warning(f"Invalid Item, no owner for: {link.href}")
             continue
         url = root_url + "/" + link.owner.id + "/" + link.href
-        item_json = await connection.get_json_file(url)
+        item_json = connection.get_json_file(url)
         item = _parse_dataset_json_to_pystac_item(item_json)
         if item:
             items.append(item)
     return items
 
 
-async def async_fetch_collection(
+def fetch_collection(
     root_url: str,
     connection: CatalogParserConnection,
     url: str,
-) -> Optional[Tuple[pystac.Collection, List[pystac.Item]]]:
-    json_collection = await connection.get_json_file(url)
+) -> Optional[tuple[pystac.Collection, list[pystac.Item]]]:
+    json_collection = connection.get_json_file(url)
     collection = _parse_product_json_to_pystac_collection(json_collection)
     if collection:
-        items = await async_fetch_dataset_items(
-            root_url, connection, collection
-        )
+        items = fetch_dataset_items(root_url, connection, collection)
         return (collection, items)
     return None
 
 
-async def async_fetch_product_items(
+def fetch_product_items(
     root_url: str,
     connection: CatalogParserConnection,
-    child_links: List[pystac.Link],
-) -> Iterator[Optional[Tuple[pystac.Collection, List[pystac.Item]]]]:
+    child_links: list[pystac.Link],
+    max_concurrent_requests: int,
+    disable_progress_bar: bool,
+) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
     tasks = []
     for link in child_links:
-        tasks.append(
-            async_fetch_collection(root_url, connection, link.absolute_href)
+        tasks.append((root_url, connection, link.absolute_href))
+    tdqm_bar_configuration = {
+        "desc": "Fetching STAC Products",
+        "disable": disable_progress_bar,
+        "leave": False,
+    }
+    return [
+        result
+        for result in run_concurrently(
+            fetch_collection,
+            tasks,
+            max_concurrent_requests,
+            tdqm_bar_configuration,
         )
-    return filter(
-        lambda x: x is not None,
-        await rolling_batch_gather(tasks, MAX_CONCURRENT_REQUESTS),
-    )
+        if result is not None
+    ]
 
 
-async def async_fetch_all_products_items(
+def fetch_all_products_items(
     connection: CatalogParserConnection,
+    max_concurrent_requests: int,
     staging: bool,
-) -> Iterator[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
+    disable_progress_bar: bool,
+) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
     catalog_root_url = (
         MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL
         if not staging
         else MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING
     )
-    json_catalog = await connection.get_json_file(catalog_root_url)
+    json_catalog = connection.get_json_file(catalog_root_url)
     catalog = pystac.Catalog.from_dict(json_catalog)
     catalog.set_self_href(catalog_root_url)
     child_links = catalog.get_child_links()
@@ -322,11 +301,18 @@ async def async_fetch_all_products_items(
         if not staging
         else (MARINE_DATA_STORE_STAC_BASE_URL_STAGING)
     )
-    childs = await async_fetch_product_items(root_url, connection, child_links)
+    childs = fetch_product_items(
+        root_url,
+        connection,
+        child_links,
+        max_concurrent_requests,
+        disable_progress_bar,
+    )
     return childs
 
 
 def parse_catalogue(
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool = False,
 ) -> CopernicusMarineCatalogue:
@@ -335,12 +321,13 @@ def parse_catalogue(
         total=2, desc="Fetching catalog", disable=disable_progress_bar
     )
 
-    connection = CatalogParserConnection()
-    nest_asyncio.apply()
-    loop = asyncio.get_event_loop()
-    marine_data_store_root_collections = loop.run_until_complete(
-        async_fetch_all_products_items(connection=connection, staging=staging)
-    )
+    with CatalogParserConnection() as connection:
+        marine_data_store_root_collections = fetch_all_products_items(
+            connection=connection,
+            max_concurrent_requests=max_concurrent_requests,
+            staging=staging,
+            disable_progress_bar=disable_progress_bar,
+        )
     progress_bar.update()
 
     products_metadata = [
@@ -359,8 +346,6 @@ def parse_catalogue(
 
     full_catalog = CopernicusMarineCatalogue(products=products_metadata)
 
-    loop.run_until_complete(connection.close())
-
     progress_bar.update()
     logger.debug("Catalogue parsed")
     return full_catalog
@@ -371,9 +356,9 @@ class DistinctDatasetVersionPart:
     dataset_id: str
     dataset_version: str
     dataset_part: str
-    layer_elements: List
-    raw_services: Dict
-    stac_items_values: Optional[Dict]
+    layer_elements: list
+    raw_services: dict
+    stac_items_values: Optional[dict]
 
 
 # ---------------------------------------
@@ -412,7 +397,7 @@ def find_match_enum(enum: Enum, tokens: list[str]) -> Any:
     return find_match_object(enum.value, tokens)
 
 
-def find_match_tuple(tuple: Tuple, tokens: list[str]) -> Optional[list[Any]]:
+def find_match_tuple(tuple: tuple, tokens: list[str]) -> Optional[list[Any]]:
     return find_match_list(list(tuple), tokens)
 
 

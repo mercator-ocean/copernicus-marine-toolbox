@@ -210,7 +210,8 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-interface.html">Python Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="response_types.html">Response Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response-types.html">Response Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network-configuration.html">Network configuration</a></li>
 </ul>
 
 </div>
@@ -311,6 +312,12 @@
 <dt class="sig sig-object std" id="cmdoption-copernicusmarine-describe-c">
 <span id="cmdoption-copernicusmarine-describe-contains"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--contains</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;contains&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-describe-c" title="Link to this definition">¶</a></dt>
 <dd><p>Filter catalogue output. Returns products with attributes matching a string token.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-copernicusmarine-describe-max-concurrent-requests">
+<span class="sig-name descname"><span class="pre">--max-concurrent-requests</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;max_concurrent_requests&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-describe-max-concurrent-requests" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of concurrent requests. Default 15. The describe command uses a thread pool executor to manage concurrent requests.</p>
 </dd></dl>
 
 <dl class="std option">
@@ -806,6 +813,12 @@
 <dt class="sig sig-object std" id="cmdoption-copernicusmarine-get-dry-run">
 <span class="sig-name descname"><span class="pre">--dry-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-copernicusmarine-get-dry-run" title="Link to this definition">¶</a></dt>
 <dd><p>Runs query without downloading data.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-copernicusmarine-get-max-concurrent-requests">
+<span class="sig-name descname"><span class="pre">--max-concurrent-requests</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;max_concurrent_requests&gt;</span></span><a class="headerlink" href="#cmdoption-copernicusmarine-get-max-concurrent-requests" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of concurrent requests. Default 15. The get command uses a thread pool executor to manage concurrent requests.</p>
 </dd></dl>
 
 <dl class="std option">

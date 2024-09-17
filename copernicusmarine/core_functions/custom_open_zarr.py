@@ -11,8 +11,8 @@ import xarray
 from copernicusmarine.core_functions.sessions import (
     PROXIES,
     TRUST_ENV,
-    _get_ssl_context,
     get_configured_boto3_session,
+    get_ssl_context,
 )
 from copernicusmarine.core_functions.utils import parse_access_dataset_url
 
@@ -160,7 +160,7 @@ def open_zarr(
         {
             "storage_options": {
                 "client_kwargs": {"trust_env": TRUST_ENV, "proxies": PROXIES},
-                "ssl": _get_ssl_context(),
+                "ssl": get_ssl_context(),
             }
         }
     )
