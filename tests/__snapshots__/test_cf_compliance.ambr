@@ -12,8 +12,8 @@
   list([
     '§2.5 Variables',
     list([
-      "Attribute 'valid_max' (type: <class 'numpy.float64'>) and parent variable 'pico' (type: <class 'numpy.float32'>) must have equivalent datatypes",
       "Attribute 'valid_min' (type: <class 'numpy.float64'>) and parent variable 'pico' (type: <class 'numpy.float32'>) must have equivalent datatypes",
+      "Attribute 'valid_max' (type: <class 'numpy.float64'>) and parent variable 'pico' (type: <class 'numpy.float32'>) must have equivalent datatypes",
     ]),
   ])
 # ---
@@ -30,12 +30,12 @@
   list([
     '§2.5 Variables',
     list([
-      "Attribute 'valid_max' (type: <class 'numpy.int64'>) and parent variable 'adjusted_sea_surface_temperature' (type: <class 'numpy.int16'>) must have equivalent datatypes",
       "Attribute 'valid_min' (type: <class 'numpy.int64'>) and parent variable 'adjusted_sea_surface_temperature' (type: <class 'numpy.int16'>) must have equivalent datatypes",
+      "Attribute 'valid_max' (type: <class 'numpy.int64'>) and parent variable 'adjusted_sea_surface_temperature' (type: <class 'numpy.int16'>) must have equivalent datatypes",
     ]),
     '§2.6 Attributes',
     list([
-      '§2.6.1 Conventions global attribute does not contain "CF-1.7"',
+      '§2.6.1 Conventions global attribute does not contain "CF-1.6"',
     ]),
     '§8.1 Packed Data',
     list([

@@ -1,5 +1,7 @@
 import json
 
+import xarray
+
 from copernicusmarine import subset
 from tests.test_utils import execute_in_terminal
 
@@ -42,7 +44,10 @@ class TestCFCompliance:
         self, dataset_id, tmp_path, snapshot, output_filename
     ):
         dataset_id = dataset_id
-        CF_convention = "1.7"
+        dataset = xarray.open_dataset(f"{tmp_path}/{output_filename}.nc")
+        CF_convention = dataset.attrs["Conventions"][-3:]
+        if CF_convention < "1.6":
+            CF_convention = "1.6"
         command = [
             "compliance-checker",
             f"--test=cf:{CF_convention}",
@@ -58,12 +63,12 @@ class TestCFCompliance:
         data = json.load(f)
 
         list_msgs = []
-        for diccionari in data["cf:1.7"]["all_priorities"]:
+        for diccionari in data[f"cf:{CF_convention}"]["all_priorities"]:
             if len(diccionari["msgs"]) > 0:
                 list_msgs.append(diccionari["name"])
                 list_msgs.append(diccionari["msgs"])
 
         assert dataset_id == snapshot
-        assert data["cf:1.7"]["scored_points"] == snapshot
-        assert data["cf:1.7"]["possible_points"] == snapshot
+        assert data[f"cf:{CF_convention}"]["scored_points"] == snapshot
+        assert data[f"cf:{CF_convention}"]["possible_points"] == snapshot
         assert list_msgs == snapshot
