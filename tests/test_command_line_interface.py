@@ -59,12 +59,13 @@ class TestCommandLineInterface:
         self.then_I_can_read_the_default_json()
         self.and_there_are_no_warnings_about_backend_versions()
 
-    def test_describe_including_datasets(self):
+    def test_describe_including_datasets(self, snapshot):
         self.when_I_run_copernicus_marine_describe_including_datasets()
         self.then_I_can_read_it_does_not_contain_weird_symbols()
         self.then_I_can_read_the_json_including_datasets()
         self.then_omi_services_are_not_in_the_catalog()
         self.then_products_from_marine_data_store_catalog_are_available()
+        self.then_datasets_variables_are_correct(snapshot)
         self.then_all_dataset_parts_are_filled()
 
     def test_describe_contains_option(self):
@@ -150,6 +151,38 @@ class TestCommandLineInterface:
         assert all(
             map(lambda x: x in expected_services, expected_dataset_services)
         )
+
+    def then_datasets_variables_are_correct(self, snapshot):
+        expected_product_id = "GLOBAL_MULTIYEAR_PHY_ENS_001_031"
+        expected_dataset_id = "cmems_mod_glo_phy-all_my_0.25deg_P1D-m"
+        wanted_services = [
+            "original-files",
+            "arco-geo-series",
+            "arco-time-series",
+        ]
+        json_result = loads(self.output.stdout)
+        expected_product = list(
+            filter(
+                lambda product: product["product_id"] == expected_product_id,
+                json_result["products"],
+            )
+        )
+        product = expected_product[0]
+        product_datasets = product["datasets"]
+        expected_dataset = list(
+            filter(
+                lambda product: product["dataset_id"] == expected_dataset_id,
+                product_datasets,
+            )
+        )
+        dataset = expected_dataset[0]
+        wanted_services_in_dataset = list(
+            filter(
+                lambda x: x["service_type"]["service_name"] in wanted_services,
+                dataset["versions"][0]["parts"][0]["services"],
+            )
+        )
+        assert snapshot == wanted_services_in_dataset
 
     def then_all_dataset_parts_are_filled(self):
         expected_product_id = "BALTICSEA_ANALYSISFORECAST_BGC_003_007"
