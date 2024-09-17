@@ -8,3 +8,6 @@ copernicusmarine/**/__pycache__/
 **/.DS_Store
 __debug.py
 dist/
+
+# Sphinx documentation html build
+doc/_build/
