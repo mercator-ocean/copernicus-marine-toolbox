@@ -35,6 +35,7 @@ from copernicusmarine.download_functions.subset_parameters import (
     TemporalParameters,
 )
 
+# comment
 logger = logging.getLogger("copernicusmarine")
 
 COORDINATES_LABEL = {
