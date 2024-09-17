@@ -13,11 +13,9 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
-    DEFAULT_BOUNDING_BOX_METHOD,
-    DEFAULT_SUBSET_METHOD,
+    DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_DIMENSION_OUTPUT,
-    BoundingBoxMethod,
-    SubsetMethod,
+    CoordinatesSelectionMethod,
     VerticalDimensionOutput,
 )
 from copernicusmarine.download_functions.download_arco_series import (
@@ -66,8 +64,9 @@ def open_dataset(
     vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
-    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
-    subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
+    coordinates_selection_method: CoordinatesSelectionMethod = (
+        DEFAULT_COORDINATES_SELECTION_METHOD
+    ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
 ) -> xarray.Dataset:
@@ -103,13 +102,8 @@ def open_dataset(
         The minimum depth for subsetting the data.
     maximum_depth : float, optional
         The maximum depth for subsetting the data.
-    bounding_box_method : str, optional
-        The bounding box method when requesting the dataset. If 'inside' (by default), it will return the inside interval.
-        If 'nearest', the limits of the requested interval will be the nearest points of the dataset. If 'outside', it will
-        return all the data such that the requested interval is fully included. Check the documentation for more details.
-    subset_method : str, optional
-        The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimensions
-        strictly inside the dataset.
+    coordinates_selection_method : str, optional
+        The method in which the coordinates will be retrieved. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
     vertical_dimension_output : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
         'elevation' with ascending positive values. Default is 'depth'.
@@ -158,8 +152,7 @@ def open_dataset(
             maximum_depth=maximum_depth,
             vertical_dimension_output=vertical_dimension_output,
         ),
-        bounding_box_method=bounding_box_method,
-        subset_method=subset_method,
+        coordinates_selection_method=coordinates_selection_method,
         force_service=service,
         credentials_file=credentials_file,
     )
