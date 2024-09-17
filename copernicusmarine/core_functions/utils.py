@@ -1,19 +1,16 @@
-import asyncio
+import concurrent.futures
 import logging
 import pathlib
 import re
 from importlib.metadata import version
 from typing import (
     Any,
-    Awaitable,
     Callable,
-    Coroutine,
     Iterable,
     Iterator,
-    List,
     Literal,
     Optional,
-    Tuple,
+    Sequence,
     TypeVar,
     Union,
 )
@@ -26,6 +23,7 @@ import pendulum.exceptions
 import xarray
 from pendulum import DateTime
 from requests import PreparedRequest
+from tqdm import tqdm
 
 from copernicusmarine import __version__ as copernicusmarine_version
 
@@ -175,23 +173,30 @@ def add_copernicusmarine_version_in_dataset_attributes(
     return dataset
 
 
-async def rolling_batch_gather(
-    promises: Union[List[Coroutine[Any, Any, Any]], List[Awaitable[Any]]],
-    per_batch: int,
-) -> List[Any]:
-    tasks: asyncio.Queue = asyncio.Queue()
-    for promise in promises:
-        tasks.put_nowait(promise)
-
-    async def worker():
-        res = []
-        while not tasks.empty():
-            res.append(await tasks.get_nowait())
-
-        return res
-
-    results = await asyncio.gather(*[worker() for _ in range(per_batch)])
-    return [s for r in results for s in r]
+# From: https://stackoverflow.com/a/46144596/20983727
+def run_concurrently(
+    func: Callable[..., _T],
+    function_arguments: Sequence[tuple[Any, ...]],
+    max_concurrent_requests: int,
+    tdqm_bar_configuration: dict = {},
+) -> list[_T]:
+    out = []
+    with tqdm(
+        total=len(function_arguments),
+        **tdqm_bar_configuration,
+    ) as pbar:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=max_concurrent_requests
+        ) as executor:
+            future_to_url = (
+                executor.submit(func, *function_argument)
+                for function_argument in function_arguments
+            )
+            for future in concurrent.futures.as_completed(future_to_url):
+                data = future.result()
+                out.append(data)
+                pbar.update(1)
+    return out
 
 
 # Example data_path
@@ -200,7 +205,7 @@ async def rolling_batch_gather(
 # https://s3.region.cloudferro.com:443/bucket/arco/product/dataset/geoChunked.zarr
 def parse_access_dataset_url(
     data_path: str, only_dataset_root_path: bool = False
-) -> Tuple[str, str, str]:
+) -> tuple[str, str, str]:
 
     match = re.search(
         r"^(http|https):\/\/([\w\-\.]+)(:[\d]+)?(\/.*)", data_path

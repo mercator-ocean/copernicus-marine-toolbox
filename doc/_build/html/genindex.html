@@ -208,7 +208,8 @@
 <li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/command-line-interface.html">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/python-interface.html">Python Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage/response_types.html">Response Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/response-types.html">Response Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/network-configuration.html">Network configuration</a></li>
 </ul>
 
 </div>
@@ -487,6 +488,15 @@
 </li>
         </ul></li>
         <li>
+    --max-concurrent-requests
+
+        <ul>
+          <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-describe-max-concurrent-requests">copernicusmarine-describe command line option</a>
+</li>
+          <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-get-max-concurrent-requests">copernicusmarine-get command line option</a>
+</li>
+        </ul></li>
+        <li>
     --maximal-depth
 
         <ul>
@@ -563,6 +573,8 @@
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-subset-y">copernicusmarine-subset command line option</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --minimum-longitude
 
@@ -570,8 +582,6 @@
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-subset-x">copernicusmarine-subset command line option</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --motu-api-request
 
@@ -898,7 +908,7 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.ResponseSubset.coodinates_extent">coodinates_extent (copernicusmarine.ResponseSubset attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.ResponseSubset.coodinates_extent">coodinates_extent (copernicusmarine.ResponseSubset attribute)</a>
 </li>
         <li>
     copernicusmarine
@@ -937,6 +947,8 @@
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-describe-include-versions">--include-versions</a>
 </li>
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-describe-log-level">--log-level</a>
+</li>
+          <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-describe-max-concurrent-requests">--max-concurrent-requests</a>
 </li>
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-describe-a">-a</a>
 </li>
@@ -982,6 +994,8 @@
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-get-index-parts">--index-parts</a>
 </li>
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-get-log-level">--log-level</a>
+</li>
+          <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-get-max-concurrent-requests">--max-concurrent-requests</a>
 </li>
           <li><a href="usage/command-line-interface.html#cmdoption-copernicusmarine-get-nd">--no-directories</a>
 </li>
@@ -1162,15 +1176,13 @@
   <h2>D</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.ResponseSubset.data_needed">data_needed (copernicusmarine.ResponseSubset attribute)</a>
-</li>
-        <li><a href="usage/response_types.html#copernicusmarine.DatasetCoordinatesExtent">DatasetCoordinatesExtent (class in copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.ResponseSubset.data_needed">data_needed (copernicusmarine.ResponseSubset attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.DatasetCoordinatesExtent.depth">depth (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.DatasetCoordinatesExtent">DatasetCoordinatesExtent (class in copernicusmarine)</a>
 </li>
-        <li><a href="usage/python-interface.html#copernicusmarine.describe">describe() (in module copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.DatasetCoordinatesExtent.depth">depth (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1180,7 +1192,7 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.DatasetCoordinatesExtent.elevation">elevation (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.DatasetCoordinatesExtent.elevation">elevation (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1190,11 +1202,11 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.FileGet">FileGet (class in copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.FileGet">FileGet (class in copernicusmarine)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.ResponseGet.files">files (copernicusmarine.ResponseGet attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.ResponseGet.files">files (copernicusmarine.ResponseGet attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1204,7 +1216,7 @@
   <h2>G</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.GeographicalExtent">GeographicalExtent (class in copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.GeographicalExtent">GeographicalExtent (class in copernicusmarine)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -1218,15 +1230,15 @@
   <h2>L</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.FileGet.last_modified">last_modified (copernicusmarine.FileGet attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.FileGet.last_modified">last_modified (copernicusmarine.FileGet attribute)</a>
 </li>
-        <li><a href="usage/response_types.html#copernicusmarine.DatasetCoordinatesExtent.latitude">latitude (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.DatasetCoordinatesExtent.latitude">latitude (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="usage/python-interface.html#copernicusmarine.login">login() (in module copernicusmarine)</a>
 </li>
-        <li><a href="usage/response_types.html#copernicusmarine.DatasetCoordinatesExtent.longitude">longitude (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.DatasetCoordinatesExtent.longitude">longitude (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1236,16 +1248,16 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.GeographicalExtent.maximum">maximum (copernicusmarine.GeographicalExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.GeographicalExtent.maximum">maximum (copernicusmarine.GeographicalExtent attribute)</a>
 
         <ul>
-          <li><a href="usage/response_types.html#copernicusmarine.TimeExtent.maximum">(copernicusmarine.TimeExtent attribute)</a>
+          <li><a href="usage/response-types.html#copernicusmarine.TimeExtent.maximum">(copernicusmarine.TimeExtent attribute)</a>
 </li>
         </ul></li>
-        <li><a href="usage/response_types.html#copernicusmarine.GeographicalExtent.minimum">minimum (copernicusmarine.GeographicalExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.GeographicalExtent.minimum">minimum (copernicusmarine.GeographicalExtent attribute)</a>
 
         <ul>
-          <li><a href="usage/response_types.html#copernicusmarine.TimeExtent.minimum">(copernicusmarine.TimeExtent attribute)</a>
+          <li><a href="usage/response-types.html#copernicusmarine.TimeExtent.minimum">(copernicusmarine.TimeExtent attribute)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1269,10 +1281,10 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.FileGet.output">output (copernicusmarine.FileGet attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.FileGet.output">output (copernicusmarine.FileGet attribute)</a>
 
         <ul>
-          <li><a href="usage/response_types.html#copernicusmarine.ResponseSubset.output">(copernicusmarine.ResponseSubset attribute)</a>
+          <li><a href="usage/response-types.html#copernicusmarine.ResponseSubset.output">(copernicusmarine.ResponseSubset attribute)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1287,9 +1299,9 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.ResponseGet">ResponseGet (class in copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.ResponseGet">ResponseGet (class in copernicusmarine)</a>
 </li>
-        <li><a href="usage/response_types.html#copernicusmarine.ResponseSubset">ResponseSubset (class in copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.ResponseSubset">ResponseSubset (class in copernicusmarine)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1299,10 +1311,10 @@
   <h2>S</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.FileGet.size">size (copernicusmarine.FileGet attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.FileGet.size">size (copernicusmarine.FileGet attribute)</a>
 
         <ul>
-          <li><a href="usage/response_types.html#copernicusmarine.ResponseSubset.size">(copernicusmarine.ResponseSubset attribute)</a>
+          <li><a href="usage/response-types.html#copernicusmarine.ResponseSubset.size">(copernicusmarine.ResponseSubset attribute)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1317,11 +1329,11 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.DatasetCoordinatesExtent.time">time (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.DatasetCoordinatesExtent.time">time (copernicusmarine.DatasetCoordinatesExtent attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.TimeExtent">TimeExtent (class in copernicusmarine)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.TimeExtent">TimeExtent (class in copernicusmarine)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1331,7 +1343,7 @@
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage/response_types.html#copernicusmarine.FileGet.url">url (copernicusmarine.FileGet attribute)</a>
+        <li><a href="usage/response-types.html#copernicusmarine.FileGet.url">url (copernicusmarine.FileGet attribute)</a>
 </li>
     </ul></td>
   </tr></table>
