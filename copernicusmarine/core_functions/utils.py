@@ -145,7 +145,7 @@ def timestamp_parser(
     by default. The unit can be changed to seconds by passing "s" as
     the unit.
     """
-    conversion_factor = 1 if unit == "s" else 10e3
+    conversion_factor = 1 if unit == "s" else 1e3
     return pendulum.from_timestamp(timestamp / conversion_factor, tz="UTC")
 
 
