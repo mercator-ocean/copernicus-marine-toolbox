@@ -261,6 +261,9 @@ def get_approximation_size_data_downloaded(
     download_estimated_size = 0
     for variable_name in temp_dataset.data_vars:
         coordinates_size = 1
+        variable = [
+            var for var in service.variables if var.short_name == variable_name
+        ][0]
         for coordinate_name in temp_dataset.sizes:
             if coordinate_name == "elevation":
                 coordinate_name = "depth"
@@ -270,15 +273,14 @@ def get_approximation_size_data_downloaded(
                 for coordinate_names in COORDINATES_LABEL.values()
                 if coordinate_name in coordinate_names
             ][0]
-            coordinate = [
+            coordinates = [
                 coord
-                for coord in [
-                    var
-                    for var in service.variables
-                    if var.short_name == variable_name
-                ][0].coordinates
+                for coord in variable.coordinates
                 if coord.coordinate_id in possible_coordinate_id
-            ][0]
+            ]
+            if not coordinates:
+                continue
+            coordinate = coordinates[0]
             chunking_length = coordinate.chunking_length
             if not chunking_length:
                 continue
