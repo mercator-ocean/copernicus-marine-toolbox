@@ -430,6 +430,18 @@ def _get_variable_name_from_standard_name(
     return None
 
 
+def _adequate_dtypes_of_valid_minmax(
+    dataset: xarray.Dataset, variable: str
+) -> xarray.Dataset:
+    dataset[variable].attrs["valid_min"] = numpy.array(
+        [dataset[variable].attrs["valid_min"]], dtype=dataset[variable].dtype
+    )[0]
+    dataset[variable].attrs["valid_max"] = numpy.array(
+        [dataset[variable].attrs["valid_max"]], dtype=dataset[variable].dtype
+    )[0]
+    return dataset
+
+
 def _update_variables_attributes(
     dataset: xarray.Dataset, variables: List[str]
 ) -> xarray.Dataset:
@@ -437,6 +449,11 @@ def _update_variables_attributes(
         dataset[variable].attrs = _filter_attributes(
             dataset[variable].attrs, NETCDF_CONVENTION_VARIABLE_ATTRIBUTES
         )
+        if (
+            "valid_min" in dataset[variable].attrs
+            and "valid_max" in dataset[variable].attrs
+        ):
+            _adequate_dtypes_of_valid_minmax(dataset, variable)
     return dataset
 
 
