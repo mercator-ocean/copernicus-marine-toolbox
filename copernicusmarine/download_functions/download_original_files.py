@@ -218,7 +218,7 @@ def download_files(
             pathlib.Path.mkdir(parent_dir, parents=True)
     if max_concurrent_requests:
         run_concurrently(
-            _original_files_file_download,
+            _download_one_file,
             [
                 (username, endpoint_url, bucket, in_file, out_file)
                 for in_file, out_file in zip(
@@ -240,7 +240,7 @@ def download_files(
             desc="Downloading files",
         ) as pbar:
             for in_file, out_file in zip(filenames_in, filenames_out):
-                _original_files_file_download(
+                _download_one_file(
                     username, endpoint_url, bucket, in_file, out_file
                 )
                 pbar.update(1)
@@ -511,16 +511,13 @@ def _get_file_size_and_last_modified(
             raise e
 
 
-def _original_files_file_download(
+def _download_one_file(
     username,
     endpoint_url: str,
     bucket: str,
     file_in: str,
     file_out: pathlib.Path,
-) -> pathlib.Path:
-    """
-    Download ONE file and return the path of the result
-    """
+) -> None:
     s3_client, s3_resource = get_configured_boto3_session(
         endpoint_url,
         ["GetObject", "HeadObject"],
@@ -546,8 +543,6 @@ def _original_files_file_download(
             f"Permission to modify the last modified date "
             f"of the file {file_out} is denied."
         )
-
-    return file_out
 
 
 # /////////////////////////////
