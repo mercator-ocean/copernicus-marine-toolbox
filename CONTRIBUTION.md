@@ -112,3 +112,40 @@ First, here is the link to the conda-forge feedstock repository: [https://github
 All the conda-forge informations about this repository are available [here in the README](https://github.com/orgs/conda-forge/teams/copernicusmarine). To update it (new version, new maintainer...), please follow the indicated procedure.
 
 Please also take a look at [this conda-forge documentation](https://conda-forge.org/docs/maintainer/updating_pkgs/#example-workflow-for-updating-a-package) for more information about the update procedure.
+
+## Documentation
+
+We use sphinx and read the docs to respectively build and distribute the documentation of the toolbox.
+
+### Sphinx
+
+We use:
+
+- autodoc: to create the documentation from the docstrings of the python interface or the comments in the models
+- numpydoc: to convert numpydoc documentation to restructuresText
+- sphinx-click: to generate the documentation from the click CLI
+- furo: as a base template
+
+The configuration of sphinx can be found in the `doc/conf.py` file and the versions are in the `conda_environment_sphinx.yaml` file. The `_build` folder is gitignored.
+
+To build the documentation do:
+
+```bash
+cd doc/
+make html
+```
+
+### ReadTheDocs
+
+Please see the admin page of the toolbox: [here](https://readthedocs.org/projects/copernicusmarine/).
+
+To access admin rights, you need to be added to the readthedocs project (after creating an account). For the moment Mathis and Simon are the admin of this page.
+
+Example: [toolbox documentation](https://copernicusmarine.readthedocs.io)
+
+Readthedocs have a webhook on the copernicusmarine repo and is triggered when: a commit is pushed, a tag is created and other events.
+
+We defined some automatisation processes that listen to these events and trigger some actions.
+
+- If a tag of a release is pushed (eg v1.3.3) then the doc is built and the v1.3.3 will be available and the default documentation ie any user going to the root of the documentation [https://copernicusmarine.readthedocs.io](https://copernicusmarine.readthedocs.io) will be directed to the newest version: `copernicusmarine.readthedocs.io/en/v1.3.3`.
+- If a tag of a pre-release is pushed (eg v2.0.0a1) then the doc is built and the v2.0.0a1 is available but won't be the default one.
