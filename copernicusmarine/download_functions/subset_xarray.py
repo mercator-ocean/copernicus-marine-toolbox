@@ -552,11 +552,11 @@ def longitude_modulus(longitude: float) -> float:
     Returns the equivalent longitude in [-180, 180[
     """
     # We are using Decimal to avoid issue with rounding
-    modulus = float(Decimal(str(longitude + 180)) % 360)
+    modulus = (Decimal(str(longitude)) + 180) % 360
     # Modulus with python return a negative value if the denominator is negative
     # To counteract that, we add 360 if the result is < 0
     modulus = modulus if modulus >= 0 else modulus + 360
-    return modulus - 180
+    return float(modulus - 180)
 
 
 def longitude_modulus_upper_bound(longitude: float) -> float:
