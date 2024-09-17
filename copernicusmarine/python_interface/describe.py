@@ -20,10 +20,11 @@ def describe(
     include_versions: bool = False,
     include_all: bool = False,
     contains: list[str] = [],
+    max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
     staging: bool = False,
 ) -> dict[str, Any]:
-    """
+    f"""
     Retrieve metadata information from the Copernicus Marine catalogue.
 
     This function fetches metadata information from the Copernicus Marine catalogue
@@ -43,6 +44,11 @@ def describe(
         Whether to include all metadata information. Defaults to False.
     contains : list[str], optional
         List of strings to filter items containing these values. Defaults to [].
+    max_concurrent_requests : int, optional
+        Maximum number of concurrent requests. Defaults to 15. The describe command
+        uses a thread pool executor to manage concurrent requests.
+    disable_progress_bar : bool, optional
+        Whether to disable the progress bar. Defaults to False.
 
     Returns
     -------
@@ -65,6 +71,7 @@ def describe(
         include_keywords,
         include_versions,
         contains,
+        max_concurrent_requests,
         disable_progress_bar,
         staging=staging,
     )

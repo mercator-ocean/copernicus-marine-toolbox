@@ -3,23 +3,18 @@ import os
 import pathlib
 import re
 from itertools import chain
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import Iterator, List, Optional, Tuple
+from typing import Optional
 
 import click
 import pendulum
 from botocore.client import ClientError
-from numpy import append, arange
 from pendulum import DateTime
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     overload_regex_with_additionnal_filter,
-)
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS,
 )
 from copernicusmarine.core_functions.models import FileGet, ResponseGet
 from copernicusmarine.core_functions.sessions import (
@@ -29,23 +24,19 @@ from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     get_unique_filename,
     parse_access_dataset_url,
+    run_concurrently,
     timestamp_parser,
 )
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
-NUMBER_THREADS = (
-    int(COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS)
-    if COPERNICUSMARINE_GET_CONCURRENT_DOWNLOADS
-    else None
-)
-
 
 def download_original_files(
     username: str,
     password: str,
     get_request: GetRequest,
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     create_file_list: Optional[str],
 ) -> ResponseGet:
@@ -188,6 +179,7 @@ def download_original_files(
         bucket,
         filenames_in,
         filenames_out,
+        max_concurrent_requests,
         disable_progress_bar,
     )
     return response
@@ -215,63 +207,43 @@ def download_files(
     username: str,
     endpoint_url: str,
     bucket: str,
-    filenames_in: List[str],
-    filenames_out: List[pathlib.Path],
+    filenames_in: list[str],
+    filenames_out: list[pathlib.Path],
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
 ) -> None:
-    nfiles_per_process, nfiles = 1, len(filenames_in)
-    indexes = append(
-        arange(0, nfiles, nfiles_per_process, dtype=int),
-        nfiles,
-    )
-    groups_in_files = [
-        filenames_in[indexes[i] : indexes[i + 1]]
-        for i in range(len(indexes) - 1)
-    ]
-    groups_out_files = [
-        filenames_out[indexes[i] : indexes[i + 1]]
-        for i in range(len(indexes) - 1)
-    ]
-
-    for groups_out_file in groups_out_files:
-        parent_dir = Path(groups_out_file[0]).parent
+    for filename_out in filenames_out:
+        parent_dir = Path(filename_out).parent
         if not parent_dir.is_dir():
             pathlib.Path.mkdir(parent_dir, parents=True)
-
-    # TODO: v2 It would be proably better to use an async approach
-    # TODO: v2 probably better to use an argument for the number
-    # of threads instead of using the environment variable
-    if NUMBER_THREADS is None or NUMBER_THREADS:
-        pool = ThreadPool(processes=NUMBER_THREADS)
-        download_summary_list: Iterator[List[Path]] = pool.imap(
-            _download_files,
-            zip(
-                [username] * len(groups_in_files),
-                [endpoint_url] * len(groups_in_files),
-                [bucket] * len(groups_in_files),
-                groups_in_files,
-                groups_out_files,
-            ),
+    if max_concurrent_requests:
+        run_concurrently(
+            _download_one_file,
+            [
+                (username, endpoint_url, bucket, in_file, out_file)
+                for in_file, out_file in zip(
+                    filenames_in,
+                    filenames_out,
+                )
+            ],
+            max_concurrent_requests,
+            tdqm_bar_configuration={
+                "disable": disable_progress_bar,
+                "desc": "Downloading files",
+            },
         )
     else:
         logger.info("Downloading files one by one...")
-        download_summary_list = map(
-            _download_files,
-            zip(
-                [username] * len(groups_in_files),
-                [endpoint_url] * len(groups_in_files),
-                [bucket] * len(groups_in_files),
-                groups_in_files,
-                groups_out_files,
-            ),
-        )
-    list(
-        tqdm(
-            download_summary_list,
-            total=len(groups_in_files),
+        with tqdm(
+            total=len(filenames_in),
             disable=disable_progress_bar,
-        )
-    )
+            desc="Downloading files",
+        ) as pbar:
+            for in_file, out_file in zip(filenames_in, filenames_out):
+                _download_one_file(
+                    username, endpoint_url, bucket, in_file, out_file
+                )
+                pbar.update(1)
 
 
 def _download_header(
@@ -285,11 +257,11 @@ def _download_header(
     only_list_root_path: bool = False,
     overwrite: bool = False,
 ) -> Optional[
-    Tuple[
-        Tuple[str, str],
+    tuple[
+        tuple[str, str],
         list[str],
-        List[float],
-        List[DateTime],
+        list[float],
+        list[DateTime],
         float,
         list[str],
     ]
@@ -362,11 +334,11 @@ def _download_header_for_direct_download(
     sync: bool,
     directory_out: pathlib.Path,
     username: str,
-) -> Tuple[
-    Tuple[str, str],
-    List[str],
-    List[float],
-    List[DateTime],
+) -> tuple[
+    tuple[str, str],
+    list[str],
+    list[float],
+    list[DateTime],
     float,
     list[str],
     list[str],
@@ -516,7 +488,7 @@ def _list_files_on_marine_data_lake_s3(
 
 def _get_file_size_and_last_modified(
     endpoint_url: str, bucket: str, file_in: str, username: str
-) -> Optional[Tuple[int, DateTime]]:
+) -> Optional[tuple[int, DateTime]]:
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["HeadObject"], username
     )
@@ -539,61 +511,38 @@ def _get_file_size_and_last_modified(
             raise e
 
 
-def _download_files(
-    tuple_original_files_filename: Tuple[
-        str, str, str, list[str], list[pathlib.Path]
-    ],
-) -> list[pathlib.Path]:
-    (
-        username,
+def _download_one_file(
+    username,
+    endpoint_url: str,
+    bucket: str,
+    file_in: str,
+    file_out: pathlib.Path,
+) -> None:
+    s3_client, s3_resource = get_configured_boto3_session(
         endpoint_url,
+        ["GetObject", "HeadObject"],
+        username,
+        return_ressources=True,
+    )
+    last_modified_date_epoch = s3_resource.Object(
+        bucket, file_in.replace(f"s3://{bucket}/", "")
+    ).last_modified.timestamp()
+
+    s3_client.download_file(
         bucket,
-        filenames_in,
-        filenames_out,
-    ) = tuple_original_files_filename
+        file_in.replace(f"s3://{bucket}/", ""),
+        file_out,
+    )
 
-    def _original_files_file_download(
-        endpoint_url: str, bucket: str, file_in: str, file_out: pathlib.Path
-    ) -> pathlib.Path:
-        """
-        Download ONE file and return the path of the result
-        """
-        s3_client, s3_resource = get_configured_boto3_session(
-            endpoint_url,
-            ["GetObject", "HeadObject"],
-            username,
-            return_ressources=True,
+    try:
+        os.utime(
+            file_out, (last_modified_date_epoch, last_modified_date_epoch)
         )
-        last_modified_date_epoch = s3_resource.Object(
-            bucket, file_in.replace(f"s3://{bucket}/", "")
-        ).last_modified.timestamp()
-
-        s3_client.download_file(
-            bucket,
-            file_in.replace(f"s3://{bucket}/", ""),
-            file_out,
+    except PermissionError:
+        logger.warning(
+            f"Permission to modify the last modified date "
+            f"of the file {file_out} is denied."
         )
-
-        try:
-            os.utime(
-                file_out, (last_modified_date_epoch, last_modified_date_epoch)
-            )
-        except PermissionError:
-            logger.warning(
-                f"Permission to modify the last modified date "
-                f"of the file {file_out} is denied."
-            )
-
-        return file_out
-
-    download_summary = []
-    for file_in, file_out in zip(filenames_in, filenames_out):
-        download_summary.append(
-            _original_files_file_download(
-                endpoint_url, bucket, file_in, file_out
-            )
-        )
-    return download_summary
 
 
 # /////////////////////////////

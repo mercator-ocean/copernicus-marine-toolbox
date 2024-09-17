@@ -92,6 +92,14 @@ def cli_describe() -> None:
     help="Filter catalogue output. Returns products with attributes "
     "matching a string token.",
 )
+@click.option(
+    "--max-concurrent-requests",
+    type=int,
+    default=15,
+    help="Maximum number of concurrent requests. "
+    "Default 15. The describe command uses a thread "
+    "pool executor to manage concurrent requests.",
+)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -117,6 +125,7 @@ def describe(
     include_versions: bool,
     include_all: bool,
     contains: list[str],
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
@@ -142,6 +151,7 @@ def describe(
         include_keywords=include_keywords,
         include_versions=include_versions,
         contains=contains,
+        max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )

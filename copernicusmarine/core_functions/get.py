@@ -50,6 +50,7 @@ def get_function(
     sync_delete: bool,
     index_parts: bool,
     dry_run: bool,
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
 ) -> ResponseGet:
@@ -130,6 +131,7 @@ def get_function(
         get_request=get_request,
         create_file_list=create_file_list,
         credentials_file=credentials_file,
+        max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
@@ -141,6 +143,7 @@ def _run_get_request(
     get_request: GetRequest,
     create_file_list: Optional[str],
     credentials_file: Optional[pathlib.Path],
+    max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool = False,
 ) -> ResponseGet:
@@ -169,6 +172,7 @@ def _run_get_request(
         username,
         password,
         get_request,
+        max_concurrent_requests,
         disable_progress_bar,
         create_file_list,
     )
