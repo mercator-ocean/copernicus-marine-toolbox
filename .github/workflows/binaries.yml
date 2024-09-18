@@ -5,6 +5,9 @@ on:
     branches:
        - main
        - 'pre-releases/**'
+  pull_request:
+    branches:
+       - copernicusmarine-toolbox-v2
 
 jobs:
   build:
@@ -32,8 +35,9 @@ jobs:
       run: |
         make build-using-pyinstaller
 
-    - name: Upload artifact
+    - name: Upload binary
       uses: actions/upload-artifact@v4
       with:
         name: windows-binary
         path: dist/copernicus_marine.exe
+        overwrite: true
