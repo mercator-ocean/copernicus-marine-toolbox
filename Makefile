@@ -57,7 +57,7 @@ run-tests-dependencie-versions:
 run-using-pyinstaller:
 	pip show distributed > where_are_the_packages.json
 	pip show distributed
-	python -m PyInstaller --copy-metadata xarray --add-data "\distributed\distributed.yaml;.\distributed" copernicusmarine\command_line_interface\copernicus_marine.py --onefile
+	python -m PyInstaller --copy-metadata xarray copernicusmarine\command_line_interface\copernicus_marine.py --onefile
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
@@ -96,6 +96,10 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
 
+build-and-prepare-for-binary:
+	python -m pip install --upgrade pip
+	pip install pyinstaller
+	pip install -e .
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
