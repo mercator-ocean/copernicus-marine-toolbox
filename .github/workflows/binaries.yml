@@ -33,7 +33,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        make build-using-pyinstaller
+        make run-using-pyinstaller
 
     - name: Upload binary
       uses: actions/upload-artifact@v4
