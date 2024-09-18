@@ -439,10 +439,16 @@ def _get_dataset_start_date_from_service(
 ) -> Optional[Union[str, int]]:
     for variable in service.variables:
         for coordinate in variable.coordinates:
-            if coordinate.coordinate_id == "time" and coordinate.minimum_value:
-                if isinstance(coordinate.minimum_value, str):
-                    return coordinate.minimum_value.replace("Z", "")
-                return int(coordinate.minimum_value)
+            if coordinate.coordinate_id == "time":
+                if coordinate.minimum_value:
+                    if isinstance(coordinate.minimum_value, str):
+                        return coordinate.minimum_value
+                    return int(coordinate.minimum_value)
+                if coordinate.values:
+                    minimum_value = min(coordinate.values)
+                    if isinstance(minimum_value, str):
+                        return minimum_value
+                    return int(minimum_value)
     return None
 
 

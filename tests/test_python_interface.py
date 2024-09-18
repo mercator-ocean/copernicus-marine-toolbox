@@ -1,6 +1,6 @@
 import inspect
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -13,6 +13,9 @@ from copernicusmarine import (
     open_dataset,
     read_dataframe,
     subset,
+)
+from copernicusmarine.download_functions.utils import (
+    timestamp_or_datestring_to_datetime,
 )
 
 
@@ -225,7 +228,21 @@ class TestPythonInterface:
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
         )
-        assert int(dataset.time.min().values) >= 1720735200000
+        assert timestamp_or_datestring_to_datetime(
+            dataset.time.values.min()
+        ) >= datetime(2024, 8, 31, 0, 0, 0, tzinfo=timezone.utc)
+
+    def test_open_dataset_with_retention_date_and_only_values_in_metadata(
+        self,
+    ):
+        dataset = open_dataset(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
+            dataset_id="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M",
+        )
+        assert timestamp_or_datestring_to_datetime(
+            dataset.time.values.min()
+        ) >= datetime(2024, 6, 1, 0, 0, 0, tzinfo=timezone.utc)
 
     def test_subset_modify_attr_for_depth(self):
         dataset = open_dataset(
