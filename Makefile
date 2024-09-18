@@ -55,6 +55,7 @@ run-tests-dependencie-versions:
 	tox run
 
 run-using-pyinstaller:
+	pip install distributed
 	pip show distributed > where_are_the_packages.json
 	pip show distributed
 	python -m PyInstaller --copy-metadata xarray copernicusmarine\command_line_interface\copernicus_marine.py --onefile
