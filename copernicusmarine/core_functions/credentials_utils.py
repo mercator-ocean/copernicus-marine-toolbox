@@ -95,9 +95,11 @@ def _retrieve_credential_from_prompt(
         logger.info(
             "Downloading CMEMS data requires a Copernicus Marine username "
             "and password, sign up for free at:"
-            " https://data.marine.copernicus.eu/register."
+            " https://data.marine.copernicus.eu/register"
         )
-    return click.prompt(credential_type, hide_input=hide_input)
+    return click.prompt(
+        "copernicusmarine " + credential_type, hide_input=hide_input
+    )
 
 
 def _retrieve_credential_from_environment_variable(

@@ -831,6 +831,11 @@ class TestCommandLineInterface:
             command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
+        assert (
+            b"Downloading CMEMS data requires a Copernicus Marine username "
+            b"and password, sign up for free at:"
+            b" https://data.marine.copernicus.eu/register \n username:"
+        ) in self.output.stdout
         assert b"username:" in self.output.stdout
 
     def test_login_command(self, tmp_path):
