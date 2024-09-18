@@ -3,8 +3,9 @@ name: Create Binaries
 on:
   push:
     branches:
-        - main
-        - 'pre-releases/**'
+       - main
+       - 'pre-releases/**'
+
 jobs:
   build:
     runs-on: windows-latest
@@ -25,13 +26,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
+        pip install -e .
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --onefile main.py
+        make build-using-pyinstaller
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: kivy-app
-        path: dist/main.exe
+        name: windows-binary
+        path: dist/copernicus_marine.exe

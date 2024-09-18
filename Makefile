@@ -90,3 +90,8 @@ build-and-publish-dockerhub-image:
 	docker build --ulimit nofile=65536:65536 --tag copernicusmarine/copernicusmarine:$${VERSION} --tag copernicusmarine/copernicusmarine:latest -f Dockerfile.dockerhub --build-arg VERSION="$${VERSION}" .
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
+
+build-using-pyinstaller:
+	pip show distributed > where_are_the_packages.json
+	pip show distributed
+    python -m PyInstaller --copy-metadata xarray --add-data "\distributed\distributed.yaml;.\distributed" copernicusmarine\command_line_interface\copernicus_marine.py --onefile
