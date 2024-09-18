@@ -834,8 +834,8 @@ class TestCommandLineInterface:
         assert (
             b"Downloading CMEMS data requires a Copernicus Marine username "
             b"and password, sign up for free at:"
-            b" https://data.marine.copernicus.eu/register \n username:"
-        ) in self.output.stdout
+            b" https://data.marine.copernicus.eu/register"
+        ) in self.output.stderr
         assert b"username:" in self.output.stdout
 
     def test_login_command(self, tmp_path):
