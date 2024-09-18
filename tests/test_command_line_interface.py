@@ -1070,7 +1070,7 @@ class TestCommandLineInterface:
             "-Y",
             "40",
             "-z",
-            "0",
+            "1",
             "-Z",
             "10",
             "-v",
