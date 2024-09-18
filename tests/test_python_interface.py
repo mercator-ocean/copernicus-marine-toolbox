@@ -194,13 +194,13 @@ class TestPythonInterface:
         dataset_id = "cmems_mod_glo_phy-cur_anfc_0.083deg_PT6H-i"
         start_datetime = "2023-09-15T00:00:00.000Z"
         end_datetime = "2023-09-15T00:00:00.000Z"
-        subset_method = "strict"
+        coordinates_selection_method = "strict"
 
         dataset = open_dataset(
             dataset_id=dataset_id,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
-            subset_method=subset_method,
+            coordinates_selection_method=coordinates_selection_method,
         )
 
         assert dataset.coords is not None
@@ -217,7 +217,7 @@ class TestPythonInterface:
             maximum_latitude=0.1,
             minimum_longitude=0.2,
             maximum_longitude=0.3,
-            subset_method="strict",
+            coordinates_selection_method="strict",
         )
 
         assert dataframe is not None
@@ -262,8 +262,8 @@ class TestPythonInterface:
             maximum_latitude=40.44,
             start_datetime="2024-02-23T00:00:00",
             end_datetime="2024-02-23T23:59:59",
-            minimum_depth=0,
-            maximum_depth=1,
+            minimum_depth=5,
+            maximum_depth=10,
             force_download=True,
             output_directory=tmp_path,
             output_filename="netcdf_fillval.nc",
@@ -290,8 +290,8 @@ class TestPythonInterface:
             maximum_latitude=40.44,
             start_datetime="2024-02-23T00:00:00",
             end_datetime="2024-02-23T23:59:59",
-            minimum_depth=0,
-            maximum_depth=1,
+            minimum_depth=5,
+            maximum_depth=10,
             force_download=True,
             output_directory=tmp_path,
             output_filename="netcdf_fillval_compressed.nc",

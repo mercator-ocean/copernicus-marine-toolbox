@@ -123,7 +123,7 @@ class TestArcoServiceSelection:
             "--minimum-latitude",
             "33.96",
             "--maximum-latitude",
-            "75.2",
+            "55.0",
             "--start-datetime",
             "2001-01-01 00:00:00",
             "--end-datetime",

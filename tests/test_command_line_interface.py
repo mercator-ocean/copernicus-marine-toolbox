@@ -785,7 +785,7 @@ class TestCommandLineInterface:
             "--maximum-latitude",
             "34.2",
             "--minimum-depth",
-            "0.5",
+            "0.6",
             "--maximum-depth",
             "1.6",
             "-o",
@@ -1291,7 +1291,7 @@ class TestCommandLineInterface:
             "-Y",
             "90",
             "-z",
-            "0.49",
+            "0.495",
             "-Z",
             "8",
             "--force-download",
@@ -1448,7 +1448,7 @@ class TestCommandLineInterface:
             "--maximum-latitude",
             "34.2",
             "--minimum-depth",
-            "0.5",
+            "0.51",
             "--maximum-depth",
             "1.6",
             "-o",
@@ -1487,7 +1487,7 @@ class TestCommandLineInterface:
             "--maximum-latitude",
             "34.2",
             "--minimum-depth",
-            "0.5",
+            "0.51",
             "--maximum-depth",
             "1.6",
             "-o",
@@ -2013,7 +2013,7 @@ class TestCommandLineInterface:
             "-v",
             "thetao",
             "-t",
-            "2022-01-01T00:00:00",
+            "2022-07-01T00:00:00",
             "-T",
             "2022-12-31T23:59:59",
             "-x",
@@ -2044,7 +2044,7 @@ class TestCommandLineInterface:
         assert output_netcdf_format.returncode == 0
         assert output_netcdf_format.stdout == b"classic\n"
 
-    def test_that_requested_interval_fully_included_with_bounding_box_method_outside(
+    def test_that_requested_interval_fully_included_with_coords_sel_method_outside(
         self, tmp_path
     ):
         output_filename = "output.nc"
@@ -2079,7 +2079,7 @@ class TestCommandLineInterface:
             f"{min_depth}",
             "--maximum-depth",
             f"{max_depth}",
-            "--bounding-box-method",
+            "--coordinates-selection-method",
             "outside",
             "-o",
             f"{tmp_path}",
@@ -2088,9 +2088,9 @@ class TestCommandLineInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
+        assert output.returncode == 0
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
-        assert output.returncode == 0
         assert dataset.longitude.values.min() <= min_longitude
         assert dataset.longitude.values.max() >= max_longitude
         assert dataset.latitude.values.min() <= min_latitude
@@ -2104,7 +2104,7 @@ class TestCommandLineInterface:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_that_requested_interval_is_correct_with_bounding_box_method_inside(
+    def test_that_requested_interval_is_correct_with_coords_sel_method_inside(
         self, tmp_path
     ):
         output_filename = "output.nc"
@@ -2139,7 +2139,7 @@ class TestCommandLineInterface:
             f"{min_depth}",
             "--maximum-depth",
             f"{max_depth}",
-            "--bounding-box-method",
+            "--coordinates-selection-method",
             "inside",
             "-o",
             f"{tmp_path}",
@@ -2148,9 +2148,9 @@ class TestCommandLineInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
+        assert output.returncode == 0
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
-        assert output.returncode == 0
         assert dataset.longitude.values.min() >= min_longitude
         assert dataset.longitude.values.max() <= max_longitude
         assert dataset.latitude.values.min() >= min_latitude
@@ -2164,7 +2164,7 @@ class TestCommandLineInterface:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) <= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_that_requested_interval_is_correct_with_bounding_box_method_nearest(
+    def test_that_requested_interval_is_correct_with_coords_sel_method_nearest(
         self, tmp_path
     ):
         output_filename = "output.nc"
@@ -2199,7 +2199,7 @@ class TestCommandLineInterface:
             f"{min_depth}",
             "--maximum-depth",
             f"{max_depth}",
-            "--bounding-box-method",
+            "--coordiantes-selection-method",
             "nearest",
             "-o",
             f"{tmp_path}",
@@ -2208,10 +2208,10 @@ class TestCommandLineInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
+        assert output.returncode == 0
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
 
-        assert output.returncode == 0
         assert dataset.longitude.values.min() == 0.083343505859375
         assert dataset.longitude.max().values == 1.583343505859375
         assert dataset.latitude.values.min() == 0.0
@@ -2225,7 +2225,7 @@ class TestCommandLineInterface:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) == datetime.datetime.strptime("2023-01-04", "%Y-%m-%d")
 
-    def test_bounding_box_method_outside_w_elevation(self, tmp_path):
+    def test_coordinates_selection_method_outside_w_elevation(self, tmp_path):
         """dataset characteristics:
         * depth      (depth) float32 500B 1.018 3.166 5.465 ... 4.062e+03 4.153e+03
         * latitude   (latitude) float32 2kB 30.19 30.23 30.27 ... 45.9 45.94 45.98
@@ -2264,7 +2264,7 @@ class TestCommandLineInterface:
             f"{min_depth}",
             "--maximum-depth",
             f"{max_depth}",
-            "--bounding-box-method",
+            "--coordinates-selection-method",
             "outside",
             "--vertical-dimension-output",
             "elevation",
@@ -2275,10 +2275,10 @@ class TestCommandLineInterface:
             "--force-download",
         ]
         output = execute_in_terminal(command)
+        assert output.returncode == 0
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
 
-        assert output.returncode == 0
         assert dataset.longitude.values.min() <= -5.5416  # dataset limit
         assert dataset.longitude.max().values >= -5.0  # our limit
         assert dataset.latitude.values.min() <= 40  # our limit
