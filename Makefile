@@ -95,6 +95,7 @@ build-and-publish-dockerhub-image:
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
 
+
 build-using-pyinstaller:
     pip show distributed > where_are_the_packages.json
     pip show distributed
