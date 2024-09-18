@@ -133,20 +133,30 @@ class CopernicusMarineCoordinate:
         dimension: str,
         dimension_metadata: dict,
         arco_data_metadata_producer_valid_start_date: Optional[str],
+        arco_data_metadata_producer_valid_start_index: Optional[int],
     ) -> Coordinate:
         coordinates_info = dimension_metadata.get("coords", {})
-        if (
-            arco_data_metadata_producer_valid_start_date
-            and dimension == "time"
-        ):
-            minimum_value = (
-                CopernicusMarineCoordinate._format_admp_valid_start_date(
-                    arco_data_metadata_producer_valid_start_date,
-                    to_timestamp=isinstance(coordinates_info.get("min"), int),
+        minimum_value = None
+        coordinate_values = None
+        if dimension == "time":
+            if (
+                arco_data_metadata_producer_valid_start_date
+            ) and coordinates_info.get("min"):
+                minimum_value = (
+                    CopernicusMarineCoordinate._format_admp_valid_start_date(
+                        arco_data_metadata_producer_valid_start_date,
+                        to_timestamp=isinstance(
+                            coordinates_info.get("min"), int
+                        ),
+                    )
                 )
-            )
-        else:
-            minimum_value = coordinates_info.get("min")
+            elif (
+                arco_data_metadata_producer_valid_start_index
+                and coordinates_info.get("values")
+            ):
+                coordinate_values = coordinates_info.get("values")[
+                    arco_data_metadata_producer_valid_start_index:
+                ]
         chunking_length = dimension_metadata.get("chunkLen")
         if isinstance(chunking_length, dict):
             chunking_length = chunking_length.get(variable_id)
@@ -154,10 +164,10 @@ class CopernicusMarineCoordinate:
         coordinate = cls(
             coordinate_id=dimension,
             units=dimension_metadata.get("units") or "",
-            minimum_value=minimum_value,  # type: ignore
+            minimum_value=minimum_value or coordinates_info.get("min"),  # type: ignore
             maximum_value=coordinates_info.get("max"),
             step=coordinates_info.get("step"),
-            values=coordinates_info.get("values"),
+            values=coordinate_values or coordinates_info.get("values"),
             chunking_length=chunking_length,
             chunk_type=dimension_metadata.get("chunkType"),
             chunk_reference_coordinate=dimension_metadata.get("chunkRefCoord"),
@@ -233,6 +243,7 @@ class CopernicusMarineVariable:
                     dimension,
                     dimension_metadata,
                     metadata_item.properties.get("admp_valid_start_date"),
+                    metadata_item.properties.get("admp_valid_start_index"),
                 )
                 for dimension, dimension_metadata in dimensions.items()
                 if dimension in cube_variable["dimensions"]
