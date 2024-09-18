@@ -55,9 +55,9 @@ run-tests-dependencie-versions:
 	tox run
 
 run-using-pyinstaller:
-    pip show distributed > where_are_the_packages.json
-    pip show distributed
-    python -m PyInstaller --copy-metadata xarray --add-data "\distributed\distributed.yaml;.\distributed" copernicusmarine\command_line_interface\copernicus_marine.py --onefile
+	pip show distributed > where_are_the_packages.json
+	pip show distributed
+	python -m PyInstaller --copy-metadata xarray --add-data "\distributed\distributed.yaml;.\distributed" copernicusmarine\command_line_interface\copernicus_marine.py --onefile
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
