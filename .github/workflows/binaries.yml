@@ -42,7 +42,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-          gh release upload "v${{steps.set-version.outputs.VERSION}}" dist/copernicus_marine.exe#windows-copernicus.exe --clobber
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine.exe#windows-copernicus.exe --clobber
 
       #- name: Upload binaries to release
       # uses: svenstaro/upload-release-action@v2
