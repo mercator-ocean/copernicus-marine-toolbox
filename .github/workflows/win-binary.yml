@@ -21,6 +21,7 @@ jobs:
       with:
         python-version: '3.12'
     - name: Install dependencies
+      id: set-version
       run: |
         make build-and-prepare-for-binary-windows-latest
 
@@ -32,4 +33,5 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
+        for /f %i in ('poetry version --short') do set MY_VARIABLE=%i && echo %MY_VARIABLE%
         gh release upload v%MY_VARIABLE% dist/cmt.exe#windows-latest-copernicus.exe
