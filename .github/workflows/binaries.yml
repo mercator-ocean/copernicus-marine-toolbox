@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       id: set-version
       run: |
-        make build-and-prepare-for-binary
+        make build-and-prepare-for-binary-${{ matrix.os }}
 
 
     - name: Build with PyInstaller
