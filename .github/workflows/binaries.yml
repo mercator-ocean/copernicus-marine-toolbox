@@ -40,6 +40,16 @@ jobs:
         path: dist/copernicus_marine.exe
         overwrite: true
 
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: dist/copernicus_marine.exe
+        asset_name: windows-binary
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: "This is my release text. Let's see if it works."
+
     - name: Gitod binary
       env:
         GH_TOKEN: ${{ github.token }}
