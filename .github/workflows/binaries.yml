@@ -11,7 +11,10 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
     steps:
@@ -36,13 +39,13 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        make run-using-pyinstaller
+        make run-using-pyinstaller-${{ matrix.os }}
 
     - name: Upload binaries to release
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine.exe#windows-copernicus.exe --clobber
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine.exe#${{matrix.os}}-copernicus.exe --clobber
 
       #- name: Upload binaries to release
       # uses: svenstaro/upload-release-action@v2
