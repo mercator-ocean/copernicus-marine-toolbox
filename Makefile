@@ -58,15 +58,16 @@ run-using-pyinstaller-windows-latest:
 	pip install distributed
 	pip show distributed > where_are_the_packages.json
 	pip show distributed
-	python -m PyInstaller --copy-metadata xarray --add-data "c:\hostedtoolcache\windows\python\3.12.6\x64\lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile
+	python -m PyInstaller --copy-metadata xarray --name cmt.exe --add-data "c:\hostedtoolcache\windows\python\3.12.6\x64\lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile
 
 run-using-pyinstaller-macos-latest:
 	pip install distributed
-	python -m PyInstaller copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
+	python -m PyInstaller --name cmt.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
+
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install distributed
-	python -m PyInstaller copernicusmarine/command_line_interface/copernicus_marine.py --onefile
+	python -m PyInstaller --name cmt.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:

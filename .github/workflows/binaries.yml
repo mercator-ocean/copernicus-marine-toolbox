@@ -44,8 +44,14 @@ jobs:
     - name: Upload binaries to release
       env:
         GH_TOKEN: ${{ github.token }}
+      if: matrix.os == 'windows-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine.exe#${{matrix.os}}-copernicus.exe --clobber
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.exe#${{matrix.os}}-copernicus.exe --clobber
+    - name: Upload binaries to macos
+      if: matrix.os == 'macos-latest' || matrix.os== 'ubuntu-latest'
+      run: |
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine/cmt.cli#${{matrix.os}}-copernicus --clobber
+
 
       #- name: Upload binaries to release
       # uses: svenstaro/upload-release-action@v2
