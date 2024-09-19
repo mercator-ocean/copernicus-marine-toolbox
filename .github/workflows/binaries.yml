@@ -41,5 +41,7 @@ jobs:
         overwrite: true
 
     - name: Gitod binary
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
           gh release upload ${{ github.repository }} dist/copernicus_marine.exe
