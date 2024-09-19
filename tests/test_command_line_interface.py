@@ -527,7 +527,7 @@ class TestCommandLineInterface:
             b"copernicusmarine get --dataset-id " + bytes(dataset_id, "utf-8")
         ) in self.output.stderr
 
-    def test_retention_period_works(self):
+    def test_retention_period_works(self, tmp_path):
         self.command = [
             "copernicusmarine",
             "subset",
@@ -546,6 +546,36 @@ class TestCommandLineInterface:
             "--maximum-latitude",
             "48.13780081656672",
             "--force-download",
+            "--output-directory",
+            tmp_path,
+        ]
+
+        self.output = execute_in_terminal(self.command)
+        assert (
+            b"time       (time) datetime64[ns] 2023" not in self.output.stderr
+        )
+
+    def test_retention_period_works_when_only_values_in_metadata(
+        self, tmp_path
+    ):
+        self.command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M",
+            "--variable",
+            "PP",
+            "--minimum-longitude",
+            "-36.29005445972566",
+            "--maximum-longitude",
+            "-35.14832052107781",
+            "--minimum-latitude",
+            "47.122926204435295",
+            "--maximum-latitude",
+            "48.13780081656672",
+            "--force-download",
+            "--output-directory",
+            tmp_path,
         ]
 
         self.output = execute_in_terminal(self.command)
