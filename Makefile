@@ -111,14 +111,14 @@ build-and-prepare-for-binary-macos-latest:
 	pip install pyinstaller
 	pip install -e .
 	pip install poetry
-	echo "VERSION=$(poetry version --short)" >> ${GITHUB_OUTPUT}
+	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 build-and-prepare-for-binary-ubuntu-latest:
 	python -m pip install --upgrade pip
 	pip install pyinstaller
 	pip install -e .
 	pip install poetry
-	echo "VERSION=$(poetry version --short)" >> ${GITHUB_OUTPUT}
+	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 build-and-prepare-for-binary-windows-latest:
 	python -m pip install --upgrade pip
