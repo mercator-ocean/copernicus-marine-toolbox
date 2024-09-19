@@ -5,9 +5,9 @@ on:
     branches:
        - main
        - 'pre-releases/**'
-  pull_request:
-    branches:
-       - copernicusmarine-toolbox-v2
+  # pull_request:
+  #   branches:
+  #      - copernicusmarine-toolbox-v2
 
 jobs:
   build:
