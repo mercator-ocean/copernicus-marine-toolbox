@@ -828,7 +828,7 @@ class TestCommandLineInterface:
         ]
 
         self.output = execute_in_terminal(
-            command, env=environment_without_crendentials, input="n\n"
+            command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
         assert (
