@@ -33,7 +33,7 @@ jobs:
       id: set-version
       run: |
         make build-and-prepare-for-binary
-        echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+
 
     - name: Build with PyInstaller
       run: |
@@ -50,7 +50,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'macos-latest' || matrix.os== 'ubuntu-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine/cmt.cli#${{matrix.os}}-copernicus --clobber
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.cli#${{matrix.os}}-copernicus --clobber
 
 
       #- name: Upload binaries to release
