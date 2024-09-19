@@ -62,7 +62,7 @@ run-using-pyinstaller-windows-latest:
 
 run-using-pyinstaller-macos-latest:
 	pip install distributed
-	python -m PyInstaller copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture x86_64
+	python -m PyInstaller copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install distributed
