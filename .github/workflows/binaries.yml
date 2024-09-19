@@ -51,8 +51,8 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'macos-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.cli#${{matrix.os}}-copernicus
-    - name: Upload binaries to macos
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.cli#${{matrix.os}}-copernicus --clobber
+    - name: Upload binaries to ubuntu
       env:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os== 'ubuntu-latest'
