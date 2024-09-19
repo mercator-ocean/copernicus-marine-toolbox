@@ -106,15 +106,26 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
 
-build-and-prepare-for-binary:
+build-and-prepare-for-binary-macos-latest:
 	python -m pip install --upgrade pip
 	pip install pyinstaller
 	pip install -e .
 	pip install poetry
 	echo "VERSION=$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
+build-and-prepare-for-binary-ubuntu-latest:
+	python -m pip install --upgrade pip
+	pip install pyinstaller
+	pip install -e .
+	pip install poetry
+	echo "VERSION=$(poetry version --short)" >> ${GITHUB_OUTPUT}
+
+build-and-prepare-for-binary-windows-latest:
+	python -m pip install --upgrade pip
+	pip install pyinstaller
+	pip install -e .
+	pip install poetry
+	echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
-
-make-test:
-	echo "VERSION=$$(poetry version --short)" > aqui
