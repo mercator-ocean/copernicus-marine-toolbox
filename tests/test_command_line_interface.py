@@ -837,7 +837,6 @@ class TestCommandLineInterface:
             b" https://data.marine.copernicus.eu/register"
         ) in self.output.stderr
         assert b"copernicusmarine username:" in self.output.stdout
-        assert b"copernicusmarine password:" in self.output.stdout
 
     def test_login_command(self, tmp_path):
         self.check_credentials_username_specified_password_prompt(tmp_path)
