@@ -29,12 +29,9 @@ jobs:
         python-version: '3.12'
 
     - name: Install dependencies
-      run: |
-        make build-and-prepare-for-binary
-
-    - name: Set version
       id: set-version
       run: |
+        make build-and-prepare-for-binary
         echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
     - name: Build with PyInstaller
