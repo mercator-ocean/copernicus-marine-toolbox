@@ -73,6 +73,7 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 ]
 
 
+@typing.no_type_check
 def _choose_extreme_point(
     dataset: xarray.Dataset,
     coord_label: str,
@@ -303,7 +304,7 @@ def _longitude_subset(
                             "pad",
                         )
                     dataset = _shift_longitude_dimension(
-                        dataset, minimum_longitude_modulus
+                        dataset, minimum_longitude_modulus  # type: ignore
                     )
                 longitude_selection = slice(
                     minimum_longitude_modulus,
@@ -578,7 +579,7 @@ def check_dataset_subset_bounds(
     service_type: CopernicusMarineDatasetServiceType,
     dataset_subset: DatasetTimeAndSpaceSubset,
     subset_method: SubsetMethod,
-    dataset_valid_date: Optional[Union[str, int]],
+    dataset_valid_date: Optional[Union[str, int, float]],
 ) -> None:
     if service_type in [
         CopernicusMarineDatasetServiceType.GEOSERIES,
