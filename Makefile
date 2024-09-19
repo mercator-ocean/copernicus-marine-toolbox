@@ -115,3 +115,6 @@ build-and-prepare-for-binary:
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
+
+make-test:
+	echo "VERSION=$$(poetry version --short)" > aqui
