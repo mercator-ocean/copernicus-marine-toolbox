@@ -35,7 +35,7 @@ jobs:
     - name: Set version
       id: set-version
       run: |
-        make set-version
+        echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
     - name: Build with PyInstaller
       run: |
