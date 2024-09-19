@@ -91,7 +91,15 @@ def _load_credential_from_motu_configuration_file(
 def _retrieve_credential_from_prompt(
     credential_type: Literal["username", "password"], hide_input: bool
 ) -> str:
-    return click.prompt(credential_type, hide_input=hide_input)
+    if credential_type == "username":
+        logger.info(
+            "Downloading CMEMS data requires a Copernicus Marine username "
+            "and password, sign up for free at:"
+            " https://data.marine.copernicus.eu/register"
+        )
+    return click.prompt(
+        "copernicusmarine " + credential_type, hide_input=hide_input
+    )
 
 
 def _retrieve_credential_from_environment_variable(
