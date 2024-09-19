@@ -161,7 +161,7 @@ def download_zarr(
     subset_request: SubsetRequest,
     dataset_id: str,
     disable_progress_bar: bool,
-    dataset_valid_start_date: Optional[Union[str, int]],
+    dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(

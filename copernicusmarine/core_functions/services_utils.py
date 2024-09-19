@@ -274,7 +274,7 @@ class RetrievalService:
     service_type: CopernicusMarineDatasetServiceType
     service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
-    dataset_valid_start_date: Optional[Union[str, int]]
+    dataset_valid_start_date: Optional[Union[str, int, float]]
     service: CopernicusMarineService
 
 
@@ -436,19 +436,14 @@ def _get_retrieval_service_from_dataset_version(
 
 def _get_dataset_start_date_from_service(
     service: CopernicusMarineService,
-) -> Optional[Union[str, int]]:
+) -> Optional[Union[str, int, float]]:
     for variable in service.variables:
         for coordinate in variable.coordinates:
             if coordinate.coordinate_id == "time":
                 if coordinate.minimum_value:
-                    if isinstance(coordinate.minimum_value, str):
-                        return coordinate.minimum_value
-                    return int(coordinate.minimum_value)
+                    return coordinate.minimum_value
                 if coordinate.values:
-                    minimum_value = min(coordinate.values)
-                    if isinstance(minimum_value, str):
-                        return minimum_value
-                    return int(minimum_value)
+                    return min(coordinate.values)
     return None
 
 

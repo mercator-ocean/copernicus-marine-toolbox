@@ -150,9 +150,9 @@ def timestamp_parser(
 
 
 def timestamp_or_datestring_to_datetime(
-    date: Union[str, int, numpy.datetime64]
+    date: Union[str, int, float, numpy.datetime64]
 ) -> DateTime:
-    if isinstance(date, int):
+    if isinstance(date, int) or isinstance(date, float):
         return timestamp_parser(date)
     else:
         return datetime_parser(date)
