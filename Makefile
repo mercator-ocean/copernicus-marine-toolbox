@@ -111,6 +111,7 @@ build-and-prepare-for-binary:
 	pip install pyinstaller
 	pip install -e .
 	pip install poetry
+	echo "VERSION=$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
