@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
@@ -45,6 +46,8 @@ jobs:
       run: |
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.exe#${{matrix.os}}-copernicus.exe --clobber
     - name: Upload binaries to macos
+      env:
+        GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'macos-latest' || matrix.os== 'ubuntu-latest'
       run: |
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicus_marine/cmt.cli#${{matrix.os}}-copernicus --clobber
