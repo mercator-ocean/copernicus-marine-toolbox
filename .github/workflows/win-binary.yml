@@ -32,6 +32,7 @@ jobs:
     - name: Gitod binary
       env:
         GH_TOKEN: ${{ github.token }}
+      shell: cmd
       run: |
         for /f %i in ('poetry version --short') do set MY_VARIABLE=%i && echo %MY_VARIABLE%
         gh release upload v%MY_VARIABLE% dist/cmt.exe#windows-latest-copernicus.exe
