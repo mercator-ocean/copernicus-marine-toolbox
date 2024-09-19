@@ -1,18 +1,25 @@
 import asyncio
+import json
+import logging
 import os
 import time
-from functools import partial
 from pathlib import Path
-from typing import Optional
+
+# from random import shuffle
+from typing import Optional, Union
 
 import pendulum
 import pytest
+import xarray
 from netCDF4 import Dataset
 from syrupy.extensions.json import JSONSnapshotExtension
 
 import copernicusmarine
-from copernicusmarine.core_functions.utils import rolling_batch_gather
+from copernicusmarine.core_functions.utils import run_concurrently
 from tests.test_utils import execute_in_terminal
+
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("copernicusmarine").setLevel(logging.CRITICAL + 1)
 
 
 @pytest.fixture
@@ -148,9 +155,9 @@ class TestDatasets:
                             start_datetime = None
                             end_datetime = None
                             minimum_latitude = None
-                            maximum_latitude = None
+                            # maximum_latitude = None
                             minimum_longitude = None
-                            maximum_longitude = None
+                            # maximum_longitude = None
                             minimum_depth = None
                             maximum_depth = None
                             for variable in service["variables"]:
@@ -185,55 +192,85 @@ class TestDatasets:
                                         minimum_latitude = (
                                             extract_minimum_value(coordinate)
                                         )
-                                        maximum_latitude = (
-                                            extract_maximum_value(coordinate)
-                                        )
+                                        # maximum_latitude = (
+                                        #     extract_maximum_value(coordinate)
+                                        # )
                                     if coordinate_id == "longitude":
                                         minimum_longitude = (
                                             extract_minimum_value(coordinate)
                                         )
-                                        maximum_longitude = (
-                                            extract_maximum_value(coordinate)
-                                        )
+                                        # maximum_longitude = (
+                                        #     extract_maximum_value(coordinate)
+                                        # )
                             for arco_service in [
                                 "arco-geo-series",
                                 # "arco-time-series",
                             ]:
-                                partial_open_dataset_and_snapshot_ncdump = (
-                                    partial(
-                                        open_dataset_and_snapshot_ncdump,
-                                        dataset_id=dataset_id,
-                                        variables=[
+                                output_filename = (
+                                    f"{dataset_id}_{arco_service}.nc"
+                                )
+                                # partial_open_dataset_and_snapshot_ncdump = (
+                                #     partial(
+                                #         open_dataset_and_snapshot_ncdump,
+                                #         dataset_id=dataset_id,
+                                #         variables=[
+                                #             variable["short_name"]
+                                #             for variable in service[
+                                #                 "variables"
+                                #             ]
+                                #         ],
+                                #         output_filename=output_filename,
+                                #         start_datetime=start_datetime,
+                                #         end_datetime=end_datetime,
+                                #         minimum_depth=minimum_depth,
+                                #         maximum_depth=maximum_depth,
+                                #         minimum_latitude=minimum_latitude,
+                                #         maximum_latitude=maximum_latitude,
+                                #         minimum_longitude=minimum_longitude,
+                                #         maximum_longitude=maximum_longitude,
+                                #         snapshot=snapshot,
+                                #         tmp_path=tmp_path,
+                                #         service=arco_service,
+                                #     )
+                                # )
+                                # all_tasks.append(
+                                #     partial_open_dataset_and_snapshot_ncdump
+                                # )
+                                all_tasks.append(
+                                    (
+                                        dataset_id,
+                                        [
                                             variable["short_name"]
                                             for variable in service[
                                                 "variables"
                                             ]
                                         ],
-                                        output_filename=output_filename,
-                                        start_datetime=start_datetime,
-                                        end_datetime=end_datetime,
-                                        minimum_depth=minimum_depth,
-                                        maximum_depth=maximum_depth,
-                                        minimum_latitude=minimum_latitude,
-                                        maximum_latitude=maximum_latitude,
-                                        minimum_longitude=minimum_longitude,
-                                        maximum_longitude=maximum_longitude,
-                                        snapshot=snapshot,
-                                        tmp_path=tmp_path,
-                                        service=arco_service,
+                                        output_filename,
+                                        start_datetime,
+                                        end_datetime,
+                                        minimum_depth,
+                                        maximum_depth,
+                                        minimum_latitude,
+                                        minimum_latitude,
+                                        minimum_longitude,
+                                        minimum_longitude,
+                                        arco_service,
+                                        snapshot,
+                                        tmp_path,
                                     )
                                 )
-                                all_tasks.append(
-                                    partial_open_dataset_and_snapshot_ncdump
-                                )
-        print(len(all_tasks))
+
+        print(f"Found {len(all_tasks)} tasks")
+        running_tasks = all_tasks[:200]
+        # shuffle(running_tasks)
+        print(f"Running tasks: {len(running_tasks)}")
         top = time.time()
-        # for task in all_tasks[:4]:
-        #     task()
-        # with ThreadPoolExecutor(max_workers=20) as executor:
-        #     executor.map(lambda x: x(), all_tasks)
-        all_futures = [run_in_executor(task) for task in all_tasks]
-        asyncio.run(rolling_batch_gather(all_futures, per_batch=30))
+        run_concurrently(
+            open_dataset_and_snapshot_ncdump,
+            running_tasks,
+            max_concurrent_requests=8,
+            tdqm_bar_configuration={"disable": False},
+        )
         print(f"took: {time.time() - top} s")
 
 
@@ -348,7 +385,8 @@ def open_dataset_and_snapshot_ncdump(
     snapshot,
     tmp_path,
 ):
-    message = ""
+    print(f"Doing {dataset_id}")
+    message: Union[dict, str] = ""
     try:
         copernicusmarine.subset(
             dataset_id=dataset_id,
@@ -365,6 +403,7 @@ def open_dataset_and_snapshot_ncdump(
             service=service,
             force_download=True,
             output_directory=tmp_path,
+            disable_progress_bar=True,
         )
     except Exception as e:
         arguments = [
@@ -386,14 +425,61 @@ def open_dataset_and_snapshot_ncdump(
     if message:
         assert message == snapshot(name=f"{dataset_id}_{service}")
     else:
-        command = [
-            "ncdump",
-            "-h",
-            str(tmp_path / output_filename),
-        ]
-        ncdump_output = execute_in_terminal(command)
-        # ncdump_output = ncdump_custom(tmp_path / output_filename)
-        assert ncdump_output.stdout.decode("utf-8") == snapshot(
-            name=f"{dataset_id}_{service}"
-        )
+        # command = [
+        #     "ncdump",
+        #     "-h",
+        #     str(tmp_path / output_filename),
+        # ]
+        # ncdump_output = execute_in_terminal(command)
+        # # ncdump_output = ncdump_custom(tmp_path / output_filename)
+        # assert ncdump_output.stdout.decode("utf-8") == snapshot(
+        #     name=f"{dataset_id}_{service}"
+        # )
+        try:
+            message = then_it_is_cf_compliant(
+                dataset_id, tmp_path, output_filename
+            )
+        except Exception as e:
+            message = (
+                f"*** Error: {e} FROM CF compliance "
+                f"for the call {dataset_id}, {','.join(arguments)}"
+            )
         os.remove(tmp_path / output_filename)
+        assert message == snapshot(name=f"{dataset_id}_{service}")
+
+
+def then_it_is_cf_compliant(dataset_id, tmp_path, output_filename) -> dict:
+    dataset_id = dataset_id
+    dataset = xarray.open_dataset(f"{tmp_path}/{output_filename}")
+    cf_convention = dataset.attrs.get("Conventions")
+    if cf_convention:
+        cf_convention = cf_convention[-3:]
+        if cf_convention < "1.6":
+            cf_convention = "1.6"
+    else:
+        cf_convention = "1.6"
+    command = [
+        "compliance-checker",
+        f"--test=cf:{cf_convention}",
+        f"{tmp_path}/{output_filename}",
+        "-f",
+        "json",
+    ]
+    output = execute_in_terminal(command)
+
+    data = json.loads(output.stdout)
+
+    dict_result = {}
+    dict_result["dataset_id"] = dataset_id
+    dict_result["scored_points"] = data[f"cf:{cf_convention}"]["scored_points"]
+    dict_result["possible_points"] = data[f"cf:{cf_convention}"][
+        "possible_points"
+    ]
+    dict_result["messages"] = []
+    for dictionary in sorted(
+        data[f"cf:{cf_convention}"]["all_priorities"], key=lambda x: x["name"]
+    ):
+        if len(dictionary["msgs"]) > 0:
+            dict_result["messages"].append(dictionary["name"])
+            dict_result["messages"].append(sorted(dictionary["msgs"]))
+    return dict_result
