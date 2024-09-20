@@ -60,12 +60,14 @@ run-using-pyinstaller-windows-latest:
 
 run-using-pyinstaller-macos-latest:
 	pip install distributed
-	python -m PyInstaller --name cmt.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
-
+	python -m PyInstaller --name cmt_macos-latest.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
+run-using-pyinstaller-macos-13:
+	pip install distributed
+	python -m PyInstaller --name cmt_macos-13.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=x86_64
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install distributed
-	python -m PyInstaller --name cmt-ubuntu.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile
+	python -m PyInstaller --name cmt-ubuntu-latest.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
@@ -104,25 +106,12 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
 
-build-and-prepare-for-binary-macos-latest:
+build-and-prepare-for-binary:
 	python -m pip install --upgrade pip
 	pip install pyinstaller
 	pip install -e .
 	pip install poetry
 	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
-
-build-and-prepare-for-binary-ubuntu-latest:
-	python -m pip install --upgrade pip
-	pip install pyinstaller
-	pip install -e .
-	pip install poetry
-	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
-
-build-and-prepare-for-binary-windows-latest:
-	python -m pip install --upgrade pip
-	pip install pyinstaller
-	pip install -e .
-	pip install poetry
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets

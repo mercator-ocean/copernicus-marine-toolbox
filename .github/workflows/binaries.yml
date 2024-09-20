@@ -5,13 +5,18 @@ on:
     branches:
        - main
        - 'pre-releases/**'
+  pull_request:
+    branches:
+       - main
+       - 'pre-releases/**'
+       - copernicusmarine-toolbox-v2
 
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest, macos-13]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -29,7 +34,7 @@ jobs:
     - name: Install dependencies
       id: set-version
       run: |
-        make build-and-prepare-for-binary-${{ matrix.os }}
+        make build-and-prepare-for-binary
 
 
     - name: Build with PyInstaller
@@ -41,17 +46,11 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'windows-latest'
       run: |
-          $MY_VARIABLE = poetry version --short
-          gh release upload v$MY_VARIABLE dist/cmt.exe#${{matrix.os}}-copernicus.exe
+          $WIN_VERSION = poetry version --short
+          gh release upload v$WIN_VERSION dist/cmt.exe#${{matrix.os}}-copernicus.exe
     - name: Upload binaries to macos
       env:
         GH_TOKEN: ${{ github.token }}
-      if: matrix.os == 'macos-latest'
+      if: matrix.os != 'windows-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.cli#${{matrix.os}}-copernicus
-    - name: Upload binaries to ubuntu
-      env:
-        GH_TOKEN: ${{ github.token }}
-      if: matrix.os== 'ubuntu-latest'
-      run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt-ubuntu.cli#${{matrix.os}}-copernicus
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt_${{matrix.os}}.cli#copernicusmarine-${{matrix.os}}
