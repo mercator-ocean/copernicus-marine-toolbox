@@ -67,7 +67,7 @@ run-using-pyinstaller-macos-13:
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install distributed
-	python -m PyInstaller --name cmt-ubuntu-latest.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile
+	python -m PyInstaller --name cmt_ubuntu-latest.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
