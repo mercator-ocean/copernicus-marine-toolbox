@@ -5,9 +5,6 @@ on:
     branches:
        - main
        - 'pre-releases/**'
-  pull_request:
-    branches:
-       - copernicusmarine-toolbox-v2
 
 jobs:
   build:
@@ -39,7 +36,7 @@ jobs:
       run: |
         make run-using-pyinstaller-${{ matrix.os }}
 
-    - name: Upload binaries to release
+    - name: Upload binaries to windows
       env:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'windows-latest'
@@ -51,20 +48,10 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'macos-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.cli#${{matrix.os}}-copernicus --clobber
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt.cli#${{matrix.os}}-copernicus
     - name: Upload binaries to ubuntu
       env:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os== 'ubuntu-latest'
       run: |
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt-ubuntu.cli#${{matrix.os}}-copernicus
-
-
-      #- name: Upload binaries to release
-      # uses: svenstaro/upload-release-action@v2
-      # with:
-      #   repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #   file: dist/copernicus_marine.exe
-      #   asset_name: windows-binary
-      #   tag: v2.0.0a0
-      #   overwrite: true

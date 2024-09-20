@@ -56,8 +56,6 @@ run-tests-dependencie-versions:
 
 run-using-pyinstaller-windows-latest:
 	pip install distributed
-	pip show distributed > where_are_the_packages.json
-	pip show distributed
 	python -m PyInstaller --copy-metadata xarray --name cmt.exe --add-data "c:\hostedtoolcache\windows\python\3.12.6\x64\lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile
 
 run-using-pyinstaller-macos-latest:
@@ -125,7 +123,6 @@ build-and-prepare-for-binary-windows-latest:
 	pip install pyinstaller
 	pip install -e .
 	pip install poetry
-	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
