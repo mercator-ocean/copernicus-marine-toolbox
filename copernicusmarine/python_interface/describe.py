@@ -24,7 +24,7 @@ def describe(
     disable_progress_bar: bool = False,
     staging: bool = False,
 ) -> dict[str, Any]:
-    f"""
+    """
     Retrieve metadata information from the Copernicus Marine catalogue.
 
     This function fetches metadata information from the Copernicus Marine catalogue
