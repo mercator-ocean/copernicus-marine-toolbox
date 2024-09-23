@@ -254,7 +254,7 @@ class TestWarningsSubsetBounds:
             "-v",
             "VHM0",
             "--force-download",
-            "--coordintes-selection-method",
+            "--coordinates-selection-method",
             f"{coordinates_selection_method}",
         ]
 
