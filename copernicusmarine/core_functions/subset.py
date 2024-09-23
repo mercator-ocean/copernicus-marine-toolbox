@@ -111,7 +111,7 @@ def subset_function(
         "maximum_latitude": maximum_latitude,
         "minimum_depth": minimum_depth,
         "maximum_depth": maximum_depth,
-        "vertical_dimension_ouptput": vertical_dimension_output,
+        "vertical_dimension_output": vertical_dimension_output,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
         "bounding_box_method": bounding_box_method,
