@@ -11,8 +11,10 @@ FileExtension = Literal[".nc", ".zarr"]
 DEFAULT_FILE_EXTENSION: FileExtension = ".nc"
 DEFAULT_FILE_EXTENSIONS = list(get_args(FileExtension))
 
-CoordinatesSelectionMethod = Literal["strict", "nearest", "outside"]
-DEFAULT_COORDINATES_SELECTION_METHOD: CoordinatesSelectionMethod = "strict"
+CoordinatesSelectionMethod = Literal[
+    "inside", "strict-inside", "nearest", "outside"
+]
+DEFAULT_COORDINATES_SELECTION_METHOD: CoordinatesSelectionMethod = "inside"
 DEFAULT_COORDINATES_SELECTION_METHODS = list(
     get_args(CoordinatesSelectionMethod)
 )

@@ -608,7 +608,7 @@ def check_dataset_subset_bounds(
                 user_maximum_coordinate_value=user_maximum_coordinate_value,
                 dataset_minimum_coordinate_value=latitudes.min(),
                 dataset_maximum_coordinate_value=latitudes.max(),
-                is_strict=coordinates_selection_method == "strict",
+                is_strict=coordinates_selection_method == "strict-inside",
             )
     for coordinate_label in COORDINATES_LABEL["longitude"]:
         if coordinate_label in dataset.sizes:
@@ -629,7 +629,7 @@ def check_dataset_subset_bounds(
                 ),
                 dataset_minimum_coordinate_value=longitudes.min(),
                 dataset_maximum_coordinate_value=longitudes.max(),
-                is_strict=coordinates_selection_method == "strict",
+                is_strict=coordinates_selection_method == "strict-inside",
             )
     for coordinate_label in COORDINATES_LABEL["time"]:
         if coordinate_label in dataset.sizes:
@@ -660,7 +660,7 @@ def check_dataset_subset_bounds(
                 user_maximum_coordinate_value=user_maximum_coordinate_value,
                 dataset_minimum_coordinate_value=dataset_minimum_coordinate_value,
                 dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
-                is_strict=coordinates_selection_method == "strict",
+                is_strict=coordinates_selection_method == "strict-inside",
             )
     for coordinate_label in COORDINATES_LABEL["depth"]:
         if coordinate_label in dataset.sizes:
@@ -679,7 +679,7 @@ def check_dataset_subset_bounds(
                 ),
                 dataset_minimum_coordinate_value=depths.min(),
                 dataset_maximum_coordinate_value=depths.max(),
-                is_strict=coordinates_selection_method == "strict",
+                is_strict=coordinates_selection_method == "strict-inside",
             )
 
 

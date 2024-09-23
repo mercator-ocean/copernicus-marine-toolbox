@@ -38,7 +38,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             else (
                 0.0,
                 50.0,
-            )  # this is a problem because the mathod is strict now!
+            )
         )
         minimum_datetime, maximum_datetime = (
             (

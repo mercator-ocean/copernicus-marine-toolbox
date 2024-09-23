@@ -40,7 +40,7 @@ class TestSubfunctions:
             maximum_longitude=50,
             minimum_latitude=0,
             maximum_latitude=50,
-            minimum_depth=4,
+            minimum_depth=0,
             maximum_depth=100,
             start_datetime="2023-01-01",
             end_datetime="2023-01-03",
@@ -49,17 +49,17 @@ class TestSubfunctions:
         max_value = 49
         coord_selection = slice(min_value, max_value)
         dataset_1 = _dataset_custom_sel(
-            dataset, "longitude", coord_selection, "strict"
+            dataset, "longitude", coord_selection, "strict-inside"
         )
         assert dataset_1.longitude.values.min() >= min_value
         assert dataset_1.longitude.max().values <= max_value
         dataset_1 = _dataset_custom_sel(
-            dataset_1, "latitude", coord_selection, "strict"
+            dataset_1, "latitude", coord_selection, "strict-inside"
         )
         assert dataset_1.latitude.values.min() >= min_value
         assert dataset_1.latitude.values.max() <= max_value
         dataset_1 = _dataset_custom_sel(
-            dataset_1, "depth", coord_selection, "strict"
+            dataset_1, "depth", coord_selection, "strict-inside"
         )
         assert dataset_1.depth.values.min() >= min_value
         assert dataset_1.depth.values.max() <= max_value
@@ -68,7 +68,7 @@ class TestSubfunctions:
             pendulum.datetime(2023, 1, 3).naive(),
         )
         dataset_1 = _dataset_custom_sel(
-            dataset_1, "time", coord_selection, "strict"
+            dataset_1, "time", coord_selection, "strict-inside"
         )
         assert datetime.datetime.strptime(
             str(dataset_1.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"

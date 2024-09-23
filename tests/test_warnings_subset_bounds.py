@@ -278,7 +278,7 @@ class TestWarningsSubsetBounds:
 
     def test_subset_strict_method(self):
         self.when_I_request_a_dataset_with_coordinates_selection_method_option(
-            "strict"
+            "strict-inside"
         )
         self.then_I_can_read_an_error_in_stdout()
 
