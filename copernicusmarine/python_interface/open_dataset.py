@@ -15,8 +15,10 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_SUBSET_METHOD,
+    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
     BoundingBoxMethod,
     SubsetMethod,
+    VerticalDimensionOutput,
 )
 from copernicusmarine.download_functions.download_arco_series import (
     open_dataset_from_arco_series,
@@ -61,7 +63,7 @@ def open_dataset(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_dimension_as_originally_produced: bool = True,
+    vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
@@ -108,8 +110,9 @@ def open_dataset(
     subset_method : str, optional
         The subset method ('nearest' or 'strict') when requesting the dataset. If strict, you can only request dimensions
         strictly inside the dataset.
-    vertical_dimension_as_originally_produced : bool, optional
-        If True, use the vertical dimension as originally produced.
+    vertical_dimension_output : str, optional
+        Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
+        'elevation' with ascending positive values. Default is 'depth'.
     start_datetime : datetime, optional
         The start datetime for temporal subsetting.
     end_datetime : datetime, optional
@@ -153,7 +156,7 @@ def open_dataset(
         depth_parameters=DepthParameters(
             minimum_depth=minimum_depth,
             maximum_depth=maximum_depth,
-            vertical_dimension_as_originally_produced=vertical_dimension_as_originally_produced,  # noqa
+            vertical_dimension_output=vertical_dimension_output,
         ),
         bounding_box_method=bounding_box_method,
         subset_method=subset_method,

@@ -192,7 +192,7 @@ def download_zarr(
     depth_parameters = DepthParameters(
         minimum_depth=subset_request.minimum_depth,
         maximum_depth=subset_request.maximum_depth,
-        vertical_dimension_as_originally_produced=subset_request.vertical_dimension_as_originally_produced,  # noqa
+        vertical_dimension_output=subset_request.vertical_dimension_output,
     )
     dataset_url = str(subset_request.dataset_url)
     output_directory = (
