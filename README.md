@@ -11,14 +11,18 @@
 
 ## Features
 
-
 The `copernicusmarine` offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
-
 
 - **Metadata Information**: List and retrieve metadata information on all variables, datasets, products, and their associated documentation.
 - **Subset Datasets**: Subset datasets to extract only the parts of interest, in preferred format, such as Analysis-Ready Cloud-Optimized (ARCO) Zarr or NetCDF file format.
 - **Advanced Filters**: Apply simple or advanced filters to get multiple files, in original formats like NetCDF/GeoTIFF, via direct Marine Data Store connections.
 - **No Quotas**: Enjoy no quotas, neither on volume size nor bandwidth.
+
+## Documentation
+
+The full documentation of the toolbox is available here: [Copernicusmarine Documentation](https://toolbox-docs.marine.copernicus.eu/). Please refer to it for the more exhaustive and up to date documentation.
+
+You might also find more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
 
 ## Installation
 
@@ -26,55 +30,29 @@ For installation, multiple options are available depending on your setup:
 
 ### Mamba | Conda
 
-A `conda` package is available on [Anaconda](https://anaconda.org/conda-forge/copernicusmarine).
-
-You can install it using `mamba` (or conda) through the `conda-forge` channel with the following command:
-
 ```bash
 mamba install conda-forge::copernicusmarine --yes
 ```
 
-To upgrade the Toolbox with mamba (or conda):
+or conda:
 
 ```bash
-mamba update --name copernicusmarine copernicusmarine --yes
+conda install -c conda-forge copernicusmarine
 ```
 
 ### Docker
-
-A docker image is also available here: [https://hub.docker.com/r/copernicusmarine/copernicusmarine](https://hub.docker.com/r/copernicusmarine/copernicusmarine)
-
-First step is to pull the container image:
 
 ```bash
 docker pull copernicusmarine/copernicusmarine:latest
 ```
 
-Then run it:
-
-```bash
-docker run -it --rm copernicusmarine/copernicusmarine --version
-```
-
 ### Pip
-
-
-Otherwise, if you already have an environment (safer to clone it), the package can be installed using the `pip` command:
-
 
 ```bash
 python -m pip install copernicusmarine
 ```
 
-And to **upgrade the package** to the newest available version, run:
-
-```bash
-python -m pip install copernicusmarine --upgrade
-```
-
 ## User Guide
-
-For more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
 
 ## Command Line Interface (CLI)
 
@@ -104,486 +82,27 @@ Commands:
   subset    Download subsets of datasets as NetCDF files or Zarr stores.
 ```
 
-### Command `describe`
-
-Retrieve metadata information about all products/datasets and display as JSON output:
-
-```bash
-copernicusmarine describe --include-datasets
-```
-
-The JSON output can also be saved as follows:
-
-```bash
-copernicusmarine describe --include-datasets > all_datasets_copernicusmarine.json
-```
-
-### Command `login`
-
-Create a single configuration file `.copernicusmarine-credentials` allowing to access all Copernicus Marine Data Store data services. By default, the file is saved in user's home directory.
-
-Example:
-
-```bash
-> copernicusmarine login
-username : johndoe
-password :
-INFO - Configuration files stored in /Users/foo/.copernicusmarine
-```
-
-If `.copernicusmarine-credentials` already exists, the user is asked for confirmation to overwrite (`--overwrite`/`--overwrite-configuration-file`).
-
-You can use the `--skip-if-user-logged-in` option to skip the configuration file overwrite if the user is already logged in.
-
-#### Access points migration and evolution
-
-If you still have a configuration for legacy services (e.g. `~/motuclient/motuclient-python.ini`, `~/.netrc` or `~/_netrc`) in your home directory, it will automatically be taken into account with commands `get` and `subset` without the need for running the `login` command.
-If the configuration files are already available in another directory, when running commands `subset` or `get`, you can use the `--credentials-file` option to point to the files.
-
-### Command `subset`
-
-Remotely subset a dataset, based on variable names, geographical and temporal parameters.
-
-Example:
-
-```bash
-copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
-```
-
-Returns:
-
-```bash
-INFO - 2024-04-03T10:18:18Z - <xarray.Dataset> Size: 3kB
-Dimensions:    (depth: 50, latitude: 2, longitude: 1, time: 3)
-Coordinates:
-  * depth      (depth) float32 200B 0.5058 1.556 2.668 ... 5.292e+03 5.698e+03
-  * latitude   (latitude) float32 8B 28.0 28.08
-  * longitude  (longitude) float32 4B 0.08333
-  * time       (time) datetime64[ns] 24B 2021-01-01 2021-01-02 2021-01-03
-Data variables:
-    thetao     (time, depth, latitude, longitude) float32 1kB dask.array<chunksize=(3, 1, 2, 1), meta=np.ndarray>
-    so         (time, depth, latitude, longitude) float32 1kB dask.array<chunksize=(3, 1, 2, 1), meta=np.ndarray>
-Attributes: (12/20)
-    Conventions:               CF-1.0
-    bulletin_date:             2020-12-01
-    ...                        ...
-    references:                http://marine.copernicus.eu
-    copernicusmarine_version:  1.1.0
-INFO - 2024-04-03T10:18:18Z - Estimated size of the dataset file is 0.002 MB.
-
-Do you want to proceed with download? [Y/n]:
-```
-
-By default, after the display of the summary of the dataset subset, a download confirmation is asked. To skip this confirmation, use the option `--force-download`.
-
-#### Note about `--subset-method` option
-
-By default, the `subset` feature uses the `nearest` method of xarray. By specifying `--subset-method strict`, you can only request dimension strictly inside the dataset, useful for **operational use-case**.
-
-#### Note about longitude range
-
-Options `--minimum-longitude` and `--maximum-longitude` work as follows:
-
-- If the result of the substraction ( `--maximum-longitude` minus `--minimum-longitude` ) is superior or equal to 360, then return the full dataset.
-- If the requested longitude range:
-  - **does not cross** the antemeridian, then return the dataset between range -180 and 180.
-  - **does cross** the antemeridian, then return the dataset between range 0 and 360.
-
-Note that you can request any longitudes you want. A modulus is applied to bring the result between -180° and 360°. For example, if you request [530, 560], the result dataset will be in [170, 200].
-
-#### Note about `--netcdf-compression-enabled` and `--netcdf-compression-level` options
-
-When subsetting data, if you decide to write your data as a NetCDF file (which is the default behavior), then you can provide the extra option `--netcdf-compression-enabled`. The downloaded file will be lighter but it will take more time to write it (because of the compression task). If you don't provide it, the task will be faster, but the file heavier.
-Otherwise, if you decide to write your data in Zarr format (`.zarr` extension), the original compression used in the Copernicus Marine Data Store will be applied, which means that the download task will be fast **and** the file compressed. In that case, you cannot use the `--netcdf-compression-enabled`.
-
-Here are the default parameters added to xarray in the background when using the option: `{'zlib': True, 'complevel': 1, 'contiguous': False, 'shuffle': True}`
-
-In addition to this option, you can also provide the `--netcdf-compression-level` option and customize the NetCDF compression level between 0 (no compression) and 9 (maximal compression).
-
-#### Note about `--netcdf3-compatible` option
-
-The `--netcdf3-compatible` option has been added to allow the downloaded dataset to be compatible with the netCDF3 format. It uses the `format="NETCDF3_CLASSIC"` of the xarray [to_netcdf](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html) method.
-
-#### Note about the `--bounding-box-method` option
-The `--bounding-box-method` option lets the user choose how the requested interval on dimensions selects the data points in the dataset. If `inside` (default option) is specified then the command returns all data points that are included within the requested area. If `nearest` is specified then the returned interval has as limiting points the closest to the ones defined in the required interval. If `outside` is specified then the command returns all data points such that all the area requested is returned.
-
-It works for all 4 dimensions: that is **longitude**, **latitude**, **time** and **depth**.
-
-For example, when requesting for **longitude** values in the range (0.01, 2.92) for the two different cases from a dataset which has all data points `[-180, 180[`.
-
->* --bounding-box-method **inside**
->
-> will return a dataset with longitudes: [0.08334 0.1667 0.25 ... 2.75 2.833 2.917]
->
->* --bounding-box-method **nearest**
->
-> will return a dataset with longitudes: [0.0 0.08334 0.1667 ... 2.75 2.833 2.917]
->
->* --bounding-box-method **outside**
->
-> will output a dataset with longitude: [0.0 0.08334 0.1667 0.25 ... 2.833 2.917 3.0]
-
-If asked for a single point (not an interval) in one of the dimensions, it will return the nearest point (a single one) in that dimension.
-
-
-### Command `get`
-
-Download the dataset file(s) as originally produced, based on the datasetID or the path to files.
-
-Example:
-
-```bash
-copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --service original-files
-```
-
-Returns:
-
-```bash
-INFO - 2024-04-03T11:39:18Z - Dataset version was not specified, the latest one was selected: "202211"
-INFO - 2024-04-03T11:39:18Z - Dataset part was not specified, the first one was selected: "default"
-INFO - 2024-04-03T11:39:18Z - Service was not specified, the default one was selected: "original-files"
-INFO - 2024-04-03T11:39:18Z - Downloading using service original-files...
-INFO - 2024-04-03T11:39:19Z - You requested the download of the following files:
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_19930101_19931231_R20221101_RE01.nc - 8.83 MB - 2023-11-12T23:47:13Z
-[... truncated for brevity..]
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc - 8.62 MB - 2023-11-12T23:47:14Z
-Printed 20 out of 29 files
-
-Total size of the download: 252.94 MB
-Do you want to proceed with download? [Y/n]:
-```
-
-By default:
-
-- After the header displays a summary of the request, a download confirmation is asked. To skip this user's action, add option `--force-download`.
-- Files are downloaded to the current directory applying the original folder structure. To avoid this behavior, add `--no-directories` and specify a destination with `-o/--output-directory`.
-
-Option `--show-outputnames` displays the full paths of the output files, if required.
-
-Option `--create-file-list` only creates a file containing the names of the targeted files instead of downloading them. You have to input a file name, e.g. `--create-file-list my_files.txt`. The format needs to be `.txt` or `.csv`:
-
-- If the user inputs a filename that ends in `.txt`, then the file contains only the full s3 path to the targeted files and is compatible with the `--file-list` option.
-
-Example:
-
-```bash
-copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.txt
-```
-
-The content of `selected_files_for_2021.txt` would be:
-
-```txt
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
-[... truncated for brevity..]
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211101_20211130_R20230101_RE01.nc
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211201_20211231_R20230101_RE01.nc
-```
-
-- If the user inputs a filename that ends in `.csv` the file contains the following columns, separated by a comma: `filename`, `size` (in Bytes), `last_modified_datetime`, and `etag`. It is **not** compatible "as is" with the `--file-list` option and would need further post-processing from user's side.
-
-Example:
-
-```bash
-copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.csv
-```
-
- The content of `selected_files_for_2021.csv` would be:
-
-```txt
-filename,size,last_modified_datetime,etag
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc,12295906,2023-11-12 23:47:05.466000+00:00,"e8a7e564f676a08bf601bcdeaebdc563"
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc,12436177,2023-11-12 23:47:05.540000+00:00,"d4a22dfb6c7ed85860c4a122c45eb953"
-[... truncated for brevity..]
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211101_20211130_R20230101_RE01.nc,12386940,2023-11-12 23:47:06.358000+00:00,"ea15d1f70fcc7f2ce404184d983530ff"
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211201_20211231_R20230101_RE01.nc,12398208,2023-11-12 23:47:06.456000+00:00,"585f49867aaefa2ce9d6e68dd468b5e1"
-```
-
-If specified, no other action will be performed.
-
-#### Note about sync option
-
-Option `--sync` allows to download original files only if not exist and not up to date. The Toolbox checks the destination folder against the source folder. It can be combined with filters. Note that if set with `--overwrite-output-data`, the latter will be ignored.
-The logic is largely inspired from [s5cmd package sync command](https://github.com/peak/s5cmd#sync).
-Option `--sync-delete` will work as `--sync` with the added fonctionnality that it deletes any local file that has not been found on the remote server. Note that the files found on the server are also filtered. Hence, a file present locally might be deleted even if it is on the server because, for example, the executed `get` command contains a filter that excludes this specific file.
-
-Limitations:
-
-- `--sync` is not compatible with `--no-directories`.
-- `--sync` only works with `--dataset-version`.
-- `--sync` functionality is not available for datasets with several parts (like INSITU or static datasets for example).
-
-#### Note about filtering options
-
-Option `--filter` allows to specify a Unix shell-style wildcard pattern (see [fnmatch — Unix filename pattern matching](https://docs.python.org/3/library/fnmatch.html)) and select specific files:
-
-```bash
-copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --filter "*01yav_200[0-2]*"
-```
-
-Returns:
-
-```bash
-INFO - 2024-04-03T11:51:15Z - Dataset version was not specified, the latest one was selected: "202211"
-INFO - 2024-04-03T11:51:15Z - Dataset part was not specified, the first one was selected: "default"
-INFO - 2024-04-03T11:51:15Z - Service was not specified, the default one was selected: "original-files"
-INFO - 2024-04-03T11:51:15Z - Downloading using service original-files...
-INFO - 2024-04-03T11:51:17Z - You requested the download of the following files:
-s3://mdl-native/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20000101_20001231_R20221101_RE01.nc - 8.93 MB
-s3://mdl-native/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc - 8.91 MB
-s3://mdl-native/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc - 8.75 MB
-
-Total size of the download: 26.59 MB
-Do you want to proceed with download? [Y/n]:
-```
-
-Option `--regex` allows to specify a regular expression for more advanced files selection:
-
-```bash
-copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --regex ".*01yav_20(00|01|02).*.nc"
-```
-
-Returns:
-
-```bash
-INFO - 2024-04-03T11:52:43Z - Dataset version was not specified, the latest one was selected: "202211"
-INFO - 2024-04-03T11:52:43Z - Dataset part was not specified, the first one was selected: "default"
-INFO - 2024-04-03T11:52:43Z - Service was not specified, the default one was selected: "original-files"
-INFO - 2024-04-03T11:52:43Z - Downloading using service original-files...
-INFO - 2024-04-03T11:52:44Z - You requested the download of the following files:
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20000101_20001231_R20221101_RE01.nc - 8.93 MB - 2023-11-12T23:47:13Z
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc - 8.91 MB - 2023-11-12T23:47:13Z
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc - 8.75 MB - 2023-11-12T23:47:13Z
-
-Total size of the download: 26.59 MB
-Do you want to proceed with download? [Y/n]:
-```
-
-#### Notes about the file list option
-
-Option `--file-list` allows to specify a list of files for more advanced files selection.
-The file can contain complete absolute paths for each target file (default behavior) or only a partial path defined by the user, as shown below.
-
-By default, the get functionality lists all the files on the bucket to be able to select the requested ones. This create some overhead when there are a lot of files for a specific dataset. For example, a dataset with more than 100 000 files would create an overhead of around two minutes. The file list option will directly download the files and avoid the listings if all the files listed are found.
-
-Careful, a path can easily be mispelled or wrongly queried. The toolbox will display a warning if the file is not found on the bucket and try to find the file by listing all the files on the bucket.
-
-Example of `file_list.txt` with paths that would be directly downloaded without the listing overhead:
-
-```txt
-# correct paths
-> s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
-> INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
-> cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
-> history/BO/AR_PR_BO_58JM.nc
-> index_history.txt
-
-# incorrect paths
-# version is missing
-> INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr/history/BO/AR_PR_BO_58JM.nc
-# only the file name and not the path to the file
-> AR_PR_BO_58JM.nc
-# not the same dataset
-> another_dataset/history/BO/AR_PR_BO_58JM.nc
-```
-
-
-Example of `file_list.txt` with absolute paths:
-
-```txt
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc
-```
-
-Note that a path to a file can be seen in 3 parts:
-
-- the provenance that indicates in which bucket the data is. For example, `s3://mdl-native-10/`. It can be found in the metadata.
-- the productID and datasetID. For example, `IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/`. It also contains the version when the dataset has one.
-- the filename which is everything that comes after the dataset id. For example, `2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc`. It should be considered like a filename. If any components are absent, the file name is not complete and the file cannot be directly downloaded. Thus a listing of all the files is necessary in order to download the file. For example, `2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc` is a filename and `CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc` is an incomplete filename.
-
-> **_NOTE:_** This option is compatible with the file generated by the `--create-file-list` option if you generated a ".txt" file.
-
-Then the following command:
-
-```bash
-copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --file-list file_list.txt
-```
-
-Returns:
-
-```bash
-INFO - 2024-04-03T12:57:44Z - Dataset version was not specified, the latest one was selected: "202211"
-INFO - 2024-04-03T12:57:44Z - Dataset part was not specified, the first one was selected: "default"
-INFO - 2024-04-03T12:57:44Z - Service was not specified, the default one was selected: "original-files"
-INFO - 2024-04-03T12:57:44Z - Downloading using service original-files...
-INFO - 2024-04-03T12:57:45Z - You requested the download of the following files:
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20000101_20001231_R20221101_RE01.nc - 8.93 MB - 2023-11-12T23:47:13Z
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc - 8.91 MB - 2023-11-12T23:47:13Z
-s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc - 8.75 MB - 2023-11-12T23:47:13Z
-
-Total size of the download: 26.59 MB
-Do you want to proceed with download? [Y/n]:
-```
-
-Also, there is a specific command `--index-parts` to retrieve the index files of INSITU datasets (as listed on the [Copernicus Marine File Browser](https://data.marine.copernicus.eu/product/INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034/files?subdataset=cmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311--ext--history&path=INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034%2Fcmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311%2F)).
-> **_NOTE:_** In the future, it is planned to have the index files for those datasets directly available through the `--filter`, `--regex` and/or `--file-list` options. Meanwhile, check this [Help Center article for a working example](https://help.marine.copernicus.eu/en/articles/9133855-how-to-download-insitu-data-using-index-files).
-
-Then the following command:
-
-```bash
-copernicusmarine get --dataset-id cmems_obs-ins_blk_phybgcwav_mynrt_na_irr --index-parts
-```
-
-Returns:
-
-```text
-INFO - 2024-04-03T12:58:40Z - Dataset version was not specified, the latest one was selected: "202311"
-INFO - 2024-04-03T12:58:40Z - Dataset part was not specified, the first one was selected: "history"
-INFO - 2024-04-03T12:58:40Z - You forced selection of service: original-files
-INFO - 2024-04-03T12:58:40Z - Downloading using service original-files...
-INFO - 2024-04-03T12:58:41Z - You requested the download of the following files:
-s3://mdl-native-08/native/INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034/cmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311/index_history.txt - 333.13 kB - 2024-04-02T08:40:30Z
-s3://mdl-native-08/native/INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034/cmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311/index_latest.txt - 466.38 kB - 2024-04-03T12:51:52Z
-s3://mdl-native-08/native/INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034/cmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311/index_monthly.txt - 1.51 MB - 2024-03-05T18:09:43Z
-s3://mdl-native-08/native/INSITU_BLK_PHYBGCWAV_DISCRETE_MYNRT_013_034/cmems_obs-ins_blk_phybgcwav_mynrt_na_irr_202311/index_platform.txt - 209.27 kB - 2024-04-03T08:33:37Z
-
-Total size of the download: 2.52 MB
-Do you want to proceed with download? [Y/n]:
-```
-
-### Shared options
-
-Both `subset` and `get` commands provide these options:
-
-#### Option `--overwrite-output-data`
-
-When specified, the existing files will be overwritten.
-Otherwise, if the files already exist on destination, new ones with a unique index will be created once the download has been accepted (or once `--force-download` is provided).
-
-#### Option `--create-template`
-
-Option to create a file in your current directory containing request parameters. If specified, no other action will be performed.
-It will create the following files depending on the feature:
-
-- `subset`
-
-Example:
-
-```bash
-copernicusmarine subset --create-template
-```
-
-Returns:
-
-```txt
-INFO - 2024-04-04T14:38:09Z - Template created at: subset_template.json
-```
-
-- `get`
-Example:
-
-```bash
-copernicusmarine get --create-template
-```
-
-Returns:
-
-```txt
-INFO - 2024-04-04T14:38:09Z - Template created at: get_template.json
-```
-
-#### Option `--request-file`
-
-This option allows to specify request parameters but in a provided `.json` file, useful for batch processing.
-You can try the following templates or use the `--create-template` option to create both `subset` or `get` template request files.
-
-- Template for `subset` data request:
-
-```json
-{
-    "dataset_id": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-    "start_datetime": "2022-04-11",
-    "end_datetime": "2023-08-11",
-    "minimum_longitude": -182.79,
-    "maximum_longitude": -179.69,
-    "minimum_latitude": -40,
-    "maximum_latitude": -36,
-    "minimum_depth": 0,
-    "maximum_depth": 0,
-    "variables": ["thetao"],
-    "output_directory": "./data/",
-    "force_download": true
-}
-```
-
-Example:
-
-```bash
-copernicusmarine subset --request-file template_subset_data_request.json
-```
-
-- Template for `get` data request:
-
-```json
-{
-    "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-    "filter": "*01yav_200[0-2]*",
-    "force_download": false,
-    "log_level": "INFO",
-    "no_directories": false,
-    "output_directory": "./data/",
-    "overwrite_output_data": false,
-    "show_outputnames": true
-}
-```
-
-Example:
-
-```bash
-copernicusmarine get --request-file template_get_data_request.json
-```
-
-#### Option `--credentials-file`
-
-You can use the `--credentials-file` option to point to a credentials file. The file can be either `.copernicusmarine-credentials`, `motuclient-python.ini`, `.netrc` or `_netrc`.
-
-#### Option `--dataset-version`
-
-You can use the `--dataset-version` option to fetch a specific dataset version. Particularly useful to keep an operational chain working when an evolution impact the chosen dataset.
-
-#### Option `--dataset-part`
-
-You can use the `--dataset-part` option to fecth a specific part for the chosen dataset version.
-
-#### Option `--log-level`
-
-Set the details printed to console by the command (based on standard logging library).
-Available values are: `[DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]`
-
-All logs of the library are by default logged in stderr except the output of the `describe` command and the output of `--show-outputnames` option that are sent to stdout.
-
-_For versions <=1.2.4_, all logs are sent to stdout by default.
-
 ## Python package (API)
 
-The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://help.marine.copernicus.eu/en/collections/9054839-main-functionalities).
-
-## Documentation
-
-A detailed standalone API documentation is under construction and will come at a later stage. For the moment, see the [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox).
+The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://toolbox-docs.marine.copernicus.eu/).
 
 ## Version management
 
-We are using semantic versioning X.Y.Z → for example 1.0.2
+We are using semantic versioning X.Y.Z → MAJOR.MINOR.PATCH → for example 1.0.2. We follow the SEMVER principles:
 
-- Z is bumped on minor non-breaking changes.
-- Y is bumped on breaking changes.
-- X is bumped on demand to highlight a new significant feature or for communication purposes (new Copernicus Marine Service release for example).
+>Given a version number MAJOR.MINOR.PATCH, increment the:
+>
+>- MAJOR version when you make incompatible API changes
+>- MINOR version when you add functionality in a backward compatible manner
+>- PATCH version when you make backward compatible bug fixes
+>
+>Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 
 ## Contribution
 
 We welcome contributions from the community to enhance this package. If you find any issues or have suggestions for improvements, please check out our [Report Template](https://help.marine.copernicus.eu/en/articles/8218546-reporting-an-issue-or-feature-request).
+
+You are welcome to submit issues to the GitHub repository or create a pull request; however, please be advised that we may not respond to your request or may provide a negative response.
 
 ## Future improvements & Roadmap
 

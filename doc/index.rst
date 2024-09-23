@@ -6,14 +6,20 @@
 Copernicus Marine Toolbox documentation
 =======================================
 
+The ``copernicusmarine`` offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
+
+- **Metadata Information**: List and retrieve metadata information on all variables, datasets, products, and their associated documentation.
+- **Subset Datasets**: Subset datasets to extract only the parts of interest, in preferred format, such as Analysis-Ready Cloud-Optimized (ARCO) Zarr or NetCDF file format.
+- **Advanced Filters**: Apply simple or advanced filters to get multiple files, in original formats like NetCDF/GeoTIFF, via direct Marine Data Store connections.
+- **No Quotas**: Enjoy no quotas, neither on volume size nor bandwidth.
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   usage/installation
-   usage/quickstart
-   usage/command-line-interface
-   usage/python-interface
-   usage/response-types
-   usage/network-configuration
+   installation
+   usage/usage
+   command-line-interface
+   python-interface
+   response-types
