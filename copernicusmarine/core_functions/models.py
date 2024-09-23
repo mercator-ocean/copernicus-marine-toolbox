@@ -19,6 +19,10 @@ BoundingBoxMethod = Literal["inside", "nearest", "outside"]
 DEFAULT_BOUNDING_BOX_METHOD: BoundingBoxMethod = "inside"
 DEFAULT_BOUNDING_BOX_METHODS = list(get_args(BoundingBoxMethod))
 
+VerticalDimensionOutput = Literal["depth", "elevation"]
+DEFAULT_VERTICAL_DIMENSION_OUTPUT: VerticalDimensionOutput = "depth"
+DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
+
 
 class FileGet(BaseModel):
     #: Full url of the location of the file server side.
