@@ -92,10 +92,10 @@ class TestWarningsSubsetBounds:
         )
 
         command1 = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "strict"
+            dataset_id, "CHL", -180, 180, "strict-inside"
         )
         command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.9, 179.9, "strict"
+            dataset_id, "CHL", -179.9, 179.9, "strict-inside"
         )
         self.output1 = execute_in_terminal(command1, input=b"n")
         self.output2 = execute_in_terminal(command2, input=b"n")
@@ -120,7 +120,7 @@ class TestWarningsSubsetBounds:
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
         command = self._build_custom_command(
-            dataset_id, "thetao", -150, 180, "strict"
+            dataset_id, "thetao", -150, 180, "strict-inside"
         )
         self.output = execute_in_terminal(command, input=b"n")
         assert (
@@ -254,7 +254,7 @@ class TestWarningsSubsetBounds:
             "-v",
             "VHM0",
             "--force-download",
-            "--coordaintes-selection-method",
+            "--coordintes-selection-method",
             f"{coordinates_selection_method}",
         ]
 
