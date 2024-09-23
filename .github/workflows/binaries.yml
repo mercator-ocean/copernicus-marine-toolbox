@@ -5,6 +5,11 @@ on:
     branches:
        - main
        - 'pre-releases/**'
+  pull_request:
+    branches:
+       - main
+       - 'pre-releases/**'
+       - 'copernicusmarine-toolbox-v2'
 
 jobs:
   build:

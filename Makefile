@@ -67,7 +67,7 @@ run-using-pyinstaller-macos-13:
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install distributed
-	python -m PyInstaller --name cmt_ubuntu-latest.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile
+	python3 -m PyInstaller --name cmt-ubuntu.cli --add-data="/opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
