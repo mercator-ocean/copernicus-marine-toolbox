@@ -3,6 +3,11 @@ from typing import Optional
 
 from pendulum import DateTime
 
+from copernicusmarine.core_functions.models import (
+    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
+    VerticalDimensionOutput,
+)
+
 
 @dataclass
 class LatitudeParameters:
@@ -36,4 +41,6 @@ class TemporalParameters:
 class DepthParameters:
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
-    vertical_dimension_as_originally_produced: bool = True
+    vertical_dimension_output: VerticalDimensionOutput = (
+        DEFAULT_VERTICAL_DIMENSION_OUTPUT
+    )
