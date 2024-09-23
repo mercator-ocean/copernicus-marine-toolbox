@@ -5,20 +5,6 @@ from tests.test_utils import execute_in_terminal
 
 
 class TestGetCreateFileList:
-    def test_get_download_file_list_is_deprecated(self):
-        self.command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
-            "--download-file-list",
-        ]
-        self.output = execute_in_terminal(self.command)
-        assert (
-            b"'--download-file-list' has been deprecated, "
-            b"use '--create-file-list' instead" in self.output.stderr
-        )
-
     def test_get_create_file_list_without_extension_raises(self):
         self.command = [
             "copernicusmarine",

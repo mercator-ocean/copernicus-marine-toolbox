@@ -1,11 +1,7 @@
 import pathlib
 from typing import Optional, Union
 
-from copernicusmarine.core_functions.deprecated import (
-    deprecated_python_option,
-    log_deprecated_message,
-    raise_both_old_and_new_value_error,
-)
+from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
@@ -36,7 +32,6 @@ def get(
     regex: Optional[str] = None,
     file_list: Optional[Union[pathlib.Path, str]] = None,
     create_file_list: Optional[str] = None,
-    download_file_list: bool = False,
     index_parts: bool = False,
     sync: bool = False,
     sync_delete: bool = False,
@@ -115,12 +110,6 @@ def get(
     )
     file_list = pathlib.Path(file_list) if file_list else None
     request_file = pathlib.Path(request_file) if request_file else None
-    if download_file_list and create_file_list:
-        raise_both_old_and_new_value_error(
-            "download_file_list", "create_file_list"
-        )
-    elif download_file_list:
-        log_deprecated_message("download_file_list", "create_file_list")
     return get_function(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
@@ -139,7 +128,6 @@ def get(
         regex=regex,
         file_list_path=file_list,
         create_file_list=create_file_list,
-        download_file_list=download_file_list,
         index_parts=index_parts,
         sync=sync,
         sync_delete=sync_delete,

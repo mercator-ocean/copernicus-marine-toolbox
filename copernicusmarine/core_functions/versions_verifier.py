@@ -61,6 +61,7 @@ class VersionVerifier:
                     f"Using a pre-release or a non-official version "
                     f"of the client. Client version: {client_version}"
                 )
+                return
 
     @staticmethod
     def _get_client_required_versions(
