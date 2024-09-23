@@ -70,7 +70,8 @@ Additionally, you can use the ``--netcdf-compression-level`` option to set a cus
 About ``--netcdf3-compatible`` option
 """"""""""""""""""""""""""""""""""""""""
 
-The ``--netcdf3-compatible`` option enables compatibility with the netCDF3 format. This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. [Documentation link](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html).
+The ``--netcdf3-compatible`` option enables compatibility with the netCDF3 format.
+This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. `Documentation link <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_.
 
 About ``--bounding-box-method`` option
 """"""""""""""""""""""""""""""""""""""""

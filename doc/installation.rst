@@ -26,7 +26,7 @@ And to **upgrade the package** to the newest available version, run:
 
 .. note:: Requires Python 3.9 or higher.
 
-Via conMamba | Condada (conda-forge channel)
+Via Mamba | Conda (conda-forge channel)
 **********************************************
 
 A ``conda`` package is available on `Anaconda`_.
