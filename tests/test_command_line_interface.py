@@ -2199,7 +2199,7 @@ class TestCommandLineInterface:
             f"{min_depth}",
             "--maximum-depth",
             f"{max_depth}",
-            "--coordiantes-selection-method",
+            "--coordinates-selection-method",
             "nearest",
             "-o",
             f"{tmp_path}",

@@ -103,7 +103,7 @@ def open_dataset(
     maximum_depth : float, optional
         The maximum depth for subsetting the data.
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
+        The method in which the coordinates will be retrieved. If 'strict', the retrieved selection will be inside the requested interval. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
     vertical_dimension_output : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
         'elevation' with ascending positive values. Default is 'depth'.
