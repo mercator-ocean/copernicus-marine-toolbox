@@ -9,7 +9,7 @@ import shutil
 from dataclasses import dataclass
 from json import loads
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 import xarray
 
@@ -1048,7 +1048,9 @@ class TestCommandLineInterface:
         ) in self.output.stderr
 
     def when_I_request_subset_dataset_with_zarr_service(
-        self, output_path, vertical_dimension_as_originally_produced
+        self,
+        output_path,
+        vertical_dimension_output: Literal["depth", "elevation"] = "depth",
     ):
         command = [
             "copernicusmarine",
@@ -1073,8 +1075,8 @@ class TestCommandLineInterface:
             "10",
             "-v",
             "thetao",
-            "--vertical-dimension-as-originally-produced",
-            f"{vertical_dimension_as_originally_produced}",
+            "--vertical-dimension-output",
+            f"{vertical_dimension_output}",
             "--service",
             "arco-time-series",
             "-o",
@@ -1109,14 +1111,16 @@ class TestCommandLineInterface:
         assert dataset[dimention_name].attrs["positive"] == attribute_value
 
     def test_conversion_between_elevation_and_depth(self, tmp_path):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path, True)
+        self.when_I_request_subset_dataset_with_zarr_service(tmp_path, "depth")
         self.then_I_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "positive"
         )
         self.then_I_have_correct_attribute_value(tmp_path, "depth", "down")
 
     def test_force_no_conversion_between_elevation_and_depth(self, tmp_path):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path, False)
+        self.when_I_request_subset_dataset_with_zarr_service(
+            tmp_path, "elevation"
+        )
         self.then_I_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "negative"
         )
@@ -1419,7 +1423,7 @@ class TestCommandLineInterface:
     def test_copernicusmarine_version_in_dataset_attributes_with_arco(
         self, tmp_path
     ):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path, True)
+        self.when_I_request_subset_dataset_with_zarr_service(tmp_path)
         self.then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
             tmp_path / "data.zarr"
         )
@@ -1588,7 +1592,7 @@ class TestCommandLineInterface:
     def test_dataset_size_is_displayed_when_downloading_with_arco_service(
         self, tmp_path
     ):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path, True)
+        self.when_I_request_subset_dataset_with_zarr_service(tmp_path)
         self.then_I_can_read_dataset_size()
 
     def test_dataset_has_always_every_dimensions(self, tmp_path):

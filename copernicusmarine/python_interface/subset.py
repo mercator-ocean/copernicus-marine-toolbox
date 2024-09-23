@@ -10,10 +10,12 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_FILE_FORMAT,
     DEFAULT_SUBSET_METHOD,
+    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
     BoundingBoxMethod,
     FileFormat,
     ResponseSubset,
     SubsetMethod,
+    VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.subset import subset_function
 from copernicusmarine.python_interface.exception_handler import (
@@ -37,7 +39,7 @@ def subset(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_dimension_as_originally_produced: bool = True,
+    vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
@@ -99,8 +101,9 @@ def subset(
         Minimum depth value for vertical subset.
     maximum_depth : float, optional
         Maximum depth value for vertical subset.
-    vertical_dimension_as_originally_produced : bool, optional
-        Use original vertical dimension.
+    vertical_dimension_output : str, optional
+        Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
+        'elevation' with ascending positive values. Default is 'depth'.
     start_datetime : datetime, optional
         Start datetime for temporal subset.
     end_datetime : datetime, optional
@@ -158,7 +161,7 @@ def subset(
         maximum_latitude,
         minimum_depth,
         maximum_depth,
-        vertical_dimension_as_originally_produced,
+        vertical_dimension_output,
         start_datetime,
         end_datetime,
         bounding_box_method,

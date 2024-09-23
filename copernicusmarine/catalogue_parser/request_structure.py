@@ -15,9 +15,11 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_BOUNDING_BOX_METHOD,
     DEFAULT_FILE_FORMAT,
     DEFAULT_SUBSET_METHOD,
+    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
     BoundingBoxMethod,
     FileFormat,
     SubsetMethod,
+    VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.utils import datetime_parser
 from copernicusmarine.download_functions.subset_parameters import (
@@ -61,7 +63,9 @@ class SubsetRequest:
     maximum_latitude: Optional[float] = None
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
-    vertical_dimension_as_originally_produced: bool = True
+    vertical_dimension_output: VerticalDimensionOutput = (
+        DEFAULT_VERTICAL_DIMENSION_OUTPUT
+    )
     start_datetime: Optional[DateTime] = None
     end_datetime: Optional[DateTime] = None
     bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD

@@ -174,7 +174,7 @@ class TestPythonInterface:
             maximum_latitude=0.1,
             minimum_longitude=0.2,
             maximum_longitude=0.3,
-            vertical_dimension_as_originally_produced=False,
+            vertical_dimension_output="elevation",
         )
         assert dataset is not None
         assert (

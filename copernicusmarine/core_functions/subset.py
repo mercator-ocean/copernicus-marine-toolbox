@@ -20,6 +20,7 @@ from copernicusmarine.core_functions.models import (
     BoundingBoxMethod,
     ResponseSubset,
     SubsetMethod,
+    VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
@@ -55,7 +56,7 @@ def subset_function(
     maximum_latitude: Optional[float],
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
-    vertical_dimension_as_originally_produced: bool,
+    vertical_dimension_output: VerticalDimensionOutput,
     start_datetime: Optional[DateTime],
     end_datetime: Optional[DateTime],
     bounding_box_method: BoundingBoxMethod,
@@ -110,7 +111,7 @@ def subset_function(
         "maximum_latitude": maximum_latitude,
         "minimum_depth": minimum_depth,
         "maximum_depth": maximum_depth,
-        "vertical_dimension_as_originally_produced": vertical_dimension_as_originally_produced,  # noqa
+        "vertical_dimension_ouptput": vertical_dimension_output,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
         "bounding_box_method": bounding_box_method,

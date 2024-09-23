@@ -384,7 +384,7 @@ def _depth_subset(
             dataset["elevation"].attrs = attrs
         return dataset
 
-    if depth_parameters.vertical_dimension_as_originally_produced:
+    if depth_parameters.vertical_dimension_output == "depth":
         dataset = convert_elevation_to_depth(dataset)
     else:
         dataset = update_elevation_attributes(dataset)
