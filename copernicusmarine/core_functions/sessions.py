@@ -10,6 +10,8 @@ from requests.adapters import HTTPAdapter, Retry
 
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
+    COPERNICUSMARINE_HTTPS_RETRIES,
+    COPERNICUSMARINE_HTTPS_TIMEOUT,
     COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
     COPERNICUSMARINE_TRUST_ENV,
     PROXY_HTTP,
@@ -23,6 +25,14 @@ if PROXY_HTTP:
     PROXIES["http"] = PROXY_HTTP
 if PROXY_HTTPS:
     PROXIES["https"] = PROXY_HTTPS
+try:
+    HTTPS_TIMEOUT = float(COPERNICUSMARINE_HTTPS_TIMEOUT)
+except ValueError:
+    HTTPS_TIMEOUT = 60
+try:
+    HTTPS_RETRIES = int(COPERNICUSMARINE_HTTPS_RETRIES)
+except ValueError:
+    HTTPS_RETRIES = 5
 
 
 def get_ssl_context() -> Optional[ssl.SSLContext]:
@@ -69,29 +79,33 @@ def get_configured_boto3_session(
     return s3_client, s3_resource
 
 
-def get_configured_requests_session() -> requests.Session:
-    retry_http_codes = [
-        408,  # Request Timeout
-        429,  # Too Many Requests
-        500,  # Internal Server Error
-        502,  # Bad Gateway
-        503,  # Service Unavailable
-        504,  # Gateway Timeout
-    ]
-    session = requests.Session()
-    session.trust_env = TRUST_ENV
-    session.verify = (
-        COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
-    )
-    session.proxies = PROXIES
-    session.mount(
-        "https://",
-        HTTPAdapter(
-            max_retries=Retry(
-                total=5,
-                backoff_factor=1,
-                status_forcelist=retry_http_codes,
+# TODO: add tests
+# example: with https://httpbin.org/delay/10 or
+# https://medium.com/@mpuig/testing-robust-requests-with-python-a06537d97771
+class ConfiguredRequestsSession(requests.Session):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trust_env = TRUST_ENV
+        self.verify = (
+            COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
+        )
+        self.proxies = PROXIES
+        if HTTPS_RETRIES:
+            self.mount(
+                "https://",
+                HTTPAdapter(
+                    max_retries=Retry(
+                        total=HTTPS_RETRIES,
+                        backoff_factor=1,
+                        status_forcelist=[408, 429, 500, 502, 503, 504],
+                    )
+                ),
             )
-        ),
-    )
-    return session
+
+    def request(self, *args, **kwargs):
+        kwargs.setdefault("timeout", HTTPS_TIMEOUT)
+        return super().request(*args, **kwargs)
+
+
+def get_configured_requests_session() -> requests.Session:
+    return ConfiguredRequestsSession()
