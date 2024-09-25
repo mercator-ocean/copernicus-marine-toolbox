@@ -9,6 +9,8 @@
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
 
+> **_IMPORTANT:_** This is a pre-release that can be used for testing purposes. The behavior and some features might change in a near futur.
+
 ## Features
 
 The `copernicusmarine` offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
