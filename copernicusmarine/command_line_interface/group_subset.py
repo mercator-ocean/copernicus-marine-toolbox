@@ -14,7 +14,6 @@ from copernicusmarine.command_line_interface.utils import (
     tqdm_disable_option,
 )
 from copernicusmarine.core_functions.deprecated import (
-    DeprecatedClickOption,
     DeprecatedClickOptionsCommand,
 )
 from copernicusmarine.core_functions.models import (
@@ -118,11 +117,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-longitude",
-    "--minimal-longitude",
     "-x",
-    cls=DeprecatedClickOption,
-    deprecated=["--minimal-longitude"],
-    preferred="--minimum-longitude",
     type=float,
     help=(
         "Minimum longitude for the subset. "
@@ -131,11 +126,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "--maximum-longitude",
-    "--maximal-longitude",
     "-X",
-    cls=DeprecatedClickOption,
-    deprecated=["--maximal-longitude"],
-    preferred="--maximum-longitude",
     type=float,
     help=(
         "Maximum longitude for the subset. "
@@ -144,43 +135,27 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-latitude",
-    "--minimal-latitude",
     "-y",
-    cls=DeprecatedClickOption,
-    deprecated=["--minimal-latitude"],
-    preferred="--minimum-latitude",
     type=click.FloatRange(min=-90, max=90),
     help="Minimum latitude for the subset."
     " Requires a float within this range:",
 )
 @click.option(
     "--maximum-latitude",
-    "--maximal-latitude",
     "-Y",
-    cls=DeprecatedClickOption,
-    deprecated=["--maximal-latitude"],
-    preferred="--maximum-latitude",
     type=click.FloatRange(min=-90, max=90),
     help="Maximum latitude for the subset."
     " Requires a float within this range:",
 )
 @click.option(
     "--minimum-depth",
-    "--minimal-depth",
     "-z",
-    cls=DeprecatedClickOption,
-    deprecated=["--minimal-depth"],
-    preferred="--minimum-depth",
     type=click.FloatRange(min=0),
     help="Minimum depth for the subset. Requires a float within this range:",
 )
 @click.option(
     "--maximum-depth",
-    "--maximal-depth",
     "-Z",
-    cls=DeprecatedClickOption,
-    deprecated=["--maximal-depth"],
-    preferred="--maximum-depth",
     type=click.FloatRange(min=0),
     help="Maximum depth for the subset. Requires a float within this range:",
 )
@@ -283,11 +258,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "--service",
-    "--force-service",
     "-s",
-    cls=DeprecatedClickOption,
-    deprecated=["--force-service"],
-    preferred="--service",
     type=str,
     help=(
         "Force download through one of the available services "

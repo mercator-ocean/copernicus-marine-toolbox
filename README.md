@@ -52,7 +52,9 @@ docker pull copernicusmarine/copernicusmarine:latest
 python -m pip install copernicusmarine
 ```
 
-## User Guide
+### Dependencies
+
+Note that the use of `xarray<2024.7.0` with `numpy>=2.0.0` leads to inconsistent results. See this issue: [xarray issue](https://github.com/pydata/xarray/issues/9179).
 
 ## Command Line Interface (CLI)
 

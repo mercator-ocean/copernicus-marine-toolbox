@@ -1951,7 +1951,8 @@ class TestCommandLineInterface:
             "files",
             "--regex",
             f"{regex}",
-            "--download-file-list",
+            "--create-file-list",
+            "files_to_download.txt",
             "--output-directory",
             f"{tmp_path}",
         ]

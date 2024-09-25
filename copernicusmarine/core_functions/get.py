@@ -45,7 +45,6 @@ def get_function(
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
     create_file_list: Optional[str],
-    download_file_list: bool,
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -111,8 +110,6 @@ def get_function(
         get_request.regex = overload_regex_with_additionnal_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
-    if download_file_list and not create_file_list:
-        create_file_list = "files_to_download.txt"
     if create_file_list is not None:
         assert create_file_list.endswith(".txt") or create_file_list.endswith(
             ".csv"
