@@ -58,3 +58,16 @@ The default value is ``15`` and minimum value is ``1``.
 .. note::
     For the ``get`` command, you can set the environment variable to ``0`` if you don't want to use the ``concurrent.futures.ThreadPoolExecutor`` at all;
     the download will be used only through ``boto3``.
+
+Connection Timeout and Retries
+-------------------------------
+
+The toolbox uses the ``requests`` library to make HTTP calls. By default, the connection timeout is set to 60 seconds.
+It's the timeout argument that is being set. Please refer to `requests documentation on timeouts <https://requests.readthedocs.io/en/stable/user/advanced/#timeouts>`_
+for more information.
+
+You can set the ``COPERNICUSMARINE_HTTPS_TIMEOUT`` environment variable to a custom value in seconds.
+The default value is ``60``. Accepted values are positive floats.
+
+The toolbox also set retries on http connections by default. You can set the ``COPERNICUSMARINE_HTTPS_RETRIES`` environment variable to a custom value.
+The default value is ``5``. Accepted values are integers.
