@@ -45,15 +45,25 @@ Use the CopernicusMarine Toolbox binaries
 ***********************************************
 
 In the release page (https://github.com/mercator-ocean/copernicus-marine-toolbox/releases) you can access the binaries of the latest releases. Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
+
 In mac-os or linux:
+
 .. code-block:: bash
+
     ./cmt_macos-latest.cli describe
+
 (describe or any other command)
+
 You might have to update the permissions of the binary to be able to execute it with linux:
+
 .. code-block:: bash
+
     chmod +rwx cmt_ubuntu-latest.cli
 
 And from a Windows os:
+
 .. code-block:: bash
+
     cmt_windows-latest.exe describe
+
 (describe or any other command)
