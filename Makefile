@@ -54,6 +54,19 @@ run-tests-dependencie-versions:
 	${ACTIVATE_ENVIRONMENT}
 	tox run
 
+run-using-pyinstaller-windows-latest:
+	python -m PyInstaller --copy-metadata xarray --name copernicusmarine.exe --add-data "c:\hostedtoolcache\windows\python\3.12.6\x64\lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile
+
+run-using-pyinstaller-macos-latest:
+	python -m PyInstaller --name copernicusmarine_macos-arm64.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
+
+run-using-pyinstaller-macos-13:
+	python -m PyInstaller --name copernicusmarine_macos-x86_64.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=x86_64
+
+run-using-pyinstaller-ubuntu-latest:
+	python3 -m PyInstaller --name copernicusmarine_linux.cli --add-data="/opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
+	chmod +rwx ./dist/copernicusmarine_linux.cli
+
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
 	${ACTIVATE_ENVIRONMENT}
@@ -91,6 +104,13 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
 
+build-and-prepare-for-binary:
+	python -m pip install --upgrade pip
+	pip install pyinstaller
+	pip install -e .
+	pip install poetry
+	pip install distributed
+	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
