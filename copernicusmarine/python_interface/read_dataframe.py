@@ -13,11 +13,9 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
-    DEFAULT_BOUNDING_BOX_METHOD,
-    DEFAULT_SUBSET_METHOD,
+    DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_DIMENSION_OUTPUT,
-    BoundingBoxMethod,
-    SubsetMethod,
+    CoordinatesSelectionMethod,
     VerticalDimensionOutput,
 )
 from copernicusmarine.download_functions.download_arco_series import (
@@ -66,8 +64,9 @@ def read_dataframe(
     vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
-    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD,
-    subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD,
+    coordinates_selection_method: CoordinatesSelectionMethod = (
+        DEFAULT_COORDINATES_SELECTION_METHOD
+    ),
     force_service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
 ) -> pandas.DataFrame:
@@ -111,15 +110,8 @@ def read_dataframe(
         Start datetime for temporal subset.
     end_datetime : datetime, optional
         End datetime for temporal subset.
-    bounding_box_method : str, optional
-        The bounding box method when requesting the dataset. If 'inside' (by default),
-        it will return the inside interval. If 'nearest', the limits of the requested
-        interval will be the nearest points of the dataset. If 'outside', it will return
-        all the data such that the requested interval is fully included. Check the documentation
-        for more details.
-    subset_method : str, optional
-        The subset method ('nearest' or 'strict') when requesting the dataset.
-        If strict, you can only request dimensions strictly inside the dataset.
+    coordinates_selection_method : str, optional
+        The method in which the coordinates will be retrieved.If 'strict', the retrieved selection will be inside the requested interval. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
     force_service : str, optional
         Force a specific service for data download.
     credentials_file : Union[pathlib.Path, str], optional
@@ -157,13 +149,12 @@ def read_dataframe(
             start_datetime=start_datetime,
             end_datetime=end_datetime,
         ),
-        subset_method=subset_method,
+        coordinates_selection_method=coordinates_selection_method,
         depth_parameters=DepthParameters(
             minimum_depth=minimum_depth,
             maximum_depth=maximum_depth,
             vertical_dimension_output=vertical_dimension_output,
         ),
-        bounding_box_method=bounding_box_method,
         force_service=force_service,
         credentials_file=credentials_file,
     )

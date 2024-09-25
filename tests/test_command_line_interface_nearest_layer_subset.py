@@ -35,7 +35,10 @@ class TestCommandLineInterfaceNearestLayerSubset:
                 SUBSET_NEAREST_LAYER_OPTIONS["requested_depth"],
             )
             if same_depth
-            else (0.0, 50.0)
+            else (
+                0.0,
+                50.0,
+            )
         )
         minimum_datetime, maximum_datetime = (
             (
@@ -222,12 +225,12 @@ class TestCommandLineInterfaceNearestLayerSubset:
             same_datetime=True,
         )
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         min_datetime = dataset.time.values.min()
         max_datetime = dataset.time.values.max()
 
-        assert self.output.returncode == 0
         assert dataset.time.size == 1
         assert (
             min_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]

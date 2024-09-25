@@ -11,7 +11,7 @@ class TestWarningsSubsetBounds:
         variable,
         min_longitude,
         max_longitude,
-        subset_method="nearest",
+        coordinates_selection_method="nearest",
     ):
         return [
             "copernicusmarine",
@@ -24,8 +24,8 @@ class TestWarningsSubsetBounds:
             f"{min_longitude}",
             "--maximum-longitude",
             f"{max_longitude}",
-            "--subset-method",
-            f"{subset_method}",
+            "--coordinates-selection-method",
+            f"{coordinates_selection_method}",
         ]
 
     def test_subset_send_warning_with_method_nearest(self):
@@ -92,10 +92,10 @@ class TestWarningsSubsetBounds:
         )
 
         command1 = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "strict"
+            dataset_id, "CHL", -180, 180, "strict-inside"
         )
         command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.9, 179.9, "strict"
+            dataset_id, "CHL", -179.9, 179.9, "strict-inside"
         )
         self.output1 = execute_in_terminal(command1, input=b"n")
         self.output2 = execute_in_terminal(command2, input=b"n")
@@ -120,7 +120,7 @@ class TestWarningsSubsetBounds:
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
         command = self._build_custom_command(
-            dataset_id, "thetao", -150, 180, "strict"
+            dataset_id, "thetao", -150, 180, "strict-inside"
         )
         self.output = execute_in_terminal(command, input=b"n")
         assert (
@@ -231,8 +231,8 @@ class TestWarningsSubsetBounds:
         except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
             assert "Some of your subset selection" in e.__str__()
 
-    def when_I_request_a_dataset_with_subset_method_option(
-        self, subset_method
+    def when_I_request_a_dataset_with_coordinates_selection_method_option(
+        self, coordinates_selection_method
     ):
         command = [
             "copernicusmarine",
@@ -254,8 +254,8 @@ class TestWarningsSubsetBounds:
             "-v",
             "VHM0",
             "--force-download",
-            "--subset-method",
-            f"{subset_method}",
+            "--coordinates-selection-method",
+            f"{coordinates_selection_method}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -277,9 +277,13 @@ class TestWarningsSubsetBounds:
         ) in self.output.stderr
 
     def test_subset_strict_method(self):
-        self.when_I_request_a_dataset_with_subset_method_option("strict")
+        self.when_I_request_a_dataset_with_coordinates_selection_method_option(
+            "strict-inside"
+        )
         self.then_I_can_read_an_error_in_stdout()
 
     def test_subset_nearest_method(self):
-        self.when_I_request_a_dataset_with_subset_method_option("nearest")
+        self.when_I_request_a_dataset_with_coordinates_selection_method_option(
+            "nearest"
+        )
         self.then_I_can_read_a_warning_in_stdout()

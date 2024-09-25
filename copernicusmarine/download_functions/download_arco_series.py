@@ -10,7 +10,7 @@ from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.models import (
-    BoundingBoxMethod,
+    CoordinatesSelectionMethod,
     ResponseSubset,
 )
 from copernicusmarine.core_functions.utils import (
@@ -72,7 +72,7 @@ def download_dataset(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box_method: BoundingBoxMethod,
+    coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_url: str,
     output_directory: pathlib.Path,
     output_filename: Optional[str],
@@ -96,7 +96,7 @@ def download_dataset(
             geographical_parameters=geographical_parameters,
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
-            bounding_box_method=bounding_box_method,
+            coordinates_selection_method=coordinates_selection_method,
             chunks="auto",
         )
     )
@@ -210,7 +210,7 @@ def download_zarr(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
-        bounding_box_method=subset_request.bounding_box_method,
+        coordinates_selection_method=subset_request.coordinates_selection_method,
         dataset_url=dataset_url,
         output_directory=output_directory,
         output_filename=subset_request.output_filename,
@@ -236,7 +236,7 @@ def open_dataset_from_arco_series(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box_method: BoundingBoxMethod,
+    coordinates_selection_method: CoordinatesSelectionMethod,
     chunks=Optional[Literal["auto"]],
 ) -> xarray.Dataset:
     dataset = custom_open_zarr.open_zarr(
@@ -250,7 +250,7 @@ def open_dataset_from_arco_series(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
-        bounding_box_method=bounding_box_method,
+        coordinates_selection_method=coordinates_selection_method,
     )
     return dataset
 
@@ -263,7 +263,7 @@ def read_dataframe_from_arco_series(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
-    bounding_box_method: BoundingBoxMethod,
+    coordinates_selection_method: CoordinatesSelectionMethod,
     chunks: Optional[Literal["auto"]],
 ) -> pandas.DataFrame:
     dataset = open_dataset_from_arco_series(
@@ -274,7 +274,7 @@ def read_dataframe_from_arco_series(
         geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
-        bounding_box_method=bounding_box_method,
+        coordinates_selection_method=coordinates_selection_method,
         chunks=chunks,
     )
     return dataset.to_dataframe()

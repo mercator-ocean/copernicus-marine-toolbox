@@ -17,17 +17,14 @@ from copernicusmarine.core_functions.deprecated import (
     DeprecatedClickOptionsCommand,
 )
 from copernicusmarine.core_functions.models import (
-    DEFAULT_BOUNDING_BOX_METHOD,
-    DEFAULT_BOUNDING_BOX_METHODS,
+    DEFAULT_COORDINATES_SELECTION_METHOD,
+    DEFAULT_COORDINATES_SELECTION_METHODS,
     DEFAULT_FILE_FORMAT,
     DEFAULT_FILE_FORMATS,
-    DEFAULT_SUBSET_METHOD,
-    DEFAULT_SUBSET_METHODS,
     DEFAULT_VERTICAL_DIMENSION_OUTPUT,
     DEFAULT_VERTICAL_DIMENSION_OUTPUTS,
-    BoundingBoxMethod,
+    CoordinatesSelectionMethod,
     FileFormat,
-    SubsetMethod,
     VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.services_utils import CommandType
@@ -191,25 +188,20 @@ def cli_subset() -> None:
     + "See https://pendulum.eustace.io/docs/#parsing",
 )
 @click.option(
-    "--bounding-box-method",
-    type=click.Choice(DEFAULT_BOUNDING_BOX_METHODS),
-    default=DEFAULT_BOUNDING_BOX_METHOD,
+    "--coordinates-selection-method",
+    type=click.Choice(DEFAULT_COORDINATES_SELECTION_METHODS),
+    default=DEFAULT_COORDINATES_SELECTION_METHOD,
     help=(
-        "The bounding box method when requesting the dataset."
-        "If 'inside' (by default), it will returned the inside interval. "
-        "If 'nearest', the limits of"
-        "the requested interval will be the nearest points of the dataset. "
-        "If 'outside', it will return all the data such that the requested "
-        "interval is fully included. Check the documentation for more details."
-    ),
-)
-@click.option(
-    "--subset-method",
-    type=click.Choice(DEFAULT_SUBSET_METHODS),
-    default=DEFAULT_SUBSET_METHOD,
-    help=(
-        "The subset method when requesting the dataset. If strict, you can only "
-        "request dimension strictly inside the dataset."
+        "The method in which the coordinates will be retrieved."
+        " If 'inside', the retrieved selection will be inside the requested"
+        " interval."
+        " If 'strict-inside', the retrieved selection will be inside the requested"
+        " interval and an error will raise if there doesn't exist the values."
+        " If 'nearest', the returned interval extremes will be the closest to what"
+        " has been asked for. A warning will be displayed if outside of bounds."
+        " If 'outisde', the extremes will be taken to contain all the requested"
+        " interval. A warning will also be displayed if the subset is "
+        "outside of the dataset bounds."
     ),
 )
 @click.option(
@@ -358,8 +350,7 @@ def subset(
     vertical_dimension_output: VerticalDimensionOutput,
     start_datetime: Optional[str],
     end_datetime: Optional[str],
-    bounding_box_method: BoundingBoxMethod,
-    subset_method: SubsetMethod,
+    coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
     netcdf_compression_enabled: bool,
@@ -395,37 +386,38 @@ def subset(
         return
 
     response = subset_function(
-        dataset_id,
-        dataset_version,
-        dataset_part,
-        username,
-        password,
-        variables,
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_depth,
-        maximum_depth,
-        vertical_dimension_output,
-        datetime_parser(start_datetime) if start_datetime else None,
-        datetime_parser(end_datetime) if end_datetime else None,
-        bounding_box_method,
-        subset_method,
-        output_filename,
-        file_format,
-        service,
-        request_file,
-        output_directory,
-        credentials_file,
-        motu_api_request,
-        force_download,
-        overwrite_output_data,
-        dry_run,
-        disable_progress_bar,
-        staging,
-        netcdf_compression_enabled,
-        netcdf_compression_level,
+        dataset_id=dataset_id,
+        force_dataset_version=dataset_version,
+        force_dataset_part=dataset_part,
+        username=username,
+        password=password,
+        variables=variables,
+        minimum_longitude=minimum_longitude,
+        maximum_longitude=maximum_longitude,
+        minimum_latitude=minimum_latitude,
+        maximum_latitude=maximum_latitude,
+        minimum_depth=minimum_depth,
+        maximum_depth=maximum_depth,
+        vertical_dimension_output=vertical_dimension_output,
+        start_datetime=(
+            datetime_parser(start_datetime) if start_datetime else None
+        ),
+        end_datetime=datetime_parser(end_datetime) if end_datetime else None,
+        coordinates_selection_method=coordinates_selection_method,
+        output_filename=output_filename,
+        file_format=file_format,
+        force_service=service,
+        request_file=request_file,
+        output_directory=output_directory,
+        credentials_file=credentials_file,
+        motu_api_request=motu_api_request,
+        force_download=force_download,
+        overwrite_output_data=overwrite_output_data,
+        dry_run=dry_run,
+        disable_progress_bar=disable_progress_bar,
+        staging=staging,
+        netcdf_compression_enabled=netcdf_compression_enabled,
+        netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
     )
     blank_logger.info(response.model_dump_json(indent=2))
