@@ -53,7 +53,7 @@ In mac-os or linux:
 
     ./cmt_macos-latest.cli describe
 
-(describe or any other command)
+(``describe`` or any other command)
 
 You might have to update the permissions of the binary to be able to execute it with linux:
 
