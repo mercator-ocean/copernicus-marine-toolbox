@@ -7,7 +7,6 @@ from copernicusmarine.command_line_interface.exception_handler import (
 )
 from copernicusmarine.command_line_interface.utils import tqdm_disable_option
 from copernicusmarine.core_functions.deprecated import (
-    DeprecatedClickOption,
     DeprecatedClickOptionsCommand,
 )
 from copernicusmarine.core_functions.describe import describe_function
@@ -65,10 +64,6 @@ def cli_describe() -> None:
 )
 @click.option(
     "--include-versions",
-    "--include-all-versions",
-    cls=DeprecatedClickOption,
-    deprecated=["--include-all-versions"],
-    preferred="--include-versions",
     type=bool,
     is_flag=True,
     default=False,

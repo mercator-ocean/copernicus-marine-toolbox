@@ -2,8 +2,6 @@ import click
 from click import Context, Option, UsageError
 from click.core import ParameterSource
 
-from copernicusmarine.core_functions.deprecated import DeprecatedClickOption
-
 
 class MutuallyExclusiveOption(Option):
     def __init__(self, *args, **kwargs):
@@ -55,10 +53,6 @@ tqdm_disable_option = click.option(
 
 force_dataset_version_option = click.option(
     "--dataset-version",
-    "--force-dataset-version",
-    cls=DeprecatedClickOption,
-    deprecated=["--force-dataset-version"],
-    preferred="--dataset-version",
     type=str,
     default=None,
     help="Force the selection of a specific dataset version.",
@@ -66,10 +60,6 @@ force_dataset_version_option = click.option(
 
 force_dataset_part_option = click.option(
     "--dataset-part",
-    "--force-dataset-part",
-    cls=DeprecatedClickOption,
-    deprecated=["--force-dataset-part"],
-    preferred="--dataset-part",
     type=str,
     default=None,
     help="Force the selection of a specific dataset part.",

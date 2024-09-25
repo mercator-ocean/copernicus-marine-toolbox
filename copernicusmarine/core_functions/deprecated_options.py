@@ -37,37 +37,4 @@ class DeprecatedOptionMapping(Mapping):
         return result_dict
 
 
-DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
-    [
-        DeprecatedOption(
-            old_name="minimal_longitude", new_name="minimum_longitude"
-        ),
-        DeprecatedOption(
-            old_name="maximal_longitude", new_name="maximum_longitude"
-        ),
-        DeprecatedOption(
-            old_name="minimal_latitude", new_name="minimum_latitude"
-        ),
-        DeprecatedOption(
-            old_name="maximal_latitude", new_name="maximum_latitude"
-        ),
-        DeprecatedOption(old_name="minimal_depth", new_name="minimum_depth"),
-        DeprecatedOption(old_name="maximal_depth", new_name="maximum_depth"),
-        DeprecatedOption(
-            old_name="force_dataset_version", new_name="dataset_version"
-        ),
-        DeprecatedOption(
-            old_name="force_dataset_part", new_name="dataset_part"
-        ),
-        DeprecatedOption(old_name="force_service", new_name="service"),
-        DeprecatedOption(
-            old_name="download_file_list",
-            new_name="create_file_list",
-            replace=False,
-        ),
-        DeprecatedOption(
-            old_name="include_all_versions",
-            new_name="include_versions",
-        ),
-    ]
-)
+DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping([])

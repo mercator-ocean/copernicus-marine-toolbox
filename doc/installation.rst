@@ -8,6 +8,10 @@ There are several ways to install or use the Copernicus Marine Toolbox:
 * via conda `conda-forge`_
 * via docker `dockerhub`_
 
+.. note::
+
+    Note that the use of ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue <https://github.com/pydata/xarray/issues/9179>`_.
+
 Via pip
 **************
 
