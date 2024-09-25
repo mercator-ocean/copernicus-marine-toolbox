@@ -218,7 +218,9 @@ def cli_subset() -> None:
     default=DEFAULT_COORDINATES_SELECTION_METHOD,
     help=(
         "The method in which the coordinates will be retrieved."
-        " If 'strict', the retrieved selection will be inside the requested"
+        " If 'inside', the retrieved selection will be inside the requested"
+        " interval."
+        " If 'strict-inside', the retrieved selection will be inside the requested"
         " interval and an error will raise if there doesn't exist the values."
         " If 'nearest', the returned interval extremes will be the closest to what"
         " has been asked for. A warning will be displayed if outside of bounds."
