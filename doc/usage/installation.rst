@@ -7,7 +7,8 @@ There are several ways to install or use the Copernicus Marine Toolbox:
 * via pip `pypi`_
 * via conda `conda-forge`_
 * via docker `dockerhub`_
-* alternatively, you can use a binary
+
+Alternatively, you can use a binary.
 
 Via pip
 **************
@@ -51,7 +52,7 @@ In mac-os or linux:
 
 .. code-block:: bash
 
-    ./cmt_macos-latest.cli describe
+    ./copernicusmarine_macos-latest.cli describe
 
 (``describe`` or any other command)
 
@@ -65,6 +66,6 @@ And from a Windows os (cmd):
 
 .. code-block:: bash
 
-    cmt_windows-latest.exe describe
+    copernicusmarine_windows-latest.exe describe
 
 (``describe`` or any other command)
