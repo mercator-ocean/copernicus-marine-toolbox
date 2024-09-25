@@ -46,7 +46,7 @@ def load_data_object_from_load_request(
         dataset_url=load_request.dataset_url,
         service_type=retrieval_service.service_type,
         dataset_subset=load_request.get_time_and_space_subset(),
-        subset_method=load_request.subset_method,
+        coordinates_selection_method=load_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
     )
     if retrieval_service.service_type in [
@@ -75,7 +75,7 @@ def load_data_object_from_load_request(
             geographical_parameters=load_request.geographical_parameters,
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
-            bounding_box_method=load_request.bounding_box_method,
+            coordinates_selection_method=load_request.coordinates_selection_method,
             chunks=None,
         )
     else:

@@ -17,9 +17,8 @@ from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
 from copernicusmarine.core_functions.models import (
-    BoundingBoxMethod,
+    CoordinatesSelectionMethod,
     ResponseSubset,
-    SubsetMethod,
     VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.services_utils import (
@@ -59,8 +58,7 @@ def subset_function(
     vertical_dimension_output: VerticalDimensionOutput,
     start_datetime: Optional[DateTime],
     end_datetime: Optional[DateTime],
-    bounding_box_method: BoundingBoxMethod,
-    subset_method: SubsetMethod,
+    coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
     force_service: Optional[str],
@@ -114,8 +112,7 @@ def subset_function(
         "vertical_dimension_output": vertical_dimension_output,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
-        "bounding_box_method": bounding_box_method,
-        "subset_method": subset_method,
+        "coordinates_selection_method": coordinates_selection_method,
         "output_filename": output_filename,
         "file_format": file_format,
         "force_service": force_service,
@@ -176,7 +173,7 @@ def subset_function(
         dataset_url=subset_request.dataset_url,
         service_type=retrieval_service.service_type,
         dataset_subset=subset_request.get_time_and_space_subset(),
-        subset_method=subset_request.subset_method,
+        coordinates_selection_method=subset_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
     )
     logger.info(
