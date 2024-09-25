@@ -7,6 +7,7 @@ There are several ways to install or use the Copernicus Marine Toolbox:
 * via pip `pypi`_
 * via conda `conda-forge`_
 * via docker `dockerhub`_
+* alternatively, you can use a binary
 
 Via pip
 **************
@@ -60,7 +61,7 @@ You might have to update the permissions of the binary to be able to execute it 
 
     chmod +rwx cmt_ubuntu-latest.cli
 
-And from a Windows os:
+And from a Windows os (cmd):
 
 .. code-block:: bash
 

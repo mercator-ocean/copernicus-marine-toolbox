@@ -5,6 +5,11 @@ on:
     branches:
        - main
        - 'pre-releases/**'
+  pull_request:
+    branches:
+       - main
+       - 'pre-releases/**'
+       - 'copernicusmarine-toolbox-v2'
 
 jobs:
   build:
@@ -43,7 +48,7 @@ jobs:
       run: |
           $WIN_VERSION = poetry version --short
           gh release upload v$WIN_VERSION dist/cmt.exe#copernicusmarine-windows.exe
-    - name: Upload binaries to macos
+    - name: Upload binaries to macos or ubuntu
       env:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os != 'windows-latest'
