@@ -15,7 +15,6 @@ from copernicusmarine.command_line_interface.utils import (
     tqdm_disable_option,
 )
 from copernicusmarine.core_functions.deprecated import (
-    DeprecatedClickOption,
     DeprecatedClickOptionsCommand,
 )
 from copernicusmarine.core_functions.get import (
@@ -126,11 +125,7 @@ def cli_get() -> None:
 )
 @click.option(
     "--service",
-    "--force-service",
     "-s",
-    cls=DeprecatedClickOption,
-    deprecated=["--force-service"],
-    preferred="--service",
     type=str,
     help=(
         "Force download through one of the available services "
@@ -190,15 +185,6 @@ def cli_get() -> None:
     "The file name specified should end with '.txt' or '.csv' "
     "If specified, no other action will be performed. "
     "Please find more information in the README.",
-)
-@click.option(
-    "--download-file-list",
-    type=bool,
-    is_flag=True,
-    cls=DeprecatedClickOption,
-    deprecated=["--download-file-list"],
-    preferred="--create-file-list",
-    hidden=True,
 )
 @click.option(
     "--sync",
@@ -277,7 +263,6 @@ def get(
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
     create_file_list: Optional[str],
-    download_file_list: bool,
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -321,7 +306,6 @@ def get(
         regex=regex,
         file_list_path=file_list,
         create_file_list=create_file_list,
-        download_file_list=download_file_list,
         sync=sync,
         sync_delete=sync_delete,
         index_parts=index_parts,
