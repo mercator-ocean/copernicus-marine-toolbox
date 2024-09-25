@@ -143,9 +143,7 @@ def _dataset_custom_sel(
     dataset: xarray.Dataset,
     coord_type: Literal["latitude", "longitude", "depth", "time"],
     coord_selection: Union[float, slice, DateTime, None],
-    coordinates_selection_method: Optional[
-        Union[CoordinatesSelectionMethod, None]
-    ],
+    coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     for coord_label in COORDINATES_LABEL[coord_type]:
         if coord_label in dataset.sizes:
@@ -165,8 +163,6 @@ def _dataset_custom_sel(
                     coord_selection = _nearest_selection(
                         dataset, coord_label, coord_selection
                     )
-            # això m'ho hauré de mirar bé, cadascun tenia la seva forma
-            # de cridar-lo i no sé si ho podré fer així
             if isinstance(coord_selection, slice):
                 tmp_dataset = dataset.sel(
                     {coord_label: coord_selection}, method=None
@@ -341,7 +337,6 @@ def _temporal_subset(
             if start_datetime == end_datetime
             else slice(start_datetime, end_datetime)
         )
-        # temporal_method = "nearest" if start_datetime == end_datetime else None
         dataset = _dataset_custom_sel(
             dataset,
             "time",
@@ -403,7 +398,6 @@ def _depth_subset(
             if minimum_depth == maximum_depth
             else slice(minimum_depth, maximum_depth)
         )
-        # depth_method = "nearest" if minimum_depth == maximum_depth else None
         dataset = _dataset_custom_sel(
             dataset,
             "depth",
