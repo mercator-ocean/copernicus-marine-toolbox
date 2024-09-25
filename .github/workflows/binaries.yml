@@ -47,7 +47,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
           $WIN_VERSION = poetry version --short
-          gh release upload v$WIN_VERSION dist/cmt.exe#copernicusmarine-windows.exe
+          gh release upload v$WIN_VERSION dist/copernicusmarine-toolbox.exe#copernicusmarine-windows-binary-for-v$WIN_VERSION
     - name: Upload binaries to macos or ubuntu
       env:
         GH_TOKEN: ${{ github.token }}
@@ -60,4 +60,4 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           ARCH="ubuntu"
         fi
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/cmt_${{matrix.os}}.cli#copernicusmarine-${ARCH}
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine-toolbox_${{matrix.os}}.cli#copernicusmarine-${ARCH}-binary-for-v${{steps.set-version.outputs.VERSION}}
