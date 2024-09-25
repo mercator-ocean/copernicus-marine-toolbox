@@ -12,13 +12,11 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
-    DEFAULT_BOUNDING_BOX_METHOD,
+    DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
-    DEFAULT_SUBSET_METHOD,
     DEFAULT_VERTICAL_DIMENSION_OUTPUT,
-    BoundingBoxMethod,
+    CoordinatesSelectionMethod,
     FileFormat,
-    SubsetMethod,
     VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.utils import datetime_parser
@@ -68,8 +66,9 @@ class SubsetRequest:
     )
     start_datetime: Optional[DateTime] = None
     end_datetime: Optional[DateTime] = None
-    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
-    subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
+    coordinates_selection_method: CoordinatesSelectionMethod = (
+        DEFAULT_COORDINATES_SELECTION_METHOD
+    )
     output_filename: Optional[str] = None
     file_format: FileFormat = DEFAULT_FILE_FORMAT
     force_service: Optional[str] = None
@@ -289,8 +288,9 @@ class LoadRequest:
         default_factory=TemporalParameters
     )
     depth_parameters: DepthParameters = field(default_factory=DepthParameters)
-    bounding_box_method: BoundingBoxMethod = DEFAULT_BOUNDING_BOX_METHOD
-    subset_method: SubsetMethod = DEFAULT_SUBSET_METHOD
+    coordinates_selection_method: CoordinatesSelectionMethod = (
+        DEFAULT_COORDINATES_SELECTION_METHOD
+    )
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None
 
