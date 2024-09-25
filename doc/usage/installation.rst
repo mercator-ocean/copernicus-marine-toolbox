@@ -67,4 +67,4 @@ And from a Windows os (cmd):
 
     cmt_windows-latest.exe describe
 
-(describe or any other command)
+(``describe`` or any other command)
