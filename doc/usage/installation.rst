@@ -45,7 +45,7 @@ To be able to use the Copernicus Marine Toolbox, you need to have an account on 
 Use the CopernicusMarine Toolbox binaries
 ***********************************************
 
-In the release page (https://github.com/mercator-ocean/copernicus-marine-toolbox/releases) you can access the binaries of the latest releases. Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
+In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases. Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
 
 In mac-os or linux:
 
