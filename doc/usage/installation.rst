@@ -52,7 +52,7 @@ In mac-os or linux:
 
 .. code-block:: bash
 
-    ./copernicusmarine_macos-latest.cli describe
+    ./copernicusmarine_macos-arm64.cli describe
 
 (``describe`` or any other command)
 
@@ -66,6 +66,6 @@ And from a Windows os (cmd):
 
 .. code-block:: bash
 
-    copernicusmarine_windows-latest.exe describe
+    copernicusmarine.exe describe
 
 (``describe`` or any other command)

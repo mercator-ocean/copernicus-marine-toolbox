@@ -8,6 +8,8 @@ There are several ways to install or use the Copernicus Marine Toolbox:
 * via conda `conda-forge`_
 * via docker `dockerhub`_
 
+Alternatively, you can use a binary.
+
 .. note::
 
     Note that the use of ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue <https://github.com/pydata/xarray/issues/9179>`_.
@@ -81,3 +83,31 @@ To be able to use the Copernicus Marine Toolbox, you need to have an account on 
 .. _dockerhub: https://hub.docker.com/r/copernicusmarine/copernicusmarine
 .. _copernicusmarine-register: https://data.marine.copernicus.eu/register
 .. _Anaconda: https://www.anaconda.com/products/individual
+
+
+Use the CopernicusMarine Toolbox binaries
+***********************************************
+
+In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases. Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
+
+In mac-os or linux:
+
+.. code-block:: bash
+
+    ./copernicusmarine_macos-latest.cli describe
+
+(``describe`` or any other command)
+
+You might have to update the permissions of the binary to be able to execute it with linux:
+
+.. code-block:: bash
+
+    chmod +rwx cmt_ubuntu-latest.cli
+
+And from a Windows os (cmd):
+
+.. code-block:: bash
+
+    copernicusmarine_windows-latest.exe describe
+
+(``describe`` or any other command)
