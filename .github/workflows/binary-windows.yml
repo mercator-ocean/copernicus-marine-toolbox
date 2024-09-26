@@ -35,17 +35,17 @@ jobs:
         post-cleanup: 'all'
 
     - name: Build with PyInstaller
-      shell: micromamba-shell {0}
+      shell: bash -el {0}
       run: |
         make run-using-pyinstaller-${{ matrix.os }}
 
     - name: Set VERSION environment variable
       id: set-version
-      shell: micromamba-shell {0}
+      shell: bash -el {0}
       run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
     - name: Upload binaries to windows
-      shell: micromamba-shell {0}
+      shell: bash -el {0}
       env:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'windows-latest'
