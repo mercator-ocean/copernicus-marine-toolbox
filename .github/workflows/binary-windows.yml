@@ -1,0 +1,54 @@
+name: Create Binaries
+
+on:
+  push:
+    branches:
+       - main
+       - 'pre-releases/**'
+  pull_request:
+    branches:
+      - 'copernicusmarine-toolbox-v2'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: '1.5.6-0'
+        micromamba-binary-path: ${{ runner.temp }}\Scripts\micromamba.exe
+        environment-file: conda_environment_binary.yaml
+        environment-name: copernicusmarine-binary
+        condarc-file: .condarc
+        cache-environment: true
+        post-cleanup: 'all'
+
+    - name: Build with PyInstaller
+      shell: micromamba-shell {0}
+      run: |
+        make run-using-pyinstaller-${{ matrix.os }}
+
+    - name: Set VERSION environment variable
+      id: set-version
+      shell: micromamba-shell {0}
+      run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+
+    - name: Upload binaries to windows
+      shell: micromamba-shell {0}
+      env:
+        GH_TOKEN: ${{ github.token }}
+      if: matrix.os == 'windows-latest'
+      run: |
+          $WIN_VERSION = poetry version --short
+          gh release upload v$WIN_VERSION dist/pcopernicusmarine.exe#pcopernicusmarine-binary-windows-for-v$WIN_VERSION
