@@ -7,13 +7,11 @@ from typing import Any, Optional
 import pystac
 from tqdm import tqdm
 
-from copernicusmarine.catalogue_parser.dataset_product_mapping import (
-    dataset_product_mapping,
-)
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCatalogue,
     CopernicusMarineProduct,
     CopernicusMarineProductDataset,
+    DatasetNotFound,
     get_version_and_part_from_full_dataset_id,
 )
 from copernicusmarine.core_functions.sessions import (
@@ -27,18 +25,23 @@ from copernicusmarine.core_functions.utils import (
 
 logger = logging.getLogger("copernicusmarine")
 
+MARINE_DATA_STORE_ROOT_METADATA_URL = (
+    "https://s3.waw3-1.cloudferro.com/mdl-metadata"
+)
 
-MARINE_DATA_STORE_STAC_BASE_URL = (
-    "https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata"
+MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING = (
+    "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta"
 )
+
+MARINE_DATA_STORE_STAC_URL = f"{MARINE_DATA_STORE_ROOT_METADATA_URL}/metadata"
 MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL = (
-    MARINE_DATA_STORE_STAC_BASE_URL + "/catalog.stac.json"
+    MARINE_DATA_STORE_STAC_URL + "/catalog.stac.json"
 )
-MARINE_DATA_STORE_STAC_BASE_URL_STAGING = (
-    "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta/metadata"
+MARINE_DATA_STORE_STAC_URL_STAGING = (
+    f"{MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING}/metadata"
 )
 MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
-    MARINE_DATA_STORE_STAC_BASE_URL_STAGING + "/catalog.stac.json"
+    MARINE_DATA_STORE_STAC_URL_STAGING + "/catalog.stac.json"
 )
 
 
@@ -66,13 +69,25 @@ def get_dataset_metadata(
     dataset_id: str, staging: bool
 ) -> Optional[CopernicusMarineProductDataset]:
     with CatalogParserConnection() as connection:
-        product_id = dataset_product_mapping[dataset_id]  # here mds mapping
-        root_url = (
-            MARINE_DATA_STORE_STAC_BASE_URL
+        stac_url = (
+            MARINE_DATA_STORE_STAC_URL
             if not staging
-            else MARINE_DATA_STORE_STAC_BASE_URL_STAGING
+            else MARINE_DATA_STORE_STAC_URL_STAGING
         )
-        url = f"{root_url}/{product_id}/product.stac.json"
+        root_url = (
+            MARINE_DATA_STORE_ROOT_METADATA_URL
+            if not staging
+            else MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING
+        )
+        dataset_product_mapping_url = (
+            f"{root_url}/dataset_product_id_mapping.json"
+        )
+        product_id = connection.get_json_file(dataset_product_mapping_url).get(
+            dataset_id
+        )
+        if not product_id:
+            raise DatasetNotFound(dataset_id)
+        url = f"{stac_url}/{product_id}/product.stac.json"
         product_json = connection.get_json_file(url)
         product_collection = pystac.Collection.from_dict(product_json)
         product_datasets_metadata_links = product_collection.get_item_links()
@@ -84,7 +99,7 @@ def get_dataset_metadata(
         if not datasets_metadata_links:
             return None
         dataset_jsons: list[dict] = [
-            connection.get_json_file(f"{root_url}/{product_id}/{link.href}")
+            connection.get_json_file(f"{stac_url}/{product_id}/{link.href}")
             for link in datasets_metadata_links
         ]
 
@@ -297,9 +312,9 @@ def fetch_all_products_items(
     catalog.set_self_href(catalog_root_url)
     child_links = catalog.get_child_links()
     root_url = (
-        MARINE_DATA_STORE_STAC_BASE_URL
+        MARINE_DATA_STORE_STAC_URL
         if not staging
-        else (MARINE_DATA_STORE_STAC_BASE_URL_STAGING)
+        else (MARINE_DATA_STORE_STAC_URL_STAGING)
     )
     childs = fetch_product_items(
         root_url,
