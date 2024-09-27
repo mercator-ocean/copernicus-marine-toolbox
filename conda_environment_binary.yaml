@@ -8,3 +8,5 @@ dependencies:
   - pip:
     - xarray
     - distributed
+    - tzdata
+    - pillow

@@ -50,4 +50,4 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       if: matrix.os == 'windows-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/pcopernicusmarine.exe#pcopernicusmarine-binary-windows-for-v$WIN_VERSION
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/pcopernicusmarine.exe#pcopernicusmarine-binary-windows-for-v${{steps.set-version.outputs.VERSION}}
