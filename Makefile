@@ -68,7 +68,7 @@ run-using-pyinstaller-macos-13:
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install -e .
-	python3 -m PyInstaller --copy-metadata copernicusmarine --icon=toolbox_icon.png --name pcopernicusmarine_linux.cli --add-data="/home/runner/micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
+	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --icon=toolbox_icon.png --name pcopernicusmarine_linux.cli --add-data="/home/runner/micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/pcopernicusmarine_linux.cli
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
