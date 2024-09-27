@@ -60,11 +60,11 @@ run-using-pyinstaller-windows-latest:
 
 run-using-pyinstaller-macos-latest:
 	pip install -e .
-	python -m PyInstaller --name copernicusmarine_macos-arm64.cli --icon=toolbox_icon.png copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
+	python -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-arm64.cli --icon=toolbox_icon.png copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=arm64
 
 run-using-pyinstaller-macos-13:
 	pip install -e .
-	python -m PyInstaller --name copernicusmarine_macos-x86_64.cli --icon=toolbox_icon.png copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=x86_64
+	python -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-x86_64.cli --icon=toolbox_icon.png copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=x86_64
 
 run-using-pyinstaller-ubuntu-latest:
 	pip install -e .
