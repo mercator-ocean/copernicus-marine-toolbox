@@ -5,17 +5,10 @@ on:
     branches:
        - main
        - 'pre-releases/**'
-  pull_request:
-    branches:
-      - 'copernicusmarine-toolbox-v2'
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     timeout-minutes: 20
 
     steps:
@@ -37,7 +30,7 @@ jobs:
     - name: Build with PyInstaller
       shell: bash -el {0}
       run: |
-        make run-using-pyinstaller-${{ matrix.os }}
+        make run-using-pyinstaller-windows-latest
 
     - name: Set VERSION environment variable
       id: set-version
@@ -48,6 +41,5 @@ jobs:
       shell: bash -el {0}
       env:
         GH_TOKEN: ${{ github.token }}
-      if: matrix.os == 'windows-latest'
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/pcopernicusmarine.exe#pcopernicusmarine-binary-windows-for-v${{steps.set-version.outputs.VERSION}}
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine.exe#copernicusmarine-binary-windows-for-v${{steps.set-version.outputs.VERSION}}

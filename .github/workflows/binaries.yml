@@ -5,9 +5,6 @@ on:
     branches:
        - main
        - 'pre-releases/**'
-  pull_request:
-    branches:
-      - 'copernicusmarine-toolbox-v2'
 
 jobs:
   build:
@@ -44,19 +41,10 @@ jobs:
       shell: micromamba-shell {0}
       run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
-    - name: Upload binaries to windows
-      shell: micromamba-shell {0}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      if: matrix.os == 'windows-latest'
-      run: |
-          $WIN_VERSION = poetry version --short
-          gh release upload v$WIN_VERSION dist/pcopernicusmarine.exe#pcopernicusmarine-binary-windows-for-v$WIN_VERSION
     - name: Upload binaries to macos or ubuntu
       shell: micromamba-shell {0}
       env:
         GH_TOKEN: ${{ github.token }}
-      if: matrix.os != 'windows-latest'
       run: |
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           ARCH="macos-arm64"
@@ -65,4 +53,4 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           ARCH="linux"
         fi
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/pcopernicusmarine_${ARCH}.cli#pcopernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
