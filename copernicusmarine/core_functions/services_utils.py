@@ -19,8 +19,8 @@ from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
+from copernicusmarine.core_functions.exceptions import FormatNotSupported
 from copernicusmarine.core_functions.utils import (
-    FormatNotSupported,
     datetime_parser,
     next_or_raise_exception,
 )
@@ -109,6 +109,12 @@ def assert_service_type_for_command(
 
 
 class ServiceDoesNotExistForCommand(Exception):
+    """
+    Exception raised when the service does not exist for the command.
+
+    Please make sure the service exists for the command.
+    """  # TODO: list available services per command
+
     def __init__(self, service_name, command_name, available_services):
         super().__init__()
         self.__setattr__(
@@ -448,6 +454,12 @@ def _get_dataset_start_date_from_service(
 
 
 class ServiceNotAvailable(Exception):
+    """
+    Exception raised when the service is not available for the dataset.
+
+    Please make sure the service is available for the specific dataset.
+    """
+
     pass
 
 
@@ -502,6 +514,13 @@ def _service_not_available_error(
 
 
 class NoServiceAvailable(Exception):
+    """
+    Exception raised when no service is available for the dataset.
+
+    We could not find a service for this dataset.
+    Please make sure there is a service available for the dataset.
+    """
+
     pass
 
 

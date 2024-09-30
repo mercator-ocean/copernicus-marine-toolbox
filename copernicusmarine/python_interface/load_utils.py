@@ -10,12 +10,12 @@ from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.credentials_utils import (
     get_username_password,
 )
+from copernicusmarine.core_functions.exceptions import ServiceNotSupported
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import ServiceNotSupported
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
     timestamp_or_datestring_to_datetime,

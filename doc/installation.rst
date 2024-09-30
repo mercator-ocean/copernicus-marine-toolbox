@@ -78,11 +78,6 @@ Create an account on Copernicus Marine website
 
 To be able to use the Copernicus Marine Toolbox, you need to have an account on the Copernicus Marine website. You can create an account here `copernicusmarine-register`_.
 
-.. _pypi: https://pypi.org/project/copernicusmarine/
-.. _conda-forge: https://anaconda.org/conda-forge/copernicusmarine
-.. _dockerhub: https://hub.docker.com/r/copernicusmarine/copernicusmarine
-.. _copernicusmarine-register: https://data.marine.copernicus.eu/register
-.. _Anaconda: https://www.anaconda.com/products/individual
 
 
 Use the CopernicusMarine Toolbox binaries
@@ -111,3 +106,9 @@ And from a Windows os (cmd):
     copernicusmarine_windows-latest.exe describe
 
 (``describe`` or any other command)
+
+.. _pypi: https://pypi.org/project/copernicusmarine/
+.. _conda-forge: https://anaconda.org/conda-forge/copernicusmarine
+.. _dockerhub: https://hub.docker.com/r/copernicusmarine/copernicusmarine
+.. _copernicusmarine-register: https://data.marine.copernicus.eu/register
+.. _Anaconda: https://www.anaconda.com/products/individual

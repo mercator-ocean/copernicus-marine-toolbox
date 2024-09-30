@@ -10,3 +10,4 @@ Usage and technical details
     get-usage
     shared-options
     network-configuration
+    errors
