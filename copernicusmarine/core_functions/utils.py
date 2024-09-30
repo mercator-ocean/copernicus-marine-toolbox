@@ -26,6 +26,7 @@ from requests import PreparedRequest
 from tqdm import tqdm
 
 from copernicusmarine import __version__ as copernicusmarine_version
+from copernicusmarine.core_functions.exceptions import WrongDatetimeFormat
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -68,18 +69,6 @@ def get_unique_filename(
     return filepath
 
 
-class ServiceNotSupported(Exception):
-    def __init__(self, service_type):
-        super().__init__(f"Service type {service_type} not supported.")
-
-
-class FormatNotSupported(Exception):
-    def __init__(self, format_type):
-        super().__init__(
-            f"Subsetting format type {format_type} not supported yet."
-        )
-
-
 _T = TypeVar("_T")
 _S = TypeVar("_S")
 
@@ -115,10 +104,6 @@ def construct_query_params_for_marine_data_store_monitoring(
     if username:
         query_params["x-cop-user"] = username
     return query_params
-
-
-class WrongDatetimeFormat(Exception):
-    pass
 
 
 def datetime_parser(date: Union[str, numpy.datetime64]) -> DateTime:

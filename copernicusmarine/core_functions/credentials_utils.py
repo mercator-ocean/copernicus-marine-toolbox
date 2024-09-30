@@ -35,9 +35,9 @@ DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
 )
 
 
-class CredentialCannotBeNone(Exception):
+class CredentialsCannotBeNone(Exception):
     """
-    Exception raised when a credential are not set.
+    Exception raised when credentials are not set.
 
     To use the Copernicus Marine Service, you need to provide a username and
     a password. You can set them as environment variables or pass them as
@@ -390,7 +390,7 @@ def _get_credential_from_environment_variable_or_prompt(
                 credential_type, hide_input
             )
             if not credential:
-                raise CredentialCannotBeNone(credential_type)
+                raise CredentialsCannotBeNone(credential_type)
     return credential
 
 

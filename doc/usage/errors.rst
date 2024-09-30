@@ -4,16 +4,36 @@ Common and Custom errors
 Custom errors
 -------------
 
-.. autoclass:: copernicusmarine.catalogue_parser.models.DatasetNotFound()
+.. autoclass:: copernicusmarine.DatasetNotFound()
 
-.. autoclass:: copernicusmarine.catalogue_parser.models.DatasetVersionNotFound()
+.. autoclass:: copernicusmarine.DatasetVersionNotFound()
 
-.. autoclass:: copernicusmarine.catalogue_parser.models.DatasetVersionPartNotFound()
+.. autoclass:: copernicusmarine.DatasetVersionPartNotFound()
 
-.. autoclass:: copernicusmarine.catalogue_parser.models.ServiceNotHandled()
+.. autoclass:: copernicusmarine.ServiceNotHandled()
 
-.. autoclass:: copernicusmarine.command_line_interface.utils.OtherOptionsPassedWithCreateTemplate()
+.. autoclass:: copernicusmarine.OtherOptionsPassedWithCreateTemplate()
 
-.. autoclass:: copernicusmarine.core_functions.credentials_utils.CredentialCannotBeNone()
+.. autoclass:: copernicusmarine.CredentialsCannotBeNone()
 
-.. autoclass:: copernicusmarine.core_functions.credentials_utils.InvalidUsernameOrPassword()
+.. autoclass:: copernicusmarine.InvalidUsernameOrPassword()
+
+.. autoclass:: copernicusmarine.MinimumLongitudeGreaterThanMaximumLongitude()
+
+.. autoclass:: copernicusmarine.VariableDoesNotExistInTheDataset()
+
+.. autoclass:: copernicusmarine.CoordinatesOutOfDatasetBounds()
+
+.. autoclass:: copernicusmarine.NetCDFCompressionNotAvailable()
+
+.. autoclass:: copernicusmarine.WrongDatetimeFormat()
+
+.. autoclass:: copernicusmarine.FormatNotSupported()
+
+.. autoclass:: copernicusmarine.ServiceNotSupported()
+
+.. autoclass:: copernicusmarine.ServiceDoesNotExistForCommand()
+
+.. autoclass:: copernicusmarine.ServiceNotAvailable()
+
+.. autoclass:: copernicusmarine.NoServiceAvailable()

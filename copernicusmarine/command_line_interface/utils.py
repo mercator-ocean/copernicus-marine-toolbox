@@ -34,7 +34,7 @@ class OtherOptionsPassedWithCreateTemplate(Exception):
     """
     Exception raised when other options are passed with create_template.
 
-    Please note that create_template should be passed with no other optiond
+    Please note that create_template should be passed with no other option
     except log_level.
     """
 
