@@ -9,6 +9,28 @@ __version__ = version("copernicusmarine")
 logging.config.dictConfig(logging_configuration_dict)
 logging.Formatter.converter = time.gmtime
 
+from copernicusmarine.catalogue_parser.models import (
+    DatasetNotFound,
+    DatasetVersionNotFound,
+    DatasetVersionPartNotFound,
+    ServiceNotHandled,
+)
+from copernicusmarine.command_line_interface.utils import (
+    OtherOptionsPassedWithCreateTemplate,
+)
+from copernicusmarine.core_functions.credentials_utils import (
+    CredentialsCannotBeNone,
+    InvalidUsernameOrPassword,
+)
+from copernicusmarine.core_functions.exceptions import (
+    CoordinatesOutOfDatasetBounds,
+    FormatNotSupported,
+    MinimumLongitudeGreaterThanMaximumLongitude,
+    NetCDFCompressionNotAvailable,
+    ServiceNotSupported,
+    VariableDoesNotExistInTheDataset,
+    WrongDatetimeFormat,
+)
 from copernicusmarine.core_functions.models import (
     DatasetCoordinatesExtent,
     FileGet,
@@ -16,6 +38,11 @@ from copernicusmarine.core_functions.models import (
     ResponseGet,
     ResponseSubset,
     TimeExtent,
+)
+from copernicusmarine.core_functions.services_utils import (
+    NoServiceAvailable,
+    ServiceDoesNotExistForCommand,
+    ServiceNotAvailable,
 )
 from copernicusmarine.python_interface.describe import describe
 from copernicusmarine.python_interface.get import get

@@ -16,6 +16,7 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
+from copernicusmarine.core_functions.exceptions import ServiceNotSupported
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     ResponseSubset,
@@ -26,10 +27,7 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import (
-    ServiceNotSupported,
-    get_unique_filename,
-)
+from copernicusmarine.core_functions.utils import get_unique_filename
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_arco_series import (
     download_zarr,

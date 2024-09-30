@@ -17,11 +17,11 @@ from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
     MinimumLongitudeGreaterThanMaximumLongitude,
+    ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
 from copernicusmarine.core_functions.utils import (
-    ServiceNotSupported,
     timestamp_or_datestring_to_datetime,
 )
 from copernicusmarine.download_functions.subset_parameters import (
