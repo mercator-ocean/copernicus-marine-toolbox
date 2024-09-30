@@ -5,10 +5,7 @@ from typing import List, Optional, Union
 import pandas
 
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
-from copernicusmarine.core_functions.deprecated import (
-    deprecated_python_option,
-    log_deprecated_message,
-)
+from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
@@ -35,15 +32,6 @@ from copernicusmarine.python_interface.load_utils import (
     load_data_object_from_load_request,
 )
 from copernicusmarine.python_interface.utils import homogenize_datetime
-
-
-@log_exception_and_exit
-def load_pandas_dataframe(*args, **kwargs):
-    """
-    Deprecated function, use 'read_dataframe' instead.
-    """
-    log_deprecated_message("load_pandas_dataframe", "read_dataframe")
-    return read_dataframe(*args, **kwargs)
 
 
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
