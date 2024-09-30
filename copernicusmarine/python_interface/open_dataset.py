@@ -5,10 +5,7 @@ from typing import List, Optional, Union
 import xarray
 
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
-from copernicusmarine.core_functions.deprecated import (
-    deprecated_python_option,
-    log_deprecated_message,
-)
+from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
@@ -37,22 +34,7 @@ from copernicusmarine.python_interface.load_utils import (
 from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
-@log_exception_and_exit
-def load_xarray_dataset(*args, **kwargs):
-    """
-    Deprecated function, use 'open_dataset' instead.
-    """
-    log_deprecated_message(
-        "load_xarray_dataset",
-        "open_dataset",
-        deleted_for_v2=True,
-        deprecated_for_v2=False,
-        only_for_v2=False,
-    )
-    return open_dataset(*args, **kwargs)
-
-
-@deprecated_python_option(DEPRECATED_OPTIONS)
+@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
 def open_dataset(
     dataset_id: str,
