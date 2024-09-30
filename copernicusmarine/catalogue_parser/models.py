@@ -102,6 +102,14 @@ def _service_type_from_web_api_string(
 
 
 class ServiceNotHandled(Exception):
+    """
+    Exception raised when the dataset does not support the service type requested.
+
+    Please verifiy that the requested service type can be found in
+    the result of the :func:`~copernicusmarine.describe` command
+    for this specific dataset, version and part.
+    """
+
     pass
 
 
@@ -374,7 +382,7 @@ class CopernicusMarineDatasetVersion:
                 return part
             elif not force_part:
                 return part
-        raise dataset_version_part_not_found_exception(self)
+        raise DatasetVersionPartNotFound(self)
 
     def sort_parts(self) -> tuple[Optional[str], Optional[str]]:
         not_released_parts = {
@@ -421,7 +429,7 @@ class CopernicusMarineProductDataset:
                 return version
             elif not force_version:
                 return version
-        raise dataset_version_not_found_exception(self)
+        raise DatasetVersionNotFound(self)
 
     def sort_versions(self) -> None:
         not_released_versions: set[str] = set()
@@ -520,27 +528,56 @@ class CopernicusMarineCatalogue:
 
 # Errors
 class DatasetVersionPartNotFound(Exception):
-    pass
+    """
+    Exception raised when the asked part of the version of the dataset cannot be found.
+
+    Please verifiy that the requested part can be found in
+    the result of the :func:`~copernicusmarine.describe` command
+    for this specific dataset version and dataset id.
+    If yes, please contact user support.
+    """
+
+    def __init__(self, version: CopernicusMarineDatasetVersion):
+        message = f"No part found for version {version.label}"
+        super().__init__(message)
 
 
 class DatasetVersionNotFound(Exception):
-    pass
+    """
+    Exception raised when the asked version of the dataset cannot be found.
+
+    Please verifiy that the requested version can be found in
+    the result of the :func:`~copernicusmarine.describe` command
+    for this specific dataset.
+    If yes, please contact user support.
+    """
+
+    def __init__(self, dataset: CopernicusMarineProductDataset):
+        message = f"No version found for dataset {dataset.dataset_id}"
+        super().__init__(message)
 
 
-def dataset_version_part_not_found_exception(
-    version: CopernicusMarineDatasetVersion,
-) -> DatasetVersionPartNotFound:
-    return DatasetVersionPartNotFound(
-        f"No part found for version {version.label}"
-    )
+class DatasetNotFound(Exception):
+    """
+    Exception raised when the dataset is not found in the catalogue.
 
+    Possible reasons:
 
-def dataset_version_not_found_exception(
-    dataset: CopernicusMarineProductDataset,
-) -> DatasetVersionNotFound:
-    return DatasetVersionNotFound(
-        f"No version found for dataset {dataset.dataset_id}"
-    )
+    - The dataset id is incorrect and not present in the catalog.
+    - The dataset has been retired.
+
+    Please verifiy that the dataset id is can be found in
+    the result of the :func:`~copernicusmarine.describe` command.
+    If yes, please contact user support.
+    """
+
+    def __init__(self, dataset_id: str):
+        message = (
+            f"{dataset_id} "
+            f"Please check that the dataset exists and "
+            f"the input datasetID is correct."
+        )
+        super().__init__(message)
 
 
 REGEX_PATTERN_DATE_YYYYMM = r"[12]\d{3}(0[1-9]|1[0-2])"
