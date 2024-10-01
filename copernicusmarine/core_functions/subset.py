@@ -218,7 +218,7 @@ def create_subset_template() -> None:
                 "maximum_longitude": -10,
                 "minimum_latitude": 35,
                 "maximum_latitude": 43,
-                "minimum_depth": 1,
+                "minimum_depth": 0,
                 "maximum_depth": 10,
                 "variables": ["zos", "tob"],
                 "output_directory": "copernicusmarine_data",
