@@ -1339,7 +1339,11 @@ class TestCommandLineInterface:
             self.short_option_output.stderr == self.long_option_output.stderr
         )
 
-    def test_subset_template_creation(self):
+    def test_subset_create_template(self):
+        self.when_created_is_created()
+        self.and_it_runs_correctly()
+
+    def when_created_is_created(self):
         command = ["copernicusmarine", "subset", "--create-template"]
 
         self.output = execute_in_terminal(command)
@@ -1349,6 +1353,19 @@ class TestCommandLineInterface:
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
         assert Path("subset_template.json").is_file()
+
+    def and_it_runs_correctly(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--force-download",
+            "--request_file",
+            "./subset_template.json",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+        assert self.output.returncode == 0
 
     def test_get_template_creation(self):
         command = ["copernicusmarine", "get", "--create-template"]
