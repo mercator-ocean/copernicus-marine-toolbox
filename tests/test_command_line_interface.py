@@ -1359,7 +1359,7 @@ class TestCommandLineInterface:
             "copernicusmarine",
             "subset",
             "--force-download",
-            "--request_file",
+            "--request-file",
             "./subset_template.json",
         ]
 
