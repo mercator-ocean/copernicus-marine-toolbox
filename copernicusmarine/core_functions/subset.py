@@ -211,16 +211,16 @@ def create_subset_template() -> None:
     with open(filename, "w") as output_file:
         json.dump(
             {
-                "dataset_id": "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+                "dataset_id": "cmems_mod_glo_phy_myint_0.083deg_P1M-m",
                 "start_datetime": "2023-10-07",
                 "end_datetime": "2023-10-12",
                 "minimum_longitude": -85,
                 "maximum_longitude": -10,
                 "minimum_latitude": 35,
                 "maximum_latitude": 43,
-                "minimum_depth": 0,
+                "minimum_depth": 1,
                 "maximum_depth": 10,
-                "variables": ["zos", "tob"],
+                "variables": ["so", "thetao"],
                 "output_directory": "copernicusmarine_data",
                 "force_service": False,
                 "force_download": False,
