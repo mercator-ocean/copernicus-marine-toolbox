@@ -457,7 +457,6 @@ def _list_files_on_marine_data_lake_s3(
     prefix: str,
     recursive: bool,
 ) -> list[tuple[str, int, DateTime, str]]:
-
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["ListObjects"], username
     )
@@ -468,11 +467,10 @@ def _list_files_on_marine_data_lake_s3(
         Prefix=prefix,
         Delimiter="/" if not recursive else "",
     )
-
+    logger.info("Listing files on the server...")
     s3_objects = chain(
-        *map(lambda page: page.get("Contents", []), page_iterator)
+        *map(lambda page: page.get("Contents", []), tqdm(page_iterator))
     )
-
     files_already_found: list[tuple[str, int, DateTime, str]] = []
     for s3_object in s3_objects:
         files_already_found.append(
