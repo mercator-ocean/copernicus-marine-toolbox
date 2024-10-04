@@ -71,26 +71,34 @@ About ``--netcdf3-compatible`` option
 The ``--netcdf3-compatible`` option enables compatibility with the netCDF3 format.
 This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. (cf. `xarray documentation <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_.)
 
-About ``--bounding-box-method`` option
-""""""""""""""""""""""""""""""""""""""""
+About ``--coordinates-selection-method`` option
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
-The ``--bounding-box-method`` option lets you specify how the requested interval selects data points:
+The ``--coordinates-selection-method`` option lets you specify how the requested interval selects data points:
 
 - **inside** (default): Returns points strictly within the requested area.
+- **strict-inside**: Returns points strictly within the requested area. Fails with an error if the requested area is outside the dataset.
 - **nearest**: Returns points closest to the requested interval.
 - **outside**: Returns all points covering the requested area.
 
 This applies to all dimensions: longitude, latitude, time, and depth.
 
 **Example of longitude requests:**
+Imagine a dataset with longitudes from 5.0 to 36.5, with steps of 0.5.
 
-- ``--bounding-box-method inside``:
-  - Returns longitudes within the range: [0.08334, 0.917]
+- ``--coordinates-selection-method``= **inside**, with requested interval = [0.4, 35.9]:
+  - Returns longitudes within the range: [0.5, 35.5]
 
-- ``--bounding-box-method nearest``:
-  - Returns longitudes: [0.0, 2.917]
+- ``--coordinates-selection-method``= **strict-inside**, with requested interval = [0.4, 35.9]:
+  - Returns longitudes within the range: [0.5, 35.5]
 
-- ``--bounding-box-method outside``:
-  - Outputs longitudes from: [0.0, 3.0]
+- ``--coordinates-selection-method``= **strict-inside**, with requested interval = [0.0, 40]:
+  - Returns an error
+
+- ``--coordinates-selection-method``= **outside**, with requested interval = [0.4, 35.9]:
+  - Returns longitudes within the range: [0.0, 36.0]
+
+- ``--coordinates-selection-method``= **nearest**, with requested interval = [0.4, 35.9]:
+  - Returns longitudes within the range: [0.5, 36.0]
 
 If you request a single point, the nearest point in that dimension will be returned.

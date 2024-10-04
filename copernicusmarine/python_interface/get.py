@@ -40,57 +40,54 @@ def get(
     staging: bool = False,
 ) -> ResponseGet:
     """
-    Fetches data from the Copernicus Marine server based on the provided parameters.
+    Download originally produced data files.
+
+    The ``dataset_id`` is required and can be found via the ``describe`` command.
 
     Parameters
     ----------
     dataset_id : str, optional
-        The unique identifier of the dataset.
+        The datasetID, required either as an argument or in the request_file option.
     dataset_version : str, optional
-        Force the use of a specific dataset version.
+        Force the selection of a specific dataset version.
     dataset_part : str, optional
-        Force the use of a specific dataset part.
+        Force the selection of a specific dataset part.
     username : str, optional
-        The username for authentication. See also :func:`~copernicusmarine.login`.
+        The username for authentication.
     password : str, optional
-        The password for authentication. See also :func:`~copernicusmarine.login`.
+        The password for authentication.
     output_directory : Union[pathlib.Path, str], optional
-        The directory where downloaded files will be saved.
+        The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a file containing authentication credentials.
+        Path to a credentials file if not in its default directory. Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     force_download : bool, optional
-        Skip confirmation before download.
+        Flag to skip confirmation before download.
     overwrite_output_data : bool, optional
-        If True, overwrite existing output files.
+        If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
     request_file : Union[pathlib.Path, str], optional
-        Path to a file containing request parameters. For more information, please refer to the README.
+        Option to pass a file containing the arguments. The file MUST follow the structure of dataclass ‘GetRequest’. For more information please refer to the documentation or use option ``--create-template`` for an example template.
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
     show_outputnames : bool, optional
-        If True, display the names of the downloaded files.
+        Option to display the names of the output files before download.
     filter : str, optional
-        Apply a filter to the downloaded data.
+        A pattern that must match the absolute paths of the files to download.
     regex : str, optional
-        Apply a regular expression filter to the downloaded data.
+        The regular expression that must match the absolute paths of the files to download.
     file_list : Union[pathlib.Path, str], optional
-        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly.
-        These files must be from the specified dataset using the --dataset-id. If no files can be found,
-        the Toolbox will list all files on the remote server and attempt to find a match.
+        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the –dataset-id. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
     create_file_list : str, optional
-        Option to only create a file containing the names of the targeted files instead of downloading them.
-        It writes the file in the directory specified with the --output-directory option (default to current directory).
-        If specified, no other action will be performed.
+        Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file in the directory specified with the –output-directory option (default to current directory). The file name specified should end with ‘.txt’ or ‘.csv’. If specified, no other action will be performed.
     index_parts : bool, optional
-        If True, download index files. Only for INSITU datasets. Temporary option.
+        Option to get the index files of an INSITU dataset. Temporary option.
     sync : bool, optional
-        If True, synchronize the local directory with the remote directory.
+        Option to synchronize the local directory with the remote directory. See the documentation for more details.
     sync_delete : bool, optional
-        If True, delete local files that are not present on the remote server while applying sync.
+        Option to delete local files that are not present on the remote server while applying sync.
     dry_run : bool, optional
         If True, runs query without downloading data.
     max_concurrent_requests : int, optional
-        Maximum number of concurrent requests. Defaults to 15. The get command
-        uses a thread pool executor to manage concurrent requests.
+        Maximum number of concurrent requests. Default 15. The command uses a thread pool executor to manage concurrent requests. If set to 0, no parallel executions are used.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
 
@@ -98,6 +95,7 @@ def get(
     -------
     ResponseGet
         A list of files that were downloaded and some metadata.
+
     """  # noqa
     output_directory = (
         pathlib.Path(output_directory) if output_directory else None

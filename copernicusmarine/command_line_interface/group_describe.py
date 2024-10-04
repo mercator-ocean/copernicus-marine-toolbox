@@ -6,6 +6,7 @@ from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
 from copernicusmarine.command_line_interface.utils import tqdm_disable_option
+from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
@@ -24,13 +25,7 @@ def cli_describe() -> None:
     "describe",
     cls=CustomClickOptionsCommand,
     short_help="Print Copernicus Marine catalogue as JSON.",
-    help="""
-    Print Copernicus Marine catalogue as JSON.
-
-    The default display contains information on the products, and more data can be displayed using the ``--include-<argument>`` flags.
-
-    The ``--contains`` option allows the user to specify one or several strings to filter through the catalogue display. The search is performed recursively on all attributes of the catalog, and the tokens only need to be contained in one of the attributes (i.e., not an exact match).
-    """,  # noqa
+    help=documentation_utils.DESCRIBE["DESCRIBE_DESCRIPTION_HELP"],  # noqa
     epilog="""
     Examples:
 
@@ -40,37 +35,37 @@ def cli_describe() -> None:
 
     .. code-block:: bash
 
-        copernicusmarine describe -c METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2
-    """,  # noqa
+        copernicusmarine describe -c METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 \n
+    """  # noqa
+    + documentation_utils.DESCRIBE["DESCRIBE_RESPONSE_HELP"],  # noqa
 )
 @click.option(
     "--include-description",
     type=bool,
     is_flag=True,
     default=False,
-    help="Include product description in output.",
+    help=documentation_utils.DESCRIBE["INCLUDE_DESCRIPTION_HELP"],
 )
 @click.option(
     "--include-datasets",
     type=bool,
     is_flag=True,
     default=False,
-    help="Include product dataset details in output.",
+    help=documentation_utils.DESCRIBE["INCLUDE_DATASETS_HELP"],
 )
 @click.option(
     "--include-keywords",
     type=bool,
     is_flag=True,
     default=False,
-    help="Include product keyword details in output.",
+    help=documentation_utils.DESCRIBE["INCLUDE_KEYWORDS_HELP"],
 )
 @click.option(
     "--include-versions",
     type=bool,
     is_flag=True,
     default=False,
-    help="Include dataset versions in output. "
-    "By default, shows only the default version.",
+    help=documentation_utils.DESCRIBE["INCLUDE_VERSIONS_HELP"],
 )
 @click.option(
     "-a",
@@ -78,34 +73,27 @@ def cli_describe() -> None:
     type=bool,
     is_flag=True,
     default=False,
-    help="Include all the possible data in output: "
-    "description, datasets, keywords, and versions.",
+    help=documentation_utils.DESCRIBE["INCLUDE_ALL_HELP"],
 )
 @click.option(
     "--contains",
     "-c",
     type=str,
     multiple=True,
-    help="Filter catalogue output. Returns products with attributes "
-    "matching a string token.",
+    help=documentation_utils.DESCRIBE["CONTAINS_HELP"],
 )
 @click.option(
     "--max-concurrent-requests",
     type=int,
     default=15,
-    help="Maximum number of concurrent requests. "
-    "Default 15. The describe command uses a thread "
-    "pool executor to manage concurrent requests.",
+    help=documentation_utils.DESCRIBE["MAX_CONCURRENT_REQUESTS_HELP"],
 )
 @tqdm_disable_option
 @click.option(
     "--log-level",
     type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
     default="INFO",
-    help=(
-        "Set the details printed to console by the command "
-        "(based on standard logging library)."
-    ),
+    help=documentation_utils.DESCRIBE["LOG_LEVEL_HELP"],
 )
 @click.option(
     "--staging",
