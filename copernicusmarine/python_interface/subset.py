@@ -2,6 +2,7 @@ import pathlib
 from datetime import datetime
 from typing import List, Optional, Union
 
+from copernicusmarine.core_functions import decorators, documentation_utils
 from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -24,6 +25,7 @@ from copernicusmarine.python_interface.utils import homogenize_datetime
 
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
+@decorators.docstring_parameter(documentation_utils.SUBSET)
 def subset(
     dataset_id: Optional[str],
     dataset_version: Optional[str] = None,
@@ -60,76 +62,72 @@ def subset(
     netcdf3_compatible: bool = False,
 ) -> ResponseSubset:
     """
-    Extracts a subset of data from a specified dataset using given parameters.
+    {SUBSET_DESCRIPTION_HELP}
 
     Parameters
     ----------
     dataset_id : str, optional
-        The unique identifier of the dataset.
+        {DATASET_ID_HELP}
     dataset_version : str, optional
-        Force the use of a specific dataset version.
+        {DATASET_VERSION_HELP}
     dataset_part : str, optional
-        Force the use of a specific dataset part.
+        {DATASET_PART_HELP}
     username : str, optional
-        The username for authentication. See also :func:`~copernicusmarine.login`.
+        {USERNAME_HELP}
     password : str, optional
-        The password for authentication. See also :func:`~copernicusmarine.login`.
+        {PASSWORD_HELP}
     output_directory : Union[pathlib.Path, str], optional
-        The directory where downloaded files will be saved.
+        {OUTPUT_DIRECTORY_HELP}
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a file containing authentication credentials.
+        {CREDENTIALS_FILE_HELP}
     force_download : bool, optional
-        Skip confirmation before download.
+        {FORCE_DOWNLOAD_HELP}
     overwrite_output_data : bool, optional
-        If True, overwrite existing output files.
+        {OVERWRITE_OUTPUT_DATA_HELP}
     request_file : Union[pathlib.Path, str], optional
-        Path to a file containing request parameters. For more information, please refer to the README.
+        {REQUEST_FILE_HELP}
     service : str, optional
-        Force the use of a specific service.
+        {SERVICE_HELP}
     variables : List[str], optional
-        List of variable names to extract.
+        {VARIABLE_HELP}
     minimum_longitude : float, optional
-        Minimum longitude value for spatial subset.
+        {MINIMUM_LONGITUDE_HELP}
     maximum_longitude : float, optional
-        Maximum longitude value for spatial subset.
+        {MAXIMUM_LONGITUDE_HELP}
     minimum_latitude : float, optional
-        Minimum latitude value for spatial subset.
+        {MINIMUM_LATITUDE_HELP}
     maximum_latitude : float, optional
-        Maximum latitude value for spatial subset.
+        {MAXIMUM_LATITUDE_HELP}
     minimum_depth : float, optional
-        Minimum depth value for vertical subset.
+        {MINIMUM_DEPTH_HELP}
     maximum_depth : float, optional
-        Maximum depth value for vertical subset.
+        {MAXIMUM_DEPTH_HELP}
     vertical_dimension_output : str, optional
-        Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
-        'elevation' with ascending positive values. Default is 'depth'.
+        {VERTICAL_DIMENSION_OUTPUT_HELP}
     start_datetime : datetime, optional
-        Start datetime for temporal subset.
+        {START_DATETIME_HELP}
     end_datetime : datetime, optional
-        End datetime for temporal subset.
+        {END_DATETIME_HELP}
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved. If 'strict', the retrieved selection will be inside the requested interval. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
+        {COORDINATES_SELECTION_METHOD_HELP}
     output_filename : str, optional
-        Output filename for the subsetted data.
+        {OUTPUT_FILENAME_HELP}
     file_format : str, optional
-        Extension format for the filename.
+        {FILE_FORMAT_HELP}
     motu_api_request : str, optional
-        MOTU API request string.
+        {MOTU_API_REQUEST_HELP}
     dry_run : bool, optional
-        If True, runs query without downloading data.
+        {DRY_RUN_HELP}
     netcdf_compression_enabled : bool, optional
-        Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the
-        compression level.
+        {NETCDF_COMPRESSION_ENABLED_HELP}
     netcdf_compression_level : int, optional
-        Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the
-        highest level of compression available.
+        {NETCDF_COMPRESSION_LEVEL_HELP}
     netcdf3_compatible : bool, optional
-        Enable downloading the dataset in a netCDF 3 compatible format.
+        {NETCDF_COMPATIBLE_HELP}
 
     Returns
     -------
-    ResponseSubset
-        A description of the downloaded data and its destination.
+    {SUBSET_RESPONSE_HELP}
     """  # noqa
     request_file = pathlib.Path(request_file) if request_file else None
     output_directory = (
