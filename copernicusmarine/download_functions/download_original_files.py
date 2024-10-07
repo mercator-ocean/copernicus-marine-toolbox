@@ -467,7 +467,7 @@ def _list_files_on_marine_data_lake_s3(
         Prefix=prefix,
         Delimiter="/" if not recursive else "",
     )
-    logger.info("Listing files on the server...")
+    logger.info("Listing files on remote server...")
     s3_objects = chain(
         *map(lambda page: page.get("Contents", []), tqdm(page_iterator))
     )
