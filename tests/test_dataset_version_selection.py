@@ -89,8 +89,6 @@ class TestDatasetVersionSelection:
             "CERSAT-GLO-SEAICE_6DAYS_DRIFT_QUICKSCAT_RAN-OBS_FULL_TIME_SERIE",
             "--dataset-version",
             "default",
-            "--service",
-            "files",
         ]
 
         self.output = execute_in_terminal(command)

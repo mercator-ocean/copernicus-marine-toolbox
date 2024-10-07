@@ -373,17 +373,6 @@ def _get_retrieval_service_from_dataset_version(
         raise Exception(
             "Sync is not supported for datasets with multiple parts."
         )
-    if (
-        force_service_type == CopernicusMarineDatasetServiceType.FILES
-        and not force_dataset_part_label
-        and not index_parts
-        and len(dataset_version.parts) > 1
-    ):
-        raise Exception(
-            "When dataset has multiple parts and using 'files' service"
-            ", please indicate the part you want to download "
-            "with the dataset-part option"
-        )
     if force_dataset_part_label:
         logger.info(
             f"You forced selection of dataset part "

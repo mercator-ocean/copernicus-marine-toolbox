@@ -133,8 +133,6 @@ class TestOverwriteOutputData:
                 "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
                 "--regex",
                 ".*20120101.*",
-                "--service",
-                f"{service}",
                 "-o",
                 f"{folder}",
                 "--force-download",

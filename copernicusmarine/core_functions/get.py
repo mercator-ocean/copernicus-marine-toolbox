@@ -40,7 +40,6 @@ def get_function(
     force_download: bool,
     overwrite_output_data: bool,
     request_file: Optional[pathlib.Path],
-    force_service: Optional[str],
     filter: Optional[str],
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
@@ -68,7 +67,6 @@ def get_function(
     request_update_dict = {
         "force_dataset_version": force_dataset_version,
         "output_directory": output_directory,
-        "force_service": force_service,
     }
     get_request.update(request_update_dict)
 
@@ -87,8 +85,6 @@ def get_function(
         get_request.force_download = force_download
     if overwrite_output_data:
         get_request.overwrite_output_data = overwrite_output_data
-    if force_service:
-        get_request.force_service = force_service
     if filter:
         get_request.regex = filter_to_regex(filter)
     if regex:
@@ -106,14 +102,13 @@ def get_function(
         get_request.sync_delete = sync_delete
     if index_parts:
         get_request.index_parts = index_parts
-        get_request.force_service = "files"
         get_request.regex = overload_regex_with_additionnal_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
-        assert create_file_list.endswith(".txt") or create_file_list.endswith(
-            ".csv"
-        ), "Download file list must be a .txt or .csv file. "
+        assert create_file_list.endswith(
+            ".txt"
+        ), "Download file list must be a .txt file."
         f"Got '{create_file_list}' instead."
     if file_list_path:
         direct_download_files = get_direct_download_files(file_list_path)
@@ -154,7 +149,7 @@ def _run_get_request(
         get_request.dataset_id,
         get_request.force_dataset_version,
         get_request.force_dataset_part,
-        get_request.force_service,
+        None,
         CommandType.GET,
         get_request.index_parts,
         dataset_sync=get_request.sync,
@@ -194,7 +189,6 @@ def create_get_template() -> None:
                 "regex": None,
                 "output_directory": "copernicusmarine_data",
                 "show_outputnames": True,
-                "service": "files",
                 "force_download": False,
                 "file_list": None,
                 "sync": False,

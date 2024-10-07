@@ -9,8 +9,6 @@ class TestDatasetPartSelection:
             "get",
             "--dataset-id",
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
-            "--service",
-            "files",
         ]
 
         self.output = execute_in_terminal(command)
@@ -28,8 +26,6 @@ class TestDatasetPartSelection:
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             "--dataset-part",
             "history",
-            "--service",
-            "files",
         ]
 
         self.output = execute_in_terminal(command)
@@ -51,8 +47,6 @@ class TestDatasetPartSelection:
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             "--dataset-part",
             "default",
-            "--service",
-            "files",
         ]
 
         self.output = execute_in_terminal(command)
@@ -68,7 +62,6 @@ class TestDatasetPartSelection:
             copernicusmarine.get(
                 dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
                 dataset_part="history",
-                service="files",
             )
         except OSError:
             pass
