@@ -78,7 +78,7 @@ Options:
   -h, --help     Show this message and exit.
 
 Commands:
-  describe  Print Copernicus Marine catalog as JSON.
+  describe  Print Copernicus Marine catalogue as JSON.
   get       Download originally produced data files.
   login     Create a configuration file with your Copernicus Marine credentials.
   subset    Download subsets of datasets as NetCDF files or Zarr stores.
