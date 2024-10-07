@@ -81,6 +81,7 @@ def download_original_files(
             get_request.sync,
             create_file_list,
             pathlib.Path(get_request.output_directory),
+            disable_progress_bar,
             only_list_root_path=get_request.index_parts,
             overwrite=get_request.overwrite_output_data,
         )
@@ -254,6 +255,7 @@ def _download_header(
     sync: bool,
     create_file_list: Optional[str],
     directory_out: pathlib.Path,
+    disable_progress_bar: bool,
     only_list_root_path: bool = False,
     overwrite: bool = False,
 ) -> Optional[
@@ -276,7 +278,12 @@ def _download_header(
     last_modified_datetimes: list[DateTime] = []
     etags: list[str] = []
     raw_filenames = _list_files_on_marine_data_lake_s3(
-        username, endpoint_url, bucket, path, not only_list_root_path
+        username,
+        endpoint_url,
+        bucket,
+        path,
+        not only_list_root_path,
+        disable_progress_bar,
     )
     filenames_without_sync = []
     for filename, size, last_modified_datetime, etag in raw_filenames:
@@ -456,8 +463,8 @@ def _list_files_on_marine_data_lake_s3(
     bucket: str,
     prefix: str,
     recursive: bool,
+    disable_progress_bar: bool,
 ) -> list[tuple[str, int, DateTime, str]]:
-
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["ListObjects"], username
     )
@@ -468,11 +475,13 @@ def _list_files_on_marine_data_lake_s3(
         Prefix=prefix,
         Delimiter="/" if not recursive else "",
     )
-
+    logger.info("Listing files on remote server...")
     s3_objects = chain(
-        *map(lambda page: page.get("Contents", []), page_iterator)
+        *map(
+            lambda page: page.get("Contents", []),
+            tqdm(page_iterator, disable=disable_progress_bar),
+        )
     )
-
     files_already_found: list[tuple[str, int, DateTime, str]] = []
     for s3_object in s3_objects:
         files_already_found.append(
