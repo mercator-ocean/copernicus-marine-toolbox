@@ -3,23 +3,6 @@ from tests.test_utils import execute_in_terminal
 
 
 class TestDatasetPartSelection:
-    def test_get_when_force_files_no_part_raises_error(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
-            "--service",
-            "files",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert (
-            b"When dataset has multiple parts and using 'files' service"
-            in self.output.stderr
-        )
-
     def test_get_when_dataset_part_is_specified(self):
         command = [
             "copernicusmarine",
@@ -28,8 +11,6 @@ class TestDatasetPartSelection:
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             "--dataset-part",
             "history",
-            "--service",
-            "files",
         ]
 
         self.output = execute_in_terminal(command)
@@ -51,8 +32,6 @@ class TestDatasetPartSelection:
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             "--dataset-part",
             "default",
-            "--service",
-            "files",
         ]
 
         self.output = execute_in_terminal(command)
@@ -68,7 +47,6 @@ class TestDatasetPartSelection:
             copernicusmarine.get(
                 dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
                 dataset_part="history",
-                service="files",
             )
         except OSError:
             pass
