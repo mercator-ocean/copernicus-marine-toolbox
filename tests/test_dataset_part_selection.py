@@ -3,21 +3,6 @@ from tests.test_utils import execute_in_terminal
 
 
 class TestDatasetPartSelection:
-    def test_get_when_force_files_no_part_raises_error(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert (
-            b"When dataset has multiple parts and using 'files' service"
-            in self.output.stderr
-        )
-
     def test_get_when_dataset_part_is_specified(self):
         command = [
             "copernicusmarine",

@@ -106,9 +106,9 @@ def get_function(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
-        assert create_file_list.endswith(
-            ".txt"
-        ), "Download file list must be a .txt file."
+        assert create_file_list.endswith(".txt") or create_file_list.endswith(
+            ".csv"
+        ), "Download file list must be a .txt or .csv file. "
         f"Got '{create_file_list}' instead."
     if file_list_path:
         direct_download_files = get_direct_download_files(file_list_path)
