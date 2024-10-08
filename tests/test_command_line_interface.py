@@ -587,30 +587,19 @@ class TestCommandLineInterface:
     # Test on get requests #
     # -------------------------#
 
-    @dataclass(frozen=True)
-    class GetServiceToTest:
-        name: str
-
-    FILES = GetServiceToTest("files")
-
     def test_get_original_files_functionnality(self, tmp_path):
-        self._test_get_functionalities(self.FILES, tmp_path)
+        self._test_get_functionalities(tmp_path)
 
-    def _test_get_functionalities(
-        self, get_service_to_test: GetServiceToTest, tmp_path
-    ):
+    def _test_get_functionalities(self, tmp_path):
         self.base_get_request_dict: dict[str, Optional[Union[str, Path]]] = {
             "--dataset-id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
             "--output-directory": str(tmp_path),
             "--no-directories": None,
-            "--service": get_service_to_test.name,
         }
-        self.check_default_get_request(get_service_to_test, tmp_path)
+        self.check_default_get_request(tmp_path)
 
-    def check_default_get_request(
-        self, get_service_to_test: GetServiceToTest, tmp_path
-    ):
-        folder = pathlib.Path(tmp_path, get_service_to_test.name)
+    def check_default_get_request(self, tmp_path):
+        folder = pathlib.Path(tmp_path, "files")
         if not folder.is_dir():
             pathlib.Path.mkdir(folder, parents=True)
 
@@ -632,8 +621,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--force-download",
             "--output-directory",
             f"{tmp_path}",
@@ -652,8 +639,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--regex",
             f"{regex}",
             "--force-download",
@@ -677,8 +662,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--regex",
             f"{regex}",
             "--output-directory",
@@ -701,8 +684,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--regex",
             f"{regex}",
             "--force-download",
@@ -926,8 +907,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--filter",
             f"{filter}",
             "--force-download",
@@ -952,8 +931,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--filter",
             f"{filter}",
             "--regex",
@@ -1127,7 +1104,7 @@ class TestCommandLineInterface:
         self.then_I_have_correct_attribute_value(tmp_path, "elevation", "up")
 
     def when_I_run_copernicus_marine_command_using_no_directories_option(
-        self, tmp_path, force_service: GetServiceToTest, output_directory=None
+        self, tmp_path, output_directory=None
     ):
         download_folder = (
             tmp_path
@@ -1147,8 +1124,6 @@ class TestCommandLineInterface:
             "--force-download",
             "--output-directory",
             f"{download_folder}",
-            "--service",
-            f"{force_service.name}",
             "--no-directories",
         ]
 
@@ -1178,11 +1153,11 @@ class TestCommandLineInterface:
 
     def test_no_directories_option_original_files(self, tmp_path):
         self.when_I_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path, force_service=self.FILES
+            tmp_path
         )
         self.then_files_are_created_without_tree_folder(tmp_path)
         self.when_I_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path, force_service=self.FILES, output_directory="test"
+            tmp_path, output_directory="test"
         )
         self.then_files_are_created_without_tree_folder(
             tmp_path, output_directory="test"
@@ -1194,8 +1169,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-            "--service",
-            f"{self.FILES.name}",
             "-nd",
             "--filter",
             "*20120101_20121231_R20221101_RE01*",
@@ -1930,8 +1903,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            f"{self.FILES.name}",
             "--file-list",
             "./tests/resources/file_list_examples/file_list_example.txt",
             "--force-download",
@@ -1964,8 +1935,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--service",
-            "files",
             "--regex",
             f"{regex}",
             "--create-file-list",
