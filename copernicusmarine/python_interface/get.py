@@ -27,7 +27,6 @@ def get(
     force_download: bool = False,
     overwrite_output_data: bool = False,
     request_file: Optional[Union[pathlib.Path, str]] = None,
-    service: Optional[str] = None,
     filter: Optional[str] = None,
     regex: Optional[str] = None,
     file_list: Optional[Union[pathlib.Path, str]] = None,
@@ -65,8 +64,6 @@ def get(
         If True, overwrite existing output files.
     request_file : Union[pathlib.Path, str], optional
         Path to a file containing request parameters. For more information, please refer to the README.
-    service : str, optional
-        Force the use of a specific service.
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
     show_outputnames : bool, optional
@@ -123,7 +120,6 @@ def get(
         force_download=force_download,
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
-        force_service=service,
         filter=filter,
         regex=regex,
         file_list_path=file_list,

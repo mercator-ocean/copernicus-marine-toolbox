@@ -21,7 +21,6 @@ from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
 )
-from copernicusmarine.core_functions.services_utils import CommandType
 from copernicusmarine.core_functions.utils import (
     OVERWRITE_LONG_OPTION,
     OVERWRITE_OPTION_HELP_TEXT,
@@ -122,16 +121,6 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=OVERWRITE_OPTION_HELP_TEXT,
-)
-@click.option(
-    "--service",
-    "-s",
-    type=str,
-    help=(
-        "Force download through one of the available services "
-        f"using the service name among {CommandType.GET.service_names()} "
-        f"or its short name among {CommandType.GET.service_short_names()}."
-    ),
 )
 @click.option(
     "--create-template",
@@ -258,7 +247,6 @@ def get(
     overwrite_output_data: bool,
     create_template: bool,
     request_file: Optional[pathlib.Path],
-    service: Optional[str],
     filter: Optional[str],
     regex: Optional[str],
     file_list: Optional[pathlib.Path],
@@ -301,7 +289,6 @@ def get(
         force_download=force_download,
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
-        force_service=service,
         filter=filter,
         regex=regex,
         file_list_path=file_list,

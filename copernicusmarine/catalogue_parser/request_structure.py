@@ -213,7 +213,6 @@ class GetRequest:
     output_directory: str = "."
     force_download: bool = False
     overwrite_output_data: bool = False
-    force_service: Optional[str] = None
     filter: Optional[str] = None
     regex: Optional[str] = None
     file_list: Optional[pathlib.Path] = None
