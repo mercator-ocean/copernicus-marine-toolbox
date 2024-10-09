@@ -36,7 +36,12 @@ def cli_get() -> None:
     "get",
     cls=DeprecatedClickOptionsCommand,
     short_help="Download originally produced data files.",
-    help=documentation_utils.GET["GET_DESCRIPTION_HELP"],  # noqa
+    help=documentation_utils.GET["GET_DESCRIPTION_HELP"]
+    + ":ref:`describe <cli-describe>`)."
+    " The function fetches the files recursively if a folder "
+    "path is passed as a URL. When provided a datasetID, all the files "
+    "in the corresponding folder will be downloaded if none of the "
+    "``--filter`` or ``--regex`` options is specified.",  # noqa
     epilog="""
     .. code-block:: bash
 

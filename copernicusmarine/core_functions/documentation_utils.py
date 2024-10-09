@@ -24,13 +24,8 @@ SHARED = {
         " be overwritten instead of creating new one with unique index."
     ),
     "CREATE_TEMPLATE_HELP": (
-        "Option to create a file subset_template.json in your current directory "
-        "containing CLI arguments. If specified, no other action will be performed."
-    ),
-    "REQUEST_FILE_HELP": (
-        "Option to pass a file containing CLI arguments. The file MUST follow the "
-        "structure of dataclass ‘SubsetRequest’. For more information please refer "
-        "to the README."
+        "Option to create a file <argument>_template.json in your current directory "
+        "containing the arguments. If specified, no other action will be performed."
     ),
     "CREDENTIALS_FILE_HELP": (
         "Path to a credentials file if not in its default directory. Accepts "
@@ -106,9 +101,7 @@ SUBSET = {
     "SUBSET_DESCRIPTION_HELP": (
         "Extracts a subset of data from a specified dataset using given parameters."
         " \n \n The ``--dataset-id`` is required (can be found via the ``describe`` "
-        "command). The argument values passed individually through the CLI take "
-        "precedence over the values from the ``--motu-api-request`` option, which "
-        "takes precedence over the ones from the ``--request-file`` option."
+        "command, see "  # has some hardcoding in CLI
     ),
     "SUBSET_RESPONSE_HELP": (
         "ResponseSubset \n"
@@ -150,10 +143,10 @@ SUBSET = {
         "to +90."
     ),
     "MINIMUM_DEPTH_HELP": (
-        "Minimum depth for the subset. Requires a float within this range: [0; 10000]."
+        "Minimum depth for the subset. Requires a positive float (or 0)."
     ),
     "MAXIMUM_DEPTH_HELP": (
-        "Maximum depth for the subset. Requires a float within this range: [0; 10000]."
+        "Maximum depth for the subset. Requires a positive float (or 0)."
     ),
     "VERTICAL_DIMENSION_OUTPUT_HELP": (
         "Consolidate the vertical dimension (the z-axis) as requested: depth with "
@@ -172,9 +165,10 @@ SUBSET = {
     ),
     "COORDINATES_SELECTION_METHOD_HELP": (
         "The method in which the coordinates will be retrieved. If ‘inside´, the "
-        "retrieved selection will be inside the requested interval. If ‘strict-"
-        "inside’, an error will raise if values don't exist inside the requested "
-        "interval. If ‘nearest’, the extremes closest to the requested values will "
+        "selection retrieved will be inside the requested range. If ‘strict-"
+        "inside’, the selection retrieved will be inside the requested range, "
+        "and an error will be raised if the values don't exist. "
+        "If ‘nearest’, the extremes closest to the requested values will "
         "be returned. A warning will be displayed if outside of bounds. If ‘outside’,"
         " the extremes will be taken to contain all the requested interval."
     ),
@@ -184,9 +178,10 @@ SUBSET = {
     ),
     "FILE_FORMAT_HELP": "Format of the downloaded dataset. Default to NetCDF (.nc).",
     "REQUEST_FILE_HELP": (
-        "Option to pass a file containing CLI arguments. The file MUST follow the "
+        "Option to pass a file containing the arguments. The file MUST follow the "
         "structure of dataclass ‘SubsetRequest’. For more information please refer to"
-        " the README."
+        " the documentation or use option ``--create-template`` "
+        "for an example template."
     ),
     "MOTU_API_REQUEST_HELP": (
         "Option to pass a complete MOTU API request as a string. Caution, user has to "
@@ -199,9 +194,10 @@ SUBSET = {
     "NETCDF_COMPRESSION_LEVEL_HELP": (
         "Specify a compression level to apply on the NetCDF output file. A value of 0 "
         "means no compression, and 9 is the highest level of compression available."
+        "The default level is 1."
     ),
     "NETCDF_COMPATIBLE_HELP": (
-        "Enable downloading the dataset in a netCDF 3 compatible format."
+        "Enable downloading the dataset in a netCDF3 compatible format."
     ),
 }
 
@@ -209,14 +205,17 @@ GET = {
     "GET_DESCRIPTION_HELP": (
         "Download originally produced data files.\n \n  "
         " The ``--dataset-id`` is required (can be found via the ``describe``"
-        " command). The function fetches the files recursively if a folder "
-        "path is passed as a URL. When provided a dataset ID, all the files "
-        "in the corresponding folder will be downloaded if none of the "
-        "``--filter`` or ``--regex`` options is specified."
-    ),
+        " command see "
+    ),  # has some hardcoding in CLI
     "GET_RESPONSE_HELP": (
         "ResponseGet \n"
         "A list of files that were downloaded and some metadata."
+    ),
+    "REQUEST_FILE_HELP": (
+        "Option to pass a file containing the arguments. The file MUST follow the "
+        "structure of dataclass ‘GetRequest’. For more information please refer to"
+        " the documentation or use option ``--create-template``"
+        " for an example template."
     ),
     "SHOW_OUTPUTNAMES_HELP": (
         "Option to display the names of the output files before download."

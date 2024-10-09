@@ -72,7 +72,7 @@ The ``--netcdf3-compatible`` option enables compatibility with the netCDF3 forma
 This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. (cf. `xarray documentation <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_.)
 
 About ``--coordinates-selection-method`` option
-""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
 The ``--coordinates-selection-method`` option lets you specify how the requested interval selects data points:
 
