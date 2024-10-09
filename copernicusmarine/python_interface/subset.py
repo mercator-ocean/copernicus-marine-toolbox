@@ -73,9 +73,9 @@ def subset(
     dataset_part : str, optional
         {DATASET_PART_HELP}
     username : str, optional
-        {USERNAME_HELP}
+        {USERNAME_HELP} See also :func:`~copernicusmarine.login`
     password : str, optional
-        {PASSWORD_HELP}
+        {PASSWORD_HELP} See also :func:`~copernicusmarine.login`
     output_directory : Union[pathlib.Path, str], optional
         {OUTPUT_DIRECTORY_HELP}
     credentials_file : Union[pathlib.Path, str], optional

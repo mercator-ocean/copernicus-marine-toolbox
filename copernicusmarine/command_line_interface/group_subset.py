@@ -48,7 +48,7 @@ def cli_subset() -> None:
     cls=DeprecatedClickOptionsCommand,
     short_help="Download subsets of datasets as NetCDF files or Zarr stores.",
     help=documentation_utils.SUBSET["SUBSET_DESCRIPTION_HELP"]
-    + ":ref:`describe <cli-describe>`)."
+    + "See :ref:`describe <cli-describe>`."
     " The argument values passed individually through the CLI take "
     "precedence over the values from the ``--motu-api-request`` option, which "
     "takes precedence over the ones from the ``--request-file`` option.",

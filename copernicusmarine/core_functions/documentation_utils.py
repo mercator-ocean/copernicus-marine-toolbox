@@ -6,22 +6,18 @@ SHARED = {
         "overwritten instead of creating new one with unique index."
     ),
     "USERNAME_HELP": (
-        "If not set, search for environment variable "
-        "COPERNICUSMARINE_SERVICE_USERNAME, or else look for configuration files, "
-        "or else ask for user input."
-    ),
+        "The username for authentication."
+    ),  # a little hardcoding in Python API
     "PASSWORD_HELP": (
-        "If not set, search for environment variable "
-        "COPERNICUSMARINE_SERVICE_PASSWORD, or else look for configuration files, "
-        "or else ask for user input."
-    ),
+        "The password for authentication."
+    ),  # a little hardcoding in Python API
     "LOG_LEVEL_HELP": (
         "Set the details printed to console by the command "
         "(based on standard logging library)."
     ),
     "OVERWRITE_OUTPUT_DATA_HELP": (
         "If specified and if the file already exists on destination, then it will"
-        " be overwritten instead of creating new one with unique index."
+        " be overwritten instead of creating a new one with unique index."
     ),
     "CREATE_TEMPLATE_HELP": (
         "Option to create a file <argument>_template.json in your current directory "
@@ -72,9 +68,8 @@ LOGIN = {
 
 DESCRIBE = {
     "DESCRIBE_DESCRIPTION_HELP": (
-        "Retrieve metadata information from the Copernicus Marine catalogue. \n \n"
-        " This function fetches metadata information from the Copernicus Marine"
-        " catalogue based on specified parameters and options."
+        "Retrieve metadata information from the Copernicus Marine catalogue"
+        " based on specified parameters and options."
     ),
     "DESCRIBE_RESPONSE_HELP": (
         "dict[str, Any]\n"
@@ -100,8 +95,8 @@ DESCRIBE = {
 SUBSET = {
     "SUBSET_DESCRIPTION_HELP": (
         "Extracts a subset of data from a specified dataset using given parameters."
-        " \n \n The ``--dataset-id`` is required (can be found via the ``describe`` "
-        "command, see "  # has some hardcoding in CLI
+        " \n \n The ``--dataset-id`` is required and can be found via the ``describe`` "
+        "command. "  # has some hardcoding in CLI and python API
     ),
     "SUBSET_RESPONSE_HELP": (
         "ResponseSubset \n"
@@ -204,8 +199,8 @@ SUBSET = {
 GET = {
     "GET_DESCRIPTION_HELP": (
         "Download originally produced data files.\n \n  "
-        " The ``--dataset-id`` is required (can be found via the ``describe``"
-        " command see "
+        " The ``--dataset-id`` is required and can be found via the ``describe``"
+        " command."
     ),  # has some hardcoding in CLI
     "GET_RESPONSE_HELP": (
         "ResponseGet \n"

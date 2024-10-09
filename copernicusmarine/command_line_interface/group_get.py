@@ -37,7 +37,7 @@ def cli_get() -> None:
     cls=DeprecatedClickOptionsCommand,
     short_help="Download originally produced data files.",
     help=documentation_utils.GET["GET_DESCRIPTION_HELP"]
-    + ":ref:`describe <cli-describe>`)."
+    + " See :ref:`describe <cli-describe>`."
     " The function fetches the files recursively if a folder "
     "path is passed as a URL. When provided a datasetID, all the files "
     "in the corresponding folder will be downloaded if none of the "
