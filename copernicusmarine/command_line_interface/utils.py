@@ -2,6 +2,8 @@ import click
 from click import Context, Option, UsageError
 from click.core import ParameterSource
 
+from copernicusmarine.core_functions import documentation_utils
+
 
 class MutuallyExclusiveOption(Option):
     def __init__(self, *args, **kwargs):
@@ -55,19 +57,19 @@ tqdm_disable_option = click.option(
     "--disable-progress-bar",
     is_flag=True,
     default=False,
-    help="Flag to hide progress bar.",
+    help=documentation_utils.SHARED["DISABLE_PROGRESS_BAR_HELP"],
 )
 
 force_dataset_version_option = click.option(
     "--dataset-version",
     type=str,
     default=None,
-    help="Force the selection of a specific dataset version.",
+    help=documentation_utils.SHARED["DATASET_VERSION_HELP"],
 )
 
 force_dataset_part_option = click.option(
     "--dataset-part",
     type=str,
     default=None,
-    help="Force the selection of a specific dataset part.",
+    help=documentation_utils.SHARED["DATASET_PART_HELP"],
 )

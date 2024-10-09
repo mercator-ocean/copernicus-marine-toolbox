@@ -1,6 +1,7 @@
 import pathlib
 from typing import Optional, Union
 
+from copernicusmarine.core_functions import decorators, documentation_utils
 from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -14,6 +15,7 @@ from copernicusmarine.python_interface.exception_handler import (
 
 @deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
 @log_exception_and_exit
+@decorators.docstring_parameter(documentation_utils.GET)
 def get(
     dataset_id: Optional[str],
     dataset_version: Optional[str] = None,
@@ -40,64 +42,58 @@ def get(
     staging: bool = False,
 ) -> ResponseGet:
     """
-    Fetches data from the Copernicus Marine server based on the provided parameters.
+    {GET_DESCRIPTION_HELP}
 
     Parameters
     ----------
     dataset_id : str, optional
-        The unique identifier of the dataset.
+        {DATASET_ID_HELP}
     dataset_version : str, optional
-        Force the use of a specific dataset version.
+        {DATASET_VERSION_HELP}
     dataset_part : str, optional
-        Force the use of a specific dataset part.
+        {DATASET_PART_HELP}
     username : str, optional
-        The username for authentication. See also :func:`~copernicusmarine.login`.
+        {USERNAME_HELP}
     password : str, optional
-        The password for authentication. See also :func:`~copernicusmarine.login`.
+        {PASSWORD_HELP}
     output_directory : Union[pathlib.Path, str], optional
-        The directory where downloaded files will be saved.
+        {OUTPUT_DIRECTORY_HELP}
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a file containing authentication credentials.
+        {CREDENTIALS_FILE_HELP}
     force_download : bool, optional
-        Skip confirmation before download.
+        {FORCE_DOWNLOAD_HELP}
     overwrite_output_data : bool, optional
-        If True, overwrite existing output files.
+        {OVERWRITE_OUTPUT_DATA_HELP}
     request_file : Union[pathlib.Path, str], optional
-        Path to a file containing request parameters. For more information, please refer to the README.
+        {REQUEST_FILE_HELP}
     no_directories : bool, optional
-        If True, downloaded files will not be organized into directories.
+        {NO_DIRECTORIES_HELP}
     show_outputnames : bool, optional
-        If True, display the names of the downloaded files.
+        {SHOW_OUTPUTNAMES_HELP}
     filter : str, optional
-        Apply a filter to the downloaded data.
+        {FILTER_WITH_GLOBBING_PATTERN_HELP}
     regex : str, optional
-        Apply a regular expression filter to the downloaded data.
+        {FILTER_WITH_REGULAR_EXPRESSION_HELP}
     file_list : Union[pathlib.Path, str], optional
-        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly.
-        These files must be from the specified dataset using the --dataset-id. If no files can be found,
-        the Toolbox will list all files on the remote server and attempt to find a match.
+        {FILE_LIST_HELP}
     create_file_list : str, optional
-        Option to only create a file containing the names of the targeted files instead of downloading them.
-        It writes the file in the directory specified with the --output-directory option (default to current directory).
-        If specified, no other action will be performed.
+        {CREATE_FILE_LIST_HELP}
     index_parts : bool, optional
-        If True, download index files. Only for INSITU datasets. Temporary option.
+        {INDEX_PARTS_HELP}
     sync : bool, optional
-        If True, synchronize the local directory with the remote directory.
+        {SYNC_HELP}
     sync_delete : bool, optional
-        If True, delete local files that are not present on the remote server while applying sync.
+        {SYNC_DELETE_HELP}
     dry_run : bool, optional
-        If True, runs query without downloading data.
+        {DRY_RUN_HELP}
     max_concurrent_requests : int, optional
-        Maximum number of concurrent requests. Defaults to 15. The get command
-        uses a thread pool executor to manage concurrent requests.
+        {MAX_CONCURRENT_REQUESTS_HELP}
     disable_progress_bar : bool, optional
-        Flag to hide progress bar.
+        {DISABLE_PROGRESS_BAR_HELP}
 
     Returns
     -------
-    ResponseGet
-        A list of files that were downloaded and some metadata.
+    {GET_RESPONSE_HELP}
     """  # noqa
     output_directory = (
         pathlib.Path(output_directory) if output_directory else None

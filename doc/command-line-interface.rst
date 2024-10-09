@@ -8,7 +8,7 @@ Command line interface
     :nested: short
     :commands: login, get, subset, describe
 
-
+.. _cli-describe:
 .. click:: copernicusmarine.command_line_interface.group_describe:describe
     :prog: describe
     :nested: short
