@@ -7,7 +7,7 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --service original-files
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
 
 **Returns:**
 
@@ -71,8 +71,9 @@ About sync option
 The ``--sync`` option downloads original files only if they do not exist or are not up to date. The Toolbox checks the destination folder against the source folder and can be combined with filters. If set with ``--overwrite-output-data``, the latter will be ignored. The ``--sync-delete`` option works like ``--sync`` but also deletes any local files not found on the remote server.
 
 **Limitations:**
+
 - ``--sync`` is not compatible with ``--no-directories``.
-- ``--sync`` only works with ``--dataset-version``.
+- ``--sync`` only works with ``--dataset-version``. (see :ref:`dataset-version <dataset version>` option )
 - ``--sync`` functionality is not available for datasets with several parts (e.g., INSITU or static datasets).
 
 About filtering options
@@ -80,7 +81,7 @@ About filtering options
 
 The ``--filter`` option allows specifying a Unix shell-style wildcard pattern to select specific files.
 
-**Example:**
+**Example** To download only files that contains "2000", "2001", or "2002":
 
 .. code-block:: bash
 
@@ -88,7 +89,7 @@ The ``--filter`` option allows specifying a Unix shell-style wildcard pattern to
 
 Option ``--regex`` allows specifying a regular expression for more advanced file selection.
 
-**Example:**
+**Example** To download only files that contains "2000", "2001", or "2002" using a regular expression:
 
 .. code-block:: bash
 
@@ -99,7 +100,7 @@ About the file list option
 
 The ``--file-list`` option allows specifying a list of files for advanced selection. The file can contain complete absolute paths or only a partial path defined by the user.
 
-By default, the get functionality lists all files in the bucket to select requested ones. The file list option will directly download files and avoid listings if all listed files are found.
+By default, the get functionality lists all files on the remote server to select requested ones. The file list option will directly download files and avoid listings if all listed files are found.
 
 **Example** of ``file_list.txt`` with paths that would be directly downloaded:
 
@@ -111,6 +112,14 @@ By default, the get functionality lists all files in the bucket to select reques
     > cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/history/BO/AR_PR_BO_58JM.nc
     > history/BO/AR_PR_BO_58JM.nc
     > index_history.txt
+    # incorrect paths
+    # version is missing
+    > INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr/history/BO/AR_PR_BO_58JM.nc
+    # only the file name and not the path to the file
+    > AR_PR_BO_58JM.nc
+    # not the same dataset
+    > another_dataset/history/BO/AR_PR_BO_58JM.nc
+
 
 **Example** of ``file_list.txt`` with absolute paths:
 

@@ -1,11 +1,13 @@
+.. _response-types:
+
 =================
-Response Types
+Response types
 =================
 
-The Copernicus Marine Toolbox commands return some information about the download.
+The Copernicus Marine toolbox commands return some information when downloading.
 It can contain useful metadata for the user.
 
-For the CLI, all the returned data will be in a form of a json sent to stdout.
+For the :ref:`command line interface <command-line-interface>`, all the returned data will be in a form of a json sent to stdout.
 You can easily save it locally by doing, for example:
 
 .. code-block:: bash

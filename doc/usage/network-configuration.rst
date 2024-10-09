@@ -12,8 +12,8 @@ to globally disable the usage of SSL in the toolbox:
 - on **UNIX** platforms: ``export COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True``
 - on **Windows** platforms: ``set COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True``
 
-Trust Env for python libraries
-------------------------------
+``trust_env`` for Python libraries
+------------------------------------
 
 To do HTTP calls, the Copernicus Marine Toolbox uses the ``requests`` library.
 By default, this library will have ``trust_env`` values set to ``True``.
@@ -26,10 +26,10 @@ with S3 connection required by the toolbox.
 Using a custom certificate path
 -------------------------------
 
-Some users reported issues with SSL certificates. You can precise a custom path to your certificate, you can set the
+Some users reported issues with SSL certificates. You can precise a custom path to your certificate by setting the
 ``COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH`` environment variable to the path of your custom certificate.
 
-It might be useful if you want to use the global certificate instead of the one created by you conda environment for example.
+It might be useful if you want to use the global certificate instead of the one created by your conda environment for example.
 
 Proxy
 -----
@@ -48,7 +48,7 @@ Number of concurrent requests
 -----------------------------
 
 The toolbox makes many requests to STAC to be able to parse the full marine data store STAC catalog.
-For that, it uses concurrent calls on one thread. It also uses this when downlaoding files for the get command.
+For that, it uses concurrent calls on one thread. It also uses this when downloading files for the get command.
 It can be problematic to do too many requests at the same time. Or you might want to boost the download.
 
 To limit the number of requests at the same time you can use: ``max_concurrent_requests`` argument.
@@ -59,7 +59,7 @@ The default value is ``15`` and minimum value is ``1``.
     For the ``get`` command, you can set the environment variable to ``0`` if you don't want to use the ``concurrent.futures.ThreadPoolExecutor`` at all;
     the download will be used only through ``boto3``.
 
-Connection Timeout and Retries
+Connection timeout and retries
 -------------------------------
 
 The toolbox uses the ``requests`` library to make HTTP calls. By default, the connection timeout is set to 60 seconds.

@@ -1,4 +1,4 @@
-Common and Custom errors
+Common and custom errors
 ==========================
 
 Custom errors
