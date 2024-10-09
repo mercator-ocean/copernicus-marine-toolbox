@@ -62,7 +62,7 @@ You also have the option to filter the output by using the ``--contains`` option
 
 **Example:**
 
-If you want the `cmems_obs-ins_glo_phy-temp-sal_my_cora_irr` dataset only, you can use the following command:
+If you want, for example, the ``cmems_obs-ins_glo_phy-temp-sal_my_cora_irr`` dataset only, you can use the following command:
 
 .. code-block:: bash
 
