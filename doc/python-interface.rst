@@ -1,5 +1,5 @@
 =================
-Python Interface
+Python interface
 =================
 
 .. automodule:: copernicusmarine

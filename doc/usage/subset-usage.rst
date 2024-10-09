@@ -29,18 +29,15 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
         references:                http://marine.copernicus.eu
         copernicusmarine_version:  1.1.0
     INFO - 2024-04-03T10:18:18Z - Estimated size of the dataset file is 0.002 MB.
+    Estimated size of the data that needs to be downloaded to obtain the result: 207 MB
+    This a very rough estimation and usually its higher than the actual size of the data that needs to be downloaded.
 
     Do you want to proceed with download? [Y/n]:
 
 By default, a summary of the dataset subset is displayed, and a download confirmation is prompted. You can skip this confirmation by using the ``--force-download`` option.
 
-Additional Options
+Additional options
 ------------------
-
-About ``--subset-method`` option
-""""""""""""""""""""""""""""""""""
-
-By default, the ``subset`` command uses the ``nearest`` method of xarray. If you specify the ``--subset-method strict`` option, it will only request dimensions strictly within the dataset's bounds, which is useful for operational use cases.
 
 About longitude range
 """"""""""""""""""""""
@@ -49,8 +46,9 @@ The ``--minimum-longitude`` and ``--maximum-longitude`` options work as follows:
 
 - If the result of ``--maximum-longitude`` minus ``--minimum-longitude`` is greater than or equal to 360, the entire dataset will be returned.
 - If the requested longitude range:
-  - **Does not cross** the antemeridian, the dataset between -180 and 180 is returned.
-  - **Crosses** the antemeridian, the dataset between 0 and 360 is returned.
+
+  * **Does not cross** the antemeridian, the dataset between -180 and 180 is returned.
+  * **Crosses** the antemeridian, the dataset between 0 and 360 is returned.
 
 Note that any longitudes can be requested. The system applies a modulus operation to bring the result between -180° and 360°. For example, a request for [530, 560] will return data for longitudes [170, 200].
 
@@ -71,7 +69,7 @@ About ``--netcdf3-compatible`` option
 """"""""""""""""""""""""""""""""""""""""
 
 The ``--netcdf3-compatible`` option enables compatibility with the netCDF3 format.
-This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. `Documentation link <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_.
+This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. (cf. `xarray documentation <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_.)
 
 About ``--bounding-box-method`` option
 """"""""""""""""""""""""""""""""""""""""

@@ -1,4 +1,4 @@
-Shared Options
+Shared options
 =========================
 
 Both ``subset`` and ``get`` (and also some concern other options) commands provide these options:
@@ -13,7 +13,7 @@ Option ``--create-template``
 
 This option creates a file in your current directory containing the request parameters. If specified, no other action will be performed. The file created will depend on the command used:
 
-- **For ``subset``:**
+- ``subset``
 
   **Example:**
 
@@ -27,7 +27,7 @@ This option creates a file in your current directory containing the request para
 
      INFO - 2024-04-04T14:38:09Z - Template created at: subset_template.json
 
-- **For ``get``:**
+- ``get``
 
   **Example:**
 
@@ -97,15 +97,93 @@ Option ``--credentials-file``
 
 You can use the ``--credentials-file`` option to specify a credentials file. The file can be either ``.copernicusmarine-credentials``, ``motuclient-python.ini``, ``.netrc``, or ``_netrc``.
 
+.. _dataset version:
+
 Option ``--dataset-version``
 *********************************
 
 This option allows you to fetch a specific version of the dataset, which is particularly useful to maintain operational consistency when updates affect the chosen dataset.
+The version of dataset can be found through the ``describe`` command.
+
+**Example:**
+
+.. code:: bash
+
+    copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --dataset-version 202012
+
+**Returns:**
+
+.. code:: text
+
+    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset version "202012"
 
 Option ``--dataset-part``
 *********************************
 
 Use this option to fetch a specific part of the chosen dataset version.
+The parts of the dataset can be found through the ``describe`` command.
+
+**Example:**
+
+.. code:: bash
+
+    copernicusmarine get -i cmems_obs-ins_blk_phybgcwav_mynrt_na_irr --dataset-part history
+
+**Returns:**
+
+.. code:: text
+
+    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset part "history"
+
+Option ``--dry-run``
+*********************************
+
+This option allows you to simulate the command without actually executing it.
+It is useful for checking the command's behavior before running it and to be able to access some metadata about the request.
+When used, the toolbox will by default, send the return response of the command.
+
+**Example:**
+
+.. code:: bash
+
+      copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao --dry-run --force-download
+
+**Returns:**
+
+.. code:: text
+
+    INFO - 2024-10-07T08:47:46Z - Dataset version was not specified, the latest one was selected: "202012"
+    INFO - 2024-10-07T08:47:46Z - Dataset part was not specified, the first one was selected: "default"
+    INFO - 2024-10-07T08:47:47Z - Service was not specified, the default one was selected: "arco-geo-series"
+    INFO - 2024-10-07T08:47:48Z - Downloading using service arco-geo-series...
+    INFO - 2024-10-07T08:47:50Z - Estimated size of the dataset file is 210828.202 MB
+    Estimated size of the data that needs to be downloaded to obtain the result: 210888 MB
+    This a very rough estimation and usually its higher than the actual size of the data that needs to be downloaded.
+    {
+      "output": "cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m_thetao_19.00W-5.00E_26.00N-56.00N_0.51-5698.06m_1993-01-01-2021-12-28.nc",
+      "size": 210828.20248091602,
+      "data_needed": 210887.9328244275,
+      "coodinates_extent": {
+        "longitude": {
+          "minimum": -19.0,
+          "maximum": 4.999999046325684
+        },
+        "latitude": {
+          "minimum": 26.0,
+          "maximum": 56.0
+        },
+        "time": {
+          "minimum": "1993-01-01T00:00:00Z",
+          "maximum": "2021-12-28T00:00:00Z"
+        },
+        "depth": {
+          "minimum": 0.5057600140571594,
+          "maximum": 5698.060546875
+        }
+      }
+    }
+
+See :ref:`Response types documentation <response-types>` for more information about the response you can expect.
 
 Option ``--log-level``
 *********************************

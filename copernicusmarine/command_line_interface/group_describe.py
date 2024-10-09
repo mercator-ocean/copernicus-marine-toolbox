@@ -23,13 +23,13 @@ def cli_describe() -> None:
 @cli_describe.command(
     "describe",
     cls=DeprecatedClickOptionsCommand,
-    short_help="Print Copernicus Marine catalog as JSON.",
+    short_help="Print Copernicus Marine catalogue as JSON.",
     help="""
-    Print Copernicus Marine catalog as JSON.
+    Print Copernicus Marine catalogue as JSON.
 
     The default display contains information on the products, and more data can be displayed using the ``--include-<argument>`` flags.
 
-    The ``--contains`` option allows the user to specify one or several strings to filter through the catalog display. The search is performed recursively on all attributes of the catalog, and the tokens only need to be contained in one of the attributes (i.e., not an exact match).
+    The ``--contains`` option allows the user to specify one or several strings to filter through the catalogue display. The search is performed recursively on all attributes of the catalog, and the tokens only need to be contained in one of the attributes (i.e., not an exact match).
     """,  # noqa
     epilog="""
     .. code-block:: bash

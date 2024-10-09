@@ -12,11 +12,11 @@ The ``login`` command creates a configuration file called ``.copernicusmarine-cr
     password :
     INFO - Configuration files stored in /Users/foo/.copernicusmarine
 
-If the ``.copernicusmarine-credentials`` file already exists, the system will ask for confirmation before overwriting it (using the ``--overwrite`` or ``--overwrite-configuration-file`` options).
+If the ``.copernicusmarine-credentials`` file already exists, the system will ask for confirmation before overwriting it. You can also use option ``–-overwrite`` or ``--overwrite-configuration-file`` to skip confirmation.
 
 You can also use the ``--skip-if-user-logged-in`` option to prevent overwriting the configuration file if the user is already logged in.
 
-Access Points Migration and Evolution
+Access points migration and evolution
 -------------------------------------
 
 If you still have configurations for legacy services (for example, files like ``~/motuclient/motuclient-python.ini``, ``~/.netrc``, or ``~/_netrc`` in your home directory), these will automatically be recognized by the ``get`` and ``subset`` commands without needing to run the ``login`` command.

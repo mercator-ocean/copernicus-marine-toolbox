@@ -25,7 +25,7 @@ DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
 
 
 class FileGet(BaseModel):
-    #: Full url of the location of the file server side.
+    #: Full url of the location of the file on remote server.
     url: str
     #: Size of the file in MB.
     size: float
@@ -50,22 +50,22 @@ class GeographicalExtent(BaseModel):
 
 
 class TimeExtent(BaseModel):
-    """Interval for time coordinate."""
+    """Interval for time coordinates."""
 
     minimum: Optional[str]
     maximum: Optional[str]
 
 
 class DatasetCoordinatesExtent(BaseModel):
-    #: Longitude Interval of the subsetted data.
+    #: Longitude interval of the subsetted data.
     longitude: GeographicalExtent
-    #: Latitude Interval of the subsetted data.
+    #: Latitude interval of the subsetted data.
     latitude: GeographicalExtent
-    #: Time Interval of the subsetted data in iso8601 string
+    #: Time interval of the subsetted data in iso8601 string
     time: TimeExtent
-    #: Depth Interval of the subsetted data.
+    #: Depth interval of the subsetted data.
     depth: Optional[GeographicalExtent] = None
-    #: Elevation Interval of the subsetted data.
+    #: Elevation interval of the subsetted data.
     #: Is relevant if data are requested for elevation
     #: instead of depth
     elevation: Optional[GeographicalExtent] = None

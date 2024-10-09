@@ -1,5 +1,5 @@
 =================
-Quick Start
+Quick start
 =================
 
 Under construction ...
