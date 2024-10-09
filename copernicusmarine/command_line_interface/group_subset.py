@@ -60,23 +60,13 @@ def cli_subset() -> None:
     epilog="""
     .. code-block:: bash
 
-        copernicusmarine subset
-        --dataset-id cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i
-        --variable thetao
-        --start-datetime 2022-01-01T00:00:00
-        --end-datetime 2022-12-31T23:59:59
-        --minimum-longitude -6.17
-        --maximum-longitude -5.08
-        --minimum-latitude 35.75
-        --maximum-latitude 36.30
-        --minimum-depth 0.0
-        --maximum-depth 5.0
+        copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2
 
     Equivalent to:
 
     .. code-block:: bash
 
-        copernicusmarine subset -i cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i -v thetao -t 2022-01-01T00:00:00 -T 2022-12-31T23:59:59 -x -6.17 -X -5.08 -y 35.75 -Y 36.30 -z 0.0 -Z 5.0
+        copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2
     """,  # noqa
 )
 @click.option(

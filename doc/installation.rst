@@ -1,14 +1,18 @@
 ===================================================
-Installing Copernicus Marine Toolbox
+Installing Copernicus Marine toolbox
 ===================================================
 
 There are several ways to install or use the Copernicus Marine Toolbox:
 
-* via pip `pypi`_
-* via conda `conda-forge`_
-* via docker `dockerhub`_
+* via pip (see `PyPI repository <https://pypi.org/project/copernicusmarine/>`_)
+* via mamba | conda (see `conda-forge channel <https://anaconda.org/conda-forge/copernicusmarine>`_)
+* via docker (see `dockerhub repository <https://hub.docker.com/r/copernicusmarine/copernicusmarine>`_)
 
 Alternatively, you can use a binary.
+
+.. note::
+
+    Requires Python ``>=3.9`` and ``<3.13``.
 
 .. note::
 
@@ -17,7 +21,7 @@ Alternatively, you can use a binary.
 Via pip
 **************
 
-If you already have an environment (safer to clone it), the package can be installed using the ``pip`` command from the Python Package Index (`pypi`_):
+If you already have an environment (safer to clone it), the package can be installed using the ``pip`` command from the Python Package Index:
 
 .. code-block:: bash
 
@@ -30,12 +34,10 @@ And to **upgrade the package** to the newest available version, run:
     python -m pip install copernicusmarine --upgrade
 
 
-.. note:: Requires Python 3.9 or higher.
-
-Via Mamba | Conda (conda-forge channel)
+Via mamba | conda (conda-forge channel)
 **********************************************
 
-A ``conda`` package is available on `Anaconda`_.
+A ``conda`` package is available on `Anaconda <https://anaconda.org/conda-forge/copernicusmarine>`_.
 
 You can install it using ``mamba`` (or conda) through the ``conda-forge`` channel with the following command:
 
@@ -58,7 +60,7 @@ Or using ``conda``:
 Via docker
 **************
 
-A Docker image is also available here: `dockerhub`_.
+A Docker image is also available on the `copernicusmarine dockerhub repository <https://hub.docker.com/r/copernicusmarine/copernicusmarine>`_.
 
 First step is to pull the container image:
 
@@ -76,11 +78,11 @@ Then run it:
 Create an account on Copernicus Marine website
 ***********************************************
 
-To be able to use the Copernicus Marine Toolbox, you need to have an account on the Copernicus Marine website. You can create an account here `copernicusmarine-register`_.
+To be able to download Copernicus Marine data, you need to have an account on the Copernicus Marine website. You can create an account on the `Copernicus Marine registration page <https://data.marine.copernicus.eu/register>`_.
 
 
 
-Use the CopernicusMarine Toolbox binaries
+Use the Copernicus Marine toolbox binaries
 ***********************************************
 
 In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases. Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
@@ -106,9 +108,3 @@ And from a Windows os (cmd):
     copernicusmarine_windows-latest.exe describe
 
 (``describe`` or any other command)
-
-.. _pypi: https://pypi.org/project/copernicusmarine/
-.. _conda-forge: https://anaconda.org/conda-forge/copernicusmarine
-.. _dockerhub: https://hub.docker.com/r/copernicusmarine/copernicusmarine
-.. _copernicusmarine-register: https://data.marine.copernicus.eu/register
-.. _Anaconda: https://www.anaconda.com/products/individual
