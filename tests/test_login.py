@@ -175,7 +175,7 @@ class TestLogin:
         assert self.output.returncode == 0
         assert (
             b"Valid credentials from input username and password"
-            in self.output.stdout
+            in self.output.stderr
         )
 
     def check_credentials_username_password_specified_are_invalid(self):
@@ -231,7 +231,7 @@ class TestLogin:
         assert self.output.returncode == 0
         assert (
             b"Valid credentials from environment variables"
-            in self.output.stdout
+            in self.output.stderr
         )
 
     def check_credentials_file_is_invalid(self):
@@ -283,7 +283,7 @@ class TestLogin:
         )
         assert self.output.returncode == 0
         assert (
-            b"Valid credentials from configuration file" in self.output.stdout
+            b"Valid credentials from configuration file" in self.output.stderr
         )
 
     def test_login_python_interface(self, tmp_path):
