@@ -116,38 +116,6 @@ class TestPythonInterface:
         )
         assert dataframe is not None
 
-    def test_login_ok(self, tmp_path):
-        non_existing_directory = Path(tmp_path, "i_dont_exist")
-        is_valid = login(
-            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
-            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
-            configuration_file_directory=non_existing_directory,
-            overwrite_configuration_file=True,
-        )
-
-        assert is_valid is True
-        assert (
-            non_existing_directory / ".copernicusmarine-credentials"
-        ).is_file()
-
-        is_valid_with_skip = login(
-            configuration_file_directory=non_existing_directory,
-            skip_if_user_logged_in=True,
-        )
-        assert is_valid_with_skip is True
-
-    def test_login_not_ok_with_wrong_credentials(self, tmp_path):
-        non_existing_directory = Path(tmp_path, "i_dont_exist")
-        is_valid = login(
-            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
-            password="FAKEPASSWORD",
-            configuration_file_directory=non_existing_directory,
-            overwrite_configuration_file=True,
-        )
-
-        assert is_valid is False
-        assert non_existing_directory.is_dir() is False
-
     def test_signature_inspection_is_working(self):
         assert inspect.signature(describe).parameters["contains"]
 

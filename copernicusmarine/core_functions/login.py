@@ -3,8 +3,8 @@ import pathlib
 from typing import Optional
 
 from copernicusmarine.core_functions.credentials_utils import (
-    copernicusmarine_configuration_file_exists,
-    copernicusmarine_configuration_file_is_valid,
+    RECOVER_YOUR_CREDENTIALS_MESSAGE,
+    copernicusmarine_credentials_are_valid,
     credentials_file_builder,
 )
 
@@ -16,19 +16,15 @@ def login_function(
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
     overwrite_configuration_file: bool,
-    skip_if_user_logged_in: bool,
+    check_credentials_valid: bool,
 ) -> bool:
-    if (
-        skip_if_user_logged_in
-        and copernicusmarine_configuration_file_exists(
-            configuration_file_directory
-        )
-        and copernicusmarine_configuration_file_is_valid(
-            configuration_file_directory
-        )
-    ):
-        logger.info("You are already logged in. Skipping login.")
-        return True
+    if check_credentials_valid:
+        if copernicusmarine_credentials_are_valid(
+            configuration_file_directory, username, password
+        ):
+            return True
+        else:
+            return False
     credentials_file = credentials_file_builder(
         username=username,
         password=password,
@@ -42,9 +38,5 @@ def login_function(
         logger.info(
             "Invalid credentials. No configuration file have been modified."
         )
-        logger.info(
-            "Learn how to recover your credentials at: "
-            "https://help.marine.copernicus.eu/en/articles/"
-            "4444552-i-forgot-my-username-or-my-password-what-should-i-do"
-        )
+        logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
     return False
