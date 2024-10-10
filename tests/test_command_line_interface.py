@@ -1636,7 +1636,7 @@ class TestCommandLineInterface:
         filename_zarr_without_option = "filename_without_option.zarr"
         filename_zarr_with_option = "filename_with_option.zarr"
 
-        netcdf_compression_option = "--netcdf-compression-level 1"
+        netcdf_compression_option = "--netcdf-compression-level"
 
         base_command = [
             "copernicusmarine",
@@ -1669,14 +1669,14 @@ class TestCommandLineInterface:
         )
         output_with_option = execute_in_terminal(
             base_command
-            + ["-f", filename_with_option, netcdf_compression_option]
+            + ["-f", filename_with_option, netcdf_compression_option, "1"]
         )
         output_zarr_without_option = execute_in_terminal(
             base_command + ["-f", filename_zarr_without_option]
         )
         output_zarr_with_option = execute_in_terminal(
             base_command
-            + ["-f", filename_zarr_with_option, netcdf_compression_option]
+            + ["-f", filename_zarr_with_option, netcdf_compression_option, "1"]
         )
 
         assert output_without_option.returncode == 0
