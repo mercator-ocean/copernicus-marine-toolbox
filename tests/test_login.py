@@ -213,7 +213,9 @@ class TestLogin:
         environment_without_crendentials[
             "COPERNICUSMARINE_SERVICE_PASSWORD"
         ] = "tutu"
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
+        )
         assert self.output.returncode == 1
         assert (
             b"Invalid credentials from environment variables"
@@ -226,8 +228,12 @@ class TestLogin:
             "login",
             "--check-credentials-valid",
         ]
-
-        self.output = execute_in_terminal(command)
+        environment_without_crendentials = (
+            get_environment_without_crendentials()
+        )
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
+        )
         assert self.output.returncode == 0
         assert (
             b"Valid credentials from environment variables"
@@ -243,7 +249,13 @@ class TestLogin:
             "/toto",
         ]
 
-        self.output = execute_in_terminal(command)
+        environment_without_crendentials = (
+            get_environment_without_crendentials()
+        )
+
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
+        )
         assert self.output.returncode == 1
         assert (
             b"Invalid credentials from configuration file"
