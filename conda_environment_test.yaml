@@ -11,4 +11,4 @@ dependencies:
     - pytest-order==1.2.1
     - freezegun==1.5.1
     - pytest-cov==5.0.0
-    - pytest-xdist==2.1.1
+    - pytest-xdist==3.6.1
