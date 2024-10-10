@@ -72,10 +72,16 @@ def cli_login() -> None:
     help="Flag to skip confirmation before overwriting configuration file.",
 )
 @click.option(
-    "--skip-if-user-logged-in",
+    "--check-credentials-valid",
     is_flag=True,
     default=False,
-    help="Flag to skip the logging process if the user is already logged in.",
+    help="Flag to check if the credentials are valid. "
+    "No other action will be performed. "
+    "The validity will be check in this order: "
+    "1. Check if the credentials are valid with the provided username and password."
+    "2. Check if the credentials are valid in the configuration file."
+    "3. Check if the credentials are valid in the environment variables."
+    "When any is found not valid, will return False immediately.",
 )
 @click.option(
     "--log-level",
@@ -92,7 +98,7 @@ def login(
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
     overwrite_configuration_file: bool,
-    skip_if_user_logged_in: bool,
+    check_credentials_valid: bool,
     log_level: str = "INFO",
 ) -> None:
     if log_level == "QUIET":
@@ -105,5 +111,5 @@ def login(
         password=password,
         configuration_file_directory=configuration_file_directory,
         overwrite_configuration_file=overwrite_configuration_file,
-        skip_if_user_logged_in=skip_if_user_logged_in,
+        check_credentials_valid=check_credentials_valid,
     )

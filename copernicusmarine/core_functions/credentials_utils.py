@@ -33,6 +33,11 @@ DEFAULT_CLIENT_CREDENTIALS_FILENAME = ".copernicusmarine-credentials"
 DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
     DEFAULT_CLIENT_BASE_DIRECTORY / DEFAULT_CLIENT_CREDENTIALS_FILENAME
 )
+RECOVER_YOUR_CREDENTIALS_MESSAGE = (
+    "Learn how to recover your credentials at: "
+    "https://help.marine.copernicus.eu/en/articles/"
+    "4444552-i-forgot-my-username-or-my-password-what-should-i-do"
+)
 
 
 class CredentialsCannotBeNone(Exception):
@@ -206,9 +211,59 @@ def copernicusmarine_configuration_file_exists(
     return configuration_filename.exists()
 
 
+def copernicusmarine_credentials_are_valid(
+    configuration_file_directory: pathlib.Path,
+    username: Optional[str],
+    password: Optional[str],
+):
+    if username and password:
+        if copernicusmarine_username_password_are_valid(username, password):
+            logger.info("Valid credentials from input username and password.")
+            return True
+        else:
+            logger.info(
+                "Invalid credentials from input username and password."
+            )
+            logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+            return False
+    elif (
+        COPERNICUSMARINE_SERVICE_USERNAME and COPERNICUSMARINE_SERVICE_PASSWORD
+    ):
+        if copernicusmarine_username_password_are_valid(
+            COPERNICUSMARINE_SERVICE_USERNAME,
+            COPERNICUSMARINE_SERVICE_PASSWORD,
+        ):
+            logger.info(
+                "Valid credentials from environment variables: "
+                "COPERNICUSMARINE_SERVICE_USERNAME and "
+                "COPERNICUSMARINE_SERVICE_PASSWORD."
+            )
+        else:
+            logger.info(
+                "Invalid credentials from environment variables: "
+                "COPERNICUSMARINE_SERVICE_USERNAME and "
+                "COPERNICUSMARINE_SERVICE_PASSWORD."
+            )
+            logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+            return False
+    elif copernicusmarine_configuration_file_is_valid(
+        configuration_file_directory
+    ):
+        logger.info("Valid credentials from configuration file.")
+        return True
+    else:
+        logger.info("Invalid credentials from configuration file.")
+        logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+    return False
+
+
 def copernicusmarine_configuration_file_is_valid(
     configuration_file_directory: pathlib.Path,
 ) -> bool:
+    if not copernicusmarine_configuration_file_exists(
+        configuration_file_directory
+    ):
+        return False
     configuration_filename = pathlib.Path(
         configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
     )
@@ -223,6 +278,14 @@ def copernicusmarine_configuration_file_is_valid(
         and password is not None
         and _check_credentials_with_cas(username, password)
     )
+
+
+def copernicusmarine_username_password_are_valid(
+    username: str, password: str
+) -> bool:
+    if not username or not password:
+        return False
+    return _check_credentials_with_cas(username, password)
 
 
 def create_copernicusmarine_configuration_file(
