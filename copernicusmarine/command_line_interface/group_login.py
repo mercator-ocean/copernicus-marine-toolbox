@@ -106,10 +106,11 @@ def login(
         logger.setLevel(level="CRITICAL")
     else:
         logger.setLevel(level=log_level)
-    login_function(
+    if not login_function(
         username=username,
         password=password,
         configuration_file_directory=configuration_file_directory,
         overwrite_configuration_file=overwrite_configuration_file,
         check_credentials_valid=check_credentials_valid,
-    )
+    ):
+        exit(1)

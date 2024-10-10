@@ -238,6 +238,7 @@ def copernicusmarine_credentials_are_valid(
                 "COPERNICUSMARINE_SERVICE_USERNAME and "
                 "COPERNICUSMARINE_SERVICE_PASSWORD."
             )
+            return True
         else:
             logger.info(
                 "Invalid credentials from environment variables: "
