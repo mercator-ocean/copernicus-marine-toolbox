@@ -75,8 +75,7 @@ class SubsetRequest:
     output_directory: pathlib.Path = pathlib.Path(".")
     force_download: bool = False
     overwrite_output_data: bool = False
-    netcdf_compression_enabled: bool = False
-    netcdf_compression_level: Optional[int] = None
+    netcdf_compression_level: int = 0
     netcdf3_compatible: bool = False
     dry_run: bool = False
 

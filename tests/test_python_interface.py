@@ -295,7 +295,7 @@ class TestPythonInterface:
             force_download=True,
             output_directory=tmp_path,
             output_filename="netcdf_fillval_compressed.nc",
-            netcdf_compression_enabled=True,
+            netcdf_compression_level=1,
             overwrite_output_data=True,
         )
 
