@@ -1713,7 +1713,7 @@ class TestCommandLineInterface:
             "blksea_omi_circulation_rim_current_index",
             "-v",
             "BSRCI",
-            "--force-download",
+            "--force-download",  # toi upload
             "-o",
             f"{tmp_path}",
         ]
