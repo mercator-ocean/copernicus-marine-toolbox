@@ -55,8 +55,7 @@ def subset(
     dry_run: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
-    netcdf_compression_enabled: bool = False,
-    netcdf_compression_level: Optional[int] = None,
+    netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
 ) -> ResponseSubset:
     """
@@ -117,9 +116,6 @@ def subset(
         MOTU API request string.
     dry_run : bool, optional
         If True, runs query without downloading data.
-    netcdf_compression_enabled : bool, optional
-        Enable compression level 1 to the NetCDF output file. Use 'netcdf_compression_level' option to customize the
-        compression level.
     netcdf_compression_level : int, optional
         Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the
         highest level of compression available.
@@ -171,7 +167,6 @@ def subset(
         dry_run,
         disable_progress_bar,
         staging=staging,
-        netcdf_compression_enabled=netcdf_compression_enabled,
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
     )

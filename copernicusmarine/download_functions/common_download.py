@@ -1,6 +1,5 @@
 import logging
 import pathlib
-from typing import Optional
 
 import xarray
 import zarr
@@ -17,12 +16,11 @@ logger = logging.getLogger("copernicusmarine")
 def get_delayed_download(
     dataset: xarray.Dataset,
     output_path: pathlib.Path,
-    netcdf_compression_enabled: bool,
-    netcdf_compression_level: Optional[int],
+    netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ):
     if output_path.suffix == ".zarr":
-        if netcdf_compression_enabled:
+        if netcdf_compression_level > 0:
             raise NetCDFCompressionNotAvailable(
                 "--netcdf-compression-enabled option cannot be used when "
                 "writing to ZARR"
@@ -32,7 +30,6 @@ def get_delayed_download(
         delayed = _prepare_download_dataset_as_netcdf(
             dataset,
             output_path,
-            netcdf_compression_enabled,
             netcdf_compression_level,
             netcdf3_compatible,
         )
@@ -52,21 +49,19 @@ def download_delayed_dataset(
 def _prepare_download_dataset_as_netcdf(
     dataset: xarray.Dataset,
     output_path: pathlib.Path,
-    netcdf_compression_enabled: bool,
-    netcdf_compression_level: Optional[int],
+    netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ):
     logger.debug("Writing dataset to NetCDF")
     for coord in dataset.coords:
         dataset[coord].encoding["_FillValue"] = None
-    if netcdf_compression_enabled:
-        complevel = (
-            1 if netcdf_compression_level is None else netcdf_compression_level
+    if netcdf_compression_level > 0:
+        logger.info(
+            f"NetCDF compression enabled with level {netcdf_compression_level}"
         )
-        logger.info(f"NetCDF compression enabled with level {complevel}")
         comp = dict(
             zlib=True,
-            complevel=complevel,
+            complevel=netcdf_compression_level,
             contiguous=False,
             shuffle=True,
         )

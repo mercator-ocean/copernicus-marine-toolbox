@@ -69,8 +69,7 @@ def subset_function(
     dry_run: bool,
     disable_progress_bar: bool,
     staging: bool,
-    netcdf_compression_enabled: bool,
-    netcdf_compression_level: Optional[int],
+    netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ) -> ResponseSubset:
     VersionVerifier.check_version_subset(staging)
@@ -78,15 +77,6 @@ def subset_function(
         logger.warning(
             "Detecting staging flag for subset command. "
             "Data will come from the staging environment."
-        )
-
-    if (
-        netcdf_compression_level is not None
-        and netcdf_compression_enabled is False
-    ):
-        raise ValueError(
-            "You must provide --netcdf-compression-enabled if you want to use "
-            "--netcdf-compression-level option"
         )
 
     subset_request = SubsetRequest(dataset_id=dataset_id or "")
@@ -115,7 +105,6 @@ def subset_function(
         "file_format": file_format,
         "force_service": force_service,
         "output_directory": output_directory,
-        "netcdf_compression_enabled": netcdf_compression_enabled,
         "netcdf_compression_level": netcdf_compression_level,
         "netcdf3_compatible": netcdf3_compatible,
         "dry_run": dry_run,
