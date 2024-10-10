@@ -82,7 +82,7 @@ class TestLogin:
             b"and password, sign up for free at:"
             b" https://data.marine.copernicus.eu/register"
         ) in self.output.stderr
-        assert b"copernicusmarine username:" in self.output.stdout
+        assert b"Copernicus Marine username:" in self.output.stdout
 
     def test_login_command_prompt_with_other_commands(self, tmp_path):
         self.check_credentials_username_specified_password_prompt(tmp_path)
@@ -287,19 +287,25 @@ class TestLogin:
         )
 
     def test_login_python_interface(self, tmp_path):
-
         folder = Path(tmp_path, "lololo12")
+        assert not login(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password="FAKEPASSWORD",
+            configuration_file_directory=folder,
+            overwrite_configuration_file=True,
+        )
+
+        assert folder.is_dir() is False
         assert login(
             username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             configuration_file_directory=folder,
+            overwrite_configuration_file=True,
         )
 
-        assert os.path.exists(folder / ".copernicusmarine-credentials")
-
+        assert (folder / ".copernicusmarine-credentials").is_file()
         assert login(
             check_credentials_valid=True,
-            configuration_file_directory=folder,
         )
 
         assert not login(
