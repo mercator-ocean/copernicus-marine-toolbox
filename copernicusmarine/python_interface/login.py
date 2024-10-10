@@ -12,7 +12,7 @@ def login(
     password: Optional[str] = None,
     configuration_file_directory: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY,
     overwrite_configuration_file: bool = False,
-    skip_if_user_logged_in: bool = False,
+    check_credentials_valid: bool = False,
 ) -> bool:
     """
     Create a configuration file with your Copernicus Marine credentials.
@@ -30,12 +30,18 @@ def login(
     overwrite_configuration_file : bool
         Flag to skip confirmation before overwriting the configuration file.
     skip_if_user_logged_in : bool
-        Flag to skip the logging process if the user is already logged in.
+        Flag to check if the credentials are valid.
+        No other action will be performed.
+        The validity will be check in this order:
+        1. Check if the credentials are valid with the provided username and password.
+        2. Check if the credentials are valid in the configuration file.
+        3. Check if the credentials are valid in the environment variables.
+        When any is found not valid, will return False immediately.,
     """  # noqa
     return login_function(
         username=username,
         password=password,
         configuration_file_directory=configuration_file_directory,
         overwrite_configuration_file=overwrite_configuration_file,
-        skip_if_user_logged_in=skip_if_user_logged_in,
+        check_credentials_valid=check_credentials_valid,
     )
