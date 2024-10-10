@@ -228,12 +228,7 @@ class TestLogin:
             "login",
             "--check-credentials-valid",
         ]
-        environment_without_crendentials = (
-            get_environment_without_crendentials()
-        )
-        self.output = execute_in_terminal(
-            command, env=environment_without_crendentials
-        )
+        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
             b"Valid credentials from environment variables"
