@@ -119,7 +119,7 @@ def _retrieve_credential_from_prompt(
             " https://data.marine.copernicus.eu/register"
         )
     return click.prompt(
-        "copernicusmarine " + credential_type, hide_input=hide_input
+        "Copernicus Marine " + credential_type, hide_input=hide_input
     )
 
 
