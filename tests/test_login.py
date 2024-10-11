@@ -85,9 +85,6 @@ class TestLogin:
         assert b"Copernicus Marine username:" in self.output.stdout
 
     def test_login_command_prompt_with_other_commands(self, tmp_path):
-        self.check_credentials_username_specified_password_prompt(tmp_path)
-
-    def check_credentials_username_specified_password_prompt(self, tmp_path):
         assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
         assert os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD") is not None
 
