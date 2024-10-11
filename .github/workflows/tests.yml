@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, macos-13]
+        os: [macos-latest, macos-13, self-hosted, ubuntu-latest] # ubuntu-latest
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     # runs-on: self-hosted
