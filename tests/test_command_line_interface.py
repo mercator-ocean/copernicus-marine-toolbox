@@ -1669,14 +1669,14 @@ class TestCommandLineInterface:
         )
         output_with_option = execute_in_terminal(
             base_command
-            + ["-f", filename_with_option, netcdf_compression_option, "1"]
+            + ["-f", filename_with_option, netcdf_compression_option]
         )
         output_zarr_without_option = execute_in_terminal(
             base_command + ["-f", filename_zarr_without_option]
         )
         output_zarr_with_option = execute_in_terminal(
             base_command
-            + ["-f", filename_zarr_with_option, netcdf_compression_option, "1"]
+            + ["-f", filename_zarr_with_option, netcdf_compression_option]
         )
 
         assert output_without_option.returncode == 0
