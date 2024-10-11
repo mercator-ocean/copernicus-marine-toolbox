@@ -280,7 +280,7 @@ def fetch_product_items(
     for link in child_links:
         tasks.append((root_url, connection, link.absolute_href))
     tdqm_bar_configuration = {
-        "desc": "Fetching STAC Products",
+        "desc": "Fetching products",
         "disable": disable_progress_bar,
         "leave": False,
     }
