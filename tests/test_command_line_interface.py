@@ -1480,7 +1480,7 @@ class TestCommandLineInterface:
         filename_zarr_without_option = "filename_without_option.zarr"
         filename_zarr_with_option = "filename_with_option.zarr"
 
-        netcdf_compression_option = "--netcdf-compression-enabled"
+        netcdf_compression_option = "--netcdf-compression-level"
 
         base_command = [
             "copernicusmarine",
@@ -1616,7 +1616,6 @@ class TestCommandLineInterface:
         assert self.output.returncode == 0
 
     def test_netcdf_compression_level(self, tmp_path):
-        netcdf_compression_enabled_option = "--netcdf-compression-enabled"
         forced_comp_level = 4
 
         base_command = [
@@ -1649,14 +1648,10 @@ class TestCommandLineInterface:
             f"{forced_comp_level}",
         ]
 
-        output_without_netcdf_compression_enabled = execute_in_terminal(
+        output_with_netcdf_compression_enabled = execute_in_terminal(
             base_command
         )
-        output_with_netcdf_compression_enabled = execute_in_terminal(
-            base_command + [netcdf_compression_enabled_option]
-        )
 
-        assert output_without_netcdf_compression_enabled.returncode != 0
         assert output_with_netcdf_compression_enabled.returncode == 0
 
         filepath = Path(tmp_path / "data.nc")

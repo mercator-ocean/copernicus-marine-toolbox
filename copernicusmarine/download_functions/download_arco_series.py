@@ -79,8 +79,7 @@ def download_dataset(
     file_format: FileFormat,
     variables: Optional[list[str]],
     disable_progress_bar: bool,
-    netcdf_compression_enabled: bool,
-    netcdf_compression_level: Optional[int],
+    netcdf_compression_level: int,
     netcdf3_compatible: bool,
     service: CopernicusMarineService,
     dry_run: bool,
@@ -145,7 +144,6 @@ def download_dataset(
     delayed = get_delayed_download(
         dataset,
         output_path,
-        netcdf_compression_enabled,
         netcdf_compression_level,
         netcdf3_compatible,
     )
@@ -219,7 +217,6 @@ def download_zarr(
         disable_progress_bar=disable_progress_bar,
         force_download=force_download,
         overwrite_output_data=subset_request.overwrite_output_data,
-        netcdf_compression_enabled=subset_request.netcdf_compression_enabled,
         netcdf_compression_level=subset_request.netcdf_compression_level,
         netcdf3_compatible=subset_request.netcdf3_compatible,
         dry_run=subset_request.dry_run,

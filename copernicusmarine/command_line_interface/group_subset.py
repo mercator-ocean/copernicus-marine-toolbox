@@ -297,19 +297,11 @@ def cli_subset() -> None:
     hidden=True,
 )
 @click.option(
-    "--netcdf-compression-enabled",
-    type=bool,
-    default=False,
-    is_flag=True,
-    help=(
-        "Enable compression level 1 to the NetCDF output file. "
-        "Use --netcdf-compression-level option to customize the compression "
-        "level"
-    ),
-)
-@click.option(
     "--netcdf-compression-level",
     type=click.IntRange(0, 9),
+    is_flag=False,
+    flag_value=1,
+    default=0,
     help=(
         "Specify a compression level to apply on the NetCDF output file. "
         "A value of 0 means no compression, and 9 is the highest level of "
@@ -343,8 +335,7 @@ def subset(
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
-    netcdf_compression_enabled: bool,
-    netcdf_compression_level: Optional[int],
+    netcdf_compression_level: int,
     netcdf3_compatible: bool,
     service: Optional[str],
     create_template: bool,
@@ -406,7 +397,6 @@ def subset(
         dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
-        netcdf_compression_enabled=netcdf_compression_enabled,
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
     )
