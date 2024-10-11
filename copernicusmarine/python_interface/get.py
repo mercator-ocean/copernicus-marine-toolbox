@@ -15,7 +15,7 @@ from copernicusmarine.python_interface.exception_handler import (
 @deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def get(
-    dataset_id: Optional[str],
+    dataset_id: Optional[str] = None,
     dataset_version: Optional[str] = None,
     dataset_part: Optional[str] = None,
     username: Optional[str] = None,
