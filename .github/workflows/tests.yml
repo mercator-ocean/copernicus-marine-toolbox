@@ -9,8 +9,14 @@ on:
 
 jobs:
   tests:
-    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, macos-13]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    # runs-on: self-hosted
+    # timeout-minutes: 30
 
     steps:
       - name: Check out code
