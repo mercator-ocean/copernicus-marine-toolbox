@@ -45,9 +45,9 @@ check-format:
 
 run-tests: SELECTED_ENVIRONMENT_NAME = ${TEST_ENVIRONMENT_NAME}
 run-tests:
-	${ACTIVATE_ENVIRONMENT}
+#	${ACTIVATE_ENVIRONMENT}
 	pip install --editable .
-	pytest -n auto --cov=copernicusmarine --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	pytest -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 run-tests-dependencie-versions: SELECTED_ENVIRONMENT_NAME = ${TEST_TOX_ENVIRONMENT_NAME}
 run-tests-dependencie-versions:
@@ -107,14 +107,6 @@ build-and-publish-dockerhub-image:
 	docker build --ulimit nofile=65536:65536 --tag copernicusmarine/copernicusmarine:$${VERSION} --tag copernicusmarine/copernicusmarine:latest -f Dockerfile.dockerhub --build-arg VERSION="$${VERSION}" .
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
-
-build-and-prepare-for-binary:
-	python -m pip install --upgrade pip
-	pip install pyinstaller
-	pip install -e .
-	pip install poetry
-	pip install distributed
-	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
