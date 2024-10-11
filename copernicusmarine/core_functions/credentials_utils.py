@@ -217,7 +217,7 @@ def copernicusmarine_credentials_are_valid(
     password: Optional[str],
 ):
     if username and password:
-        if copernicusmarine_username_password_are_valid(username, password):
+        if _check_credentials_with_cas(username, password):
             logger.info("Valid credentials from input username and password.")
             return True
         else:
@@ -229,7 +229,7 @@ def copernicusmarine_credentials_are_valid(
     elif (
         COPERNICUSMARINE_SERVICE_USERNAME and COPERNICUSMARINE_SERVICE_PASSWORD
     ):
-        if copernicusmarine_username_password_are_valid(
+        if _check_credentials_with_cas(
             COPERNICUSMARINE_SERVICE_USERNAME,
             COPERNICUSMARINE_SERVICE_PASSWORD,
         ):
@@ -279,14 +279,6 @@ def copernicusmarine_configuration_file_is_valid(
         and password is not None
         and _check_credentials_with_cas(username, password)
     )
-
-
-def copernicusmarine_username_password_are_valid(
-    username: str, password: str
-) -> bool:
-    if not username or not password:
-        return False
-    return _check_credentials_with_cas(username, password)
 
 
 def create_copernicusmarine_configuration_file(
