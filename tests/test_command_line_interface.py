@@ -843,7 +843,7 @@ class TestCommandLineInterface:
         )
         assert self.output.returncode == 1
         assert (
-            b"Downloading CMEMS data requires a Copernicus Marine username "
+            b"Downloading Copernicus Marine data requires a Copernicus Marine username "
             b"and password, sign up for free at:"
             b" https://data.marine.copernicus.eu/register"
         ) in self.output.stderr
