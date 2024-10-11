@@ -299,6 +299,8 @@ def cli_subset() -> None:
 @click.option(
     "--netcdf-compression-level",
     type=click.IntRange(0, 9),
+    is_flag=False,
+    flag_value=1,
     default=0,
     help=(
         "Specify a compression level to apply on the NetCDF output file. "
