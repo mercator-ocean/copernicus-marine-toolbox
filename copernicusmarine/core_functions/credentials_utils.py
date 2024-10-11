@@ -109,7 +109,7 @@ def _retrieve_credential_from_prompt(
 ) -> str:
     if credential_type == "username":
         logger.info(
-            "Downloading CMEMS data requires a Copernicus Marine username "
+            "Downloading Copernicus Marine data requires a Copernicus Marine username "
             "and password, sign up for free at:"
             " https://data.marine.copernicus.eu/register"
         )
