@@ -196,12 +196,12 @@ def _construct_marine_data_store_product(
 
     production_center_name = production_center[0] if production_center else ""
 
+    thumbnail_url = None
     if stac_product.assets:
         thumbnail = stac_product.assets.get("thumbnail")
         if thumbnail:
             thumbnail_url = thumbnail.get_absolute_href()
-        else:
-            thumbnail_url = None
+
     thumbnail = stac_product.assets and stac_product.assets.get("thumbnail")
     digital_object_identifier = (
         stac_product.extra_fields.get("sci:doi", None)
