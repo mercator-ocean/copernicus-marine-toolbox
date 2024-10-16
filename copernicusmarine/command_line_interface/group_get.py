@@ -14,8 +14,8 @@ from copernicusmarine.command_line_interface.utils import (
     force_dataset_version_option,
     tqdm_disable_option,
 )
-from copernicusmarine.core_functions.deprecated import (
-    DeprecatedClickOptionsCommand,
+from copernicusmarine.core_functions.click_custom_class import (
+    CustomClickOptionsCommand,
 )
 from copernicusmarine.core_functions.get import (
     create_get_template,
@@ -38,7 +38,7 @@ def cli_get() -> None:
 
 @cli_get.command(
     "get",
-    cls=DeprecatedClickOptionsCommand,
+    cls=CustomClickOptionsCommand,
     short_help="Download originally produced data files.",
     help="""
     Download originally produced data files.
@@ -46,9 +46,10 @@ def cli_get() -> None:
     The ``--dataset-id`` is required (can be found via the "describe" command). The function fetches the files recursively if a folder path is passed as a URL. When provided a dataset ID, all the files in the corresponding folder will be downloaded if none of the ``--filter`` or ``--regex`` options is specified.
     """,  # noqa
     epilog="""
+    Example to download all the files from a given dataset:
+
     .. code-block:: bash
 
-        # Example: Download all files from a dataset
         copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
     """,  # noqa
 )

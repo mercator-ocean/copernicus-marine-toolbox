@@ -13,8 +13,8 @@ from copernicusmarine.command_line_interface.utils import (
     force_dataset_version_option,
     tqdm_disable_option,
 )
-from copernicusmarine.core_functions.deprecated import (
-    DeprecatedClickOptionsCommand,
+from copernicusmarine.core_functions.click_custom_class import (
+    CustomClickOptionsCommand,
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
@@ -50,7 +50,7 @@ def cli_subset() -> None:
 
 @cli_subset.command(
     "subset",
-    cls=DeprecatedClickOptionsCommand,
+    cls=CustomClickOptionsCommand,
     short_help="Download subsets of datasets as NetCDF files or Zarr stores.",
     help="""
     Download subsets of datasets as NetCDF files or Zarr stores.
@@ -58,6 +58,8 @@ def cli_subset() -> None:
     The ``--dataset-id`` is required (can be found via the "describe" command). The argument values passed individually through the CLI take precedence over the values from the ``--motu-api-request`` option, which takes precedence over the ones from the ``--request-file`` option.
     """,  # noqa
     epilog="""
+    Examples:
+
     .. code-block:: bash
 
         copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2

@@ -7,6 +7,9 @@ import click
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
+from copernicusmarine.core_functions.click_custom_class import (
+    CustomClickOptionsCommand,
+)
 from copernicusmarine.core_functions.credentials_utils import (
     DEFAULT_CLIENT_BASE_DIRECTORY,
 )
@@ -22,6 +25,7 @@ def cli_login() -> None:
 
 @cli_login.command(
     "login",
+    cls=CustomClickOptionsCommand,
     short_help="Create a configuration file with your Copernicus Marine credentials.",
     help="""
     Create a configuration file with your Copernicus Marine credentials.
@@ -29,13 +33,21 @@ def cli_login() -> None:
     Create a configuration file under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``--credentials-file`` option).
     """,  # noqa
     epilog="""
+    Examples:
+
+    Using environment variables:
+
     .. code-block:: bash
 
         COPERNICUSMARINE_SERVICE_USERNAME=<USERNAME> COPERNICUSMARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
 
+    Using command line arguments:
+
     .. code-block:: bash
 
         copernicusmarine login --username <USERNAME> --password <PASSWORD>
+
+    Using directly user input:
 
     .. code-block:: bash
 
