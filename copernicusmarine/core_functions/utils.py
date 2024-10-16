@@ -1,4 +1,5 @@
 import concurrent.futures
+import functools
 import logging
 import pathlib
 import re
@@ -221,3 +222,44 @@ def create_custom_query_function(username: Optional[str]) -> Callable:
         )
 
     return _add_custom_query_param
+
+
+# Deprecation utils
+def get_deprecated_message(old_value, preferred_value):
+    return (
+        f"'{old_value}' has been deprecated, use '{preferred_value}' instead"
+    )
+
+
+def log_deprecated_message(old_value, preferred_value):
+    logger.warning(get_deprecated_message(old_value, preferred_value))
+
+
+def raise_both_old_and_new_value_error(old_value, new_value):
+    raise TypeError(
+        f"Received both {old_value} and {new_value} as arguments! "
+        f"{get_deprecated_message(old_value, new_value)}"
+    )
+
+
+def deprecated_python_option(**aliases: str) -> Callable:
+    def deco(f: Callable):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            rename_kwargs(f.__name__, kwargs, aliases)
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
+def rename_kwargs(
+    func_name: str, kwargs: dict[str, Any], aliases: dict[str, str]
+):
+    for alias, new in aliases.items():
+        if alias in kwargs:
+            if new in kwargs:
+                raise_both_old_and_new_value_error(alias, new)
+            log_deprecated_message(alias, new)
+            kwargs[new] = kwargs.pop(alias)
