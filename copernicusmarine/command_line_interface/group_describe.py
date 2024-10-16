@@ -6,8 +6,8 @@ from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
 from copernicusmarine.command_line_interface.utils import tqdm_disable_option
-from copernicusmarine.core_functions.deprecated import (
-    DeprecatedClickOptionsCommand,
+from copernicusmarine.core_functions.click_custom_class import (
+    CustomClickOptionsCommand,
 )
 from copernicusmarine.core_functions.describe import describe_function
 
@@ -22,7 +22,7 @@ def cli_describe() -> None:
 
 @cli_describe.command(
     "describe",
-    cls=DeprecatedClickOptionsCommand,
+    cls=CustomClickOptionsCommand,
     short_help="Print Copernicus Marine catalogue as JSON.",
     help="""
     Print Copernicus Marine catalogue as JSON.
@@ -32,6 +32,8 @@ def cli_describe() -> None:
     The ``--contains`` option allows the user to specify one or several strings to filter through the catalogue display. The search is performed recursively on all attributes of the catalog, and the tokens only need to be contained in one of the attributes (i.e., not an exact match).
     """,  # noqa
     epilog="""
+    Examples:
+
     .. code-block:: bash
 
         copernicusmarine describe --contains METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 --include-datasets

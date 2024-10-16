@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 import pandas
 
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
-from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
@@ -15,6 +14,7 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     VerticalDimensionOutput,
 )
+from copernicusmarine.core_functions.utils import deprecated_python_option
 from copernicusmarine.download_functions.download_arco_series import (
     read_dataframe_from_arco_series,
 )

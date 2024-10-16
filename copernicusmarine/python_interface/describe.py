@@ -1,11 +1,11 @@
 import json
 from typing import Any
 
-from copernicusmarine.core_functions.deprecated import deprecated_python_option
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.describe import describe_function
+from copernicusmarine.core_functions.utils import deprecated_python_option
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
