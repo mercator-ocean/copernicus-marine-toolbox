@@ -46,7 +46,7 @@ def cli_get() -> None:
     The ``--dataset-id`` is required (can be found via the "describe" command). The function fetches the files recursively if a folder path is passed as a URL. When provided a dataset ID, all the files in the corresponding folder will be downloaded if none of the ``--filter`` or ``--regex`` options is specified.
     """,  # noqa
     epilog="""
-    Example: Download all files from a dataset
+    Example to download all the files from a given dataset:
 
     .. code-block:: bash
 

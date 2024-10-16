@@ -35,13 +35,19 @@ def cli_login() -> None:
     epilog="""
     Examples:
 
+    Using environment variables:
+
     .. code-block:: bash
 
         COPERNICUSMARINE_SERVICE_USERNAME=<USERNAME> COPERNICUSMARINE_SERVICE_PASSWORD=<PASSWORD> copernicusmarine login
 
+    Using command line arguments:
+
     .. code-block:: bash
 
         copernicusmarine login --username <USERNAME> --password <PASSWORD>
+
+    Using directly user input:
 
     .. code-block:: bash
 
