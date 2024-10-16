@@ -7,10 +7,10 @@ import click
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
+from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
-from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.credentials_utils import (
     DEFAULT_CLIENT_BASE_DIRECTORY,
 )
