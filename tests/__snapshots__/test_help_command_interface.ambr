@@ -54,7 +54,7 @@
     '',
     '',
     '    Examples:',
-    '    ',
+    '',
     '',
     '        copernicusmarine describe --contains METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 --include-datasets',
     '',
