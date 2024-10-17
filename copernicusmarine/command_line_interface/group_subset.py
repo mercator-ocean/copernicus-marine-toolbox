@@ -48,8 +48,9 @@ def cli_subset() -> None:
     cls=CustomClickOptionsCommand,
     short_help="Download subsets of datasets as NetCDF files or Zarr stores.",
     help=documentation_utils.SUBSET["SUBSET_DESCRIPTION_HELP"]
-    + documentation_utils.SUBSET["SUBSET_RESPONSE_HELP"]
-    + "See :ref:`describe <cli-describe>`.",
+    + "See :ref:`describe <cli-describe>`."
+    + " \n\nReturns\n "
+    + documentation_utils.SUBSET["SUBSET_RESPONSE_HELP"],
     epilog="""
     Examples:
 

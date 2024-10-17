@@ -29,6 +29,7 @@ def cli_login() -> None:
     cls=CustomClickOptionsCommand,
     short_help="Create a configuration file with your Copernicus Marine credentials.",
     help=documentation_utils.LOGIN["LOGIN_DESCRIPTION_HELP"]
+    + " \n\nReturns\n "
     + documentation_utils.LOGIN["LOGIN_RESPONSE_HELP"],  # noqa
     epilog="""
     Examples:

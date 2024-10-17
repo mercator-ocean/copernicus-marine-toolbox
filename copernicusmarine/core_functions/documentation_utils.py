@@ -39,12 +39,6 @@ SHARED: dict[str, str] = {
         "The destination folder for the downloaded files. Default is the current "
         "directory."
     ),
-    "REQUEST_FILE_HELP": (
-        "Option to pass a file containing the arguments."
-        " For more information please refer to"
-        " the documentation or use option ``--create-template`` "
-        "for an example template."
-    ),
 }
 
 LOGIN: dict[str, str] = {
@@ -107,7 +101,7 @@ DESCRIBE: dict[str, str] = {
 SUBSET: dict[str, str] = {
     "SUBSET_DESCRIPTION_HELP": (
         "Extracts a subset of data from a specified dataset using given parameters."
-        " \n \n The datasetID is required and can be found via the ``describe`` "
+        "\n\nThe datasetID is required and can be found via the ``describe`` "
         "command. "  # has some hardcoding in CLI and python API
     ),
     "SUBSET_RESPONSE_HELP": (
@@ -145,6 +139,12 @@ SUBSET: dict[str, str] = {
         "Consolidate the vertical dimension (the z-axis) as requested: depth with "
         "descending positive values, elevation with ascending positive values. "
         "Default is depth."
+    ),
+    "REQUEST_FILE_HELP": (
+        "Option to pass a file containing the arguments."
+        " For more information please refer to"
+        " the documentation or use option ``--create-template`` "
+        "for an example template."
     ),
     "START_DATETIME_HELP": (
         "The start datetime of the temporal subset. Supports common "
@@ -187,8 +187,8 @@ SUBSET: dict[str, str] = {
 
 GET: dict[str, str] = {
     "GET_DESCRIPTION_HELP": (
-        "Download originally produced data files.\n \n  "
-        " The datasetID is required (either as an "
+        "Download originally produced data files.\n\n"
+        "The datasetID is required (either as an "
         "argument or in a request file) and can be found via the ``describe``"
         " command."
     ),  # has some hardcoding in CLI
@@ -209,6 +209,9 @@ GET: dict[str, str] = {
     "REGEX_HELP": (
         "The regular expression that must match the absolute paths of the files to "
         "download."
+    ),
+    "REQUEST_FILE_HELP": (
+        "Option to pass a file containing the arguments " "..."
     ),
     "FILE_LIST_HELP": (
         "Path to a '.txt' file containing a "

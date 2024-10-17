@@ -61,7 +61,7 @@ def subset(
     """
     Extracts a subset of data from a specified dataset using given parameters.
 
-    The ``dataset_id`` is required and can be found via the ``describe`` command.
+    The datasetID is required and can be found via the ``describe`` command.
 
     Parameters
     ----------

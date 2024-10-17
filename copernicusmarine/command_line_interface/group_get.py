@@ -37,7 +37,7 @@ def cli_get() -> None:
     cls=CustomClickOptionsCommand,
     short_help="Download originally produced data files.",
     help=documentation_utils.GET["GET_DESCRIPTION_HELP"]
-    + " See :ref:`describe <cli-describe>`."
+    + " See :ref:`describe <cli-describe>`. \n\nReturns\n "
     + documentation_utils.GET["GET_RESPONSE_HELP"],
     epilog="""
     Example to download all the files from a given dataset:

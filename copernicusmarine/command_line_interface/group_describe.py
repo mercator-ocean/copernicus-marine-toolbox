@@ -26,6 +26,7 @@ def cli_describe() -> None:
     cls=CustomClickOptionsCommand,
     short_help="Print Copernicus Marine catalogue as JSON.",
     help=documentation_utils.DESCRIBE["DESCRIBE_DESCRIPTION_HELP"]
+    + " \n\nReturns\n "
     + documentation_utils.DESCRIBE["DESCRIBE_RESPONSE_HELP"],  # noqa
     epilog="""
     Examples:
