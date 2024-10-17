@@ -42,7 +42,7 @@ def describe(
     contains : list[str], optional
         Filter catalogue output. Returns products with attributes matching a string token.
     max_concurrent_requests : int, optional
-        Maximum number of concurrent requests. Default 15. The command uses a thread pool executor to manage concurrent requests.
+        Maximum number of concurrent requests (>=1). Default 15. The command uses a thread pool executor to manage concurrent requests.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
 

@@ -13,29 +13,21 @@ class TestDocumentation:
         for i in range(len(text_subset["Parameters"])):
             name_of_variable = text_subset["Parameters"][i].name
             if name_of_variable in ["start_datetime", "end_datetime"]:
-                assert (
-                    text_subset["Parameters"][i].desc
-                    == documentation_utils.SUBSET[
+                assert text_subset["Parameters"][i].desc == [
+                    documentation_utils.SUBSET[
                         name_of_variable.upper() + "_HELP"
                     ]
-                    + "Caution: encapsulate date with “ “ to ensure valid "
-                    "expression for format “%Y-%m-%d %H:%M:%S”."
-                )
+                ]
                 continue
             if name_of_variable == "variables":
-                assert (
-                    text_subset["Parameters"][i].desc
-                    == "List of variable names to extract."
-                )
+                assert text_subset["Parameters"][i].desc == [
+                    "List of variable names to extract."
+                ]
                 continue
             if name_of_variable == "netcdf_compression_level":
-                assert text_subset["Parameters"][
-                    i
-                ].desc + " If used as a flag, the assigned value will be 1." == [
-                    [
-                        documentation_utils.SUBSET[
-                            name_of_variable.upper() + "_HELP"
-                        ]
+                assert text_subset["Parameters"][i].desc == [
+                    documentation_utils.SUBSET[
+                        name_of_variable.upper() + "_HELP"
                     ]
                 ]
                 continue
@@ -92,20 +84,16 @@ class TestDocumentation:
         for i in range(len(text_open_dataset["Parameters"])):
             name_of_variable = text_open_dataset["Parameters"][i].name
             if name_of_variable in ["start_datetime", "end_datetime"]:
-                assert (
-                    text_open_dataset["Parameters"][i].desc
-                    == documentation_utils.SUBSET[
+                assert text_open_dataset["Parameters"][i].desc == [
+                    documentation_utils.SUBSET[
                         name_of_variable.upper() + "_HELP"
                     ]
-                    + "Caution: encapsulate date with “ “ to ensure valid "
-                    "expression for format “%Y-%m-%d %H:%M:%S”."
-                )
+                ]
                 continue
             if name_of_variable == "variables":
-                assert (
-                    text_open_dataset["Parameters"][i].desc
-                    == "List of variable names to extract."
-                )
+                assert text_open_dataset["Parameters"][i].desc == [
+                    "List of variable names to extract."
+                ]
                 continue
             if name_of_variable == "dataset_id":
                 assert text_open_dataset["Parameters"][i].desc == [
@@ -124,20 +112,16 @@ class TestDocumentation:
         for i in range(len(text_read_dataframe["Parameters"])):
             name_of_variable = text_read_dataframe["Parameters"][i].name
             if name_of_variable in ["start_datetime", "end_datetime"]:
-                assert (
-                    text_read_dataframe["Parameters"][i].desc
-                    == documentation_utils.SUBSET[
+                assert text_read_dataframe["Parameters"][i].desc == [
+                    documentation_utils.SUBSET[
                         name_of_variable.upper() + "_HELP"
                     ]
-                    + "Caution: encapsulate date with “ “ to ensure valid "
-                    "expression for format “%Y-%m-%d %H:%M:%S”."
-                )
+                ]
                 continue
             if name_of_variable == "variables":
-                assert (
-                    text_read_dataframe["Parameters"][i].desc
-                    == "List of variable names to extract."
-                )
+                assert text_read_dataframe["Parameters"][i].desc == [
+                    "List of variable names to extract."
+                ]
                 continue
             if name_of_variable == "dataset_id":
                 assert text_read_dataframe["Parameters"][i].desc == [
@@ -146,6 +130,8 @@ class TestDocumentation:
                 continue
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
+            print(name_of_variable)
+
             assert text_read_dataframe["Parameters"][i].desc == [
                 documentation_utils.SUBSET[name_of_variable.upper() + "_HELP"]
             ]

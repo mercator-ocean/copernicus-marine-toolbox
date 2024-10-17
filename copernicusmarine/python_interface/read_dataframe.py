@@ -93,15 +93,15 @@ def read_dataframe(
     vertical_dimension_output : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
     start_datetime : Union[datetime, str], optional
-        The start datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports common format parsed by pendulum.
+        The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     end_datetime : Union[datetime, str], optional
-        The end datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports common format parsed by pendulum.
+        The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved. If ‘inside´, the selection retrieved will be inside the requested range. If ‘strict-inside’, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ‘nearest’, the extremes closest to the requested values will be returned. A warning will be displayed if outside of bounds. If ‘outside’, the extremes will be taken to contain all the requested interval.
+        If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     service : str, optional
-        Force download through one of the available services using the service name among [‘arco-geo-series’, ‘arco-time-series’, ‘omi-arco’, ‘static-arco’] or its short name among [‘geoseries’, ‘timeseries’, ‘omi-arco’, ‘static-arco’].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a credentials file if not in its default directory. Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
+        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
 
 
     Returns

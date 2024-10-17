@@ -31,9 +31,9 @@ def login(
     check_credentials_valid : bool
         Flag to check if the credentials are valid. No other action will be performed. The validity will be check in this order:
         1. Check if the credentials are valid with the provided username and password.
-        2. Check if the credentials are valid in the configuration file.
-        3. Check if the credentials are valid in the environment variables.
-        When any is found not valid, will return False immediately.
+        2. Check if the credentials are valid in the environment variables.
+        3. Check if the credentials are valid in the configuration file.
+        When any is found (valid or not valid), will return immediately.
 
     Returns
     -------

@@ -59,7 +59,7 @@ def get(
     output_directory : Union[pathlib.Path, str], optional
         The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a credentials file if not in its default directory. Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
+        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     force_download : bool, optional
         Flag to skip confirmation before download.
     overwrite_output_data : bool, optional
@@ -75,11 +75,11 @@ def get(
     regex : str, optional
         The regular expression that must match the absolute paths of the files to download.
     file_list : Union[pathlib.Path, str], optional
-        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the datasetID. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
+        Path to a '.txt' file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the same dataset as the one specified dataset with the datasetID option. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
     create_file_list : str, optional
         Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file to the specified output directory (default to current directory). The file name specified should end with '.txt' or '.csv'. If specified, no other action will be performed.
     index_parts : bool, optional
-        Option to get the index files of an INSITU dataset. Temporary option.
+        Option to get the index files of an INSITU dataset.
     sync : bool, optional
         Option to synchronize the local directory with the remote directory. See the documentation for more details.
     sync_delete : bool, optional
