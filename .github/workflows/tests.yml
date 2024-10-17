@@ -4,6 +4,7 @@ on:
   pull_request_target:
     branches: [ "main", "copernicusmarine-toolbox-v2" ]
 
+
 jobs:
   tests:
     runs-on: self-hosted
