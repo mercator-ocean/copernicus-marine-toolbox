@@ -55,55 +55,54 @@ def read_dataframe(
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
-    force_service: Optional[str] = None,
+    service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
 ) -> pandas.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
 
-    Unlike "lazy-loading," the data is loaded as soon as this function is executed,
-    which may be preferable when rapid access to the entire dataset is required,
-    but may require careful memory management.
+    Unlike 'lazy-loading,' the data is loaded as soon as this function is executed, which may be preferable when rapid access to the entire dataset is required, but may require careful memory management.
+
 
     Parameters
     ----------
-    dataset_id : str, optional
-        The identifier of the dataset.
+    dataset_id : str
+        The datasetID, required.
     dataset_version : str, optional
-        Force a specific dataset version.
+        Force the selection of a specific dataset version.
     dataset_part : str, optional
-        Force a specific dataset part.
+        Force the selection of a specific dataset part.
     username : str, optional
-        Username for authentication.
+        The username for authentication.
     password : str, optional
-        Password for authentication.
+        The password for authentication.
     variables : List[str], optional
-        List of variable names to load.
+        List of variable names to extract.
     minimum_longitude : float, optional
-        Minimum longitude for spatial subset.
+        Minimum longitude for the subset. The value will be transposed to the interval [-180; 360[.
     maximum_longitude : float, optional
-        Maximum longitude for spatial subset.
+        Maximum longitude for the subset. The value will be transposed to the interval [-180; 360[.
     minimum_latitude : float, optional
-        Minimum latitude for spatial subset.
+        Minimum latitude for the subset. Requires a float from -90 degrees to +90.
     maximum_latitude : float, optional
-        Maximum latitude for spatial subset.
+        Maximum latitude for the subset. Requires a float from -90 degrees to +90.
     minimum_depth : float, optional
-        Minimum depth for vertical subset.
+        Minimum depth for the subset. Requires a positive float (or 0).
     maximum_depth : float, optional
-        Maximum depth for vertical subset.
+        Maximum depth for the subset. Requires a positive float (or 0).
     vertical_dimension_output : str, optional
-        Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
-        'elevation' with ascending positive values. Default is 'depth'.
-    start_datetime : datetime, optional
-        Start datetime for temporal subset.
-    end_datetime : datetime, optional
-        End datetime for temporal subset.
+        Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
+    start_datetime : Union[datetime, str], optional
+        The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
+    end_datetime : Union[datetime, str], optional
+        The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved.If 'strict', the retrieved selection will be inside the requested interval. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
-    force_service : str, optional
-        Force a specific service for data download.
+        If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
+    service : str, optional
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a credentials file for authentication.
+        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
+
 
     Returns
     -------
@@ -143,7 +142,7 @@ def read_dataframe(
             maximum_depth=maximum_depth,
             vertical_dimension_output=vertical_dimension_output,
         ),
-        force_service=force_service,
+        force_service=service,
         credentials_file=credentials_file,
     )
     dataset = load_data_object_from_load_request(

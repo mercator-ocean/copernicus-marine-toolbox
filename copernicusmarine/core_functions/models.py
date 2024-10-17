@@ -91,4 +91,4 @@ class ResponseSubset(BaseModel):
     #: get the final result in MB.
     data_needed: Optional[float]
     #: The bounds of the subsetted dataset.
-    coodinates_extent: DatasetCoordinatesExtent
+    coordinates_extent: DatasetCoordinatesExtent

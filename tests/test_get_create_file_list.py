@@ -16,7 +16,7 @@ class TestGetCreateFileList:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"Assertion error: Download file list must be a .txt or .csv file."
+            b"Assertion error: Download file list must be a '.txt' or '.csv' file."
             in self.output.stderr
         )
 
@@ -58,7 +58,10 @@ class TestGetCreateFileList:
                 create_file_list="hello",
             )
         except AssertionError as e:
-            assert str(e) == "Download file list must be a .txt or .csv file. "
+            assert (
+                str(e)
+                == "Download file list must be a '.txt' or '.csv' file. "
+            )
 
     def test_get_create_file_list_python(self):
         get(

@@ -59,50 +59,51 @@ def open_dataset(
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
 ) -> xarray.Dataset:
     """
-    Load an xarray dataset using "lazy-loading" mode from a Copernicus Marine data source using either the ARCO series protocol.
+    Load an xarray dataset using 'lazy-loading' mode from a Copernicus Marine data source.
 
     This means that data is only loaded into memory when a computation is called, optimizing RAM usage by avoiding immediate loading.
     It supports various parameters for customization, such as specifying geographical bounds, temporal range, depth range, and more.
 
+
     Parameters
     ----------
     dataset_id : str
-        The ID of the dataset. `dataset_id` is mandatory.
+        The datasetID, required.
     dataset_version : str, optional
-        Force the use of a specific dataset version.
+        Force the selection of a specific dataset version.
     dataset_part : str, optional
-        Force the use of a specific dataset part.
+        Force the selection of a specific dataset part.
     username : str, optional
-        Username for authentication, if required.
+        The username for authentication.
     password : str, optional
-        Password for authentication, if required.
+        The password for authentication.
     variables : List[str], optional
-        List of variable names to be loaded from the dataset.
+        List of variable names to extract.
     minimum_longitude : float, optional
-        The minimum longitude for subsetting the data.
+        Minimum longitude for the subset. The value will be transposed to the interval [-180; 360[.
     maximum_longitude : float, optional
-        The maximum longitude for subsetting the data.
+        Maximum longitude for the subset. The value will be transposed to the interval [-180; 360[.
     minimum_latitude : float, optional
-        The minimum latitude for subsetting the data.
+        Minimum latitude for the subset. Requires a float from -90 degrees to +90.
     maximum_latitude : float, optional
-        The maximum latitude for subsetting the data.
+        Maximum latitude for the subset. Requires a float from -90 degrees to +90.
     minimum_depth : float, optional
-        The minimum depth for subsetting the data.
+        Minimum depth for the subset. Requires a positive float (or 0).
     maximum_depth : float, optional
-        The maximum depth for subsetting the data.
+        Maximum depth for the subset. Requires a positive float (or 0).
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved. If 'strict', the retrieved selection will be inside the requested interval. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
+        If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     vertical_dimension_output : str, optional
-        Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
-        'elevation' with ascending positive values. Default is 'depth'.
-    start_datetime : datetime, optional
-        The start datetime for temporal subsetting.
-    end_datetime : datetime, optional
-        The end datetime for temporal subsetting.
+        Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
+    start_datetime : Union[datetime, str], optional
+        The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
+    end_datetime : Union[datetime, str], optional
+        The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     service : str, optional
-        Force the use of a specific service (ARCO geo series or time series).
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a file containing authentication credentials.
+        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
+
 
     Returns
     -------
