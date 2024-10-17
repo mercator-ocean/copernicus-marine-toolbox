@@ -42,7 +42,7 @@ def get(
     """
     Download originally produced data files.
 
-    The ``dataset_id`` is required and can be found via the ``describe`` command.
+    The `datasetID is required and can be found via the ``describe`` command.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def get(
     overwrite_output_data : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
     request_file : Union[pathlib.Path, str], optional
-        Option to pass a file containing the arguments. The file MUST follow the structure of dataclass ‘GetRequest’. For more information please refer to the documentation or use option ``--create-template`` for an example template.
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` for an example template.
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
     show_outputnames : bool, optional
@@ -75,9 +75,9 @@ def get(
     regex : str, optional
         The regular expression that must match the absolute paths of the files to download.
     file_list : Union[pathlib.Path, str], optional
-        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the –dataset-id. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
+        Path to a .txt file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the specified dataset using the datasetID. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
     create_file_list : str, optional
-        Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file in the directory specified with the –output-directory option (default to current directory). The file name specified should end with ‘.txt’ or ‘.csv’. If specified, no other action will be performed.
+        Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file to the specified output directory (default to current directory). The file name specified should end with '.txt' or '.csv'. If specified, no other action will be performed.
     index_parts : bool, optional
         Option to get the index files of an INSITU dataset. Temporary option.
     sync : bool, optional

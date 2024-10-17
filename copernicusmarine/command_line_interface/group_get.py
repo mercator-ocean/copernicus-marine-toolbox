@@ -38,17 +38,14 @@ def cli_get() -> None:
     short_help="Download originally produced data files.",
     help=documentation_utils.GET["GET_DESCRIPTION_HELP"]
     + " See :ref:`describe <cli-describe>`."
-    " When provided a datasetID, all the files "
-    "in the corresponding folder will be downloaded. Filters can be applied "
-    "with ``--filter`` or ``--regex`` options.",  # noqa
+    + documentation_utils.GET["GET_RESPONSE_HELP"],
     epilog="""
     Example to download all the files from a given dataset:
 
     .. code-block:: bash
 
         copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m \n
-    """
-    + documentation_utils.GET["GET_RESPONSE_HELP"],  # noqa
+    """,  # noqa
 )
 @click.option(
     "--dataset-id",

@@ -84,7 +84,7 @@ def subset(
     overwrite_output_data : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
     request_file : Union[pathlib.Path, str], optional
-        Option to pass a file containing the arguments. The file MUST follow the structure of dataclass ‘SubsetRequest’. For more information please refer to the documentation or use option ``--create-template`` for an example template.
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` for an example template.
     service : str, optional
         Force download through one of the available services using the service name among [‘arco-geo-series’, ‘arco-time-series’, ‘omi-arco’, ‘static-arco’] or its short name among [‘geoseries’, ‘timeseries’, ‘omi-arco’, ‘static-arco’].
     variables : List[str], optional
@@ -108,7 +108,7 @@ def subset(
     end_datetime : Union[datetime, str], optional
         The end datetime of the temporal subset. Caution: encapsulate date with “ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports common format parsed by pendulum.
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved. If ‘inside´, the selection retrieved will be inside the requested range. If ‘strict-inside’, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ‘nearest’, the extremes closest to the requested values will be returned. A warning will be displayed if outside of bounds. If ‘outside’, the extremes will be taken to contain all the requested interval.
+        The method in which the coordinates will be retrieved. If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. A warning will be displayed if outside of bounds. If ``outside``, the extremes will be taken to contain all the requested interval.
     output_filename : str, optional
         Concatenate the downloaded data in the given file name (under the output directory).
     file_format : str, optional

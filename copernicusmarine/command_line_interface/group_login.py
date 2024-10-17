@@ -28,7 +28,8 @@ def cli_login() -> None:
     "login",
     cls=CustomClickOptionsCommand,
     short_help="Create a configuration file with your Copernicus Marine credentials.",
-    help=documentation_utils.LOGIN["LOGIN_DESCRIPTION_HELP"],  # noqa
+    help=documentation_utils.LOGIN["LOGIN_DESCRIPTION_HELP"]
+    + documentation_utils.LOGIN["LOGIN_RESPONSE_HELP"],  # noqa
     epilog="""
     Examples:
 
@@ -51,8 +52,7 @@ def cli_login() -> None:
         copernicusmarine login
         > Username: [USER-INPUT]
         > Password: [USER-INPUT]
-    """  # noqa
-    + documentation_utils.LOGIN["LOGIN_RESPONSE_HELP"],
+    """,  # noqa
 )
 @click.option(
     "--username",

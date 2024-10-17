@@ -48,6 +48,7 @@ def cli_subset() -> None:
     cls=CustomClickOptionsCommand,
     short_help="Download subsets of datasets as NetCDF files or Zarr stores.",
     help=documentation_utils.SUBSET["SUBSET_DESCRIPTION_HELP"]
+    + documentation_utils.SUBSET["SUBSET_RESPONSE_HELP"]
     + "See :ref:`describe <cli-describe>`.",
     epilog="""
     Examples:
@@ -61,8 +62,7 @@ def cli_subset() -> None:
     .. code-block:: bash
 
         copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 \n
-    """  # noqa
-    + documentation_utils.SUBSET["SUBSET_RESPONSE_HELP"],
+    """,  # noqa
 )
 @click.option(
     "--dataset-id",
@@ -140,13 +140,17 @@ def cli_subset() -> None:
     "--start-datetime",
     "-t",
     type=str,
-    help=documentation_utils.SUBSET["START_DATETIME_HELP"],
+    help=documentation_utils.SUBSET["START_DATETIME_HELP"]
+    + "Caution: encapsulate date with “ “ to ensure valid "
+    "expression for format “%Y-%m-%d %H:%M:%S”.",
 )
 @click.option(
     "--end-datetime",
     "-T",
     type=str,
-    help=documentation_utils.SUBSET["END_DATETIME_HELP"],
+    help=documentation_utils.SUBSET["END_DATETIME_HELP"]
+    + "Caution: encapsulate date with “ “ to ensure valid "
+    "expression for format “%Y-%m-%d %H:%M:%S”.",
 )
 @click.option(
     "--coordinates-selection-method",

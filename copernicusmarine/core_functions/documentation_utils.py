@@ -23,7 +23,7 @@ SHARED: dict[str, str] = {
     ),
     "CREDENTIALS_FILE_HELP": (
         "Path to a credentials file if not in its default directory"
-        " (which would be $HOME/.copernicusmarine). Accepts "
+        " (``$HOME/.copernicusmarine``). Accepts "
         ".copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini "
         "files."
     ),
@@ -71,7 +71,7 @@ LOGIN: dict[str, str] = {
         " with the provided username and password. "
         "2. Check if the credentials are valid in the environment variables. "
         "3. Check if the credentials are valid in the configuration file. "
-        "When any is found not valid, will return False immediately."
+        "When any is found (valid or not valid), will return immediately."
     ),
 }
 
@@ -81,8 +81,7 @@ DESCRIBE: dict[str, str] = {
         " from the Copernicus Marine catalogue."
     ),
     "DESCRIBE_RESPONSE_HELP": (
-        "dict[str, Any]\n"
-        "A dictionary containing the retrieved metadata information."
+        "JSON\n A dictionary containing the retrieved metadata information."
     ),
     "MAX_CONCURRENT_REQUESTS_HELP": (
         "Maximum number of concurrent requests (>=1). Default 15. The command uses "
@@ -108,12 +107,11 @@ DESCRIBE: dict[str, str] = {
 SUBSET: dict[str, str] = {
     "SUBSET_DESCRIPTION_HELP": (
         "Extracts a subset of data from a specified dataset using given parameters."
-        " \n \n The ``--dataset-id`` is required and can be found via the ``describe`` "
+        " \n \n The datasetID is required and can be found via the ``describe`` "
         "command. "  # has some hardcoding in CLI and python API
     ),
     "SUBSET_RESPONSE_HELP": (
-        "ResponseSubset \n"
-        "A description of the downloaded data and its destination."
+        "JSON \n A description of the downloaded data and its destination."
     ),
     "SERVICE_HELP": (
         f"Force download through one of the available services using the service name "
@@ -149,34 +147,34 @@ SUBSET: dict[str, str] = {
         "Default is depth."
     ),
     "START_DATETIME_HELP": (
-        "The start datetime of the temporal subset. Caution: encapsulate date with "
-        "“ “ to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports "
-        "common format parsed by pendulum."
-    ),
+        "The start datetime of the temporal subset. Supports common "
+        "format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing)."
+    ),  # hardocded in cli: Caution: encapsulate date with “ “ to ensure valid
+    # expression for format “%Y-%m-%d %H:%M:%S”.
     "END_DATETIME_HELP": (
-        "The end datetime of the temporal subset. Caution: encapsulate date with “ “ "
-        "to ensure valid expression for format “%Y-%m-%d %H:%M:%S”. Supports common "
-        "format parsed by pendulum."
-    ),
+        "The end datetime of the temporal subset. Supports common "
+        "format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing)."
+    ),  # hardocded in cli: Caution: encapsulate date with “ “
+    # to ensure valid expression for format “%Y-%m-%d %H:%M:%S”.
     "COORDINATES_SELECTION_METHOD_HELP": (
-        "If ‘inside´, the "
-        "selection retrieved will be inside the requested range. If ‘strict-"
-        "inside’, the selection retrieved will be inside the requested range, "
+        "If ``inside``, the "
+        "selection retrieved will be inside the requested range. If ``strict-"
+        "inside``, the selection retrieved will be inside the requested range, "
         "and an error will be raised if the values don't exist. "
-        "If ‘nearest’, the extremes closest to the requested values will "
-        "be returned. If ‘outside’,"
+        "If ``nearest``, the extremes closest to the requested values will "
+        "be returned. If ``outside``,"
         " the extremes will be taken to contain all the requested interval."
-        " The methods ‘inside´, ‘nearest’ and ‘outside’ will display"
+        " The methods ``inside``, ``nearest`` and ``outside`` will display"
         " a warning if the request is out of bounds."
     ),
     "OUTPUT_FILENAME_HELP": (
-        "Concatenate the downloaded data in the given file name (under the output "
+        "Save the downloaded data with the given file name (under the output "
         "directory)."
     ),
     "FILE_FORMAT_HELP": "Format of the downloaded dataset. Default to NetCDF (.nc).",
     "MOTU_API_REQUEST_HELP": (
         "Option to pass a complete MOTU API request as a string. Caution, user has to "
-        "replace double quotes “ with single quotes ‘ in the request."
+        "replace double quotes “ with single quotes ' in the request."
     ),
     "NETCDF_COMPRESSION_LEVEL_HELP": (
         "Specify a compression level to apply on the NetCDF output file. A value of 0 "
@@ -190,7 +188,7 @@ SUBSET: dict[str, str] = {
 GET: dict[str, str] = {
     "GET_DESCRIPTION_HELP": (
         "Download originally produced data files.\n \n  "
-        " The ``--dataset-id`` is required (either as an "
+        " The datasetID is required (either as an "
         "argument or in a request file) and can be found via the ``describe``"
         " command."
     ),  # has some hardcoding in CLI
@@ -200,8 +198,7 @@ GET: dict[str, str] = {
         " executions are used."
     ),
     "GET_RESPONSE_HELP": (
-        "ResponseGet \n"
-        "A list of files that were downloaded and some metadata."
+        "JSON \n A list of files that were downloaded and some metadata."
     ),
     "SHOW_OUTPUTNAMES_HELP": (
         "Option to display the names of the output files before download."
@@ -214,16 +211,17 @@ GET: dict[str, str] = {
         "download."
     ),
     "FILE_LIST_HELP": (
-        "Path to a .txt file containing a list of file paths, line by line, that will "
-        "be downloaded directly. These files must be from the specified dataset using "
-        "the --dataset-id. If no files can be found, the Toolbox will list all files "
-        "on the remote server and attempt to find a match."
+        "Path to a '.txt' file containing a "
+        "list of file paths, line by line, that will "
+        "be downloaded directly. These files must be from the same dataset as the one s"
+        "pecified dataset with the datasetID option. If no files can be found, the "
+        "Toolbox will list all files on the remote server and attempt to find a match."
     ),
     "CREATE_FILE_LIST_HELP": (
         "Option to only create a file containing the names of the targeted files "
-        "instead of downloading them. It writes the file in the directory specified "
-        "with the --output-directory option (default to current directory). The file "
-        "name specified should end with ‘.txt’ or ‘.csv’. If specified, no other "
+        "instead of downloading them. It writes the file to the specified output"
+        " directory (default to current directory). The file "
+        "name specified should end with '.txt' or '.csv'. If specified, no other "
         "action will be performed."
     ),
     "SYNC_HELP": (

@@ -25,7 +25,8 @@ def cli_describe() -> None:
     "describe",
     cls=CustomClickOptionsCommand,
     short_help="Print Copernicus Marine catalogue as JSON.",
-    help=documentation_utils.DESCRIBE["DESCRIBE_DESCRIPTION_HELP"],  # noqa
+    help=documentation_utils.DESCRIBE["DESCRIBE_DESCRIPTION_HELP"]
+    + documentation_utils.DESCRIBE["DESCRIBE_RESPONSE_HELP"],  # noqa
     epilog="""
     Examples:
 
@@ -36,8 +37,7 @@ def cli_describe() -> None:
     .. code-block:: bash
 
         copernicusmarine describe -c METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 \n
-    """  # noqa
-    + documentation_utils.DESCRIBE["DESCRIBE_RESPONSE_HELP"],  # noqa
+    """,  # noqa
 )
 @click.option(
     "--include-description",
