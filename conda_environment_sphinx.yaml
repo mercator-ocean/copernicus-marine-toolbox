@@ -1,5 +1,6 @@
 dependencies:
   - python==3.9.18
+  - pandoc==3.5
   - pip
   - pip:
     - sphinx==7.4.7
@@ -7,3 +8,4 @@ dependencies:
     - numpydoc==1.8.0
     - sphinx-copybutton==0.5.2
     - furo==2024.8.6
+    - nbsphinx==0.9.5

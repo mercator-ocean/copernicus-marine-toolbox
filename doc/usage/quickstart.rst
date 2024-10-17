@@ -2,7 +2,8 @@
 Quick start
 =================
 
-Under construction ...
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-.. image:: ../_static/under_construction.gif
-   :align: center
+   ../_static/notebooks/CMT-english
