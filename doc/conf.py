@@ -20,6 +20,7 @@ extensions = [
     "sphinx_click",
     "numpydoc",
     "sphinx_copybutton",
+    "nbsphinx",
 ]
 numpydoc_show_class_members = False
 
