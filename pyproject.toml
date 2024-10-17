@@ -6,6 +6,8 @@ authors = ["Copernicus Marine User Support <servicedesk.cmems@mercator-ocean.eu>
 readme = "README.md"
 packages = [{include = "copernicusmarine"}]
 license = "EUPL-1.2"
+repository = "https://github.com/mercator-ocean/copernicus-marine-toolbox"
+documentation = "https://toolbox-docs.marine.copernicus.eu/"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
