@@ -15,8 +15,7 @@ def login(
     check_credentials_valid: bool = False,
 ) -> bool:
     """
-    Create a configuration file with your Copernicus Marine credentials under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``overwrite_configuration_file`` option).
-
+    Create a configuration file with your Copernicus Marine credentials under the ``$HOME/.copernicusmarine`` directory.
 
     Parameters
     ----------

@@ -42,7 +42,7 @@ def get(
     """
     Download originally produced data files.
 
-    The datasetID is required and can be found via the ``describe`` command.
+    The datasetID is required (either as an argument or in a request file) and can be found via the ``describe`` command.
 
     Parameters
     ----------

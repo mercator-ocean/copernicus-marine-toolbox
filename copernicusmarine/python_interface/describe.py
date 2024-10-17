@@ -25,7 +25,7 @@ def describe(
     staging: bool = False,
 ) -> dict[str, Any]:
     """
-    Retrieve metadata information from the Copernicus Marine catalogue based on specified parameters and options.
+    Retrieve and parse the metadata information from the Copernicus Marine catalogue.
 
     Parameters
     ----------

@@ -59,7 +59,7 @@ def subset(
     netcdf3_compatible: bool = False,
 ) -> ResponseSubset:
     """
-    Extracts a subset of data from a specified dataset using given parameters.
+    Extracts a subset of data from a specified dataset using given parameters."
 
     The datasetID is required and can be found via the ``describe`` command.
 

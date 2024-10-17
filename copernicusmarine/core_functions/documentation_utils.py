@@ -45,7 +45,7 @@ LOGIN: dict[str, str] = {
     "LOGIN_DESCRIPTION_HELP": (
         "Create a configuration file with your Copernicus Marine credentials"
         " under the ``$HOME/.copernicusmarine`` directory"
-        " (overwritable with the ``--credentials-file`` option)."
+        "."
     ),
     "LOGIN_RESPONSE_HELP": (
         "Error code\n 0 error code if the login was successfully "
@@ -72,7 +72,7 @@ LOGIN: dict[str, str] = {
 DESCRIBE: dict[str, str] = {
     "DESCRIBE_DESCRIPTION_HELP": (
         "Retrieve and parse the metadata information "
-        " from the Copernicus Marine catalogue."
+        "from the Copernicus Marine catalogue."
     ),
     "DESCRIBE_RESPONSE_HELP": (
         "JSON\n A dictionary containing the retrieved metadata information."
@@ -211,7 +211,7 @@ GET: dict[str, str] = {
         "download."
     ),
     "REQUEST_FILE_HELP": (
-        "Option to pass a file containing the arguments " "..."
+        "Option to pass a file containing the arguments. " "..."
     ),
     "FILE_LIST_HELP": (
         "Path to a '.txt' file containing a "
