@@ -134,7 +134,7 @@ def download_dataset(
         output=output_path,
         size=final_result_size_estimation,
         data_needed=data_needed_approximation,
-        coodinates_extent=get_dataset_coordinates_extent(dataset),
+        coordinates_extent=get_dataset_coordinates_extent(dataset),
     )
 
     if dry_run:
