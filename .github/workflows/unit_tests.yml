@@ -1,17 +1,20 @@
 name: Run tests
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [ "main", "copernicusmarine-toolbox-v2" ]
 
+
 jobs:
-  tests:
+  unit_tests:
     runs-on: self-hosted
     timeout-minutes: 30
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: mamba-org/setup-micromamba@v1
         with:
