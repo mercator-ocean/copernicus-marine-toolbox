@@ -119,3 +119,7 @@ And from a Windows os (cmd):
     copernicusmarine_windows-latest.exe describe
 
 (``describe`` or any other command)
+
+.. note::
+
+    For the **Ubuntu** binaries you need a version of Glibc higher than the one that the binary has. Use older **Ubuntu** versions to access a lower version of said library.
