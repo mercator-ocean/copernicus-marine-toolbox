@@ -5,13 +5,18 @@ on:
     branches:
        - main
        - 'pre-releases/**'
+  pull_request:
+    branches:
+       - main
+       - 'pre-releases/**'
+       - copernicusmarine-toolbox-v2
 
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, macos-13]
+        os: [macos-latest, ubuntu-latest, macos-13, ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -52,5 +57,7 @@ jobs:
           ARCH="macos-x86_64"
         elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           ARCH="linux"
+        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
+          ARCH="linux-20.04"
         fi
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
