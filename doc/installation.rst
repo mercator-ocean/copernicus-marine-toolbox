@@ -85,7 +85,16 @@ To be able to download Copernicus Marine data, you need to have an account on th
 Use the Copernicus Marine toolbox binaries
 ***********************************************
 
-In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases. Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
+In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases:
+
+To download directly the latest stable releases:
+
+- MacOS arm64: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine_macos-arm64.cli>`_
+- MacOS x86_64: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine_macos-x86_64.cli>`_
+- Linux: `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine_linux.cli>`_
+- Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine.exe>`_
+
+Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
 
 In mac-os or linux:
 
