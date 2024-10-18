@@ -86,19 +86,24 @@ This applies to all dimensions: longitude, latitude, time, and depth.
 **Example of longitude requests:**
 Imagine a dataset with longitudes from 5.0 to 36.5, with steps of 0.5.
 
-- ``--coordinates-selection-method``= **inside**, with requested interval = [0.4, 35.9]:
+- ``--coordinates-selection-method`` = **inside**, with requested interval = [0.4, 35.9]:
+
   - Returns longitudes within the range: [0.5, 35.5]
 
-- ``--coordinates-selection-method``= **strict-inside**, with requested interval = [0.4, 35.9]:
+- ``--coordinates-selection-method`` = **strict-inside**, with requested interval = [0.4, 35.9]:
+
   - Returns longitudes within the range: [0.5, 35.5]
 
-- ``--coordinates-selection-method``= **strict-inside**, with requested interval = [0.0, 40]:
-  - Returns an error
+- ``--coordinates-selection-method`` = **strict-inside**, with requested interval = [0.0, 40]:
 
-- ``--coordinates-selection-method``= **outside**, with requested interval = [0.4, 35.9]:
+  - Returns an error, see :class:`copernicusmarine.CoordinatesOutOfDatasetBounds`.
+
+- ``--coordinates-selection-method`` = **outside**, with requested interval = [0.4, 35.9]:
+
   - Returns longitudes within the range: [0.0, 36.0]
 
-- ``--coordinates-selection-method``= **nearest**, with requested interval = [0.4, 35.9]:
+- ``--coordinates-selection-method`` = **nearest**, with requested interval = [0.4, 35.9]:
+
   - Returns longitudes within the range: [0.5, 36.0]
 
 If you request a single point, the nearest point in that dimension will be returned.
