@@ -53,7 +53,7 @@ LOGIN: dict[str, str] = {
         " (overwritable with the ``overwrite_configuration_file`` option)."
     ),
     "LOGIN_RESPONSE_HELP": (
-        "Error code\n 0 error code if the login was successfully "
+        "Exit code\n 0 exit code if the login was successfully "
         "completed, 1 otherwise."
     ),
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
