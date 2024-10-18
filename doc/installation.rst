@@ -85,7 +85,7 @@ To be able to download Copernicus Marine data, you need to have an account on th
 Use the Copernicus Marine toolbox binaries
 ***********************************************
 
-In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases:
+In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases.
 
 To download directly the latest stable releases:
 
