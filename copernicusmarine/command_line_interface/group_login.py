@@ -7,6 +7,7 @@ import click
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
+from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
@@ -27,11 +28,9 @@ def cli_login() -> None:
     "login",
     cls=CustomClickOptionsCommand,
     short_help="Create a configuration file with your Copernicus Marine credentials.",
-    help="""
-    Create a configuration file with your Copernicus Marine credentials.
-
-    Create a configuration file under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``--credentials-file`` option).
-    """,  # noqa
+    help=documentation_utils.LOGIN["LOGIN_DESCRIPTION_HELP"]
+    + " \n\nReturns\n "
+    + documentation_utils.LOGIN["LOGIN_RESPONSE_HELP"],  # noqa
     epilog="""
     Examples:
 
@@ -59,50 +58,37 @@ def cli_login() -> None:
 @click.option(
     "--username",
     hide_input=False,
-    help="If not set, search for environment variable"
-    + " COPERNICUSMARINE_SERVICE_USERNAME"
-    + ", or else ask for user input.",
+    help=documentation_utils.LOGIN["USERNAME_HELP"],
 )
 @click.option(
     "--password",
     hide_input=True,
-    help="If not set, search for environment variable"
-    + " COPERNICUSMARINE_SERVICE_PASSWORD"
-    + ", or else ask for user input.",
+    help=documentation_utils.LOGIN["PASSWORD_HELP"],
 )
 @click.option(
     "--configuration-file-directory",
     type=click.Path(path_type=pathlib.Path),
     default=DEFAULT_CLIENT_BASE_DIRECTORY,
-    help="Path to the directory where the configuration file is stored.",
+    help=documentation_utils.LOGIN["CONFIGURATION_FILE_DIRECTORY_HELP"],
 )
 @click.option(
     "--overwrite-configuration-file",
     "-overwrite",
     is_flag=True,
     default=False,
-    help="Flag to skip confirmation before overwriting configuration file.",
+    help=documentation_utils.LOGIN["OVERWRITE_CONFIGURATION_FILE_HELP"],
 )
 @click.option(
     "--check-credentials-valid",
     is_flag=True,
     default=False,
-    help="Flag to check if the credentials are valid. "
-    "No other action will be performed. "
-    "The validity will be check in this order: "
-    "1. Check if the credentials are valid with the provided username and password."
-    "2. Check if the credentials are valid in the configuration file."
-    "3. Check if the credentials are valid in the environment variables."
-    "When any is found not valid, will return False immediately.",
+    help=documentation_utils.LOGIN["CHECK_CREDENTIALS_VALID_HELP"],
 )
 @click.option(
     "--log-level",
     type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
     default="INFO",
-    help=(
-        "Set the details printed to console by the command "
-        "(based on standard logging library)."
-    ),
+    help=documentation_utils.LOGIN["LOG_LEVEL_HELP"],
 )
 @log_exception_and_exit
 def login(

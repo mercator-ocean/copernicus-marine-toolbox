@@ -108,7 +108,7 @@ def get_function(
     if create_file_list is not None:
         assert create_file_list.endswith(".txt") or create_file_list.endswith(
             ".csv"
-        ), "Download file list must be a .txt or .csv file. "
+        ), "Download file list must be a '.txt' or '.csv' file. "
         f"Got '{create_file_list}' instead."
     if file_list_path:
         direct_download_files = get_direct_download_files(file_list_path)
@@ -211,7 +211,7 @@ def get_direct_download_files(
         if not os.path.exists(file_list_path):
             raise FileNotFoundError(
                 f"File {file_list_path} does not exist."
-                " Please provide a valid path to a .txt file."
+                " Please provide a valid path to a '.txt' file."
             )
         with open(file_list_path) as f:
             direct_download_files = [line.strip() for line in f.readlines()]

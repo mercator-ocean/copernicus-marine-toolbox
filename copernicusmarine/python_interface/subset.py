@@ -59,73 +59,74 @@ def subset(
     netcdf3_compatible: bool = False,
 ) -> ResponseSubset:
     """
-    Extracts a subset of data from a specified dataset using given parameters.
+    Extracts a subset of data from a specified dataset using given parameters."
+
+    The datasetID is required and can be found via the ``describe`` command.
 
     Parameters
     ----------
     dataset_id : str, optional
-        The unique identifier of the dataset.
+        The datasetID, required either as an argument or in the request_file option.
     dataset_version : str, optional
-        Force the use of a specific dataset version.
+        Force the selection of a specific dataset version.
     dataset_part : str, optional
-        Force the use of a specific dataset part.
+        Force the selection of a specific dataset part.
     username : str, optional
-        The username for authentication. See also :func:`~copernicusmarine.login`.
+        The username for authentication. See also :func:`~copernicusmarine.login`
     password : str, optional
-        The password for authentication. See also :func:`~copernicusmarine.login`.
+        The password for authentication. See also :func:`~copernicusmarine.login`
     output_directory : Union[pathlib.Path, str], optional
-        The directory where downloaded files will be saved.
+        The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
-        Path to a file containing authentication credentials.
+        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     force_download : bool, optional
-        Skip confirmation before download.
+        Flag to skip confirmation before download.
     overwrite_output_data : bool, optional
-        If True, overwrite existing output files.
+        If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
     request_file : Union[pathlib.Path, str], optional
-        Path to a file containing request parameters. For more information, please refer to the README.
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     service : str, optional
-        Force the use of a specific service.
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
     variables : List[str], optional
         List of variable names to extract.
     minimum_longitude : float, optional
-        Minimum longitude value for spatial subset.
+        Minimum longitude for the subset. The value will be transposed to the interval [-180; 360[.
     maximum_longitude : float, optional
-        Maximum longitude value for spatial subset.
+        Maximum longitude for the subset. The value will be transposed to the interval [-180; 360[.
     minimum_latitude : float, optional
-        Minimum latitude value for spatial subset.
+        Minimum latitude for the subset. Requires a float from -90 degrees to +90.
     maximum_latitude : float, optional
-        Maximum latitude value for spatial subset.
+        Maximum latitude for the subset. Requires a float from -90 degrees to +90.
     minimum_depth : float, optional
-        Minimum depth value for vertical subset.
+        Minimum depth for the subset. Requires a positive float (or 0).
     maximum_depth : float, optional
-        Maximum depth value for vertical subset.
+        Maximum depth for the subset. Requires a positive float (or 0).
     vertical_dimension_output : str, optional
-        Consolidate the vertical dimension (the z-axis) as requested: 'depth' with descending positive values.
-        'elevation' with ascending positive values. Default is 'depth'.
-    start_datetime : datetime, optional
-        Start datetime for temporal subset.
-    end_datetime : datetime, optional
-        End datetime for temporal subset.
+        Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
+    start_datetime : Union[datetime, str], optional
+        The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
+    end_datetime : Union[datetime, str], optional
+        The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     coordinates_selection_method : str, optional
-        The method in which the coordinates will be retrieved. If 'strict', the retrieved selection will be inside the requested interval. If 'strict', the retrieved selection will be inside the requested interval and an error will raise if there doesn't exist the values. If 'nearest', the returned interval extremes will be the closest to what has been asked for. A warning will be displayed if outside of bounds. If 'outisde', the extremes will be taken to contain all the requested interval. A warning will also be displayed if the subset is outside of the dataset bounds.
+        If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     output_filename : str, optional
-        Output filename for the subsetted data.
+        Save the downloaded data with the given file name (under the output directory).
     file_format : str, optional
-        Extension format for the filename.
+        Format of the downloaded dataset. Default to NetCDF '.nc'.
     motu_api_request : str, optional
-        MOTU API request string.
+        Option to pass a complete MOTU API request as a string. Caution, user has to replace double quotes “ with single quotes ' in the request.
     dry_run : bool, optional
         If True, runs query without downloading data.
     netcdf_compression_level : int, optional
-        Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the
-        highest level of compression available.
+        Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
     netcdf3_compatible : bool, optional
-        Enable downloading the dataset in a netCDF 3 compatible format.
+        Enable downloading the dataset in a netCDF3 compatible format.
 
     Returns
     -------
     ResponseSubset
         A description of the downloaded data and its destination.
+
     """  # noqa
     request_file = pathlib.Path(request_file) if request_file else None
     output_directory = (
