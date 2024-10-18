@@ -15,7 +15,7 @@ to globally disable the usage of SSL in the toolbox:
 ``trust_env`` for Python libraries
 ------------------------------------
 
-To do HTTP calls, the Copernicus Marine Toolbox uses the ``requests`` library.
+To do HTTP calls, the Copernicus Marine toolbox uses the ``requests`` library.
 By default, this library will have ``trust_env`` values set to ``True``.
 
 If you want to deactivate this, you can set ``COPERNICUSMARINE_TRUST_ENV=False`` (default ``True``).
