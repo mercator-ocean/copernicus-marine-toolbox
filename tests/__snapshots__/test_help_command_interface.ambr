@@ -174,7 +174,7 @@
     '  the ``$HOME/.copernicusmarine`` directory (overwritable with the',
     '  ``overwrite_configuration_file`` option).',
     '',
-    '  Returns  Error code  0 error code if the login was successfully completed, 1',
+    '  Returns  Exit code  0 exit code if the login was successfully completed, 1',
     '  otherwise.',
     '',
     'Options:',
