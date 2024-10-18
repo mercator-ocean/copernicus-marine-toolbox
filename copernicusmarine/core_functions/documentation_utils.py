@@ -42,7 +42,7 @@ SHARED: dict[str, str] = {
     "REQUEST_FILE_HELP": (
         "Option to pass a file containing the arguments. For more information "
         "please refer to the documentation or use option ``--create-template`` "
-        "of the command line interface for an example template."
+        "from the command line interface for an example template."
     ),
 }
 
