@@ -51,18 +51,25 @@ This option allows you to specify request parameters in a provided ``.json`` fil
   .. code-block:: text
 
     {
-        "dataset_id": "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-        "start_datetime": "2022-04-11",
-        "end_datetime": "2023-08-11",
-        "minimum_longitude": -182.79,
-        "maximum_longitude": -179.69,
-        "minimum_latitude": -40,
-        "maximum_latitude": -36,
-        "minimum_depth": 0,
-        "maximum_depth": 0,
-        "variables": ["thetao"],
-        "output_directory": "./data/",
-        "force_download": true
+        "dataset_id": "cmems_mod_glo_phy_myint_0.083deg_P1M-m",
+        "start_datetime": "2023-10-07",
+        "end_datetime": "2023-10-12",
+        "minimum_longitude": -85,
+        "maximum_longitude": -10,
+        "minimum_latitude": 35,
+        "maximum_latitude": 43,
+        "minimum_depth": 1,
+        "maximum_depth": 10,
+        "variables": [
+            "so",
+            "thetao"
+        ],
+        "output_directory": "copernicusmarine_data",
+        "force_service": false,
+        "force_download": false,
+        "request_file": false,
+        "motu_api_request": false,
+        "overwrite_output_data": false
     }
 
   **Example:**
@@ -77,13 +84,23 @@ This option allows you to specify request parameters in a provided ``.json`` fil
 
     {
         "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-        "filter": "*01yav_200[0-2]*",
-        "force_download": false,
-        "log_level": "INFO",
+        "dataset_version": null,
+        "dataset_part": null,
+        "username": null,
+        "password": null,
         "no_directories": false,
-        "output_directory": "./data/",
+        "filter": "*01yav_200[0-2]*",
+        "regex": null,
+        "output_directory": "copernicusmarine_data",
+        "show_outputnames": true,
+        "force_download": false,
+        "file_list": null,
+        "sync": false,
+        "sync_delete": false,
+        "index_parts": false,
+        "disable_progress_bar": false,
         "overwrite_output_data": false,
-        "show_outputnames": true
+        "log_level": "INFO"
     }
 
   **Example:**
