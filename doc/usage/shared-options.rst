@@ -46,7 +46,7 @@ Option ``--request-file``
 
 This option allows you to specify request parameters in a provided ``.json`` file, which is useful for batch processing. You can use the following templates or create new ones with the ``--create-template`` option.
 
-- **Template for ``subset`` data request:**
+- Template for ``subset`` data request:
 
   .. code-block:: text
 
@@ -78,7 +78,7 @@ This option allows you to specify request parameters in a provided ``.json`` fil
 
      copernicusmarine subset --request-file template_subset_data_request.json
 
-- **Template for ``get`` data request:**
+- Template for ``get`` data request:
 
   .. code-block:: text
 
