@@ -1,8 +1,10 @@
+.. _installation-page:
+
 ===================================================
 Installing Copernicus Marine toolbox
 ===================================================
 
-There are several ways to install or use the Copernicus Marine Toolbox:
+There are several ways to install or use the Copernicus Marine toolbox:
 
 * via pip (see `PyPI repository <https://pypi.org/project/copernicusmarine/>`_)
 * via mamba | conda (see `conda-forge channel <https://anaconda.org/conda-forge/copernicusmarine>`_)

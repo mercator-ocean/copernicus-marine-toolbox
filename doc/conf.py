@@ -8,7 +8,7 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Copernicus Marine Toolbox"
+project = "Copernicus Marine toolbox"
 copyright = "2024, Mercator Ocean International"
 author = "Mercator Ocean International"
 
@@ -20,7 +20,7 @@ extensions = [
     "sphinx_click",
     "numpydoc",
     "sphinx_copybutton",
-    "nbsphinx",
+    "myst_nb",
 ]
 numpydoc_show_class_members = False
 
@@ -68,3 +68,8 @@ StandaloneHTMLBuilder.supported_image_types = [
     "image/png",
     "image/jpeg",
 ]
+
+# -- Options for myst_nb --------------------------------------------------
+# https://myst-nb.readthedocs.io/en/latest/configuration.html#config-intro
+
+nb_execution_mode = "off"

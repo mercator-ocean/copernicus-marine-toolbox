@@ -28,7 +28,7 @@ repos:
         args: [--pytest-test-first]
         exclude: ^tests/resources/
       - id: pretty-format-json
-        exclude: ^doc/_static/notebooks/CMT-english.ipynb
+        exclude: ^doc/usage/quickoverview.ipynb
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
