@@ -65,7 +65,7 @@ def get(
     overwrite_output_data : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
     request_file : Union[pathlib.Path, str], optional
-        Option to pass a file containing the arguments ...
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` of the command line interface for an example template.
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
     show_outputnames : bool, optional

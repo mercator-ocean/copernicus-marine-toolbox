@@ -39,13 +39,18 @@ SHARED: dict[str, str] = {
         "The destination folder for the downloaded files. Default is the current "
         "directory."
     ),
+    "REQUEST_FILE_HELP": (
+        "Option to pass a file containing the arguments. For more information "
+        "please refer to the documentation or use option ``--create-template`` "
+        "of the command line interface for an example template."
+    ),
 }
 
 LOGIN: dict[str, str] = {
     "LOGIN_DESCRIPTION_HELP": (
         "Create a configuration file with your Copernicus Marine credentials"
         " under the ``$HOME/.copernicusmarine`` directory"
-        "."
+        " (overwritable with the ``overwrite_configuration_file`` option)."
     ),
     "LOGIN_RESPONSE_HELP": (
         "Error code\n 0 error code if the login was successfully "
@@ -140,12 +145,6 @@ SUBSET: dict[str, str] = {
         "descending positive values, elevation with ascending positive values. "
         "Default is depth."
     ),
-    "REQUEST_FILE_HELP": (
-        "Option to pass a file containing the arguments."
-        " For more information please refer to"
-        " the documentation or use option ``--create-template`` "
-        "for an example template."
-    ),
     "START_DATETIME_HELP": (
         "The start datetime of the temporal subset. Supports common "
         "format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing)."
@@ -209,9 +208,6 @@ GET: dict[str, str] = {
     "REGEX_HELP": (
         "The regular expression that must match the absolute paths of the files to "
         "download."
-    ),
-    "REQUEST_FILE_HELP": (
-        "Option to pass a file containing the arguments. " "..."
     ),
     "FILE_LIST_HELP": (
         "Path to a '.txt' file containing a "
