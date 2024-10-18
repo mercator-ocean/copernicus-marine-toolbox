@@ -14,17 +14,13 @@ from copernicusmarine.command_line_interface.utils import (
     force_dataset_version_option,
     tqdm_disable_option,
 )
+from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
 from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
-)
-from copernicusmarine.core_functions.utils import (
-    OVERWRITE_LONG_OPTION,
-    OVERWRITE_OPTION_HELP_TEXT,
-    OVERWRITE_SHORT_OPTION,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -40,17 +36,15 @@ def cli_get() -> None:
     "get",
     cls=CustomClickOptionsCommand,
     short_help="Download originally produced data files.",
-    help="""
-    Download originally produced data files.
-
-    The ``--dataset-id`` is required (can be found via the "describe" command). The function fetches the files recursively if a folder path is passed as a URL. When provided a dataset ID, all the files in the corresponding folder will be downloaded if none of the ``--filter`` or ``--regex`` options is specified.
-    """,  # noqa
+    help=documentation_utils.GET["GET_DESCRIPTION_HELP"]
+    + " See :ref:`describe <cli-describe>`. \n\nReturns\n "
+    + documentation_utils.GET["GET_RESPONSE_HELP"],
     epilog="""
     Example to download all the files from a given dataset:
 
     .. code-block:: bash
 
-        copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m
+        copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m \n
     """,  # noqa
 )
 @click.option(
@@ -58,7 +52,7 @@ def cli_get() -> None:
     "-i",
     type=str,
     default=None,
-    help="The datasetID.",
+    help=documentation_utils.GET["DATASET_ID_HELP"],
 )
 @force_dataset_version_option
 @force_dataset_part_option
@@ -66,123 +60,97 @@ def cli_get() -> None:
     "--username",
     type=str,
     default=None,
-    help="If not set, search for environment variable"
-    + " COPERNICUSMARINE_SERVICE_USERNAME"
-    + ", or else look for configuration files, or else ask for user input.",
+    help=documentation_utils.GET["USERNAME_HELP"],
 )
 @click.option(
     "--password",
     type=str,
     default=None,
-    help="If not set, search for environment variable"
-    + " COPERNICUSMARINE_SERVICE_PASSWORD"
-    + ", or else look for configuration files, or else ask for user input.",
+    help=documentation_utils.GET["PASSWORD_HELP"],
 )
 @click.option(
     "--no-directories",
     "-nd",
     cls=MutuallyExclusiveOption,
     is_flag=True,
-    help="Option to not recreate folder hierarchy in ouput directory.",
+    help=documentation_utils.GET["NO_DIRECTORIES_HELP"],
     default=False,
     mutually_exclusive=["sync"],
 )
 @click.option(
     "--show-outputnames",
     is_flag=True,
-    help="Option to display the names of the"
-    + " output files before download.",
+    help=documentation_utils.GET["SHOW_OUTPUTNAMES_HELP"],
     default=False,
 )
 @click.option(
     "--output-directory",
     "-o",
     type=click.Path(path_type=pathlib.Path),
-    help="The destination directory for the downloaded files."
-    + " Default is the current directory.",
+    help=documentation_utils.GET["OUTPUT_DIRECTORY_HELP"],
 )
 @click.option(
     "--credentials-file",
     type=click.Path(path_type=pathlib.Path),
-    help=(
-        "Path to a credentials file if not in its default directory. "
-        "Accepts .copernicusmarine-credentials / .netrc or _netrc / "
-        "motuclient-python.ini files."
-    ),
+    help=documentation_utils.GET["CREDENTIALS_FILE_HELP"],
 )
 @click.option(
     "--force-download",
     is_flag=True,
     default=False,
-    help="Flag to skip confirmation before download.",
+    help=documentation_utils.GET["FORCE_DOWNLOAD_HELP"],
 )
 @click.option(
-    OVERWRITE_LONG_OPTION,
-    OVERWRITE_SHORT_OPTION,
+    documentation_utils.GET["OVERWRITE_LONG_OPTION"],
+    documentation_utils.GET["OVERWRITE_SHORT_OPTION"],
     is_flag=True,
     default=False,
-    help=OVERWRITE_OPTION_HELP_TEXT,
+    help=documentation_utils.GET["OVERWRITE_OUTPUT_DATA_HELP"],
 )
 @click.option(
     "--create-template",
     type=bool,
     is_flag=True,
     default=False,
-    help="Option to create a file get_template.json in your current directory "
-    "containing CLI arguments. If specified, no other action will be performed.",
+    help=documentation_utils.GET["CREATE_TEMPLATE_HELP"],
 )
 @click.option(
     "--request-file",
     type=click.Path(exists=True, path_type=pathlib.Path),
-    help="Option to pass a file containing CLI arguments. "
-    "The file MUST follow the structure of dataclass 'GetRequest'."
-    " For more information please refer to the README.",
+    help=documentation_utils.GET["REQUEST_FILE_HELP"],
 )
 @click.option(
     "--filter",
     "--filter-with-globbing-pattern",
     type=str,
     default=None,
-    help="A pattern that must match the absolute paths of "
-    "the files to download.",
+    help=documentation_utils.GET["FILTER_HELP"],
 )
 @click.option(
     "--regex",
     "--filter-with-regular-expression",
     type=str,
     default=None,
-    help="The regular expression that must match the absolute paths of "
-    "the files to download.",
+    help=documentation_utils.GET["REGEX_HELP"],
 )
 @click.option(
     "--file-list",
     type=pathlib.Path,
     default=None,
-    help="Path to a .txt file containing a list of file paths,"
-    " line by line, that will be downloaded directly."
-    " These files must be from the specified dataset using the --dataset-id."
-    " If no files can be found, the Toolbox will list all"
-    " files on the remote server and attempt to find a match.",
+    help=documentation_utils.GET["FILE_LIST_HELP"],
 )
 @click.option(
     "--create-file-list",
     type=str,
     default=None,
-    help="Option to only create a file containing "
-    "the names of the targeted files instead of downloading them. "
-    "It writes the file in the directory specified with the "
-    "--output-directory option (default to current directory). "
-    "The file name specified should end with '.txt' or '.csv' "
-    "If specified, no other action will be performed. "
-    "Please find more information in the README.",
+    help=documentation_utils.GET["CREATE_FILE_LIST_HELP"],
 )
 @click.option(
     "--sync",
     cls=MutuallyExclusiveOption,
     is_flag=True,
     default=False,
-    help="Option to synchronize the local directory with "
-    "the remote directory. See the documentation for more details.",
+    help=documentation_utils.GET["SYNC_HELP"],
     mutually_exclusive=["no-directories"],
 )
 @click.option(
@@ -190,8 +158,7 @@ def cli_get() -> None:
     cls=MutuallyExclusiveOption,
     is_flag=True,
     default=False,
-    help="Option to delete local files that are not present on "
-    "the remote server while applying sync.",
+    help=documentation_utils.GET["SYNC_DELETE_HELP"],
     mutually_exclusive=["no-directories"],
 )
 @click.option(
@@ -199,32 +166,27 @@ def cli_get() -> None:
     type=bool,
     is_flag=True,
     default=False,
-    help="Option to get the index files of an INSITU dataset. Temporary option.",
+    help=documentation_utils.GET["INDEX_PARTS_HELP"],
 )
 @click.option(
     "--dry-run",
     type=bool,
     is_flag=True,
     default=False,
-    help="Runs query without downloading data.",
+    help=documentation_utils.GET["DRY_RUN_HELP"],
 )
 @click.option(
     "--max-concurrent-requests",
     type=int,
     default=15,
-    help="Maximum number of concurrent requests. "
-    "Default 15. The get command uses a thread "
-    "pool executor to manage concurrent requests.",
+    help=documentation_utils.GET["MAX_CONCURRENT_REQUESTS_HELP"],
 )
 @tqdm_disable_option
 @click.option(
     "--log-level",
     type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
     default="INFO",
-    help=(
-        "Set the details printed to console by the command "
-        "(based on standard logging library)."
-    ),
+    help=documentation_utils.GET["LOG_LEVEL_HELP"],
 )
 @click.option(
     "--staging",

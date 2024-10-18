@@ -25,35 +25,32 @@ def describe(
     staging: bool = False,
 ) -> dict[str, Any]:
     """
-    Retrieve metadata information from the Copernicus Marine catalogue.
-
-    This function fetches metadata information from the Copernicus Marine catalogue
-    based on specified parameters and options.
+    Retrieve and parse the metadata information from the Copernicus Marine catalogue.
 
     Parameters
     ----------
     include_description : bool, optional
-        Whether to include description for each product. Defaults to False.
+        Include product description in output.
     include_datasets : bool, optional
-        Whether to include dataset information. Defaults to False.
+        Include product dataset details in output.
     include_keywords : bool, optional
-        Whether to include keywords for each product. Defaults to False.
+        Include product keyword details in output.
     include_versions : bool, optional
-        Whether to include all versions of each dataset. Defaults to False.
+        Include dataset versions in output. By default, shows only the default version.
     include_all : bool, optional
-        Whether to include all metadata information. Defaults to False.
+        Include all the possible data in output: description, datasets, keywords, and versions.
     contains : list[str], optional
-        List of strings to filter items containing these values. Defaults to [].
+        Filter catalogue output. Returns products with attributes matching a string token.
     max_concurrent_requests : int, optional
-        Maximum number of concurrent requests. Defaults to 15. The describe command
-        uses a thread pool executor to manage concurrent requests.
+        Maximum number of concurrent requests (>=1). Default 15. The command uses a thread pool executor to manage concurrent requests.
     disable_progress_bar : bool, optional
-        Whether to disable the progress bar. Defaults to False.
+        Flag to hide progress bar.
 
     Returns
     -------
     dict[str, Any]
         A dictionary containing the retrieved metadata information.
+
     """  # noqa
 
     if not isinstance(contains, list):
