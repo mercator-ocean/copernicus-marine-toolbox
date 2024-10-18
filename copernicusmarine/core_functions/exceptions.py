@@ -33,7 +33,7 @@ class CoordinatesOutOfDatasetBounds(Exception):
     Exception raised when the coordinates are out of the dataset bounds.
 
     Please make sure the coordinates are within the dataset bounds. If you are using the
-    strict mode, the coordinates must be within the dataset bounds.
+    strict-inside mode, the coordinates must be within the dataset bounds.
     """
 
     def __init__(self, message: str):
