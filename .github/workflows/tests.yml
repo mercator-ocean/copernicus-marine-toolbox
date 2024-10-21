@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  tests:
+  unit_tests:
     runs-on: self-hosted
     timeout-minutes: 30
 
