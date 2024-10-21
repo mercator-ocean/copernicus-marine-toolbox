@@ -1,14 +1,12 @@
 import logging.config
 import time
-from importlib.metadata import version
 
 from copernicusmarine.logging_conf import logging_configuration_dict
-
-__version__ = version("copernicusmarine")
 
 logging.config.dictConfig(logging_configuration_dict)
 logging.Formatter.converter = time.gmtime
 
+from copernicusmarine._version import __version__
 from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     DatasetVersionNotFound,

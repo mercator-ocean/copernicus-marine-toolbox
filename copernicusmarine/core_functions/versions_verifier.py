@@ -2,7 +2,7 @@ import logging
 
 import semver
 
-from copernicusmarine import __version__ as client_version
+from copernicusmarine._version import __version__ as client_version
 from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
 )

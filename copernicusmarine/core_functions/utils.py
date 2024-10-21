@@ -3,7 +3,6 @@ import functools
 import logging
 import pathlib
 import re
-from importlib.metadata import version
 from typing import (
     Any,
     Callable,
@@ -26,7 +25,7 @@ from pendulum import DateTime
 from requests import PreparedRequest
 from tqdm import tqdm
 
-from copernicusmarine import __version__ as copernicusmarine_version
+from copernicusmarine._version import __version__ as copernicusmarine_version
 from copernicusmarine.core_functions.exceptions import WrongDatetimeFormat
 
 logger = logging.getLogger("copernicusmarine")
@@ -149,7 +148,7 @@ def convert_datetime64_to_netcdf_timestamp(
 def add_copernicusmarine_version_in_dataset_attributes(
     dataset: xarray.Dataset,
 ) -> xarray.Dataset:
-    dataset.attrs["copernicusmarine_version"] = version("copernicusmarine")
+    dataset.attrs["copernicusmarine_version"] = copernicusmarine_version
     return dataset
 
 
