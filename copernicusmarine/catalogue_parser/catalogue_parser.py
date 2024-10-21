@@ -2,9 +2,10 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from itertools import groupby
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import pystac
+from pydantic import BaseModel
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.models import (
@@ -19,7 +20,6 @@ from copernicusmarine.core_functions.sessions import (
 )
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
-    map_reject_none,
     run_concurrently,
 )
 
@@ -376,64 +376,73 @@ class DistinctDatasetVersionPart:
 
 
 # ---------------------------------------
-# --- Utils function on any catalogue ---
+# --- Utils functions
 # ---------------------------------------
 
 
+def search_and_filter(
+    model: BaseModel, search_str: set[str]
+) -> Union[BaseModel, None]:
+    filtered_fields = {}
+    search_str = {s.lower() for s in search_str}
+    for field, value in model:
+        if isinstance(value, BaseModel):
+            filtered_value = search_and_filter(value, search_str)
+            if filtered_value:
+                filtered_fields[field] = filtered_value
+
+        elif isinstance(value, list) or isinstance(value, tuple):
+            filtered_list = []
+            for item in value:
+                if isinstance(item, BaseModel):
+                    filtered_item = search_and_filter(item, search_str)
+                    if filtered_item:
+                        filtered_list.append(filtered_item)
+                elif isinstance(item, str) and any(
+                    s in item.lower() for s in search_str
+                ):
+                    filtered_list.append(item)
+
+            if filtered_list and isinstance(value, list):
+                filtered_fields[field] = filtered_list
+
+            if filtered_list and isinstance(value, tuple):
+                filtered_fields[field] = tuple(filtered_list)
+
+        elif isinstance(value, dict):
+            filtered_dict = {}
+            for key, val in value.items():
+                if isinstance(val, BaseModel):
+                    filtered_val = search_and_filter(val, search_str)
+                    if filtered_val:
+                        filtered_dict[key] = filtered_val
+                elif isinstance(val, str) and any(
+                    s in val.lower() for s in search_str
+                ):
+                    filtered_dict[key] = val
+
+            if filtered_dict:
+                filtered_fields[field] = filtered_dict
+
+        elif isinstance(value, Enum):
+            if any(s in value.name.lower() for s in search_str):
+                filtered_fields[field] = value
+
+        elif isinstance(value, str) and any(
+            s in value.lower() for s in search_str
+        ):
+            filtered_fields[field] = value
+    if filtered_fields:
+        return model.model_copy(update=filtered_fields)
+    return None
+
+
 def filter_catalogue_with_strings(
-    catalogue: CopernicusMarineCatalogue, tokens: list[str]
-) -> dict[str, Any]:
-    return find_match_object(catalogue, tokens) or {}
-
-
-def find_match_object(value: Any, tokens: list[str]) -> Any:
-    match: Any
-    if isinstance(value, str):
-        match = find_match_string(value, tokens)
-    elif isinstance(value, Enum):
-        match = find_match_enum(value, tokens)
-    elif isinstance(value, tuple):
-        match = find_match_tuple(value, tokens)
-    elif isinstance(value, list):
-        match = find_match_list(value, tokens)
-    elif hasattr(value, "__dict__"):
-        match = find_match_dict(value, tokens)
-    else:
-        match = None
-    return match
-
-
-def find_match_string(string: str, tokens: list[str]) -> Optional[str]:
-    return string if any(token in string for token in tokens) else None
-
-
-def find_match_enum(enum: Enum, tokens: list[str]) -> Any:
-    return find_match_object(enum.value, tokens)
-
-
-def find_match_tuple(tuple: tuple, tokens: list[str]) -> Optional[list[Any]]:
-    return find_match_list(list(tuple), tokens)
-
-
-def find_match_list(object_list: list[Any], tokens) -> Optional[list[Any]]:
-    def find_match(element: Any) -> Optional[Any]:
-        return find_match_object(element, tokens)
-
-    filtered_list: list[Any] = list(map_reject_none(find_match, object_list))
-    return filtered_list if filtered_list else None
-
-
-def find_match_dict(
-    structure: dict[str, Any], tokens
-) -> Optional[dict[str, Any]]:
-    filtered_dict = {
-        key: find_match_object(value, tokens)
-        for key, value in structure.__dict__.items()
-        if find_match_object(value, tokens)
-    }
-
-    found_match = any(filtered_dict.values())
-    if found_match:
-        new_dict = dict(structure.__dict__, **filtered_dict)
-        structure.__dict__ = new_dict
-    return structure if found_match else None
+    catalogue: CopernicusMarineCatalogue, search_str: set[str]
+) -> CopernicusMarineCatalogue:
+    filtered_models = []
+    for model in catalogue.products:
+        filtered_model = search_and_filter(model, search_str)
+        if filtered_model:
+            filtered_models.append(filtered_model)
+    return CopernicusMarineCatalogue(products=filtered_models)

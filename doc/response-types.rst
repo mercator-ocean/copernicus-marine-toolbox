@@ -7,7 +7,8 @@ Response types
 The Copernicus Marine toolbox commands return some information when downloading.
 It can contain useful metadata for the user.
 
-For the :ref:`command line interface <command-line-interface>`, all the returned data will be in a form of a json sent to stdout.
+For the :ref:`command line interface <command-line-interface>`, all the returned data will
+be in a form of a json sent to stdout (whereas the logs are sent to stderr).
 You can easily save it locally by doing, for example:
 
 .. code-block:: bash
@@ -17,7 +18,7 @@ You can easily save it locally by doing, for example:
 
 .. note::
    For the "get" and "subset" commands you can get those metadata without
-   downloading anything by using the ``dry_run`` option (or ``--dry-run`` flag for the CLI).
+   downloading anything by using the ``dry_run`` option (or ``--dry-run`` flag for the command line interface).
 
 -------------------
 Commands Response
@@ -33,6 +34,12 @@ Commands Response
     :members:
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineCatalogue()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, filter_only_official_versions_and_parts
     :member-order: bysource
 
 --------------
@@ -59,6 +66,54 @@ Subtypes
     :member-order: bysource
 
 .. autoclass:: copernicusmarine.TimeExtent()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineProduct()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, sort_versions, parse_dataset_metadata_items
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineProductDataset()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, get_version, sort_versions, parse_dataset_metadata_items
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineDatasetVersion()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, get_part, sort_parts
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineVersionPart()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_service_by_service_type
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineService()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineVariable()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineCoordinate()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineServiceFormat()
     :members:
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields

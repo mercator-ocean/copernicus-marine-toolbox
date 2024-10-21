@@ -7,7 +7,6 @@ from importlib.metadata import version
 from typing import (
     Any,
     Callable,
-    Iterable,
     Iterator,
     Literal,
     Optional,
@@ -66,12 +65,6 @@ def get_unique_filename(
 
 _T = TypeVar("_T")
 _S = TypeVar("_S")
-
-
-def map_reject_none(
-    function: Callable[[_S], Optional[_T]], iterable: Iterable[_S]
-) -> Iterable[_T]:
-    return (element for element in map(function, iterable) if element)
 
 
 def next_or_raise_exception(

@@ -10,6 +10,15 @@ logging.config.dictConfig(logging_configuration_dict)
 logging.Formatter.converter = time.gmtime
 
 from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineCatalogue,
+    CopernicusMarineCoordinate,
+    CopernicusMarineDatasetVersion,
+    CopernicusMarineProduct,
+    CopernicusMarineProductDataset,
+    CopernicusMarineService,
+    CopernicusMarineServiceFormat,
+    CopernicusMarineVariable,
+    CopernicusMarineVersionPart,
     DatasetNotFound,
     DatasetVersionNotFound,
     DatasetVersionPartNotFound,
