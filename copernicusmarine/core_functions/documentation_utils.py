@@ -82,10 +82,6 @@ DESCRIBE: dict[str, str] = {
     "DESCRIBE_RESPONSE_HELP": (
         "JSON\n A dictionary containing the retrieved metadata information."
     ),
-    "MAX_CONCURRENT_REQUESTS_HELP": (
-        "Maximum number of concurrent requests (>=1). Default 15. The command uses "
-        "a thread pool executor to manage concurrent requests."
-    ),
     "INCLUDE_DESCRIPTION_HELP": "Include product description in output.",
     "INCLUDE_DATASETS_HELP": "Include product dataset details in output.",
     "INCLUDE_KEYWORDS_HELP": "Include product keyword details in output.",
@@ -100,6 +96,18 @@ DESCRIBE: dict[str, str] = {
     "CONTAINS_HELP": (
         "Filter catalogue output. Returns products with attributes matching a string "
         "token."
+    ),
+    "PRODUCT_ID_HELP": (
+        "Force the productID to be used for the describe command. Will not parse the "
+        "whole catalogue, but only the product with the given productID."
+    ),
+    "DATASET_ID_HELP": (
+        "Force the datasetID to be used for the describe command. Will not "
+        "parse the whole catalogue, but only the dataset with the given datasetID."
+    ),
+    "MAX_CONCURRENT_REQUESTS_HELP": (
+        "Maximum number of concurrent requests (>=1). Default 15. The command uses "
+        "a thread pool executor to manage concurrent requests."
     ),
 }
 
@@ -243,4 +251,4 @@ GET: dict[str, str] = {
 SUBSET.update(SHARED)
 GET.update(SHARED)
 LOGIN.update(SHARED)
-DESCRIBE.update(SHARED)
+DESCRIBE.update({k: v for k, v in SHARED.items() if k not in DESCRIBE})

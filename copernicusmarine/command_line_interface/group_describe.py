@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import click
 
@@ -84,6 +85,20 @@ def cli_describe() -> None:
     help=documentation_utils.DESCRIBE["CONTAINS_HELP"],
 )
 @click.option(
+    "--product-id",
+    "-p",
+    type=str,
+    default=None,
+    help=documentation_utils.DESCRIBE["PRODUCT_ID_HELP"],
+)
+@click.option(
+    "--dataset-id",
+    "-i",
+    type=str,
+    default=None,
+    help=documentation_utils.DESCRIBE["DATASET_ID_HELP"],
+)
+@click.option(
     "--max-concurrent-requests",
     type=int,
     default=15,
@@ -111,6 +126,8 @@ def describe(
     include_versions: bool,
     include_all: bool,
     contains: list[str],
+    product_id: Optional[str],
+    dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
@@ -137,6 +154,8 @@ def describe(
         include_keywords=include_keywords,
         include_versions=include_versions,
         contains=contains,
+        force_product_id=product_id,
+        force_dataset_id=dataset_id,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,

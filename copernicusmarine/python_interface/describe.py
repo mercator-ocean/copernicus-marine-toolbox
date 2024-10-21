@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Optional
 
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -20,6 +20,8 @@ def describe(
     include_versions: bool = False,
     include_all: bool = False,
     contains: list[str] = [],
+    product_id: Optional[str] = None,
+    dataset_id: Optional[str] = None,
     max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
     staging: bool = False,
@@ -41,6 +43,10 @@ def describe(
         Include all the possible data in output: description, datasets, keywords, and versions.
     contains : list[str], optional
         Filter catalogue output. Returns products with attributes matching a string token.
+    product_id : str, optional
+        Force the productID to be used for the describe command. Will not parse the whole catalogue, but only the product with the given productID.
+    dataset_id : str, optional
+        Force the datasetID to be used for the describe command. Will not parse the whole catalogue, but only the dataset with the given datasetID.
     max_concurrent_requests : int, optional
         Maximum number of concurrent requests (>=1). Default 15. The command uses a thread pool executor to manage concurrent requests.
     disable_progress_bar : bool, optional
@@ -68,6 +74,8 @@ def describe(
         include_keywords,
         include_versions,
         contains,
+        product_id,
+        dataset_id,
         max_concurrent_requests,
         disable_progress_bar,
         staging=staging,

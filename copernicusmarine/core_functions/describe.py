@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     filter_catalogue_with_strings,
@@ -17,6 +17,8 @@ def describe_function(
     include_keywords: bool,
     include_versions: bool,
     contains: list[str],
+    force_product_id: Optional[str],
+    force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
@@ -30,6 +32,8 @@ def describe_function(
         )
 
     base_catalogue: CopernicusMarineCatalogue = parse_catalogue(
+        force_product_id=force_product_id,
+        force_dataset_id=force_dataset_id,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,

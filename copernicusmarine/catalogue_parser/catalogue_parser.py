@@ -241,11 +241,14 @@ def fetch_dataset_items(
     root_url: str,
     connection: CatalogParserConnection,
     collection: pystac.Collection,
+    force_dataset_id: Optional[str],
 ) -> list[pystac.Item]:
     items = []
     for link in collection.get_item_links():
         if not link.owner:
             logger.warning(f"Invalid Item, no owner for: {link.href}")
+            continue
+        if force_dataset_id and force_dataset_id not in link.href:
             continue
         url = root_url + "/" + link.owner.id + "/" + link.href
         item_json = connection.get_json_file(url)
@@ -259,11 +262,14 @@ def fetch_collection(
     root_url: str,
     connection: CatalogParserConnection,
     url: str,
+    force_dataset_id: Optional[str],
 ) -> Optional[tuple[pystac.Collection, list[pystac.Item]]]:
     json_collection = connection.get_json_file(url)
     collection = _parse_product_json_to_pystac_collection(json_collection)
     if collection:
-        items = fetch_dataset_items(root_url, connection, collection)
+        items = fetch_dataset_items(
+            root_url, connection, collection, force_dataset_id
+        )
         return (collection, items)
     return None
 
@@ -272,12 +278,18 @@ def fetch_product_items(
     root_url: str,
     connection: CatalogParserConnection,
     child_links: list[pystac.Link],
+    force_product_id: Optional[str],
+    force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
     tasks = []
     for link in child_links:
-        tasks.append((root_url, connection, link.absolute_href))
+        if force_product_id and force_product_id not in link.href:
+            continue
+        tasks.append(
+            (root_url, connection, link.absolute_href, force_dataset_id)
+        )
     tdqm_bar_configuration = {
         "desc": "Fetching products",
         "disable": disable_progress_bar,
@@ -297,6 +309,8 @@ def fetch_product_items(
 
 def fetch_all_products_items(
     connection: CatalogParserConnection,
+    force_product_id: Optional[str],
+    force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     staging: bool,
     disable_progress_bar: bool,
@@ -319,6 +333,8 @@ def fetch_all_products_items(
         root_url,
         connection,
         child_links,
+        force_product_id,
+        force_dataset_id,
         max_concurrent_requests,
         disable_progress_bar,
     )
@@ -326,6 +342,8 @@ def fetch_all_products_items(
 
 
 def parse_catalogue(
+    force_product_id: Optional[str],
+    force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool = False,
@@ -334,10 +352,27 @@ def parse_catalogue(
     progress_bar = tqdm(
         total=2, desc="Fetching catalog", disable=disable_progress_bar
     )
-
     with CatalogParserConnection() as connection:
+        if force_dataset_id and not force_product_id:
+            root_url = (
+                MARINE_DATA_STORE_ROOT_METADATA_URL
+                if not staging
+                else MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING
+            )
+            dataset_product_mapping_url = (
+                f"{root_url}/dataset_product_id_mapping.json"
+            )
+            force_product_id = connection.get_json_file(
+                dataset_product_mapping_url
+            ).get(force_dataset_id)
+            logger.info(f"Force dataset id: {force_dataset_id}")
+            logger.info(f"Force product id: {force_product_id}")
+            if not force_product_id:
+                raise DatasetNotFound(force_dataset_id)
         marine_data_store_root_collections = fetch_all_products_items(
             connection=connection,
+            force_product_id=force_product_id,
+            force_dataset_id=force_dataset_id,
             max_concurrent_requests=max_concurrent_requests,
             staging=staging,
             disable_progress_bar=disable_progress_bar,
