@@ -86,7 +86,7 @@ Commands:
 
 ## Python package (API)
 
-The `copernicusmarine` exposes a python interface to allow you to [call commands as functions](https://toolbox-docs.marine.copernicus.eu/).
+The `copernicusmarine` exposes a Python interface to allow you to [call commands as functions](https://toolbox-docs.marine.copernicus.eu/).
 
 ## Version management
 

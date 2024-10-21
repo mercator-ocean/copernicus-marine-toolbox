@@ -121,7 +121,7 @@ We use sphinx and read the docs to respectively build and distribute the documen
 
 We use:
 
-- autodoc: to create the documentation from the docstrings of the python interface or the comments in the models
+- autodoc: to create the documentation from the docstrings of the Python interface or the comments in the models
 - numpydoc: to convert numpydoc documentation to restructuresText
 - sphinx-click: to generate the documentation from the click CLI
 - furo: as a base template
