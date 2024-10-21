@@ -30,13 +30,15 @@ jobs:
         micromamba-version: '1.5.6-0'
         micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
         environment-file: conda_environment_binary-old-linux.yaml
-        environment-name: copernicusmarine-binary
+        environment-name: copernicusmarine-binary-old-linux
         condarc-file: .condarc
         cache-environment: true
         post-cleanup: 'all'
 
     - name: Build with PyInstaller
       shell: micromamba-shell {0}
+      env:
+        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
       run: |
         make run-using-pyinstaller-ubuntu-20.04
         echo ubuntu-20.04
@@ -44,11 +46,14 @@ jobs:
     - name: Set VERSION environment variable
       id: set-version
       shell: micromamba-shell {0}
+      env:
+        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
       run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
     - name: Upload binaries to ubnutu-old
       shell: micromamba-shell {0}
       env:
         GH_TOKEN: ${{ github.token }}
+        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
       run: |
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_linux-20.04.cli#copernicusmarine-binary-linux-20.04-for-v${{steps.set-version.outputs.VERSION}}
