@@ -1,10 +1,10 @@
 dependencies:
-  - python==3.9
+  - python==3.9.19
   - poetry==1.8.2
-  - git==2.44.0
-  - pip==24.0
-  - gh==2.45.0
-  - pyinstaller==5.13.2
+  - git==2.45.2
+  - pip==24.2
+  - gh==2.59.0
+  - pyinstaller==6.7.0
   - pip:
     - xarray
     - distributed
