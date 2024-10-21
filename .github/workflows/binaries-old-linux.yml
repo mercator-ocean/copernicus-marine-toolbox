@@ -5,14 +5,15 @@ on:
     branches:
        - main
        - 'pre-releases/**'
+  pull_request:
+    branches:
+       - main
+       - 'pre-releases/**'
+       - copernicusmarine-toolbox-v2
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest, macos-13, ubuntu-20.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     timeout-minutes: 20
 
     steps:
@@ -25,7 +26,7 @@ jobs:
       with:
         micromamba-version: '1.5.6-0'
         micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-        environment-file: conda_environment_binary.yaml
+        environment-file: conda_environment_binary-old-linux.yaml
         environment-name: copernicusmarine-binary
         condarc-file: .condarc
         cache-environment: true
@@ -34,26 +35,17 @@ jobs:
     - name: Build with PyInstaller
       shell: micromamba-shell {0}
       run: |
-        make run-using-pyinstaller-${{ matrix.os }}
-        echo ${{ matrix.os }}[0:6]
+        make run-using-pyinstaller-ubuntu-20.04
+        echo ubuntu-20.04
 
     - name: Set VERSION environment variable
       id: set-version
       shell: micromamba-shell {0}
       run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
-    - name: Upload binaries to macos or ubuntu
+    - name: Upload binaries to ubnutu-old
       shell: micromamba-shell {0}
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ARCH="macos-arm64"
-        elif [ "${{ matrix.os }}" == "macos-13" ]; then
-          ARCH="macos-x86_64"
-        elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-          ARCH="linux"
-        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
-          ARCH="linux-20.04"
-        fi
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_linux-20.04.cli#copernicusmarine-binary-linux-20.04-for-v${{steps.set-version.outputs.VERSION}}

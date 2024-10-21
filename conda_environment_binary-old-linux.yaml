@@ -1,0 +1,12 @@
+dependencies:
+  - python==3.9
+  - poetry==1.8.2
+  - git==2.44.0
+  - pip==24.0
+  - gh==2.45.0
+  - pyinstaller==6.10.0
+  - pip:
+    - xarray
+    - distributed
+    - tzdata
+    - pillow
