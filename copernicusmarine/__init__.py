@@ -40,6 +40,7 @@ from copernicusmarine.core_functions.models import (
     ResponseGet,
     ResponseSubset,
     StatusCode,
+    StatusFile,
     StatusMessage,
     TimeExtent,
 )
@@ -94,6 +95,7 @@ __all__ = [
     "ServiceNotHandled",
     "ServiceNotSupported",
     "StatusCode",
+    "StatusFile",
     "StatusMessage",
     "TimeExtent",
     "VariableDoesNotExistInTheDataset",

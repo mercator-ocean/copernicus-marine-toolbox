@@ -9,6 +9,10 @@ from tests.test_utils import execute_in_terminal
 DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE = (
     "tests/resources/file_list_examples/direct_download_file_list.txt"
 )
+DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED = (
+    "tests/resources/file_list_examples/direct_download_file_list_extended.txt"
+)
+
 DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_WITH_ONE_WRONG = (
     "tests/resources/file_list_examples/"
     "direct_download_file_list_with_one_wrong.txt"
@@ -25,7 +29,12 @@ DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS = (
 
 
 class TestGetDirectDownload:
-    def test_get_direct_download_file_list(self, tmp_path):
+    def test_get_direct_download_file_list_extended(self, tmp_path):
+        self.when_get_direct_download_file_list(tmp_path)
+        self.if_skip_option_skipped_with_same_list(tmp_path)
+        self.if_skip_option_skipped_with_extended_list(tmp_path)
+
+    def when_get_direct_download_file_list(self, tmp_path):
         self.command = [
             "copernicusmarine",
             "get",
@@ -57,6 +66,61 @@ class TestGetDirectDownload:
         )
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58US.nc"
+        )
+        assert self.output.returncode == 0
+
+    def if_skip_option_skipped_with_same_list(self, tmp_path):
+        self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
+            "--file-list",
+            DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE,
+            "--force-download",
+            "--show-outputnames",
+            "--skip-existing",
+            "-o",
+            str(tmp_path),
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert b"No data to download" in self.output.stderr
+        self._assert_insitu_file_exists_locally(
+            tmp_path, "history/BO/AR_PR_BO_58JM.nc"
+        )
+        self._assert_insitu_file_exists_locally(
+            tmp_path, "history/BO/AR_PR_BO_58US.nc"
+        )
+        assert self.output.returncode == 0
+
+    def if_skip_option_skipped_with_extended_list(self, tmp_path):
+        self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
+            "--file-list",
+            DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED,
+            "--force-download",
+            "--show-outputnames",
+            "--skip-existing",
+            "-o",
+            str(tmp_path),
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert (
+            b"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            b"history/BO/AR_PR_BO_LHUW.nc"
+        ) in self.output.stdout
+        self._assert_insitu_file_exists_locally(
+            tmp_path, "history/BO/AR_PR_BO_58JM.nc"
+        )
+        self._assert_insitu_file_exists_locally(
+            tmp_path, "history/BO/AR_PR_BO_58US.nc"
+        )
+        self._assert_insitu_file_exists_locally(
+            tmp_path, "history/BO/AR_PR_BO_LHUW.nc"
         )
         assert self.output.returncode == 0
 

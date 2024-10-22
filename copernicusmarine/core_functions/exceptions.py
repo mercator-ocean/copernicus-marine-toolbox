@@ -90,3 +90,16 @@ class ServiceNotSupported(Exception):
 
     def __init__(self, service_type):
         super().__init__(f"Service type {service_type} not supported.")
+
+
+class MutuallyExclusiveArguments(Exception):
+    """
+    Exception raised when mutually exclusive arguments are used together.
+
+    Please make sure the arguments are not used together.
+    """
+
+    def __init__(self, arg1, arg2):
+        super().__init__(
+            f"Arguments '{arg1}' and '{arg2}' are mutually exclusive."
+        )

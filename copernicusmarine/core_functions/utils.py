@@ -28,20 +28,16 @@ logger = logging.getLogger("copernicusmarine")
 
 
 def get_unique_filename(
-    filepath: pathlib.Path, overwrite_option: bool
+    filepath: pathlib.Path,
 ) -> pathlib.Path:
-    if not overwrite_option:
-        parent = filepath.parent
-        filename = filepath.stem
-        extension = filepath.suffix
-        counter = 1
+    parent = filepath.parent
+    filename = filepath.stem
+    extension = filepath.suffix
+    counter = 1
 
-        while filepath.exists():
-            filepath = parent / (
-                filename + "_(" + str(counter) + ")" + extension
-            )
-            counter += 1
-
+    while filepath.exists():
+        filepath = parent / (filename + "_(" + str(counter) + ")" + extension)
+        counter += 1
     return filepath
 
 

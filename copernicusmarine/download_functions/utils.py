@@ -246,7 +246,7 @@ def get_message_formatted_dataset_size_estimation(
         f" {estimation_data_downloaded:.0f} MB"
         "\nThis is a very rough estimate that is"
         " generally higher than the actual size of the"
-        "  data that needs to be downloaded."
+        " data that needs to be downloaded."
     )
 
 

@@ -209,7 +209,7 @@ class TestCommandLineInterface:
     # Test on get requests #
     # -------------------------#
 
-    def test_get_original_files_functionnality(self, tmp_path):
+    def test_get_original_files_functionality(self, tmp_path):
         self._test_get_functionalities(tmp_path)
 
     def _test_get_functionalities(self, tmp_path):
@@ -263,6 +263,7 @@ class TestCommandLineInterface:
             f"{regex}",
             "--output-directory",
             f"{tmp_path}",
+            "--skip-existing",
         ]
 
         self.output = execute_in_terminal(command)
@@ -316,7 +317,11 @@ class TestCommandLineInterface:
             not in self.output.stderr
         )
 
-    def test_get_by_default_returns_status_message(self, tmp_path):
+    def test_get_something_and_skip_existing(self, tmp_path):
+        self.when_get_by_default_returns_status_message(tmp_path)
+        self.and_I_do_skip_existing(tmp_path)
+
+    def when_get_by_default_returns_status_message(self, tmp_path):
         filter = "*_200[123]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
@@ -335,6 +340,41 @@ class TestCommandLineInterface:
         returned_value = loads(self.output.stdout)
         assert returned_value["status"]
         assert returned_value["message"]
+        assert "files" not in returned_value
+        assert "total_size" not in returned_value
+
+    def and_I_do_skip_existing(self, tmp_path):
+        filter = "*_200[1234]*.nc"
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--filter",
+            f"{filter}",
+            "--force-download",
+            "--output-directory",
+            f"{tmp_path}",
+            "--skip-existing",
+        ]
+        self.output2 = execute_in_terminal(command)
+        assert self.output2.returncode == 0
+        returned_value = loads(self.output2.stdout)
+        assert returned_value["status"] == "000"
+        assert returned_value["message"]
+        start_path = (
+            f"{tmp_path}/"
+            f"IBI_MULTIYEAR_PHY_005_002/"
+            f"cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/"
+            f"CMEMS_v5r1_IBI_PHY_MY_NL_01yav_"
+        )
+        assert os.path.exists(
+            start_path + "20040101_20041231_R20221101_RE01.nc"
+        )
+        assert not os.path.exists(
+            start_path + "20040101_20041231_R20221101_RE01_(1).nc"
+        )
         assert "files" not in returned_value
         assert "total_size" not in returned_value
 
@@ -1351,6 +1391,7 @@ class TestCommandLineInterface:
             "data.nc",
             "--netcdf-compression-level",
             f"{forced_comp_level}",
+            "--skip-existing",
         ]
 
         output_with_netcdf_compression_enabled = execute_in_terminal(
@@ -1561,6 +1602,7 @@ class TestCommandLineInterface:
             "5.0",
             "-f",
             "dataset.nc",
+            "--skip-existing",
             "-o",
             f"{tmp_path}",
             "--netcdf3-compatible",

@@ -48,6 +48,11 @@ SHARED: dict[str, str] = {
         "please refer to the documentation or use option ``--create-template`` "
         "from the command line interface for an example template."
     ),
+    "SKIP_EXISTING_HELP": (
+        "If the files already exists where it would be downloaded, then "
+        "the download is skipped for this file. By default, the toolbox "
+        "creates a new file with an index (eg 'filename_(1).nc')."
+    ),
 }
 
 LOGIN: dict[str, str] = {

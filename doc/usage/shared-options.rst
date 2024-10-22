@@ -248,3 +248,16 @@ All logs of the library are by default logged in stderr. The outputs of the comm
 
 .. note::
     For versions <=1.2.4, all logs are sent to stdout by default.
+
+
+Option ``--skip-existing``
+*******************************
+
+This option allows you to skip the download of files that already exist at the output destination. If the file exists, the download will be skipped.
+
+Remember that by default, the toolbox creates a new file with an index (eg 'filename_(1).nc').
+
+See in :ref:`Response types documentation <response-types>` the ``status`` and ``message`` fields for more information about request statuses.
+
+.. note::
+    This option is incompatible with the ``--overwrite-output-data`` option and the ``--sync`` and ``--sync-delete`` options.

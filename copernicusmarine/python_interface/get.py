@@ -5,6 +5,9 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
 )
+from copernicusmarine.core_functions.exceptions import (
+    MutuallyExclusiveArguments,
+)
 from copernicusmarine.core_functions.get import get_function
 from copernicusmarine.core_functions.models import ResponseGet
 from copernicusmarine.python_interface.exception_handler import (
@@ -32,6 +35,7 @@ def get(
     index_parts: bool = False,
     sync: bool = False,
     sync_delete: bool = False,
+    skip_existing: bool = False,
     dry_run: bool = False,
     max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
@@ -78,6 +82,8 @@ def get(
         Option to synchronize the local directory with the remote directory. See the documentation for more details.
     sync_delete : bool, optional
         Option to delete local files that are not present on the remote server while applying sync.
+    skip_existing : bool, optional
+        If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with an index (eg 'filename_(1).nc').
     dry_run : bool, optional
         If True, runs query without downloading data.
     max_concurrent_requests : int, optional
@@ -91,6 +97,31 @@ def get(
         A list of files that were downloaded and some metadata.
 
     """  # noqa
+    # Mutually exclusive options:
+    if overwrite_output_data:
+        if skip_existing:
+            raise MutuallyExclusiveArguments(
+                "overwrite_output_data", "skip_existing"
+            )
+        elif sync:
+            raise MutuallyExclusiveArguments("overwrite_output_data", "sync")
+        elif sync_delete:
+            raise MutuallyExclusiveArguments(
+                "overwrite_output_data", "sync_delete"
+            )
+    if skip_existing:
+        if sync:
+            raise MutuallyExclusiveArguments("skip_existing", "sync")
+        elif sync_delete:
+            raise MutuallyExclusiveArguments("skip_existing", "sync_delete")
+        elif no_directories:
+            raise MutuallyExclusiveArguments("skip_existing", "no_directories")
+    if no_directories:
+        if sync:
+            raise MutuallyExclusiveArguments("sync", "no_directories")
+        elif sync_delete:
+            raise MutuallyExclusiveArguments("sync_delete", "no_directories")
+
     output_directory = (
         pathlib.Path(output_directory) if output_directory else None
     )
@@ -117,6 +148,7 @@ def get(
         index_parts=index_parts,
         sync=sync,
         sync_delete=sync_delete,
+        skip_existing=skip_existing,
         dry_run=dry_run,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,

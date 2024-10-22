@@ -10,11 +10,11 @@ class MutuallyExclusiveOption(Option):
         self.mutually_exclusive = set(kwargs.pop("mutually_exclusive", []))
         help = kwargs.get("help", "")
         if self.mutually_exclusive:
-            ex_str = ", ".join(self.mutually_exclusive)
+            ex_str = ", ".join(sorted(self.mutually_exclusive))
             kwargs["help"] = (
                 help
                 + """
-                \b\nNOTE: This argument is mutually exclusive with arguments: ["""
+                 NOTE: This argument is mutually exclusive with arguments: ["""
                 + ex_str
                 + "]."
             )
@@ -28,9 +28,9 @@ class MutuallyExclusiveOption(Option):
             and self.name in opts
         ):
             raise UsageError(
-                f"Illegal usage: `{self.name.replace('_', '-')}` "
-                "is mutually exclusive with "
-                f"arguments `{', '.join(self.mutually_exclusive).replace('_', '-')}`."
+                f"Illegal usage: arguments '{self.name.replace('_', '-')}' and "
+                f"'{', '.join(self.mutually_exclusive).replace('_', '-')}'"
+                " are mutually exclusive."
             )
 
         return super().handle_parse_result(ctx, opts, args)
