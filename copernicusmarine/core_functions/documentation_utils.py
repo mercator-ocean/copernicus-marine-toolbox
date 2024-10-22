@@ -44,6 +44,10 @@ SHARED: dict[str, str] = {
         "please refer to the documentation or use option ``--create-template`` "
         "from the command line interface for an example template."
     ),
+    "SKIP_EXISTING_HELP": (
+        "If specified and if the file already exists on destination,"
+        " then it won't be download again."
+    ),
 }
 
 LOGIN: dict[str, str] = {
