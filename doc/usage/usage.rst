@@ -3,7 +3,7 @@ Usage and technical details
 
 .. toctree::
 
-    quickstart
+    quickoverview
     login-usage
     describe-usage
     subset-usage
