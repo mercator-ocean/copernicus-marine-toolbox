@@ -76,7 +76,7 @@ This option allows you to specify request parameters in a provided ``.json`` fil
 
   .. code-block:: bash
 
-     copernicusmarine subset --request-file template_subset_data_request.json
+     copernicusmarine subset --request-file subset_template.json
 
 - Template for ``get`` data request:
 
@@ -107,7 +107,7 @@ This option allows you to specify request parameters in a provided ``.json`` fil
 
   .. code-block:: bash
 
-     copernicusmarine get --request-file template_get_data_request.json
+     copernicusmarine get --request-file get_template.json
 
 Option ``--credentials-file``
 *********************************
