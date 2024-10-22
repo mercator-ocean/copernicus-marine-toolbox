@@ -1,4 +1,5 @@
 import logging
+import os
 import pathlib
 from typing import Hashable, Iterable, Literal, Optional, Union
 
@@ -36,6 +37,7 @@ from copernicusmarine.download_functions.utils import (
     get_approximation_size_final_result,
     get_dataset_coordinates_extent,
     get_filename,
+    get_message_data_downloaded,
     get_message_formatted_dataset_size_estimation,
     timestamp_or_datestring_to_datetime,
 )
@@ -85,6 +87,7 @@ def download_dataset(
     dry_run: bool,
     force_download: bool,
     overwrite_output_data: bool,
+    skip_existing: bool,
 ) -> ResponseSubset:
     dataset = _rechunk(
         open_dataset_from_arco_series(
@@ -128,16 +131,29 @@ def download_dataset(
         logger.info(message_formatted_dataset_size_estimation)
 
     output_path = get_unique_filename(
-        filepath=output_path, overwrite_option=overwrite_output_data
+        filepath=output_path,
+        overwrite_option=overwrite_output_data,
+        skip_existing=skip_existing,
     )
+
     response = ResponseSubset(
         output=output_path,
+        download_status=get_message_data_downloaded(
+            dry_run,
+            skip_existing,
+            overwrite_output_data,
+            os.path.exists(output_path),
+        ),
         size=final_result_size_estimation,
         data_needed=data_needed_approximation,
         coordinates_extent=get_dataset_coordinates_extent(dataset),
     )
 
-    if dry_run:
+    if dry_run or (
+        os.path.exists(output_path)
+        and skip_existing
+        and not overwrite_output_data
+    ):
         return response
 
     logger.info("Writing to local storage. Please wait...")
@@ -221,6 +237,7 @@ def download_zarr(
         netcdf3_compatible=subset_request.netcdf3_compatible,
         dry_run=subset_request.dry_run,
         service=service,
+        skip_existing=subset_request.skip_existing,
     )
     return response
 

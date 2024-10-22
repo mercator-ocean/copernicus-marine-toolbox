@@ -66,6 +66,7 @@ def subset_function(
     motu_api_request: Optional[str],
     force_download: bool,
     overwrite_output_data: bool,
+    skip_existing: bool,
     dry_run: bool,
     disable_progress_bar: bool,
     staging: bool,
@@ -144,6 +145,8 @@ def subset_function(
         subset_request.force_download = force_download
     if overwrite_output_data:
         subset_request.overwrite_output_data = overwrite_output_data
+    if skip_existing:
+        subset_request.skip_existing = skip_existing
 
     retrieval_service: RetrievalService = get_retrieval_service(
         subset_request.dataset_id,
@@ -193,7 +196,9 @@ def subset_function(
 
 def create_subset_template() -> None:
     filename = get_unique_filename(
-        filepath=pathlib.Path("subset_template.json"), overwrite_option=False
+        filepath=pathlib.Path("subset_template.json"),
+        overwrite_option=False,
+        skip_existing=False,
     )
     with open(filename, "w") as output_file:
         json.dump(

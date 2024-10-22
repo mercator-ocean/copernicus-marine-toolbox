@@ -52,6 +52,7 @@ def subset(
     motu_api_request: Optional[str] = None,
     force_download: bool = False,
     overwrite_output_data: bool = False,
+    skip_existing: bool = False,
     dry_run: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
@@ -83,6 +84,8 @@ def subset(
         Flag to skip confirmation before download.
     overwrite_output_data : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
+    skip_existing : bool, optional
+        If specified and if the file already exists on destination, then it won't be download again.
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     service : str, optional
@@ -165,6 +168,7 @@ def subset(
         motu_api_request,
         force_download,
         overwrite_output_data,
+        skip_existing,
         dry_run,
         disable_progress_bar,
         staging=staging,

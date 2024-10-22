@@ -225,7 +225,9 @@ class TestOverwriteOutputData:
         )
         Path(relative_filepath).touch()
         unique_filepath = get_unique_filename(
-            filepath=relative_filepath, overwrite_option=False
+            filepath=relative_filepath,
+            overwrite_option=False,
+            skip_existing=False,
         )
         assert unique_filepath == pathlib.Path(
             relative_folder, filename + "_(1)" + file_extension

@@ -85,6 +85,8 @@ class ResponseSubset(BaseModel):
 
     #: Path to the result file.
     output: pathlib.Path
+    #: Message to indicate if the data was downloaded or not.
+    download_status: str
     #: Estimation of the size of the final result file in MB.
     size: Optional[float]
     #: Estimation of the maximum amount of data needed to

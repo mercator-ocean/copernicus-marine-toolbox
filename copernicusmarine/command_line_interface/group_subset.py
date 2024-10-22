@@ -196,6 +196,13 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["OVERWRITE_OUTPUT_DATA_HELP"],
 )
 @click.option(
+    "--skip-existing",
+    is_flag=True,
+    type=bool,
+    default=False,
+    help=documentation_utils.SUBSET["SKIP_EXISTING_HELP"],
+)
+@click.option(
     "--service",
     "-s",
     type=str,
@@ -285,6 +292,7 @@ def subset(
     motu_api_request: Optional[str],
     force_download: bool,
     overwrite_output_data: bool,
+    skip_existing: bool,
     dry_run: bool,
     disable_progress_bar: bool,
     log_level: str,
@@ -334,6 +342,7 @@ def subset(
         motu_api_request=motu_api_request,
         force_download=force_download,
         overwrite_output_data=overwrite_output_data,
+        skip_existing=skip_existing,
         dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
         staging=staging,

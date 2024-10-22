@@ -231,8 +231,23 @@ def get_message_formatted_dataset_size_estimation(
         f" {estimation_data_downloaded:.0f} MB"
         "\nThis is a very rough estimate that is"
         " generally higher than the actual size of the"
-        "  data that needs to be downloaded."
+        " data that needs to be downloaded."
     )
+
+
+def get_message_data_downloaded(
+    dry_run: bool,
+    skip_existing: bool,
+    overwrite_output_data: bool,
+    exists: bool,
+) -> str:
+    if dry_run:
+        return "Dry-run, data has not been downloaded."
+    if overwrite_output_data:
+        return "Data will be downloaded, with option overwrite_output_data."
+    if exists and skip_existing:
+        return "Data already exists, skipping download."
+    return "Data will be downloaded."
 
 
 def get_approximation_size_final_result(

@@ -300,7 +300,7 @@ def _download_header(
     total_size = sum(sizes)
     if create_file_list and create_file_list.endswith(".txt"):
         download_filename = get_unique_filename(
-            directory_out / create_file_list, overwrite
+            directory_out / create_file_list, overwrite, False
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
@@ -309,7 +309,7 @@ def _download_header(
         return None
     elif create_file_list and create_file_list.endswith(".csv"):
         download_filename = get_unique_filename(
-            directory_out / create_file_list, overwrite
+            directory_out / create_file_list, overwrite, False
         )
         logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
@@ -579,7 +579,9 @@ def create_filenames_out(
             )
         if unique_names_compared_to_local_files:
             filename_out = get_unique_filename(
-                filepath=filename_out, overwrite_option=overwrite
+                filepath=filename_out,
+                overwrite_option=overwrite,
+                skip_existing=False,
             )
 
         filenames_out.append(filename_out)

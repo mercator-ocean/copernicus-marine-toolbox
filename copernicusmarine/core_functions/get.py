@@ -174,7 +174,9 @@ def _run_get_request(
 
 def create_get_template() -> None:
     filename = get_unique_filename(
-        filepath=pathlib.Path("get_template.json"), overwrite_option=False
+        filepath=pathlib.Path("get_template.json"),
+        overwrite_option=False,
+        skip_existing=False,
     )
     with open(filename, "w") as output_file:
         json.dump(
