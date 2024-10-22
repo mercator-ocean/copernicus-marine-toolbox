@@ -1,0 +1,38 @@
+name: Run tests on all datasets
+
+on:
+    pull_request:
+      branches:
+        - "copernicusmarine-toolbox-v2"
+
+# to change to be triggered manually
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment_test_all_datasets.yaml
+          environment-name: copernicusmarine_test
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Install netcdf
+        run: sudo apt-get install netcdf-bin
+        shell: bash
+
+      - name: Run tests
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        run: make run-tests-all-datasets-and-update-snapshots
+        shell: micromamba-shell {0}
