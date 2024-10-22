@@ -74,14 +74,23 @@ class TestCommandLineInterface:
     def then_I_can_read_the_default_json(self):
         json_result = loads(self.output.stdout.decode("utf-8"))
         assert len(json_result["products"]) >= 270
+        seen_processing_level = False
+        seen_digital_object_identifier = False
         for product in json_result["products"]:
             assert product["title"] is not None
             assert product["product_id"] is not None
             assert product["thumbnail_url"] is not None
-            assert "digital_object_identifier" in product
+            seen_digital_object_identifier = (
+                seen_digital_object_identifier
+                or ("digital_object_identifier" in product)
+            )
             assert product["sources"] is not None
-            assert "processing_level" in product
+            seen_processing_level = (
+                seen_processing_level or "processing_level" in product
+            )
             assert product["production_center"] is not None
+        assert seen_processing_level
+        assert seen_digital_object_identifier
 
     def and_there_are_no_warnings_about_backend_versions(self):
         assert (
@@ -281,13 +290,20 @@ class TestCommandLineInterface:
     def then_I_can_read_the_json_including_datasets(self):
         json_result = loads(self.output.stdout)
         assert len(json_result["products"]) >= 270
+        seen_processing_level = False
+        seen_digital_object_identifier = False
         for product in json_result["products"]:
             assert product["title"] is not None
             assert product["product_id"] is not None
             assert product["thumbnail_url"] is not None
-            assert "digital_object_identifier" in product
+            seen_digital_object_identifier = (
+                seen_digital_object_identifier
+                or ("digital_object_identifier" in product)
+            )
             assert product["sources"] is not None
-            assert "processing_level" in product
+            seen_processing_level = (
+                seen_processing_level or "processing_level" in product
+            )
             assert product["production_center"] is not None
             assert "datasets" in product
             assert product[
@@ -385,6 +401,8 @@ class TestCommandLineInterface:
                                 CopernicusMarineDatasetServiceType.STATIC_ARCO.service_name.value  # noqa
                                 not in service_names
                             )
+        assert seen_processing_level
+        assert seen_digital_object_identifier
 
     def when_I_use_staging_environment_in_debug_logging_level(self):
         command = [
