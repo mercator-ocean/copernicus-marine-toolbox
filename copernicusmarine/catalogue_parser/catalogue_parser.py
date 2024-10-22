@@ -365,8 +365,6 @@ def parse_catalogue(
             force_product_id = connection.get_json_file(
                 dataset_product_mapping_url
             ).get(force_dataset_id)
-            logger.info(f"Force dataset id: {force_dataset_id}")
-            logger.info(f"Force product id: {force_product_id}")
             if not force_product_id:
                 raise DatasetNotFound(force_dataset_id)
         marine_data_store_root_collections = fetch_all_products_items(
