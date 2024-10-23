@@ -6,7 +6,7 @@ from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock impo
 )
 
 
-class TestDescribe:
+class TestDescribeReleaseDate:
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,

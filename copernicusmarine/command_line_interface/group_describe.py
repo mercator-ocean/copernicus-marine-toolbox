@@ -3,6 +3,8 @@ from typing import Optional
 
 import click
 
+from copernicusmarine.catalogue_parser.fields_query_builder import QueryBuilder
+from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -10,6 +12,7 @@ from copernicusmarine.command_line_interface.utils import tqdm_disable_option
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
+    DeprecatedClickOption,
 )
 from copernicusmarine.core_functions.describe import describe_function
 
@@ -34,7 +37,7 @@ def cli_describe() -> None:
 
     .. code-block:: bash
 
-        copernicusmarine describe --contains METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 --include-datasets
+        copernicusmarine describe --contains METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 --returned-fields datasets
 
     .. code-block:: bash
 
@@ -43,6 +46,9 @@ def cli_describe() -> None:
 )
 @click.option(
     "--include-description",
+    cls=DeprecatedClickOption,
+    deprecated=["--include-description"],
+    preferred="--returned-fields description",
     type=bool,
     is_flag=True,
     default=False,
@@ -50,6 +56,9 @@ def cli_describe() -> None:
 )
 @click.option(
     "--include-datasets",
+    cls=DeprecatedClickOption,
+    deprecated=["--include-datasets"],
+    preferred="--returned-fields datasets",
     type=bool,
     is_flag=True,
     default=False,
@@ -57,6 +66,9 @@ def cli_describe() -> None:
 )
 @click.option(
     "--include-keywords",
+    cls=DeprecatedClickOption,
+    deprecated=["--include-keywords"],
+    preferred="--returned-fields keywords",
     type=bool,
     is_flag=True,
     default=False,
@@ -72,10 +84,27 @@ def cli_describe() -> None:
 @click.option(
     "-a",
     "--include-all",
+    cls=DeprecatedClickOption,
+    deprecated=["--include-all"],
+    preferred="--returned-fields all",
     type=bool,
     is_flag=True,
     default=False,
     help=documentation_utils.DESCRIBE["INCLUDE_ALL_HELP"],
+)
+@click.option(
+    "--returned-fields",
+    "-r",
+    type=str,
+    default=None,
+    help=documentation_utils.DESCRIBE["RETURNED_FIELDS_HELP"],
+)
+@click.option(
+    "--returned-fields-exclude",
+    "-e",
+    type=str,
+    default=None,
+    help=documentation_utils.DESCRIBE["RETURNED_FIELDS_EXCLUDE_HELP"],
 )
 @click.option(
     "--contains",
@@ -125,6 +154,8 @@ def describe(
     include_keywords: bool,
     include_versions: bool,
     include_all: bool,
+    returned_fields: Optional[str],
+    returned_fields_exclude: Optional[str],
     contains: list[str],
     product_id: Optional[str],
     dataset_id: Optional[str],
@@ -143,21 +174,86 @@ def describe(
         logger.debug("DEBUG mode activated")
 
     if include_all:
+        include_versions = True
+
+    response_catalogue = describe_function(
+        include_versions,
+        contains,
+        product_id,
+        dataset_id,
+        max_concurrent_requests,
+        disable_progress_bar,
+        staging,
+    )
+    include_query, exclude_query = _create_include_and_exclude(
+        returned_fields,
+        returned_fields_exclude,
+        include_datasets,
+        include_keywords,
+        include_description,
+        include_all,
+    )
+    blank_logger.info(
+        response_catalogue.model_dump_json(
+            exclude_unset=True,
+            exclude_none=True,
+            exclude=exclude_query,
+            include=include_query,
+            indent=2,
+            context={"sort_keys": False},
+        )
+    )
+
+
+def _create_include_and_exclude(
+    returned_fields: Optional[str],
+    returned_fields_exclude: Optional[str],
+    include_datasets: bool,
+    include_keywords: bool,
+    include_description: bool,
+    include_all: bool,
+) -> tuple[Optional[dict], Optional[dict]]:
+
+    if include_all:
         include_description = True
         include_datasets = True
         include_keywords = True
-        include_versions = True
+    include_in_output = set()
+    if returned_fields:
+        include_in_output = set(returned_fields.replace(" ", "").split(","))
+    exclude_from_output = set()
+    if returned_fields_exclude:
+        exclude_from_output = set(
+            returned_fields_exclude.replace(" ", "").split(",")
+        )
+    if (
+        not include_datasets
+        and not exclude_from_output
+        and not include_in_output
+        and ("datasets" not in include_in_output)
+    ):
+        exclude_from_output.add("datasets")
+    if (
+        not include_keywords
+        and not exclude_from_output
+        and not include_in_output
+        and ("keywords" not in include_in_output)
+    ):
+        exclude_from_output.add("keywords")
+    if (
+        not include_description
+        and not exclude_from_output
+        and not include_in_output
+        and ("description" not in include_in_output)
+    ):
+        exclude_from_output.add("description")
 
-    json_dump = describe_function(
-        include_description=include_description,
-        include_datasets=include_datasets,
-        include_keywords=include_keywords,
-        include_versions=include_versions,
-        contains=contains,
-        force_product_id=product_id,
-        force_dataset_id=dataset_id,
-        max_concurrent_requests=max_concurrent_requests,
-        disable_progress_bar=disable_progress_bar,
-        staging=staging,
-    )
-    blank_logger.info(json_dump)
+    include_query = None
+    if include_in_output and "all" not in include_in_output:
+        query_builder = QueryBuilder(include_in_output)
+        include_query = query_builder.build_query(CopernicusMarineCatalogue)
+    exclude_query = None
+    if exclude_from_output:
+        query_builder = QueryBuilder(exclude_from_output)
+        exclude_query = query_builder.build_query(CopernicusMarineCatalogue)
+    return include_query, exclude_query

@@ -44,19 +44,70 @@ Here the first 2 products are shown:
     }
 
 
-By default, the command only shows the products. To include the datasets, you can use the ``--include-datasets`` option.
-
-**Example:**
-
-.. code-block:: bash
-
-    copernicusmarine describe --include-datasets
+By default, the command only shows the products. To include the datasets, you can use the ``--returned-fields datasets`` option.
 
 To save the JSON output to a file, you can use the following command:
 
 .. code-block:: bash
 
-    copernicusmarine describe --include-datasets > all_datasets_copernicusmarine.json
+    copernicusmarine describe > all_products_copernicus_marine_service.json
+
+.. note::
+    At some point in the future, the command will be updated to include everything by default.
+    Then the user will be able to use the ``--returned-fields`` option or ``--returned-fields-exclude`` to filter the output.
+
+.. note::
+    In the case of the Python interface, the describe will return directly the :class:`copernicusmarine.CopernicusMarineCatalogue` object.
+    The catalogue will be complete except if you use the ``dataset_id``, ``product_id`` or ``contains`` arguments.
+
+``--returned-fields`` and ``--returned-fields-exclude`` options
+----------------------------------------------------------------
+
+You can use the ``--returned-fields`` (``-r``) and ``--returned-fields-exclude`` (``-e``) options to select the fields you want to see in the output.
+The options allow to select respectively the fileds you want to include or exclude from the output.
+You just need to add them as a comma-separated list.
+
+For example if you want only the URI of the services, you can use the following command:
+
+**Example:**
+
+.. code-block:: bash
+
+    copernicusmarine describe --returned-fields uri,product_id,dataset_id
+
+The output will be something like this (only the first product are shown):
+
+.. code-block:: json
+
+    {
+    "products": [
+        {
+        "product_id": "ANTARCTIC_OMI_SI_extent",
+        "datasets": [
+            {
+            "dataset_id": "antarctic_omi_si_extent",
+            "versions": [
+                {
+                "parts": [
+                    {
+                    "services": [
+                        {
+                        "uri": "https://s3.waw3-1.cloudferro.com/mdl-native-10/native/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/antarctic_omi_si_extent_19930115_P20220328.nc"
+                        },
+                        {
+                        "uri": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-001/arco/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/omi.zarr"
+                        }
+                    ]
+                    }
+                ]
+                }
+            ]
+            }
+        ]
+        }
+        ]
+    }
+
 
 ``--contains`` option
 ----------------------
@@ -118,6 +169,51 @@ The output will be something like this:
         ]
         }
     ]
+    }
+
+
+``dataset_id`` and ``product_id`` options
+-----------------------------------------
+
+Calling the whole catalogue can be time-consuming. If you know the dataset or product you are looking for, you can use the ``dataset_id`` or ``product_id`` options.
+It will drastically reduce the time to get the information you need.
+You can either use the ``--dataset_id`` or ``--product_id`` options or both.
+
+**Example:**
+
+Let's filter to returned values for simplicity.
+
+.. code-block:: bash
+
+    copernicusmarine describe -i cmems_mod_glo_phy_my_0.083deg_P1D-m -e services -r datasets,product_id
+
+The output will be something like this:
+
+.. code-block:: json
+
+    {
+        "products": [
+            {
+            "product_id": "GLOBAL_MULTIYEAR_PHY_001_030",
+            "datasets": [
+                {
+                "dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+                "dataset_name": "daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily",
+                "versions": [
+                    {
+                    "label": "202311",
+                    "parts": [
+                        {
+                        "name": "default",
+                        "released_date": "2023-11-30T11:00:00.000Z"
+                        }
+                    ]
+                    }
+                ]
+                }
+            ]
+            }
+        ]
     }
 
 ``--include-versions`` option

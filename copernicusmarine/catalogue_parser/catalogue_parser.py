@@ -1,5 +1,4 @@
 import logging
-from dataclasses import dataclass
 from enum import Enum
 from itertools import groupby
 from typing import Any, Optional, Union
@@ -350,7 +349,7 @@ def parse_catalogue(
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
-        total=2, desc="Fetching catalog", disable=disable_progress_bar
+        total=2, desc="Fetching catalogue", disable=disable_progress_bar
     )
     with CatalogParserConnection() as connection:
         if force_dataset_id and not force_product_id:
@@ -396,16 +395,6 @@ def parse_catalogue(
     progress_bar.update()
     logger.debug("Catalogue parsed")
     return full_catalog
-
-
-@dataclass
-class DistinctDatasetVersionPart:
-    dataset_id: str
-    dataset_version: str
-    dataset_part: str
-    layer_elements: list
-    raw_services: dict
-    stac_items_values: Optional[dict]
 
 
 # ---------------------------------------

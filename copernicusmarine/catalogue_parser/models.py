@@ -54,7 +54,7 @@ class _Service(BaseModel):
             "short_name": self.short_name.value,
         }
 
-    class Config:
+    class ConfigDict:
         frozen = True
 
 
@@ -163,7 +163,7 @@ class CopernicusMarineCoordinate(BaseModel):
     #: Coordinate id
     coordinate_id: str
     #: Coordinate units
-    units: str
+    coordinate_unit: str
     #: Minimum value of the coordinate
     minimum_value: Optional[Union[float, str]]
     #: Maximum value of the coordinate
@@ -218,7 +218,7 @@ class CopernicusMarineCoordinate(BaseModel):
 
         coordinate = cls(
             coordinate_id=dimension,
-            units=dimension_metadata.get("units") or "",
+            coordinate_unit=dimension_metadata.get("units") or "",
             minimum_value=minimum_value or coordinates_info.get("min"),  # type: ignore
             maximum_value=coordinates_info.get("max"),
             step=coordinates_info.get("step"),

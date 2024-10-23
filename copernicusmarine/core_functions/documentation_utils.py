@@ -82,16 +82,25 @@ DESCRIBE: dict[str, str] = {
     "DESCRIBE_RESPONSE_HELP": (
         "JSON\n A dictionary containing the retrieved metadata information."
     ),
-    "INCLUDE_DESCRIPTION_HELP": "Include product description in output.",
-    "INCLUDE_DATASETS_HELP": "Include product dataset details in output.",
-    "INCLUDE_KEYWORDS_HELP": "Include product keyword details in output.",
+    "INCLUDE_DESCRIPTION_HELP": "Deprecated. Include product description in output.",
+    "INCLUDE_DATASETS_HELP": "Deprecated. Include product dataset details in output.",
+    "INCLUDE_KEYWORDS_HELP": "Deprecated. Include product keyword details in output.",
     "INCLUDE_VERSIONS_HELP": (
         "Include dataset versions in output. By default, shows only the default "
         "version."
     ),
     "INCLUDE_ALL_HELP": (
-        "Include all the possible data in output: description, datasets, keywords, "
+        "Deprecated. Include all the possible data in output: "
+        "description, datasets, keywords, "
         "and versions."
+    ),
+    "RETURNED_FIELDS_HELP": (
+        "Option to specify the fields to return in the output. "
+        "The fields are separated by a comma. You can use 'all' to return all fields."
+    ),
+    "RETURNED_FIELDS_EXCLUDE_HELP": (
+        "Option to specify the fields to exclude from the output. "
+        "The fields are separated by a comma."
     ),
     "CONTAINS_HELP": (
         "Filter catalogue output. Returns products with attributes matching a string "
