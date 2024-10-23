@@ -22,9 +22,9 @@ jobs:
       run: |
         # ubuntu dockerfile is very minimal (only 122 packages are installed)
         # need to install updated git (from official git ppa)
-        apt update
-        apt install -y software-properties-common
-        add-apt-repository ppa:git-core/ppa -y
+        sudo apt update
+        sudo apt install -y software-properties-common
+        sudo add-apt-repository ppa:git-core/ppa -y
         # install dependencies expected by other steps
         apt update
         apt install -y git \
