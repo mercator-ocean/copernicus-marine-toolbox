@@ -374,7 +374,6 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     if response.status_code == 200:
         token_response = response.json()
         access_token = token_response["access_token"]
-        print("Access Token:", access_token)
 
         userinfo_url = "https://auth.marine.copernicus.eu/realms/MIS/protocol/openid-connect/userinfo"  # noqa: E501
         headers = {"Authorization": f"Bearer {access_token}"}
