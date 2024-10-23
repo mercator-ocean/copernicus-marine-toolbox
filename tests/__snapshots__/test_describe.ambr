@@ -2,10 +2,8 @@
 # name: TestDescribe.test_describe_returned_fields_datasets
   list([
     dict({
-      'service_type': dict({
-        'service_name': 'original-files',
-        'short_name': 'files',
-      }),
+      'service_name': 'original-files',
+      'service_short_name': 'files',
       'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_MULTIYEAR_PHY_ENS_001_031/cmems_mod_glo_phy-all_my_0.25deg_P1D-m_202311',
       'variables': list([
         dict({
@@ -324,10 +322,8 @@
     }),
     dict({
       'service_format': 'zarr',
-      'service_type': dict({
-        'service_name': 'arco-geo-series',
-        'short_name': 'geoseries',
-      }),
+      'service_name': 'arco-geo-series',
+      'service_short_name': 'geoseries',
       'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-066/arco/GLOBAL_MULTIYEAR_PHY_ENS_001_031/cmems_mod_glo_phy-all_my_0.25deg_P1D-m_202311/timeChunked.zarr',
       'variables': list([
         dict({
@@ -2206,10 +2202,8 @@
     }),
     dict({
       'service_format': 'zarr',
-      'service_type': dict({
-        'service_name': 'arco-time-series',
-        'short_name': 'timeseries',
-      }),
+      'service_name': 'arco-time-series',
+      'service_short_name': 'timeseries',
       'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-066/arco/GLOBAL_MULTIYEAR_PHY_ENS_001_031/cmems_mod_glo_phy-all_my_0.25deg_P1D-m_202311/geoChunked.zarr',
       'variables': list([
         dict({

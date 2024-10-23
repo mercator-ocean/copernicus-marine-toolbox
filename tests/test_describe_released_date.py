@@ -1,6 +1,6 @@
 from unittest import mock
 
-from copernicusmarine import describe
+from copernicusmarine import CopernicusMarineCatalogue, describe
 from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock import (
     mocked_stac_requests_get,
 )
@@ -28,7 +28,7 @@ class TestDescribeReleaseDate:
         )
 
     def then_I_dont_get_the_not_released_products_version_and_datasets(
-        self, describe_result, snapshot
+        self, describe_result: CopernicusMarineCatalogue, snapshot
     ):
         assert 1 == len(describe_result.products)
         assert (
@@ -45,7 +45,7 @@ class TestDescribeReleaseDate:
         )
 
     def then_I_get_all_products_versions_and_datasets(
-        self, describe_result, snapshot
+        self, describe_result: CopernicusMarineCatalogue, snapshot
     ):
         assert 2 == len(describe_result.products)
         assert (

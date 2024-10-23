@@ -92,7 +92,7 @@ Subtypes
 .. autoclass:: copernicusmarine.CopernicusMarineVersionPart()
     :members:
     :undoc-members:
-    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_service_by_service_type
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_service_by_service_name
     :member-order: bysource
 
 .. autoclass:: copernicusmarine.CopernicusMarineService()
@@ -111,6 +111,18 @@ Subtypes
     :members:
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CopernicusMarineServiceNames()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.CoperniusMarineServiceShortNames()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields
     :member-order: bysource
 
 .. autoclass:: copernicusmarine.CopernicusMarineServiceFormat()

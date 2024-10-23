@@ -25,7 +25,7 @@ extensions = [
 numpydoc_show_class_members = False
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "__pycache__"]
 
 pygments_style = "sphinx"
 pygments_dark_style = "monokai"

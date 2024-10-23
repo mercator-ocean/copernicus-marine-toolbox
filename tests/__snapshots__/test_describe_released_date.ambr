@@ -16,7 +16,8 @@
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211',
                         'variables': list([
                           dict({
@@ -48,8 +49,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -243,8 +245,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -449,7 +452,8 @@
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011',
                         'variables': list([
                           dict({
@@ -481,8 +485,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -676,8 +681,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -888,7 +894,8 @@
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211',
                         'variables': list([
                           dict({
@@ -907,8 +914,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -1008,8 +1016,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -1125,7 +1134,53 @@
                     'name': 'default',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com:443/mdl-arco-time-005-dta/arco/OCEANCOLOUR_GLO_BGC_L3_MY_009_103/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/timeChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -179.99722290039062,
+                              -89.99722290039062,
+                              179.9972381591797,
+                              89.99722290039062,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'chunking_length': 1,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
+                                'maximum_value': 1487376000000.0,
+                                'minimum_value': 1461542400000.0,
+                                'step': 86400000.0,
+                              }),
+                              dict({
+                                'chunking_length': 400,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                                'maximum_value': 89.99722290039062,
+                                'minimum_value': -89.99722290039062,
+                                'step': 0.0055555555974190944,
+                              }),
+                              dict({
+                                'chunking_length': 1200,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                                'maximum_value': 179.9972381591797,
+                                'minimum_value': -179.99722290039062,
+                                'step': 0.0055555555764870024,
+                              }),
+                            ]),
+                            'short_name': 'CHL',
+                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
+                            'units': 'milligram m-3',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-dta/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211',
                         'variables': list([
                           dict({
@@ -1136,6 +1191,51 @@
                               89.99722290039062,
                             ]),
                             'coordinates': list([
+                            ]),
+                            'short_name': 'CHL',
+                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
+                            'units': 'milligram m-3',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-005-dta/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/geoChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -179.99722290039062,
+                              -89.99722290039062,
+                              179.9972381591797,
+                              89.99722290039062,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'chunking_length': 300,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
+                                'maximum_value': 1487376000000.0,
+                                'minimum_value': 1461542400000.0,
+                                'step': 86400000.0,
+                              }),
+                              dict({
+                                'chunking_length': 60,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                                'maximum_value': 89.99722290039062,
+                                'minimum_value': -89.99722290039062,
+                                'step': 0.0055555555974190944,
+                              }),
+                              dict({
+                                'chunking_length': 60,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                                'maximum_value': 179.9972381591797,
+                                'minimum_value': -179.99722290039062,
+                                'step': 0.0055555555764870024,
+                              }),
                             ]),
                             'short_name': 'CHL',
                             'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
@@ -1227,7 +1327,8 @@
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012',
                         'variables': list([
                           dict({
@@ -1246,8 +1347,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -1321,8 +1423,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -1413,7 +1516,8 @@
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012',
                         'variables': list([
                           dict({
@@ -1432,8 +1536,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -1874,8 +1979,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -2397,7 +2503,8 @@
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211',
                         'variables': list([
                           dict({
@@ -2429,8 +2536,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -2624,8 +2732,9 @@
                         ]),
                       }),
                       dict({
-                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
-                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -2835,7 +2944,53 @@
                     'name': 'default',
                     'services': list([
                       dict({
-                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com:443/mdl-arco-time-005-dta/arco/OCEANCOLOUR_GLO_BGC_L3_MY_009_103/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/timeChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -179.99722290039062,
+                              -89.99722290039062,
+                              179.9972381591797,
+                              89.99722290039062,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'chunking_length': 1,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
+                                'maximum_value': 1487376000000.0,
+                                'minimum_value': 1461542400000.0,
+                                'step': 86400000.0,
+                              }),
+                              dict({
+                                'chunking_length': 400,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                                'maximum_value': 89.99722290039062,
+                                'minimum_value': -89.99722290039062,
+                                'step': 0.0055555555974190944,
+                              }),
+                              dict({
+                                'chunking_length': 1200,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                                'maximum_value': 179.9972381591797,
+                                'minimum_value': -179.99722290039062,
+                                'step': 0.0055555555764870024,
+                              }),
+                            ]),
+                            'short_name': 'CHL',
+                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
+                            'units': 'milligram m-3',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-dta/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211',
                         'variables': list([
                           dict({
@@ -2846,6 +3001,51 @@
                               89.99722290039062,
                             ]),
                             'coordinates': list([
+                            ]),
+                            'short_name': 'CHL',
+                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
+                            'units': 'milligram m-3',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_format': 'zarr',
+                        'service_name': 'arco-time-series',
+                        'service_short_name': 'timeseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-005-dta/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/geoChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -179.99722290039062,
+                              -89.99722290039062,
+                              179.9972381591797,
+                              89.99722290039062,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'chunking_length': 300,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
+                                'maximum_value': 1487376000000.0,
+                                'minimum_value': 1461542400000.0,
+                                'step': 86400000.0,
+                              }),
+                              dict({
+                                'chunking_length': 60,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                                'maximum_value': 89.99722290039062,
+                                'minimum_value': -89.99722290039062,
+                                'step': 0.0055555555974190944,
+                              }),
+                              dict({
+                                'chunking_length': 60,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                                'maximum_value': 179.9972381591797,
+                                'minimum_value': -179.99722290039062,
+                                'step': 0.0055555555764870024,
+                              }),
                             ]),
                             'short_name': 'CHL',
                             'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',

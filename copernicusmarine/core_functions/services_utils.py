@@ -1,19 +1,19 @@
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from itertools import chain
 from typing import List, Literal, Optional, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineDatasetServiceType,
     CopernicusMarineDatasetVersion,
     CopernicusMarineProductDataset,
     CopernicusMarineService,
     CopernicusMarineServiceFormat,
+    CopernicusMarineServiceNames,
     CopernicusMarineVersionPart,
+    short_name_from_service_name,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndSpaceSubset,
@@ -40,71 +40,47 @@ class _Command(Enum):
 @dataclass(frozen=True)
 class Command:
     command_name: _Command
-    service_types_by_priority: List[CopernicusMarineDatasetServiceType]
+    service_names_by_priority: List[CopernicusMarineServiceNames]
 
     def service_names(self) -> List[str]:
-        return list(
-            map(
-                lambda service_type: service_type.service_name.value,
-                self.service_types_by_priority,
-            )
-        )
+        return [
+            service_name for service_name in self.service_names_by_priority
+        ]
 
-    def service_short_names(self) -> List[str]:
-        return list(
-            map(
-                lambda service_type: service_type.short_name.value,
-                self.service_types_by_priority,
+    def get_available_service_for_command(self) -> list[str]:
+        available_services = []
+        for service in self.service_names_by_priority:
+            available_services.append(service.value)
+            available_services.append(
+                short_name_from_service_name(service).value
             )
-        )
-
-    def service_aliases(self) -> List[str]:
-        return list(
-            chain(
-                *map(
-                    lambda service_type: service_type.aliases(),
-                    self.service_types_by_priority,
-                )
-            )
-        )
+        return available_services
 
 
 class CommandType(Command, Enum):
     SUBSET = (
         _Command.SUBSET,
         [
-            CopernicusMarineDatasetServiceType.GEOSERIES,
-            CopernicusMarineDatasetServiceType.TIMESERIES,
-            CopernicusMarineDatasetServiceType.OMI_ARCO,
-            CopernicusMarineDatasetServiceType.STATIC_ARCO,
+            CopernicusMarineServiceNames.GEOSERIES,
+            CopernicusMarineServiceNames.TIMESERIES,
+            CopernicusMarineServiceNames.OMI_ARCO,
+            CopernicusMarineServiceNames.STATIC_ARCO,
         ],
     )
     GET = (
         _Command.GET,
         [
-            CopernicusMarineDatasetServiceType.FILES,
+            CopernicusMarineServiceNames.FILES,
         ],
     )
     LOAD = (
         _Command.LOAD,
         [
-            CopernicusMarineDatasetServiceType.GEOSERIES,
-            CopernicusMarineDatasetServiceType.TIMESERIES,
-            CopernicusMarineDatasetServiceType.OMI_ARCO,
-            CopernicusMarineDatasetServiceType.STATIC_ARCO,
+            CopernicusMarineServiceNames.GEOSERIES,
+            CopernicusMarineServiceNames.TIMESERIES,
+            CopernicusMarineServiceNames.OMI_ARCO,
+            CopernicusMarineServiceNames.STATIC_ARCO,
         ],
-    )
-
-
-def assert_service_type_for_command(
-    service_type: CopernicusMarineDatasetServiceType, command_type: CommandType
-) -> CopernicusMarineDatasetServiceType:
-    return next_or_raise_exception(
-        (
-            service_type
-            for service_type in command_type.service_types_by_priority
-        ),
-        _service_type_does_not_exist_for_command(service_type, command_type),
     )
 
 
@@ -115,45 +91,43 @@ class ServiceDoesNotExistForCommand(Exception):
     Please make sure the service exists for the command.
     """  # TODO: list available services per command
 
-    def __init__(self, service_name, command_name, available_services):
+    def __init__(
+        self,
+        requested_service_name: str,
+        command_name: str,
+        available_services: list[str],
+    ):
         super().__init__()
         self.__setattr__(
             "custom_exception_message",
-            f"Service {service_name} "
+            f"Service {requested_service_name} "
             f"does not exist for command {command_name}. "
             f"Possible service{'s' if len(available_services) > 1 else ''}: "
             f"{available_services}",
         )
 
 
-def _service_type_does_not_exist_for_command(
-    service_type: CopernicusMarineDatasetServiceType, command_type: CommandType
-) -> ServiceDoesNotExistForCommand:
-    return _service_does_not_exist_for_command(
-        service_type.service_name.value, command_type
-    )
-
-
 def _service_does_not_exist_for_command(
-    service_name: str, command_type: CommandType
+    requested_service_name: str,
+    command_type: CommandType,
 ) -> ServiceDoesNotExistForCommand:
     return ServiceDoesNotExistForCommand(
-        service_name,
+        requested_service_name,
         command_type.command_name.value,
-        command_type.service_aliases(),
+        command_type.get_available_service_for_command(),
     )
 
 
 def _select_forced_service(
     dataset_version_part: CopernicusMarineVersionPart,
-    force_service_type: CopernicusMarineDatasetServiceType,
+    force_service_name: CopernicusMarineServiceNames,
     command_type: CommandType,
 ) -> CopernicusMarineService:
     return next_or_raise_exception(
         (
             service
             for service in dataset_version_part.services
-            if service.service_type == force_service_type
+            if service.service_name == force_service_name
         ),
         _service_not_available_error(dataset_version_part, command_type),
     )
@@ -164,8 +138,8 @@ def _get_best_arco_service_type(
     dataset_url: str,
     username: Optional[str],
 ) -> Literal[
-    CopernicusMarineDatasetServiceType.TIMESERIES,
-    CopernicusMarineDatasetServiceType.GEOSERIES,
+    CopernicusMarineServiceNames.TIMESERIES,
+    CopernicusMarineServiceNames.GEOSERIES,
 ]:
     dataset = custom_open_zarr.open_zarr(
         dataset_url, copernicus_marine_username=username
@@ -213,20 +187,20 @@ def _get_best_arco_service_type(
     temporal_coverage = subset_temporal_dimensions / temporal_dimensions
 
     if geographical_coverage >= temporal_coverage:
-        return CopernicusMarineDatasetServiceType.GEOSERIES
-    return CopernicusMarineDatasetServiceType.TIMESERIES
+        return CopernicusMarineServiceNames.GEOSERIES
+    return CopernicusMarineServiceNames.TIMESERIES
 
 
-def _get_first_available_service_type(
+def _get_first_available_service_name(
     command_type: CommandType,
-    dataset_available_service_types: list[CopernicusMarineDatasetServiceType],
-) -> CopernicusMarineDatasetServiceType:
-    available_service_types = command_type.service_types_by_priority
+    dataset_available_service_names: list[CopernicusMarineServiceNames],
+) -> CopernicusMarineServiceNames:
+    available_service_names = command_type.service_names_by_priority
     return next_or_raise_exception(
         (
-            service_type
-            for service_type in available_service_types
-            if service_type in dataset_available_service_types
+            service_name
+            for service_name in available_service_names
+            if service_name in dataset_available_service_names
         ),
         _no_service_available_for_command(command_type),
     )
@@ -238,21 +212,21 @@ def _select_service_by_priority(
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
 ) -> CopernicusMarineService:
-    dataset_available_service_types = [
-        service.service_type for service in dataset_version_part.services
+    dataset_available_service_names = [
+        service.service_name for service in dataset_version_part.services
     ]
-    first_available_service_type = _get_first_available_service_type(
+    first_available_service_name = _get_first_available_service_name(
         command_type=command_type,
-        dataset_available_service_types=dataset_available_service_types,
+        dataset_available_service_names=dataset_available_service_names,
     )
-    first_available_service = dataset_version_part.get_service_by_service_type(
-        service_type=first_available_service_type
+    first_available_service = dataset_version_part.get_service_by_service_name(
+        service_name=first_available_service_name
     )
     if (
-        CopernicusMarineDatasetServiceType.GEOSERIES
-        in dataset_available_service_types
-        and CopernicusMarineDatasetServiceType.TIMESERIES
-        in dataset_available_service_types
+        CopernicusMarineServiceNames.GEOSERIES
+        in dataset_available_service_names
+        and CopernicusMarineServiceNames.TIMESERIES
+        in dataset_available_service_names
         and command_type in [CommandType.SUBSET, CommandType.LOAD]
         and dataset_subset is not None
     ):
@@ -263,12 +237,12 @@ def _select_service_by_priority(
             raise FormatNotSupported(
                 first_available_service.service_format.value
             )
-        best_arco_service_type: CopernicusMarineDatasetServiceType = (
+        best_arco_service_type: CopernicusMarineServiceNames = (
             _get_best_arco_service_type(
                 dataset_subset, first_available_service.uri, username
             )
         )
-        return dataset_version_part.get_service_by_service_type(
+        return dataset_version_part.get_service_by_service_name(
             best_arco_service_type
         )
     return first_available_service
@@ -277,7 +251,7 @@ def _select_service_by_priority(
 @dataclass
 class RetrievalService:
     dataset_id: str
-    service_type: CopernicusMarineDatasetServiceType
+    service_name: CopernicusMarineServiceNames
     service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
@@ -288,7 +262,7 @@ def get_retrieval_service(
     dataset_id: str,
     force_dataset_version_label: Optional[str],
     force_dataset_part_label: Optional[str],
-    force_service_type_string: Optional[str],
+    force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
     index_parts: bool = False,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
@@ -304,9 +278,11 @@ def get_retrieval_service(
             " you can use 'copernicusmarine describe --include-datasets "
             "--contains <search_token>' to find datasets"
         )
-    force_service_type: Optional[CopernicusMarineDatasetServiceType] = (
-        _service_type_from_string(force_service_type_string, command_type)
-        if force_service_type_string
+    force_service_name: Optional[CopernicusMarineServiceNames] = (
+        _service_name_from_string(
+            force_service_name_or_short_name, command_type
+        )
+        if force_service_name_or_short_name
         else None
     )
 
@@ -314,7 +290,7 @@ def get_retrieval_service(
         dataset=dataset_metadata,
         force_dataset_version_label=force_dataset_version_label,
         force_dataset_part_label=force_dataset_part_label,
-        force_service_type=force_service_type,
+        force_service_name=force_service_name,
         command_type=command_type,
         index_parts=index_parts,
         dataset_subset=dataset_subset,
@@ -327,7 +303,7 @@ def _get_retrieval_service_from_dataset(
     dataset: CopernicusMarineProductDataset,
     force_dataset_version_label: Optional[str],
     force_dataset_part_label: Optional[str],
-    force_service_type: Optional[CopernicusMarineDatasetServiceType],
+    force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
     index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
@@ -349,7 +325,7 @@ def _get_retrieval_service_from_dataset(
         dataset_id=dataset.dataset_id,
         dataset_version=dataset_version,
         force_dataset_part_label=force_dataset_part_label,
-        force_service_type=force_service_type,
+        force_service_name=force_service_name,
         command_type=command_type,
         index_parts=index_parts,
         dataset_subset=dataset_subset,
@@ -362,7 +338,7 @@ def _get_retrieval_service_from_dataset_version(
     dataset_id: str,
     dataset_version: CopernicusMarineDatasetVersion,
     force_dataset_part_label: Optional[str],
-    force_service_type: Optional[CopernicusMarineDatasetServiceType],
+    force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
     index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
@@ -395,14 +371,13 @@ def _get_retrieval_service_from_dataset_version(
             dataset_id, dataset_version, dataset_part
         )
 
-    if force_service_type:
+    if force_service_name:
         logger.info(
-            f"You forced selection of service: "
-            f"{force_service_type.service_name.value}"
+            f"You forced selection of service: " f"{force_service_name.value}"
         )
         service = _select_forced_service(
             dataset_version_part=dataset_part,
-            force_service_type=force_service_type,
+            force_service_name=force_service_name,
             command_type=command_type,
         )
         if service.service_format == CopernicusMarineServiceFormat.SQLITE:
@@ -416,12 +391,12 @@ def _get_retrieval_service_from_dataset_version(
         )
         logger.info(
             "Service was not specified, the default one was "
-            f'selected: "{service.service_type.service_name.value}"'
+            f'selected: "{service.service_name.value}"'
         )
     dataset_start_date = _get_dataset_start_date_from_service(service)
     return RetrievalService(
         dataset_id=dataset_id,
-        service_type=service.service_type,
+        service_name=service.service_name,
         uri=service.uri,
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
@@ -491,14 +466,14 @@ def _service_not_available_error(
     dataset_version_part: CopernicusMarineVersionPart,
     command_type: CommandType,
 ) -> ServiceNotAvailable:
-    dataset_available_service_types = [
-        service.service_type.short_name.value
+    dataset_available_service_names = [
+        service.service_short_name
         for service in dataset_version_part.services
-        if service.service_type in command_type.service_types_by_priority
+        if service.service_name in command_type.service_names_by_priority
     ]
     return ServiceNotAvailable(
         f"Available services for dataset: "
-        f"{dataset_available_service_types}"
+        f"{dataset_available_service_names}"
     )
 
 
@@ -522,14 +497,15 @@ def _no_service_available_for_command(
     )
 
 
-def _service_type_from_string(
+def _service_name_from_string(
     string: str, command_type: CommandType
-) -> CopernicusMarineDatasetServiceType:
+) -> CopernicusMarineServiceNames:
     return next_or_raise_exception(
         (
-            service_type
-            for service_type in command_type.service_types_by_priority
-            if string in service_type.aliases()
+            service_name
+            for service_name in command_type.service_names_by_priority
+            if string
+            in {service_name.value, short_name_from_service_name(service_name)}
         ),
         _service_does_not_exist_for_command(string, command_type),
     )

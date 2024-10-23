@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional, Type, TypeVar, Union
 
 import pystac
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_debug,
@@ -19,7 +19,11 @@ VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
 
 
-class ServiceName(str, Enum):
+class CopernicusMarineServiceNames(str, Enum):
+    """
+    Services parsed by the Copernicus Marine toolbox.
+    """
+
     GEOSERIES = "arco-geo-series"
     TIMESERIES = "arco-time-series"
     FILES = "original-files"
@@ -28,7 +32,12 @@ class ServiceName(str, Enum):
     STATIC_ARCO = "static-arco"
 
 
-class ServiceShortName(str, Enum):
+class CoperniusMarineServiceShortNames(str, Enum):
+    """
+    Short names or the services parsed by the Copernicus Marine toolbox.
+    Also accepted when a service is requested.
+    """
+
     GEOSERIES = "geoseries"
     TIMESERIES = "timeseries"
     FILES = "files"
@@ -37,71 +46,23 @@ class ServiceShortName(str, Enum):
     STATIC_ARCO = "static-arco"
 
 
-class _Service(BaseModel):
-    service_name: ServiceName
-    short_name: ServiceShortName
-
-    def aliases(self) -> list[str]:
-        return (
-            [self.service_name.value, self.short_name.value]
-            if self.short_name.value != self.service_name.value
-            else [self.service_name.value]
-        )
-
-    def to_json_dict(self) -> dict:
-        return {
-            "service_name": self.service_name.value,
-            "short_name": self.short_name.value,
-        }
-
-    class ConfigDict:
-        frozen = True
-
-
-class CopernicusMarineDatasetServiceType(Enum):
-    GEOSERIES = _Service(
-        service_name=ServiceName.GEOSERIES,
-        short_name=ServiceShortName.GEOSERIES,
-    )
-    TIMESERIES = _Service(
-        service_name=ServiceName.TIMESERIES,
-        short_name=ServiceShortName.TIMESERIES,
-    )
-    FILES = _Service(
-        service_name=ServiceName.FILES,
-        short_name=ServiceShortName.FILES,
-    )
-    WMTS = _Service(
-        service_name=ServiceName.WMTS,
-        short_name=ServiceShortName.WMTS,
-    )
-    OMI_ARCO = _Service(
-        service_name=ServiceName.OMI_ARCO,
-        short_name=ServiceShortName.OMI_ARCO,
-    )
-    STATIC_ARCO = _Service(
-        service_name=ServiceName.STATIC_ARCO,
-        short_name=ServiceShortName.STATIC_ARCO,
-    )
-
-    @property
-    def service_name(self) -> ServiceName:
-        return self.value.service_name
-
-    @property
-    def short_name(self) -> ServiceShortName:
-        return self.value.short_name
-
-    def aliases(self) -> list[str]:
-        return self.value.aliases()
-
-    def to_json_dict(self) -> dict:
-        return self.value.to_json_dict()
+def short_name_from_service_name(
+    service_name: CopernicusMarineServiceNames,
+) -> CoperniusMarineServiceShortNames:
+    mapping = {
+        CopernicusMarineServiceNames.GEOSERIES: CoperniusMarineServiceShortNames.GEOSERIES,  # noqa
+        CopernicusMarineServiceNames.TIMESERIES: CoperniusMarineServiceShortNames.TIMESERIES,  # noqa
+        CopernicusMarineServiceNames.FILES: CoperniusMarineServiceShortNames.FILES,  # noqa
+        CopernicusMarineServiceNames.WMTS: CoperniusMarineServiceShortNames.WMTS,  # noqa
+        CopernicusMarineServiceNames.OMI_ARCO: CoperniusMarineServiceShortNames.OMI_ARCO,  # noqa
+        CopernicusMarineServiceNames.STATIC_ARCO: CoperniusMarineServiceShortNames.STATIC_ARCO,  # noqa
+    }
+    return mapping[service_name]
 
 
 def _service_type_from_web_api_string(
     name: str,
-) -> CopernicusMarineDatasetServiceType:
+) -> CopernicusMarineServiceNames:
     class WebApi(Enum):
         GEOSERIES = "timeChunked"
         TIMESERIES = "geoChunked"
@@ -110,13 +71,13 @@ def _service_type_from_web_api_string(
         OMI_ARCO = "omi"
         STATIC_ARCO = "static"
 
-    web_api_mapping = {
-        WebApi.GEOSERIES: CopernicusMarineDatasetServiceType.GEOSERIES,
-        WebApi.TIMESERIES: CopernicusMarineDatasetServiceType.TIMESERIES,
-        WebApi.FILES: CopernicusMarineDatasetServiceType.FILES,
-        WebApi.WMTS: CopernicusMarineDatasetServiceType.WMTS,
-        WebApi.OMI_ARCO: CopernicusMarineDatasetServiceType.OMI_ARCO,
-        WebApi.STATIC_ARCO: CopernicusMarineDatasetServiceType.STATIC_ARCO,
+    web_api_mapping: dict[WebApi, CopernicusMarineServiceNames] = {
+        WebApi.GEOSERIES: CopernicusMarineServiceNames.GEOSERIES,
+        WebApi.TIMESERIES: CopernicusMarineServiceNames.TIMESERIES,
+        WebApi.FILES: CopernicusMarineServiceNames.FILES,
+        WebApi.WMTS: CopernicusMarineServiceNames.WMTS,
+        WebApi.OMI_ARCO: CopernicusMarineServiceNames.OMI_ARCO,
+        WebApi.STATIC_ARCO: CopernicusMarineServiceNames.STATIC_ARCO,
     }
 
     return next_or_raise_exception(
@@ -330,10 +291,13 @@ class CopernicusMarineService(BaseModel):
     For original files service, there are no variables.
     """
 
-    #: Service type: "arco-geo-series" (or "geoseries"), "arco-time-series"
-    #: (or "timeseries"), "original-files" (or "files"), "wmts", "omi-arco",
-    #: "static-arco"
-    service_type: CopernicusMarineDatasetServiceType
+    model_config = ConfigDict(use_enum_values=True)
+
+    #: Service name
+    service_name: CopernicusMarineServiceNames
+
+    #: Service short name
+    service_short_name: Optional[CoperniusMarineServiceShortNames]
 
     #: Service format: format of the service
     #: (eg:"arco-geo-series" can be "zarr", "sqlite")
@@ -354,7 +318,12 @@ class CopernicusMarineService(BaseModel):
             service_uri = asset.get_absolute_href()
             if not service_uri:
                 raise ServiceNotHandled(service_name)
-            service_type = _service_type_from_web_api_string(service_name)
+            service_name_parsed = _service_type_from_web_api_string(
+                service_name
+            )
+            service_short_name = short_name_from_service_name(
+                service_name_parsed
+            )
             service_format = None
             admp_in_preparation = metadata_item.properties.get(
                 "admp_in_preparation"
@@ -366,16 +335,15 @@ class CopernicusMarineService(BaseModel):
 
             if not service_uri.endswith("/"):
                 if admp_in_preparation and (
-                    service_type
-                    == CopernicusMarineDatasetServiceType.GEOSERIES
-                    or service_type
-                    == CopernicusMarineDatasetServiceType.TIMESERIES
+                    service_name == CopernicusMarineServiceNames.GEOSERIES
+                    or service_name == CopernicusMarineServiceNames.TIMESERIES
                 ):
                     return None
                 else:
                     bbox = metadata_item.bbox
                     return cls(
-                        service_type=service_type,
+                        service_name=service_name_parsed,
+                        service_short_name=service_short_name,
                         uri=service_uri,
                         variables=[
                             CopernicusMarineVariable.from_metadata_item(
@@ -441,13 +409,13 @@ class CopernicusMarineVersionPart(BaseModel):
             released_date=released_date,
         )
 
-    def get_service_by_service_type(
-        self, service_type: CopernicusMarineDatasetServiceType
-    ):
+    def get_service_by_service_name(
+        self, service_name: CopernicusMarineServiceNames
+    ) -> CopernicusMarineService:
         return next(
             service
             for service in self.services
-            if service.service_type == service_type
+            if service.service_name == service_name
         )
 
 

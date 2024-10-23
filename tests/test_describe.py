@@ -1,12 +1,15 @@
 import re
 from json import loads
 
-from copernicusmarine import CopernicusMarineCatalogue, describe
+from copernicusmarine import (
+    CopernicusMarineCatalogue,
+    CopernicusMarineServiceNames,
+    describe,
+)
 from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     REGEX_PATTERN_DATE_YYYYMM,
     VERSION_DEFAULT,
-    CopernicusMarineDatasetServiceType,
 )
 from tests.test_utils import execute_in_terminal
 
@@ -102,7 +105,7 @@ class TestDescribe:
                     for part in version["parts"]:
                         assert "omi" not in list(
                             map(
-                                lambda x: x["service_type"]["service_name"],
+                                lambda x: x["service_name"],
                                 part["services"],
                             )
                         )
@@ -137,7 +140,7 @@ class TestDescribe:
         dataset = expected_dataset[0]
         expected_dataset_services = list(
             map(
-                lambda x: x["service_type"]["service_name"],
+                lambda x: x["service_name"],
                 dataset["versions"][0]["parts"][0]["services"],
             )
         )
@@ -171,7 +174,7 @@ class TestDescribe:
         dataset = expected_dataset[0]
         wanted_services_in_dataset = list(
             filter(
-                lambda x: x["service_type"]["service_name"] in wanted_services,
+                lambda x: x["service_name"] in wanted_services,
                 dataset["versions"][0]["parts"][0]["services"],
             )
         )
@@ -351,53 +354,53 @@ class TestDescribe:
                         assert len(services) != 0, dataset["dataset_id"]
                         service_names = list(
                             map(
-                                lambda x: x["service_type"]["service_name"],
+                                lambda x: x["service_name"],
                                 services,
                             )
                         )
                         assert len(service_names) == len(set(service_names))
                         if (
-                            CopernicusMarineDatasetServiceType.OMI_ARCO.service_name.value  # noqa
+                            CopernicusMarineServiceNames.OMI_ARCO.value  # noqa
                             in service_names
                         ):
                             assert (
-                                CopernicusMarineDatasetServiceType.GEOSERIES.service_name.value  # noqa
+                                CopernicusMarineServiceNames.GEOSERIES.value  # noqa
                                 not in service_names
                             )
                             assert (
-                                CopernicusMarineDatasetServiceType.TIMESERIES.service_name.value  # noqa
+                                CopernicusMarineServiceNames.TIMESERIES.value  # noqa
                                 not in service_names
                             )
                             assert (
-                                CopernicusMarineDatasetServiceType.STATIC_ARCO.service_name.value  # noqa
+                                CopernicusMarineServiceNames.STATIC_ARCO.value  # noqa
                                 not in service_names
                             )
                         if (
-                            CopernicusMarineDatasetServiceType.STATIC_ARCO.service_name.value  # noqa
+                            CopernicusMarineServiceNames.STATIC_ARCO.value  # noqa
                             in service_names
                         ):
                             assert (
-                                CopernicusMarineDatasetServiceType.GEOSERIES.service_name.value  # noqa
+                                CopernicusMarineServiceNames.GEOSERIES.value  # noqa
                                 not in service_names
                             )
                             assert (
-                                CopernicusMarineDatasetServiceType.TIMESERIES.service_name.value  # noqa
+                                CopernicusMarineServiceNames.TIMESERIES.value  # noqa
                                 not in service_names
                             )
                             assert (
-                                CopernicusMarineDatasetServiceType.OMI_ARCO.service_name.value  # noqa
+                                CopernicusMarineServiceNames.OMI_ARCO.value  # noqa
                                 not in service_names
                             )
                         if service_names in (
-                            CopernicusMarineDatasetServiceType.GEOSERIES,
-                            CopernicusMarineDatasetServiceType.TIMESERIES,
+                            CopernicusMarineServiceNames.GEOSERIES,
+                            CopernicusMarineServiceNames.TIMESERIES,
                         ):
                             assert (
-                                CopernicusMarineDatasetServiceType.OMI_ARCO.service_name.value  # noqa
+                                CopernicusMarineServiceNames.OMI_ARCO.value  # noqa
                                 not in service_names
                             )
                             assert (
-                                CopernicusMarineDatasetServiceType.STATIC_ARCO.service_name.value  # noqa
+                                CopernicusMarineServiceNames.STATIC_ARCO.value  # noqa
                                 not in service_names
                             )
         assert seen_processing_level
