@@ -34,17 +34,17 @@ class TestDescribe:
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, None
         )
-        self.then_I_can_read_the_json_including_datasets()
+        self.then_stdout_can_be_load_as_json()
         self.then_I_have_only_one_product()
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             None, dataset_id
         )
-        self.then_I_can_read_the_json_including_datasets()
+        self.then_stdout_can_be_load_as_json()
         self.then_I_have_only_one_product_and_one_dataset()
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, dataset_id
         )
-        self.then_I_can_read_the_json_including_datasets()
+        self.then_stdout_can_be_load_as_json()
         self.then_I_have_only_one_product_and_one_dataset()
 
     def test_describe_contains_option(self):
@@ -406,7 +406,7 @@ class TestDescribe:
     def when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
         self, product_id, dataset_id
     ):
-        command = ["copernicusmarine", "describe"]
+        command = ["copernicusmarine", "describe", "--returned-fields", "all"]
         if product_id:
             command.extend(["--product-id", product_id])
         if dataset_id:

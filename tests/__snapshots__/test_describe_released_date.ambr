@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: TestDescribe.test_describe_all_versions
+# name: TestDescribeReleaseDate.test_describe_all_versions
   dict({
     'products': list([
       dict({
@@ -16,10 +16,7 @@
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211',
                         'variables': list([
                           dict({
@@ -51,11 +48,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-geo-series',
-                          'short_name': 'geoseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -69,7 +63,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -126,26 +120,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'uo',
@@ -163,7 +157,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -220,26 +214,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'vo',
@@ -249,11 +243,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-time-series',
-                          'short_name': 'timeseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -267,7 +258,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -324,26 +315,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'uo',
@@ -361,7 +352,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -418,26 +409,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'vo',
@@ -458,10 +449,7 @@
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011',
                         'variables': list([
                           dict({
@@ -493,11 +481,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-geo-series',
-                          'short_name': 'geoseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -511,7 +496,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -568,26 +553,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'uo',
@@ -605,7 +590,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -662,26 +647,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'vo',
@@ -691,11 +676,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-time-series',
-                          'short_name': 'timeseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -709,7 +691,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -766,26 +748,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'uo',
@@ -803,7 +785,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -860,26 +842,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'vo',
@@ -906,10 +888,7 @@
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211',
                         'variables': list([
                           dict({
@@ -928,11 +907,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-geo-series',
-                          'short_name': 'geoseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -946,7 +922,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -1003,26 +979,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'so',
@@ -1032,11 +1008,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-time-series',
-                          'short_name': 'timeseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -1050,7 +1023,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -1107,26 +1080,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'so',
@@ -1152,10 +1125,7 @@
                     'name': 'default',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-dta/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211',
                         'variables': list([
                           dict({
@@ -1180,7 +1150,60 @@
             ]),
           }),
         ]),
+        'description': '''
+          The Operational Mercator global ocean analysis and forecast system at 1/12 degree is providing 10 days of 3D global ocean forecasts updated daily. The time series is aggregated in time in order to reach a two full year’s time series sliding window.
+
+          This product includes daily and monthly mean files of temperature, salinity, currents, sea level, mixed layer depth and ice parameters from the top to the bottom over the global ocean. It also includes hourly mean surface fields for sea level height, temperature and currents. The global ocean output files are displayed with a 1/12 degree horizontal resolution with regular longitude/latitude equirectangular projection.
+
+          50 vertical levels are ranging from 0 to 5500 meters.
+
+          This product also delivers a special dataset for surface current which also includes wave and tidal drift called SMOC (Surface merged Ocean Current).
+
+          **DOI (product):**
+          https://doi.org/10.48670/moi-00016
+        ''',
         'digital_object_identifier': '10.48670/moi-00016',
+        'keywords': list([
+          'target-application#seaiceforecastingapplication',
+          'oceanographic-geographical-features',
+          'numerical-model',
+          'eastward-sea-water-velocity',
+          'northward-sea-water-velocity',
+          'sea-surface-wave-stokes-drift-x-velocity',
+          'sea-surface-wave-stokes-drift-y-velocity',
+          'ocean-mixed-layer-thickness-defined-by-sigma-theta',
+          'sea-water-potential-temperature-at-sea-floor',
+          'sea-ice-thickness',
+          'sea-ice-area-fraction',
+          'eastward-sea-ice-velocity',
+          'northward-sea-ice-velocity',
+          'sea-surface-height-above-geoid',
+          'sea-water-pressure-at-sea-floor',
+          'surface-snow-thickness',
+          'sea-ice-speed',
+          'sea-ice-surface-temperature',
+          'sea-ice-albedo',
+          'age-of-sea-ice',
+          'sea-water-salinity',
+          'sea-water-potential-temperature',
+          'upward-sea-water-velocity',
+          'cell-thickness',
+          'model-level-number-at-sea-floor',
+          'sea-floor-depth-below-geoid',
+          'invariant',
+          'near-real-time',
+          'forecast',
+          'marine-resources',
+          'coastal-marine-environment',
+          'marine-safety',
+          'weather-climate-and-seasonal-forecasting',
+          'global-ocean',
+          'level-4',
+          'sea-level',
+          'sea-ice-concentration-and/or-thickness',
+          'in-situ-ts-profiles',
+          'sst',
+        ]),
         'processing_level': 'Level 4',
         'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
         'production_center': 'Mercator Océan International',
@@ -1204,10 +1227,7 @@
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012',
                         'variables': list([
                           dict({
@@ -1226,11 +1246,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-geo-series',
-                          'short_name': 'geoseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -1244,15 +1261,15 @@
                               dict({
                                 'chunking_length': 4,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1693440000000.0,
                                 'minimum_value': 725846400000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5000,
                                   4000,
@@ -1283,18 +1300,18 @@
                               dict({
                                 'chunking_length': 375,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 65.00125122070312,
                                 'minimum_value': 40.06666946411133,
                                 'step': 0.06667000469676951,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 297,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 12.999670028686523,
                                 'minimum_value': -19.88888931274414,
                                 'step': 0.11110999133135821,
-                                'units': 'degrees_east',
                               }),
                             ]),
                             'short_name': 'chl',
@@ -1304,11 +1321,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-time-series',
-                          'short_name': 'timeseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -1322,15 +1336,15 @@
                               dict({
                                 'chunking_length': 2156,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1693440000000.0,
                                 'minimum_value': 725846400000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5000,
                                   4000,
@@ -1361,18 +1375,18 @@
                               dict({
                                 'chunking_length': 16,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 65.00125122070312,
                                 'minimum_value': 40.06666946411133,
                                 'step': 0.06667000469676951,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 16,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 12.999670028686523,
                                 'minimum_value': -19.88888931274414,
                                 'step': 0.11110999133135821,
-                                'units': 'degrees_east',
                               }),
                             ]),
                             'short_name': 'chl',
@@ -1399,10 +1413,7 @@
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012',
                         'variables': list([
                           dict({
@@ -1421,11 +1432,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-geo-series',
-                          'short_name': 'geoseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -1439,7 +1447,7 @@
                               dict({
                                 'chunking_length': 4,
                                 'coordinate_id': 'time',
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'values': list([
                                   725846400000,
                                   728524800000,
@@ -1814,7 +1822,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5000,
                                   4000,
@@ -1845,18 +1853,18 @@
                               dict({
                                 'chunking_length': 375,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 65.00125122070312,
                                 'minimum_value': 40.06666946411133,
                                 'step': 0.06667000469676951,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 297,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 12.999670028686523,
                                 'minimum_value': -19.88888931274414,
                                 'step': 0.11110999133135821,
-                                'units': 'degrees_east',
                               }),
                             ]),
                             'short_name': 'chl',
@@ -1866,11 +1874,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-time-series',
-                          'short_name': 'timeseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -1884,7 +1889,7 @@
                               dict({
                                 'chunking_length': 72,
                                 'coordinate_id': 'time',
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'values': list([
                                   725846400000,
                                   728524800000,
@@ -2259,7 +2264,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5000,
                                   4000,
@@ -2290,18 +2295,18 @@
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 65.00125122070312,
                                 'minimum_value': 40.06666946411133,
                                 'step': 0.06667000469676951,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 12.999670028686523,
                                 'minimum_value': -19.88888931274414,
                                 'step': 0.11110999133135821,
-                                'units': 'degrees_east',
                               }),
                             ]),
                             'short_name': 'chl',
@@ -2317,7 +2322,52 @@
             ]),
           }),
         ]),
+        'description': '''
+          **Short  Description:**
+
+          The ocean biogeochemistry reanalysis for the North-West European Shelf is produced using the European Regional Seas Ecosystem Model (ERSEM), coupled online to the forecasting ocean assimilation model at 7 km horizontal resolution, NEMO-NEMOVAR. ERSEM (Butensch&ouml;n et al. 2016) is developed and maintained at Plymouth Marine Laboratory. NEMOVAR system was used to assimilate observations of sea surface chlorophyll concentration from ocean colour satellite data and all the physical variables described in [NWSHELF_MULTIYEAR_PHY_004_009](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_PHY_004_009). Biogeochemical boundary conditions and river inputs used climatologies; nitrogen deposition at the surface used time-varying data.
+
+          The description of the model and its configuration, including the products validation is provided in the [CMEMS-NWS-QUID-004-011](http://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-NWS-QUID-004-011.pdf).
+
+          Products are provided as monthly and daily 25-hour, de-tided, averages. The datasets available are concentration of chlorophyll, nitrate, phosphate, oxygen, phytoplankton biomass, net primary production, light attenuation coefficient, pH, surface partial pressure of CO2, concentration of diatoms expressed as chlorophyll, concentration of dinoflagellates expressed as chlorophyll, concentration of nanophytoplankton expressed as chlorophyll, concentration of picophytoplankton expressed as chlorophyll in sea water. All, as multi-level variables, are interpolated from the model 51 hybrid s-sigma terrain-following system to 24 standard geopotential depths (z-levels). Grid-points near to the model boundaries are masked. The product is updated biannually,  providing a six-month extension of the time series. See [CMEMS-NWS-PUM-004-009_011](http://resources.marine.copernicus.eu/documents/PUM/CMEMS-NWS-PUM-004-009_011.pdf) for details.
+
+          **Associated products:**
+
+          This model is coupled with a hydrodynamic model (NEMO) available as CMEMS product [NWSHELF_MULTIYEAR_PHY_004_009](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_PHY_004_009).
+          An analysis-forecast product is available from: [NWSHELF_MULTIYEAR_BGC_004_011](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_BGC_004_011).
+
+          **DOI (product):**
+          https://doi.org/10.48670/moi-00058
+
+          **References:**
+
+          * Ciavatta, S., Brewin, R. J. W., Skákala, J., Polimene, L., de Mora, L., Artioli, Y., & Allen, J. I. (2018). [https://doi.org/10.1002/2017JC013490 Assimilation of ocean‐color plankton functional types to improve marine ecosystem simulations]. Journal of Geophysical Research: Oceans, 123, 834–854. https://doi.org/10.1002/2017JC013490
+
+        ''',
         'digital_object_identifier': '10.48670/moi-00058',
+        'keywords': list([
+          'oceanographic-geographical-features',
+          'numerical-model',
+          'mass-concentration-of-picophytoplankton-expressed-as-chlorophyll-in-sea-water',
+          'mass-concentration-of-diatoms-expressed-as-chlorophyll-in-sea-water',
+          'sea-water-ph-reported-on-total-scale',
+          'mole-concentration-of-phosphate-in-sea-water',
+          'mole-concentration-of-phytoplankton-expressed-as-carbon-in-sea-water',
+          'volume-beam-attenuation-coefficient-of-radiative-flux-in-sea-water',
+          'mass-concentration-of-chlorophyll-a-in-sea-water',
+          'mole-concentration-of-dissolved-molecular-oxygen-in-sea-water',
+          'mole-concentration-of-nitrate-in-sea-water',
+          'surface-partial-pressure-of-carbon-dioxide-in-sea-water',
+          'net-primary-production-of-biomass-expressed-as-carbon-per-unit-volume-in-sea-water',
+          'multi-year',
+          'coastal-marine-environment',
+          'marine-safety',
+          'weather-climate-and-seasonal-forecasting',
+          'marine-resources',
+          'north-west-shelf-seas',
+          'level-4',
+          'satellite-chlorophyll',
+        ]),
         'processing_level': 'Level 4',
         'product_id': 'NWSHELF_MULTIYEAR_BGC_004_011',
         'production_center': 'Met Office (UK)',
@@ -2330,7 +2380,7 @@
     ]),
   })
 # ---
-# name: TestDescribe.test_only_released_dataset_by_default
+# name: TestDescribeReleaseDate.test_only_released_dataset_by_default
   dict({
     'products': list([
       dict({
@@ -2347,10 +2397,7 @@
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211',
                         'variables': list([
                           dict({
@@ -2382,11 +2429,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-geo-series',
-                          'short_name': 'geoseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.GEOSERIES: _Service(service_name=<ServiceName.GEOSERIES: 'arco-geo-series'>, short_name=<ServiceShortName.GEOSERIES: 'geoseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/timeChunked.zarr',
                         'variables': list([
                           dict({
@@ -2400,7 +2444,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -2457,26 +2501,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'uo',
@@ -2494,7 +2538,7 @@
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -2551,26 +2595,26 @@
                               dict({
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'vo',
@@ -2580,11 +2624,8 @@
                         ]),
                       }),
                       dict({
-                        'service_format': 'zarr',
-                        'service_type': dict({
-                          'service_name': 'arco-time-series',
-                          'short_name': 'timeseries',
-                        }),
+                        'service_format': <CopernicusMarineServiceFormat.ZARR: 'zarr'>,
+                        'service_type': <CopernicusMarineDatasetServiceType.TIMESERIES: _Service(service_name=<ServiceName.TIMESERIES: 'arco-time-series'>, short_name=<ServiceShortName.TIMESERIES: 'timeseries'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-007/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/geoChunked.zarr',
                         'variables': list([
                           dict({
@@ -2598,7 +2639,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -2655,26 +2696,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'uo',
@@ -2692,7 +2733,7 @@
                               dict({
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
-                                'units': 'm',
+                                'coordinate_unit': 'm',
                                 'values': list([
                                   5727.9169921875,
                                   5274.7841796875,
@@ -2749,26 +2790,26 @@
                               dict({
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
                                 'maximum_value': 90.0,
                                 'minimum_value': -80.0,
                                 'step': 0.08333333333333333,
-                                'units': 'degrees_north',
                               }),
                               dict({
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
                                 'maximum_value': 179.91668701171875,
                                 'minimum_value': -180.0,
                                 'step': 0.08333333804392655,
-                                'units': 'degrees_east',
                               }),
                               dict({
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                                 'maximum_value': 1714608000000.0,
                                 'minimum_value': 1604188800000.0,
                                 'step': 86400000.0,
-                                'units': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
                               }),
                             ]),
                             'short_name': 'vo',
@@ -2794,10 +2835,7 @@
                     'name': 'default',
                     'services': list([
                       dict({
-                        'service_type': dict({
-                          'service_name': 'original-files',
-                          'short_name': 'files',
-                        }),
+                        'service_type': <CopernicusMarineDatasetServiceType.FILES: _Service(service_name=<ServiceName.FILES: 'original-files'>, short_name=<ServiceShortName.FILES: 'files'>)>,
                         'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-dta/native/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211',
                         'variables': list([
                           dict({
@@ -2822,7 +2860,60 @@
             ]),
           }),
         ]),
+        'description': '''
+          The Operational Mercator global ocean analysis and forecast system at 1/12 degree is providing 10 days of 3D global ocean forecasts updated daily. The time series is aggregated in time in order to reach a two full year’s time series sliding window.
+
+          This product includes daily and monthly mean files of temperature, salinity, currents, sea level, mixed layer depth and ice parameters from the top to the bottom over the global ocean. It also includes hourly mean surface fields for sea level height, temperature and currents. The global ocean output files are displayed with a 1/12 degree horizontal resolution with regular longitude/latitude equirectangular projection.
+
+          50 vertical levels are ranging from 0 to 5500 meters.
+
+          This product also delivers a special dataset for surface current which also includes wave and tidal drift called SMOC (Surface merged Ocean Current).
+
+          **DOI (product):**
+          https://doi.org/10.48670/moi-00016
+        ''',
         'digital_object_identifier': '10.48670/moi-00016',
+        'keywords': list([
+          'target-application#seaiceforecastingapplication',
+          'oceanographic-geographical-features',
+          'numerical-model',
+          'eastward-sea-water-velocity',
+          'northward-sea-water-velocity',
+          'sea-surface-wave-stokes-drift-x-velocity',
+          'sea-surface-wave-stokes-drift-y-velocity',
+          'ocean-mixed-layer-thickness-defined-by-sigma-theta',
+          'sea-water-potential-temperature-at-sea-floor',
+          'sea-ice-thickness',
+          'sea-ice-area-fraction',
+          'eastward-sea-ice-velocity',
+          'northward-sea-ice-velocity',
+          'sea-surface-height-above-geoid',
+          'sea-water-pressure-at-sea-floor',
+          'surface-snow-thickness',
+          'sea-ice-speed',
+          'sea-ice-surface-temperature',
+          'sea-ice-albedo',
+          'age-of-sea-ice',
+          'sea-water-salinity',
+          'sea-water-potential-temperature',
+          'upward-sea-water-velocity',
+          'cell-thickness',
+          'model-level-number-at-sea-floor',
+          'sea-floor-depth-below-geoid',
+          'invariant',
+          'near-real-time',
+          'forecast',
+          'marine-resources',
+          'coastal-marine-environment',
+          'marine-safety',
+          'weather-climate-and-seasonal-forecasting',
+          'global-ocean',
+          'level-4',
+          'sea-level',
+          'sea-ice-concentration-and/or-thickness',
+          'in-situ-ts-profiles',
+          'sst',
+        ]),
         'processing_level': 'Level 4',
         'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
         'production_center': 'Mercator Océan International',
