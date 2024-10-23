@@ -12,10 +12,9 @@ on:
        - copernicusmarine-toolbox-v2
 
 jobs:
-  build:
+  container-test-job:
     runs-on: ubuntu-20.04
-    container:
-      image: ubuntu:18.04
+    container: node:18
     timeout-minutes: 20
 
     steps:
