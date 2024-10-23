@@ -241,6 +241,8 @@ def get_message_data_downloaded(
     overwrite_output_data: bool,
     exists: bool,
 ) -> str:
+    if dry_run and exists:
+        return "Dry-run, data has not been downloaded (already exists!)."
     if dry_run:
         return "Dry-run, data has not been downloaded."
     if overwrite_output_data:

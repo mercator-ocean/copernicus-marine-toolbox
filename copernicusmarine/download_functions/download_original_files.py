@@ -41,7 +41,7 @@ def download_original_files(
     create_file_list: Optional[str],
 ) -> ResponseGet:
     files_not_found: list[str] = []
-    filenames_in_sync_ignored: list[str] = []
+    filenames_to_be_ignored: list[str] = []
     total_size: float = 0.0
     sizes: list[float] = []
     last_modified_datetimes: list[DateTime] = []
@@ -53,7 +53,7 @@ def download_original_files(
             sizes,
             last_modified_datetimes,
             total_size,
-            filenames_in_sync_ignored,
+            filenames_to_be_ignored,
             files_not_found,
         ) = _download_header_for_direct_download(
             get_request.direct_download,
@@ -92,10 +92,10 @@ def download_original_files(
                 sizes_listing,
                 last_modified_datetimes_listing,
                 total_size_listing,
-                filenames_in_sync_ignored_listing,
+                filenames_to_be_ignored_listing,
             ) = result
             filenames_in.extend(filenames_in_listing)
-            filenames_in_sync_ignored.extend(filenames_in_sync_ignored_listing)
+            filenames_to_be_ignored.extend(filenames_to_be_ignored_listing)
             total_size += total_size_listing
             sizes.extend(sizes_listing)
             last_modified_datetimes.extend(last_modified_datetimes_listing)
@@ -140,14 +140,14 @@ def download_original_files(
     files_to_delete = []
     if get_request.sync_delete:
         filenames_out_sync_ignored = create_filenames_out(
-            filenames_in=filenames_in_sync_ignored,
+            filenames_in=filenames_to_be_ignored,
             output_directory=pathlib.Path(get_request.output_directory),
             no_directories=get_request.no_directories,
             overwrite=False,
             unique_names_compared_to_local_files=False,
         )
         files_to_delete = _get_files_to_delete_with_sync(
-            filenames_in=filenames_in_sync_ignored,
+            filenames_in=filenames_to_be_ignored,
             output_directory=pathlib.Path(get_request.output_directory),
             filenames_out=filenames_out_sync_ignored,
         )
@@ -290,6 +290,10 @@ def _download_header(
         if not regex or re.search(regex, filename):
             filenames_without_sync.append(filename)
             last_modified_datetime = pendulum.instance(last_modified_datetime)
+            if sync or _already_downloaded(
+                filename, directory_out
+            ):  # these two lines are to use the funciton
+                filenames.append("")
             if not sync or _check_needs_to_be_synced(
                 filename, size, last_modified_datetime, directory_out
             ):
@@ -405,6 +409,14 @@ def _download_header_for_direct_download(
         filenames_without_sync,
         filenames_not_found,
     )
+
+
+def _already_downloaded(
+    filename: str,
+    directory_out: pathlib.Path,
+) -> bool:
+    filename_out = _local_path_from_s3_url(filename, directory_out)
+    return filename_out.is_file()
 
 
 def _check_needs_to_be_synced(

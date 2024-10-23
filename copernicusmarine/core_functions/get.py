@@ -96,7 +96,7 @@ def get_function(
         if not get_request.force_dataset_version:
             raise ValueError(
                 "Sync requires to set a dataset version. "
-                "Please use --force-dataset-version option."
+                "Please use --dataset-version option."
             )
     if sync_delete:
         get_request.sync_delete = sync_delete
