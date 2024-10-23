@@ -24,7 +24,7 @@ jobs:
         # need to install updated git (from official git ppa)
         apt update
         apt install -y software-properties-common
-        apt get install python3-launchpadlib -y
+        apt-get install python3-launchpadlib -y
         add-apt-repository ppa:git-core/ppa -y
         # install dependencies expected by other steps
         apt update
