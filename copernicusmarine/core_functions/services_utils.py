@@ -391,7 +391,7 @@ def _get_retrieval_service_from_dataset_version(
         )
         logger.info(
             "Service was not specified, the default one was "
-            f'selected: "{service.service_name.value}"'
+            f'selected: "{service.service_name}"'
         )
     dataset_start_date = _get_dataset_start_date_from_service(service)
     return RetrievalService(
@@ -505,7 +505,7 @@ def _service_name_from_string(
             service_name
             for service_name in command_type.service_names_by_priority
             if string
-            in {service_name.value, short_name_from_service_name(service_name)}
+            in {service_name, short_name_from_service_name(service_name)}
         ),
         _service_does_not_exist_for_command(string, command_type),
     )

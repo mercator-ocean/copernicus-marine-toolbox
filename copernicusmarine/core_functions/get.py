@@ -157,8 +157,7 @@ def _run_get_request(
     )
     get_request.dataset_url = retrieval_service.uri
     logger.info(
-        "Downloading using service "
-        f"{retrieval_service.service_name.value}..."
+        "Downloading using service " f"{retrieval_service.service_name}..."
     )
     downloaded_files = download_original_files(
         username,
