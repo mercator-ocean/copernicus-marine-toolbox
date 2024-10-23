@@ -65,6 +65,21 @@ class InvalidUsernameOrPassword(Exception):
     pass
 
 
+class CouldNotConnectToAuthenticationSystem(Exception):
+    """
+    Exception raised when the client could not connect to the authentication system.
+
+    Please check the following common problems:
+
+    - Check your internet connection
+    - make sure to authorize ``cmems-cas.cls.fr`` and/or ``auth.marine.copernicus.eu`` domains
+
+    If none of this worked, maybe the authentication system is down, please try again later.
+    """  # noqa
+
+    pass
+
+
 def _load_credential_from_copernicus_marine_configuration_file(
     credential_type: Literal["username", "password"],
     configuration_filename: pathlib.Path,
@@ -76,6 +91,7 @@ def _load_credential_from_copernicus_marine_configuration_file(
     config = configparser.RawConfigParser()
     config.read_string(configuration_string)
     credential = config.get("credentials", credential_type)
+    logger.info(f"credentials: {credential}")
     if credential:
         logger.debug(f"{credential_type} loaded from {configuration_filename}")
     return credential
@@ -217,7 +233,8 @@ def copernicusmarine_credentials_are_valid(
     password: Optional[str],
 ):
     if username and password:
-        if _check_credentials_with_cas(username, password):
+        logger.info("Checking credentials from input username and password.")
+        if _are_copernicus_marine_credentials_valid(username, password):
             logger.info("Valid credentials from input username and password.")
             return True
         else:
@@ -229,7 +246,7 @@ def copernicusmarine_credentials_are_valid(
     elif (
         COPERNICUSMARINE_SERVICE_USERNAME and COPERNICUSMARINE_SERVICE_PASSWORD
     ):
-        if _check_credentials_with_cas(
+        if _are_copernicus_marine_credentials_valid(
             COPERNICUSMARINE_SERVICE_USERNAME,
             COPERNICUSMARINE_SERVICE_PASSWORD,
         ):
@@ -277,7 +294,7 @@ def copernicusmarine_configuration_file_is_valid(
     return (
         username is not None
         and password is not None
-        and _check_credentials_with_cas(username, password)
+        and _are_copernicus_marine_credentials_valid(username, password)
     )
 
 
@@ -310,7 +327,7 @@ def create_copernicusmarine_configuration_file(
     return configuration_filename
 
 
-def _check_credentials_with_cas(username: str, password: str) -> bool:
+def _check_credentials_with_old_cas(username: str, password: str) -> bool:
     logger.debug("Checking user credentials...")
     service = "copernicus-marine-client"
     cmems_cas_login_url = (
@@ -339,9 +356,81 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     return login_success
 
 
+def _check_credentials_with_cas(username: str, password: str) -> bool:
+    keycloak_url = "https://auth.marine.copernicus.eu/realms/MIS/protocol/openid-connect/token"  # noqa: E501
+    client_id = "toolbox"
+    scope = "openid profile email"
+
+    data = {
+        "client_id": client_id,
+        "grant_type": "password",
+        "username": username,
+        "password": password,
+        "scope": scope,
+    }
+    conn_session = get_configured_requests_session()
+    response = conn_session.post(keycloak_url, data=data)
+    response.raise_for_status()
+    if response.status_code == 200:
+        token_response = response.json()
+        access_token = token_response["access_token"]
+        print("Access Token:", access_token)
+
+        userinfo_url = "https://auth.marine.copernicus.eu/realms/MIS/protocol/openid-connect/userinfo"  # noqa: E501
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = conn_session.get(userinfo_url, headers=headers)
+        response.raise_for_status()
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def _are_copernicus_marine_credentials_valid_old_system(
+    username: str, password: str
+) -> bool:
+    number_of_retry = 3
+    user_is_active = None
+    while (user_is_active not in [True, False]) and number_of_retry > 0:
+        try:
+            user_is_active = _check_credentials_with_old_cas(
+                username=username, password=password
+            )
+        except requests.exceptions.ConnectTimeout:
+            number_of_retry -= 1
+        except requests.exceptions.ConnectionError:
+            number_of_retry -= 1
+    if user_is_active is None:
+        raise CouldNotConnectToAuthenticationSystem()
+    return user_is_active
+
+
 def _are_copernicus_marine_credentials_valid(
     username: str, password: str
-) -> Optional[bool]:
+) -> bool:
+    try:
+        logger.info("Trying with new authentication system...")
+        result = _are_copernicus_marine_credentials_valid_new_system(
+            username, password
+        )
+        logger.info(f"New authentication system succeeded. {result}")
+        return result
+
+    except Exception as e:
+        logger.debug(
+            f"Could not connect with new authentication system because of: {e}"
+        )
+        logger.debug("Trying with old authentication system...")
+        return _are_copernicus_marine_credentials_valid_old_system(
+            username, password
+        )
+
+
+def _are_copernicus_marine_credentials_valid_new_system(
+    username: str, password: str
+) -> bool:
     number_of_retry = 3
     user_is_active = None
     while (user_is_active not in [True, False]) and number_of_retry > 0:
@@ -353,6 +442,8 @@ def _are_copernicus_marine_credentials_valid(
             number_of_retry -= 1
         except requests.exceptions.ConnectionError:
             number_of_retry -= 1
+    if user_is_active is None:
+        raise CouldNotConnectToAuthenticationSystem()
     return user_is_active
 
 
