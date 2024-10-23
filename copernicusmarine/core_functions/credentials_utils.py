@@ -39,6 +39,16 @@ RECOVER_YOUR_CREDENTIALS_MESSAGE = (
     "4444552-i-forgot-my-username-or-my-password-what-should-i-do"
 )
 
+COPERNICUS_MARINE_AUTH_SYSTEM_URL = "https://auth.marine.copernicus.eu/"
+COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT = (
+    COPERNICUS_MARINE_AUTH_SYSTEM_URL
+    + "realms/MIS/protocol/openid-connect/token"
+)
+COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT = (
+    COPERNICUS_MARINE_AUTH_SYSTEM_URL
+    + "realms/MIS/protocol/openid-connect/userinfo"
+)
+
 
 class CredentialsCannotBeNone(Exception):
     """
@@ -357,7 +367,7 @@ def _check_credentials_with_old_cas(username: str, password: str) -> bool:
 
 
 def _check_credentials_with_cas(username: str, password: str) -> bool:
-    keycloak_url = "https://auth.marine.copernicus.eu/realms/MIS/protocol/openid-connect/token"  # noqa: E501
+    keycloak_url = COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT
     client_id = "toolbox"
     scope = "openid profile email"
 
@@ -374,8 +384,7 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
     if response.status_code == 200:
         token_response = response.json()
         access_token = token_response["access_token"]
-
-        userinfo_url = "https://auth.marine.copernicus.eu/realms/MIS/protocol/openid-connect/userinfo"  # noqa: E501
+        userinfo_url = COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT
         headers = {"Authorization": f"Bearer {access_token}"}
         response = conn_session.get(userinfo_url, headers=headers)
         response.raise_for_status()
