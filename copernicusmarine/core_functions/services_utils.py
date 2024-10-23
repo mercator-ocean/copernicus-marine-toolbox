@@ -373,7 +373,7 @@ def _get_retrieval_service_from_dataset_version(
 
     if force_service_name:
         logger.info(
-            f"You forced selection of service: " f"{force_service_name.value}"
+            f"You forced selection of service: " f"{force_service_name}"
         )
         service = _select_forced_service(
             dataset_version_part=dataset_part,
