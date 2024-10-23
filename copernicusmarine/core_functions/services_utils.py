@@ -49,11 +49,13 @@ class Command:
 
     def get_available_service_for_command(self) -> list[str]:
         available_services = []
-        for service in self.service_names_by_priority:
-            available_services.append(service.value)
-            available_services.append(
-                short_name_from_service_name(service).value
-            )
+        for service_name in self.service_names_by_priority:
+            available_services.append(service_name.value)
+            short_name = short_name_from_service_name(service_name)
+            if short_name != service_name:
+                available_services.append(
+                    short_name_from_service_name(service_name).value
+                )
         return available_services
 
 
