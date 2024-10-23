@@ -3,7 +3,9 @@ import logging
 
 import click
 
-from copernicusmarine.core_functions.utils import log_deprecated_message
+from copernicusmarine.core_functions.deprecated_options import (
+    log_deprecated_message,
+)
 
 logger = logging.getLogger("copernicusmarine")
 

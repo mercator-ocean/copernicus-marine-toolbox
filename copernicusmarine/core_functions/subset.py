@@ -6,8 +6,8 @@ from typing import List, Optional
 from pendulum import DateTime
 
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineDatasetServiceType,
     CopernicusMarineServiceFormat,
+    CopernicusMarineServiceNames,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     SubsetRequest,
@@ -158,20 +158,19 @@ def subset_function(
         username=username,
         password=password,
         dataset_url=subset_request.dataset_url,
-        service_type=retrieval_service.service_type,
+        service_name=retrieval_service.service_name,
         dataset_subset=subset_request.get_time_and_space_subset(),
         coordinates_selection_method=subset_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
     )
     logger.info(
-        "Downloading using service "
-        f"{retrieval_service.service_type.service_name.value}..."
+        "Downloading using service " f"{retrieval_service.service_name}..."
     )
-    if retrieval_service.service_type in [
-        CopernicusMarineDatasetServiceType.GEOSERIES,
-        CopernicusMarineDatasetServiceType.TIMESERIES,
-        CopernicusMarineDatasetServiceType.OMI_ARCO,
-        CopernicusMarineDatasetServiceType.STATIC_ARCO,
+    if retrieval_service.service_name in [
+        CopernicusMarineServiceNames.GEOSERIES,
+        CopernicusMarineServiceNames.TIMESERIES,
+        CopernicusMarineServiceNames.OMI_ARCO,
+        CopernicusMarineServiceNames.STATIC_ARCO,
     ]:
         if (
             retrieval_service.service_format
@@ -187,7 +186,7 @@ def subset_function(
                 service=retrieval_service.service,
             )
     else:
-        raise ServiceNotSupported(retrieval_service.service_type)
+        raise ServiceNotSupported(retrieval_service.service_name)
     return response
 
 

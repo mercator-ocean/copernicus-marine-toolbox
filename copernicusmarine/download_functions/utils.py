@@ -2,7 +2,7 @@ import bisect
 import logging
 import math
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import xarray
 from pendulum import DateTime
@@ -260,7 +260,7 @@ def get_approximation_size_data_downloaded(
 
     download_estimated_size = 0
     for variable_name in temp_dataset.data_vars:
-        coordinates_size = 1
+        coordinates_size = 1.0
         variable = [
             var for var in service.variables if var.short_name == variable_name
         ][0]
@@ -302,7 +302,7 @@ def get_approximation_size_data_downloaded(
 def get_number_of_chunks_for_coordinate(
     dataset: xarray.Dataset,
     coordinate: CopernicusMarineCoordinate,
-    chunking_length: int,
+    chunking_length: Union[int, float],
 ) -> Optional[int]:
     maximum_value = coordinate.maximum_value
     minimum_value = coordinate.minimum_value
@@ -315,9 +315,9 @@ def get_number_of_chunks_for_coordinate(
     ):
         values = [minimum_value]
         for _ in range(
-            0, math.ceil((maximum_value - minimum_value) / step_value)
+            0, math.ceil((maximum_value - minimum_value) / step_value)  # type: ignore
         ):
-            values.append(values[-1] + step_value)
+            values.append(values[-1] + step_value)  # type: ignore
     elif not values:
         return None
 
@@ -346,8 +346,8 @@ def get_number_of_chunks_for_coordinate(
     index_left = bisect.bisect_left(values, requested_minimum)
     if index_left == len(values) - 1:
         chunk_of_requested_minimum = math.floor((index_left) / chunking_length)
-    elif abs(values[index_left] - requested_minimum) <= abs(
-        values[index_left + 1] - requested_minimum
+    elif abs(values[index_left] - requested_minimum) <= abs(  # type: ignore
+        values[index_left + 1] - requested_minimum  # type: ignore
     ):
         chunk_of_requested_minimum = math.floor(index_left / chunking_length)
     else:
@@ -358,8 +358,8 @@ def get_number_of_chunks_for_coordinate(
     index_left = bisect.bisect_left(values, requested_maximum)
     if index_left == len(values) - 1 or index_left == len(values):
         chunk_of_requested_maximum = math.floor((index_left) / chunking_length)
-    elif abs(values[index_left] - requested_maximum) <= abs(
-        values[index_left + 1] - requested_maximum
+    elif abs(values[index_left] - requested_maximum) <= abs(  # type: ignore
+        values[index_left + 1] - requested_maximum  # type: ignore
     ):
         chunk_of_requested_maximum = math.floor(index_left / chunking_length)
     else:
