@@ -1250,60 +1250,7 @@
             ]),
           }),
         ]),
-        'description': '''
-          The Operational Mercator global ocean analysis and forecast system at 1/12 degree is providing 10 days of 3D global ocean forecasts updated daily. The time series is aggregated in time in order to reach a two full year’s time series sliding window.
-
-          This product includes daily and monthly mean files of temperature, salinity, currents, sea level, mixed layer depth and ice parameters from the top to the bottom over the global ocean. It also includes hourly mean surface fields for sea level height, temperature and currents. The global ocean output files are displayed with a 1/12 degree horizontal resolution with regular longitude/latitude equirectangular projection.
-
-          50 vertical levels are ranging from 0 to 5500 meters.
-
-          This product also delivers a special dataset for surface current which also includes wave and tidal drift called SMOC (Surface merged Ocean Current).
-
-          **DOI (product):**
-          https://doi.org/10.48670/moi-00016
-        ''',
         'digital_object_identifier': '10.48670/moi-00016',
-        'keywords': list([
-          'target-application#seaiceforecastingapplication',
-          'oceanographic-geographical-features',
-          'numerical-model',
-          'eastward-sea-water-velocity',
-          'northward-sea-water-velocity',
-          'sea-surface-wave-stokes-drift-x-velocity',
-          'sea-surface-wave-stokes-drift-y-velocity',
-          'ocean-mixed-layer-thickness-defined-by-sigma-theta',
-          'sea-water-potential-temperature-at-sea-floor',
-          'sea-ice-thickness',
-          'sea-ice-area-fraction',
-          'eastward-sea-ice-velocity',
-          'northward-sea-ice-velocity',
-          'sea-surface-height-above-geoid',
-          'sea-water-pressure-at-sea-floor',
-          'surface-snow-thickness',
-          'sea-ice-speed',
-          'sea-ice-surface-temperature',
-          'sea-ice-albedo',
-          'age-of-sea-ice',
-          'sea-water-salinity',
-          'sea-water-potential-temperature',
-          'upward-sea-water-velocity',
-          'cell-thickness',
-          'model-level-number-at-sea-floor',
-          'sea-floor-depth-below-geoid',
-          'invariant',
-          'near-real-time',
-          'forecast',
-          'marine-resources',
-          'coastal-marine-environment',
-          'marine-safety',
-          'weather-climate-and-seasonal-forecasting',
-          'global-ocean',
-          'level-4',
-          'sea-level',
-          'sea-ice-concentration-and/or-thickness',
-          'in-situ-ts-profiles',
-          'sst',
-        ]),
         'processing_level': 'Level 4',
         'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
         'production_center': 'Mercator Océan International',
@@ -2428,52 +2375,7 @@
             ]),
           }),
         ]),
-        'description': '''
-          **Short  Description:**
-
-          The ocean biogeochemistry reanalysis for the North-West European Shelf is produced using the European Regional Seas Ecosystem Model (ERSEM), coupled online to the forecasting ocean assimilation model at 7 km horizontal resolution, NEMO-NEMOVAR. ERSEM (Butensch&ouml;n et al. 2016) is developed and maintained at Plymouth Marine Laboratory. NEMOVAR system was used to assimilate observations of sea surface chlorophyll concentration from ocean colour satellite data and all the physical variables described in [NWSHELF_MULTIYEAR_PHY_004_009](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_PHY_004_009). Biogeochemical boundary conditions and river inputs used climatologies; nitrogen deposition at the surface used time-varying data.
-
-          The description of the model and its configuration, including the products validation is provided in the [CMEMS-NWS-QUID-004-011](http://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-NWS-QUID-004-011.pdf).
-
-          Products are provided as monthly and daily 25-hour, de-tided, averages. The datasets available are concentration of chlorophyll, nitrate, phosphate, oxygen, phytoplankton biomass, net primary production, light attenuation coefficient, pH, surface partial pressure of CO2, concentration of diatoms expressed as chlorophyll, concentration of dinoflagellates expressed as chlorophyll, concentration of nanophytoplankton expressed as chlorophyll, concentration of picophytoplankton expressed as chlorophyll in sea water. All, as multi-level variables, are interpolated from the model 51 hybrid s-sigma terrain-following system to 24 standard geopotential depths (z-levels). Grid-points near to the model boundaries are masked. The product is updated biannually,  providing a six-month extension of the time series. See [CMEMS-NWS-PUM-004-009_011](http://resources.marine.copernicus.eu/documents/PUM/CMEMS-NWS-PUM-004-009_011.pdf) for details.
-
-          **Associated products:**
-
-          This model is coupled with a hydrodynamic model (NEMO) available as CMEMS product [NWSHELF_MULTIYEAR_PHY_004_009](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_PHY_004_009).
-          An analysis-forecast product is available from: [NWSHELF_MULTIYEAR_BGC_004_011](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_BGC_004_011).
-
-          **DOI (product):**
-          https://doi.org/10.48670/moi-00058
-
-          **References:**
-
-          * Ciavatta, S., Brewin, R. J. W., Skákala, J., Polimene, L., de Mora, L., Artioli, Y., & Allen, J. I. (2018). [https://doi.org/10.1002/2017JC013490 Assimilation of ocean‐color plankton functional types to improve marine ecosystem simulations]. Journal of Geophysical Research: Oceans, 123, 834–854. https://doi.org/10.1002/2017JC013490
-
-        ''',
         'digital_object_identifier': '10.48670/moi-00058',
-        'keywords': list([
-          'oceanographic-geographical-features',
-          'numerical-model',
-          'mass-concentration-of-picophytoplankton-expressed-as-chlorophyll-in-sea-water',
-          'mass-concentration-of-diatoms-expressed-as-chlorophyll-in-sea-water',
-          'sea-water-ph-reported-on-total-scale',
-          'mole-concentration-of-phosphate-in-sea-water',
-          'mole-concentration-of-phytoplankton-expressed-as-carbon-in-sea-water',
-          'volume-beam-attenuation-coefficient-of-radiative-flux-in-sea-water',
-          'mass-concentration-of-chlorophyll-a-in-sea-water',
-          'mole-concentration-of-dissolved-molecular-oxygen-in-sea-water',
-          'mole-concentration-of-nitrate-in-sea-water',
-          'surface-partial-pressure-of-carbon-dioxide-in-sea-water',
-          'net-primary-production-of-biomass-expressed-as-carbon-per-unit-volume-in-sea-water',
-          'multi-year',
-          'coastal-marine-environment',
-          'marine-safety',
-          'weather-climate-and-seasonal-forecasting',
-          'marine-resources',
-          'north-west-shelf-seas',
-          'level-4',
-          'satellite-chlorophyll',
-        ]),
         'processing_level': 'Level 4',
         'product_id': 'NWSHELF_MULTIYEAR_BGC_004_011',
         'production_center': 'Met Office (UK)',
@@ -3060,60 +2962,7 @@
             ]),
           }),
         ]),
-        'description': '''
-          The Operational Mercator global ocean analysis and forecast system at 1/12 degree is providing 10 days of 3D global ocean forecasts updated daily. The time series is aggregated in time in order to reach a two full year’s time series sliding window.
-
-          This product includes daily and monthly mean files of temperature, salinity, currents, sea level, mixed layer depth and ice parameters from the top to the bottom over the global ocean. It also includes hourly mean surface fields for sea level height, temperature and currents. The global ocean output files are displayed with a 1/12 degree horizontal resolution with regular longitude/latitude equirectangular projection.
-
-          50 vertical levels are ranging from 0 to 5500 meters.
-
-          This product also delivers a special dataset for surface current which also includes wave and tidal drift called SMOC (Surface merged Ocean Current).
-
-          **DOI (product):**
-          https://doi.org/10.48670/moi-00016
-        ''',
         'digital_object_identifier': '10.48670/moi-00016',
-        'keywords': list([
-          'target-application#seaiceforecastingapplication',
-          'oceanographic-geographical-features',
-          'numerical-model',
-          'eastward-sea-water-velocity',
-          'northward-sea-water-velocity',
-          'sea-surface-wave-stokes-drift-x-velocity',
-          'sea-surface-wave-stokes-drift-y-velocity',
-          'ocean-mixed-layer-thickness-defined-by-sigma-theta',
-          'sea-water-potential-temperature-at-sea-floor',
-          'sea-ice-thickness',
-          'sea-ice-area-fraction',
-          'eastward-sea-ice-velocity',
-          'northward-sea-ice-velocity',
-          'sea-surface-height-above-geoid',
-          'sea-water-pressure-at-sea-floor',
-          'surface-snow-thickness',
-          'sea-ice-speed',
-          'sea-ice-surface-temperature',
-          'sea-ice-albedo',
-          'age-of-sea-ice',
-          'sea-water-salinity',
-          'sea-water-potential-temperature',
-          'upward-sea-water-velocity',
-          'cell-thickness',
-          'model-level-number-at-sea-floor',
-          'sea-floor-depth-below-geoid',
-          'invariant',
-          'near-real-time',
-          'forecast',
-          'marine-resources',
-          'coastal-marine-environment',
-          'marine-safety',
-          'weather-climate-and-seasonal-forecasting',
-          'global-ocean',
-          'level-4',
-          'sea-level',
-          'sea-ice-concentration-and/or-thickness',
-          'in-situ-ts-profiles',
-          'sst',
-        ]),
         'processing_level': 'Level 4',
         'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
         'production_center': 'Mercator Océan International',
