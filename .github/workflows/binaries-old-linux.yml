@@ -13,8 +13,8 @@ on:
 
 jobs:
   container-test-job:
-    runs-on: ubuntu-20.04
-    container: node:18
+    runs-on: ubuntu-18.04
+    container: node:16
     timeout-minutes: 20
 
     steps:
