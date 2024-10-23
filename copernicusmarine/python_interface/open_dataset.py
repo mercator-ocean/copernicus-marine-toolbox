@@ -100,7 +100,7 @@ def open_dataset(
     end_datetime : Union[datetime, str], optional
         The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
 

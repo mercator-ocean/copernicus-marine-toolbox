@@ -86,7 +86,7 @@ def subset(
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
     variables : List[str], optional
         List of variable names to extract.
     minimum_longitude : float, optional

@@ -132,7 +132,7 @@ SUBSET: dict[str, str] = {
     "SERVICE_HELP": (
         f"Force download through one of the available services using the service name "
         f"among {CommandType.SUBSET.service_names()} or "
-        f"its short name among {CommandType.SUBSET.service_names()}."
+        f"its short name among {CommandType.SUBSET.short_names_services()}."
     ),
     "VARIABLES_HELP": "Specify dataset variable. Can be used multiple times.",
     "MINIMUM_LONGITUDE_HELP": (

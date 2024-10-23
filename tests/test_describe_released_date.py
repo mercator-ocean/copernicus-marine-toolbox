@@ -18,7 +18,6 @@ class TestDescribeReleaseDate:
     ):
         return describe(
             include_versions=include_versions,
-            include_datasets=True,
         )
 
     def test_only_released_dataset_by_default(self, snapshot):

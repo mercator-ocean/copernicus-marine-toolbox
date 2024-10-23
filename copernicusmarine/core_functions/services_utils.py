@@ -44,7 +44,14 @@ class Command:
 
     def service_names(self) -> List[str]:
         return [
-            service_name for service_name in self.service_names_by_priority
+            service_name.value
+            for service_name in self.service_names_by_priority
+        ]
+
+    def short_names_services(self) -> List[str]:
+        return [
+            short_name_from_service_name(service_name).value
+            for service_name in self.service_names_by_priority
         ]
 
     def get_available_service_for_command(self) -> list[str]:
