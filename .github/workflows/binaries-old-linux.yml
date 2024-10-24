@@ -30,6 +30,7 @@ jobs:
         # install dependencies expected by other steps
         apt update
         apt install -y git \
+        apt install python3-pip \
         curl \
         ca-certificates \
         wget \
@@ -49,15 +50,6 @@ jobs:
       uses: actions/checkout@v1
       with:
         fetch-depth: 0
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-
-    - name: Install dependencies
-      run: |
-        make build-and-prepare-for-binary
 
     - name: Build with PyInstaller
       shell: micromamba-shell {0}
