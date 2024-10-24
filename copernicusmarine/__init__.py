@@ -1,14 +1,5 @@
-import logging.config
-import time
-from importlib.metadata import version
-
-from copernicusmarine.logging_conf import logging_configuration_dict
-
-__version__ = version("copernicusmarine")
-
-logging.config.dictConfig(logging_configuration_dict)
-logging.Formatter.converter = time.gmtime
-
+import copernicusmarine._init_logging  # noqa
+from copernicusmarine._version import __version__
 from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     DatasetVersionNotFound,
@@ -55,3 +46,36 @@ from copernicusmarine.python_interface.read_dataframe import (
     read_dataframe,
 )
 from copernicusmarine.python_interface.subset import subset
+
+__all__ = [
+    "__version__",
+    "CoordinatesOutOfDatasetBounds",
+    "CredentialsCannotBeNone",
+    "DatasetCoordinatesExtent",
+    "DatasetNotFound",
+    "DatasetVersionNotFound",
+    "DatasetVersionPartNotFound",
+    "FileGet",
+    "FormatNotSupported",
+    "GeographicalExtent",
+    "InvalidUsernameOrPassword",
+    "MinimumLongitudeGreaterThanMaximumLongitude",
+    "NetCDFCompressionNotAvailable",
+    "NoServiceAvailable",
+    "OtherOptionsPassedWithCreateTemplate",
+    "ResponseGet",
+    "ResponseSubset",
+    "ServiceDoesNotExistForCommand",
+    "ServiceNotAvailable",
+    "ServiceNotHandled",
+    "ServiceNotSupported",
+    "TimeExtent",
+    "VariableDoesNotExistInTheDataset",
+    "WrongDatetimeFormat",
+    "describe",
+    "get",
+    "login",
+    "open_dataset",
+    "read_dataframe",
+    "subset",
+]
