@@ -19,6 +19,7 @@ from copernicusmarine.command_line_interface.utils import (
     OtherOptionsPassedWithCreateTemplate,
 )
 from copernicusmarine.core_functions.credentials_utils import (
+    CouldNotConnectToAuthenticationSystem,
     CredentialsCannotBeNone,
     InvalidUsernameOrPassword,
 )
