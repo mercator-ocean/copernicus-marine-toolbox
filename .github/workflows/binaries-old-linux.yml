@@ -57,11 +57,9 @@ jobs:
 
     - name: Set VERSION environment variable
       id: set-version
-      shell: micromamba-shell {0}
       run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
     - name: Upload binaries to ubnutu-old
-      shell: micromamba-shell {0}
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
