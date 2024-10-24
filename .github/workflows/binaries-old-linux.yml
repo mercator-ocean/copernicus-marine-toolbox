@@ -27,6 +27,7 @@ jobs:
         apt install -y software-properties-common
         apt-get install python3-launchpadlib -y
         add-apt-repository ppa:git-core/ppa -y
+        apt-get install build-essential
         # install dependencies expected by other steps
         apt update
         apt install -y git \
