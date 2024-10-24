@@ -30,7 +30,7 @@ jobs:
         # install dependencies expected by other steps
         apt update
         apt install -y git \
-        apt install python3-pip \
+        apt-get install python3-pip \
         curl \
         ca-certificates \
         wget \
