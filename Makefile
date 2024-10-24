@@ -72,6 +72,19 @@ run-using-pyinstaller-ubuntu-latest:
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_linux.cli
 
 run-using-pyinstaller-ubuntu-20.04:
+	sudo apt update
+	sudo apt install software-properties-common
+	sudo apt install wget build-essential checkinstall
+	sudo apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+	cd /opt
+	sudo wget https://www.python.org/ftp/python/3.9.16/Python-3.9.16.tgz
+	tar xzf Python-3.9.16.tgz
+	cd Python-3.9.16
+	sudo ./configure --enable-optimizations
+	sudo make altinstall
+	python3.9 -V
+	sudo rm -f /opt/Python-3.9.6.tgz
+
 	python3.9 -m pip install --upgrade pip
 	pip install pyinstaller
 	pip install poetry
