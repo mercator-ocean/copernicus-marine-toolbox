@@ -22,7 +22,7 @@ def get_deprecated_message(
 ):
     message = ""
     if only_for_v2:
-        message = f"Deprecation warning for option `{old_value}`. "
+        message = f"Deprecation warning for option '{old_value}'. "
     else:
         message = f"'{old_value}' has been deprecated. "
     if old_value != preferred_value and not only_for_v2:

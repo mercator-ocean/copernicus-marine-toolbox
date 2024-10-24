@@ -84,6 +84,13 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         ),
         DeprecatedOption(old_name="force_service", new_name="service"),
         DeprecatedOption(
+            old_name="service",
+            new_name="service",
+            deleted_for_v2=True,
+            only_for_v2=True,
+            targeted_functions=["get"],
+        ),
+        DeprecatedOption(
             old_name="download_file_list",
             new_name="create_file_list",
             replace=False,
