@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, macos-13]
+        os: [macos-latest, ubuntu-latest, macos-13, ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -35,6 +35,7 @@ jobs:
       shell: micromamba-shell {0}
       run: |
         make run-using-pyinstaller-${{ matrix.os }}
+        echo ${{ matrix.os }}[0:6]
 
     - name: Set VERSION environment variable
       id: set-version
@@ -52,5 +53,7 @@ jobs:
           ARCH="macos-x86_64"
         elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           ARCH="linux"
+        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
+          ARCH="linux-20.04"
         fi
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
