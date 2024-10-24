@@ -72,7 +72,7 @@ run-using-pyinstaller-ubuntu-latest:
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_linux.cli
 
 run-using-pyinstaller-ubuntu-20.04:
-	python3 -m pip install --upgrade pip
+	python3.9 -m pip install --upgrade pip
 	pip install pyinstaller
 	pip install poetry
 	pip install distributed
