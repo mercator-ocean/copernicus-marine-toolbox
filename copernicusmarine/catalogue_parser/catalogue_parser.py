@@ -888,11 +888,13 @@ def parse_catalogue(
             disable_progress_bar=disable_progress_bar,
             staging=staging,
         )
-    except ValueError as e:
-        logger.debug(f"Error while parsing catalogue: {e}")
-        logger.debug(
-            "Now retrying without cache. If the problem with "
-            "the cache persists, try running "
+    except Exception as e:
+        if no_metadata_cache:
+            raise e
+        logger.debug(f"Error with cache: {e}")
+        logger.info(
+            "Cache could not be loaded. Retrying without cache. "
+            "If the problem with the cache persists, try running "
             "copernicusmarine describe --overwrite-metadata-cache"
         )
         catalog = _parse_catalogue(
