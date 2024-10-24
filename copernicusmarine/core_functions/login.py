@@ -19,6 +19,7 @@ def login_function(
     check_credentials_valid: bool,
 ) -> bool:
     if check_credentials_valid:
+        logger.info("Checking if credentials are valid.")
         if copernicusmarine_credentials_are_valid(
             configuration_file_directory, username, password
         ):
