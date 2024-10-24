@@ -101,7 +101,6 @@ def _load_credential_from_copernicus_marine_configuration_file(
     config = configparser.RawConfigParser()
     config.read_string(configuration_string)
     credential = config.get("credentials", credential_type)
-    logger.info(f"credentials: {credential}")
     if credential:
         logger.debug(f"{credential_type} loaded from {configuration_filename}")
     return credential
@@ -243,7 +242,6 @@ def copernicusmarine_credentials_are_valid(
     password: Optional[str],
 ):
     if username and password:
-        logger.info("Checking credentials from input username and password.")
         if _are_copernicus_marine_credentials_valid(username, password):
             logger.info("Valid credentials from input username and password.")
             return True
@@ -419,11 +417,9 @@ def _are_copernicus_marine_credentials_valid(
     username: str, password: str
 ) -> bool:
     try:
-        logger.info("Trying with new authentication system...")
         result = _are_copernicus_marine_credentials_valid_new_system(
             username, password
         )
-        logger.info(f"New authentication system succeeded. {result}")
         return result
 
     except Exception as e:
