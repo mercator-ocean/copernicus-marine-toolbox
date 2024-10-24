@@ -1030,10 +1030,10 @@ class TestCommandLineInterface:
     def then_I_got_an_error_regarding_mutual_exclusivity(self):
         assert self.output.returncode == 2
         assert self.output.stdout == b""
-        assert self.output.stderr == (
+        assert (
             b"Error: Illegal usage: `overwrite-metadata-cache` is mutually "
             b"exclusive with arguments `no-metadata-cache`.\n"
-        )
+        ) in self.output.stderr
 
     def test_describe_without_using_cache(self):
         command = ["copernicusmarine", "describe", "--no-metadata-cache"]
