@@ -72,6 +72,11 @@ run-using-pyinstaller-ubuntu-latest:
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_linux.cli
 
 run-using-pyinstaller-ubuntu-20.04:
+	python -m pip install --upgrade pip
+	pip install pyinstaller
+	pip install poetry
+	pip install distributed
+	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 	pip install -e .
 	ldd --version
 	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --icon=toolbox_icon.png --name copernicusmarine_linux-20.04.cli --add-data="/github/home/micromamba/envs/copernicusmarine-binary-old-linux/lib/python3.9/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.9.19/x64/lib/python3.9/site-packages --copy-metadata xarray
@@ -116,12 +121,7 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:latest
 
 build-and-prepare-for-binary:
-	python -m pip install --upgrade pip
-	pip install pyinstaller
-	pip install -e .
-	pip install poetry
-	pip install distributed
-	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
+
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets

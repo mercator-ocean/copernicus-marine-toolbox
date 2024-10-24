@@ -50,15 +50,14 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: mamba-org/setup-micromamba@v1
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        micromamba-version: '1.5.6-0'
-        micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-        environment-file: conda_environment_binary-old-linux.yaml
-        environment-name: copernicusmarine-binary-old-linux
-        condarc-file: .condarc
-        cache-environment: true
-        post-cleanup: 'all'
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        make build-and-prepare-for-binary
 
     - name: Build with PyInstaller
       shell: micromamba-shell {0}
