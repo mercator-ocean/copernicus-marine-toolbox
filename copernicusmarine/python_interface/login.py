@@ -1,10 +1,15 @@
 import pathlib
 from typing import Optional
 
+from copernicusmarine.core_functions.deprecated import deprecated_python_option
+from copernicusmarine.core_functions.deprecated_options import (
+    DEPRECATED_OPTIONS,
+)
 from copernicusmarine.core_functions.login import login_function
 from copernicusmarine.core_functions.utils import DEFAULT_CLIENT_BASE_DIRECTORY
 
 
+@deprecated_python_option(DEPRECATED_OPTIONS)
 def login(
     username: Optional[str] = None,
     password: Optional[str] = None,

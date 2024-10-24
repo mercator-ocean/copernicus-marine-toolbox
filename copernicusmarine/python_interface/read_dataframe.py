@@ -40,11 +40,17 @@ def load_pandas_dataframe(*args, **kwargs):
     """
     Deprecated function, use 'read_dataframe' instead.
     """
-    log_deprecated_message("load_pandas_dataframe", "read_dataframe")
+    log_deprecated_message(
+        "load_pandas_dataframe",
+        "read_dataframe",
+        deleted_for_v2=True,
+        deprecated_for_v2=False,
+        only_for_v2=False,
+    )
     return read_dataframe(*args, **kwargs)
 
 
-@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
+@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def read_dataframe(
     dataset_url: Optional[str] = None,

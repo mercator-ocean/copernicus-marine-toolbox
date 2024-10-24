@@ -11,7 +11,7 @@ from copernicusmarine.python_interface.exception_handler import (
 )
 
 
-@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
+@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def describe(
     include_description: bool = False,

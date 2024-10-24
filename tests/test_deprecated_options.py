@@ -76,8 +76,8 @@ class TestDeprecatedOptions:
         self.output = execute_in_terminal(command)
         assert b"WARNING" in self.output.stderr
         assert (
-            b"'--include-all-versions' has been deprecated, "
-            b"use '--include-versions' instead"
+            b"'--include-all-versions' has been deprecated. "
+            b"Use '--include-versions' instead"
         ) in self.output.stderr
         assert self.output.returncode == 0
 
