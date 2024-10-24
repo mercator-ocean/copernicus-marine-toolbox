@@ -31,8 +31,8 @@ def get_deprecated_message(
         message += (
             "This option will no longer be "
             + "available in copernicusmarine>=2.0.0. "
-            + "Please refer to the documentation for more information "
-            + "when the new major version is released."
+            + "Please refer to the documentation when the new major "
+            + "version is released for more information."
         )
     if deprecated_for_v2:
         message += (
