@@ -122,7 +122,7 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         DeprecatedOption(
             old_name="subset_method",
             new_name="coordinates_selection_method",
-            replace=False,  # TOCHECK
+            replace=False,
             only_for_v2=True,
         ),
         DeprecatedOption(
@@ -135,7 +135,7 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
             new_name="disable_progress_bar",
             targeted_functions=["open_dataset", "read_dataframe"],
             only_for_v2=True,
-        ),  # TOCHECK: shouldn't be triggered for all
+        ),
         DeprecatedOption(
             old_name="include_datasets",
             new_name="include_datasets",

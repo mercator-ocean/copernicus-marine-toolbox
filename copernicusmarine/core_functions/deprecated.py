@@ -37,7 +37,7 @@ def get_deprecated_message(
     if deprecated_for_v2:
         message += (
             "This option will be deprecated in copernicusmarine>=2.0.0 i.e. "
-            + "it will not break but it might not have the expected effect."
+            + "it will not break but it might have an unexpected effect."
         )
     return message
 
@@ -86,8 +86,6 @@ class DeprecatedClickOptionsCommand(click.Command):
         command_name = ctx.command.name
 
         for option in options:
-            # if not isinstance(option.obj, DeprecatedClickOption):
-            #     continue
 
             def make_process(an_option):
                 orig_process = an_option.process
