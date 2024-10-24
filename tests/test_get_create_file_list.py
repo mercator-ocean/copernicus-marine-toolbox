@@ -15,8 +15,8 @@ class TestGetCreateFileList:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"'--download-file-list' has been deprecated, "
-            b"use '--create-file-list' instead" in self.output.stderr
+            b"'--download-file-list' has been deprecated. "
+            b"Use '--create-file-list' instead" in self.output.stderr
         )
 
     def test_get_create_file_list_without_extension_raises(self):

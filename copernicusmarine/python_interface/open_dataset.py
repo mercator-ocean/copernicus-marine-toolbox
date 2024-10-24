@@ -40,11 +40,17 @@ def load_xarray_dataset(*args, **kwargs):
     """
     Deprecated function, use 'open_dataset' instead.
     """
-    log_deprecated_message("load_xarray_dataset", "open_dataset")
+    log_deprecated_message(
+        "load_xarray_dataset",
+        "open_dataset",
+        deleted_for_v2=True,
+        deprecated_for_v2=False,
+        only_for_v2=False,
+    )
     return open_dataset(*args, **kwargs)
 
 
-@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
+@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def open_dataset(
     dataset_url: Optional[str] = None,

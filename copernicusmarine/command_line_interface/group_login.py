@@ -7,6 +7,9 @@ import click
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
+from copernicusmarine.core_functions.deprecated import (
+    DeprecatedClickOptionsCommand,
+)
 from copernicusmarine.core_functions.login import login_function
 from copernicusmarine.core_functions.utils import DEFAULT_CLIENT_BASE_DIRECTORY
 
@@ -20,6 +23,7 @@ def cli_group_login() -> None:
 
 @cli_group_login.command(
     "login",
+    cls=DeprecatedClickOptionsCommand,
     short_help="Create a configuration file with your Copernicus Marine credentials.",
     help="""
     Create a configuration file with your Copernicus Marine credentials.

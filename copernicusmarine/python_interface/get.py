@@ -15,7 +15,7 @@ from copernicusmarine.python_interface.exception_handler import (
 )
 
 
-@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
+@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def get(
     dataset_url: Optional[str] = None,
@@ -89,7 +89,13 @@ def get(
             "download_file_list", "create_file_list"
         )
     elif download_file_list:
-        log_deprecated_message("download_file_list", "create_file_list")
+        log_deprecated_message(
+            "download_file_list",
+            "create_file_list",
+            deleted_for_v2=True,
+            deprecated_for_v2=False,
+            only_for_v2=False,
+        )
     return get_function(
         dataset_url=dataset_url,
         dataset_id=dataset_id,
