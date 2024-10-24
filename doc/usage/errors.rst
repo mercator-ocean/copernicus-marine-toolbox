@@ -18,6 +18,8 @@ Custom errors
 
 .. autoclass:: copernicusmarine.InvalidUsernameOrPassword()
 
+.. autoclass:: copernicusmarine.CouldNotConnectToAuthenticationSystem()
+
 .. autoclass:: copernicusmarine.MinimumLongitudeGreaterThanMaximumLongitude()
 
 .. autoclass:: copernicusmarine.VariableDoesNotExistInTheDataset()
