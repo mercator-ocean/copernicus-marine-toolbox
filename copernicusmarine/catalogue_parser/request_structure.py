@@ -136,17 +136,16 @@ def subset_request_from_file(filepath: pathlib.Path) -> SubsetRequest:
     json_with_deprecated_options_replace = {}
 
     for key, val in json_content.items():
-        if key in DEPRECATED_OPTIONS:
+        if key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
+            new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
+            json_with_deprecated_options_replace[new_key] = val
+        elif key in DEPRECATED_OPTIONS:
             deprecated_option = DEPRECATED_OPTIONS[key]
             json_with_deprecated_options_replace[
                 deprecated_option.new_name
             ] = val
-        elif key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
-            new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
-            json_with_deprecated_options_replace[new_key] = val
         else:
             json_with_deprecated_options_replace[key] = val
-
     subset_request = SubsetRequest()
     subset_request.__dict__.update(json_with_deprecated_options_replace)
     subset_request.enforce_types()

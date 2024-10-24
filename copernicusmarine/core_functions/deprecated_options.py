@@ -86,6 +86,7 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         DeprecatedOption(
             old_name="service",
             new_name="service",
+            replace=False,
             deleted_for_v2=True,
             only_for_v2=True,
             targeted_functions=["get"],
