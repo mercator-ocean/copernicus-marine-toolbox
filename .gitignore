@@ -11,7 +11,6 @@ dist/
 
 # Sphinx documentation html build
 doc/_build/
-doc/**/__pycache__/
 
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints/

@@ -6,15 +6,18 @@ from copernicusmarine.core_functions.utils import logger
 
 
 class DeprecatedOption:
-    def __init__(self, old_name, new_name, replace=True) -> None:
+    def __init__(
+        self, old_name, new_name, replace=True, do_not_pass=False
+    ) -> None:
         self.old_name = old_name
         self.new_name = new_name
         self.replace = replace
+        self.do_not_pass = do_not_pass
 
 
 class DeprecatedOptionMapping(Mapping):
     def __init__(self, deprecated_options: list[DeprecatedOption]) -> None:
-        self.deprecated_options_by_old_names: dict = {}
+        self.deprecated_options_by_old_names: dict[str, DeprecatedOption] = {}
         for value in deprecated_options:
             if value not in self.deprecated_options_by_old_names:
                 self.deprecated_options_by_old_names[value.old_name] = value
@@ -28,39 +31,28 @@ class DeprecatedOptionMapping(Mapping):
     def __len__(self) -> int:
         return self.deprecated_options_by_old_names.__len__()
 
-    @property
-    def dict_old_names_to_new_names(self):
-        result_dict = {}
-        for (
-            old_name,
-            deprecated_option,
-        ) in self.deprecated_options_by_old_names.items():
-            if deprecated_option.replace:
-                result_dict[old_name] = deprecated_option.new_name
-        return result_dict
-
 
 DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
     [
         DeprecatedOption(
             old_name="include_datasets",
             new_name="include_datasets",
-            replace=True,
+            do_not_pass=True,
         ),
         DeprecatedOption(
             old_name="include_keywords",
             new_name="include_keywords",
-            replace=True,
+            do_not_pass=True,
         ),
         DeprecatedOption(
             old_name="include_all",
             new_name="include_all",
-            replace=True,
+            do_not_pass=True,
         ),
         DeprecatedOption(
             old_name="include_description",
             new_name="include_description",
-            replace=True,
+            do_not_pass=True,
         ),
     ]
 )
@@ -86,7 +78,7 @@ def raise_both_old_and_new_value_error(old_value, new_value):
     )
 
 
-def deprecated_python_option(**aliases: str) -> Callable:
+def deprecated_python_option(aliases: DeprecatedOptionMapping) -> Callable:
     def deco(f: Callable):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
@@ -99,14 +91,18 @@ def deprecated_python_option(**aliases: str) -> Callable:
 
 
 def rename_kwargs(
-    func_name: str, kwargs: dict[str, Any], aliases: dict[str, str]
+    func_name: str, kwargs: dict[str, Any], aliases: DeprecatedOptionMapping
 ):
-    for alias, new in aliases.items():
-        if alias in kwargs:
-            if new in kwargs and alias != new:
-                raise_both_old_and_new_value_error(alias, new)
-            if alias == new:
-                log_deprecated_message(alias, None)
+    for old, alias_info in aliases.deprecated_options_by_old_names.items():
+        new = alias_info.new_name
+        if old in kwargs:
+            if new in kwargs and old != new:
+                raise_both_old_and_new_value_error(old, new)
+            if old == new:
+                log_deprecated_message(old, None)
             else:
-                log_deprecated_message(alias, new)
-                kwargs[new] = kwargs.pop(alias)
+                log_deprecated_message(old, new)
+            if alias_info.replace:
+                kwargs[new] = kwargs.pop(old)
+            if alias_info.do_not_pass:
+                del kwargs[old]

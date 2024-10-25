@@ -7,12 +7,12 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineDatasetVersion,
-    CopernicusMarineProductDataset,
+    CopernicusMarineDataset,
+    CopernicusMarinePart,
     CopernicusMarineService,
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
-    CopernicusMarineVersionPart,
+    CopernicusMarineVersion,
     short_name_from_service_name,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
@@ -128,7 +128,7 @@ def _service_does_not_exist_for_command(
 
 
 def _select_forced_service(
-    dataset_version_part: CopernicusMarineVersionPart,
+    dataset_version_part: CopernicusMarinePart,
     force_service_name: CopernicusMarineServiceNames,
     command_type: CommandType,
 ) -> CopernicusMarineService:
@@ -216,7 +216,7 @@ def _get_first_available_service_name(
 
 
 def _select_service_by_priority(
-    dataset_version_part: CopernicusMarineVersionPart,
+    dataset_version_part: CopernicusMarinePart,
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
@@ -307,7 +307,7 @@ def get_retrieval_service(
 
 
 def _get_retrieval_service_from_dataset(
-    dataset: CopernicusMarineProductDataset,
+    dataset: CopernicusMarineDataset,
     force_dataset_version_label: Optional[str],
     force_dataset_part_label: Optional[str],
     force_service_name: Optional[CopernicusMarineServiceNames],
@@ -343,7 +343,7 @@ def _get_retrieval_service_from_dataset(
 
 def _get_retrieval_service_from_dataset_version(
     dataset_id: str,
-    dataset_version: CopernicusMarineDatasetVersion,
+    dataset_version: CopernicusMarineVersion,
     force_dataset_part_label: Optional[str],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
@@ -436,8 +436,8 @@ class ServiceNotAvailable(Exception):
 
 def _warning_dataset_will_be_deprecated(
     dataset_id: str,
-    dataset_version: CopernicusMarineDatasetVersion,
-    dataset_part: CopernicusMarineVersionPart,
+    dataset_version: CopernicusMarineVersion,
+    dataset_part: CopernicusMarinePart,
 ):
     logger.warning(
         f"""The dataset {dataset_id}"""
@@ -453,8 +453,8 @@ def _warning_dataset_will_be_deprecated(
 
 def _warning_dataset_not_yet_released(
     dataset_id: str,
-    dataset_version: CopernicusMarineDatasetVersion,
-    dataset_part: CopernicusMarineVersionPart,
+    dataset_version: CopernicusMarineVersion,
+    dataset_part: CopernicusMarinePart,
 ):
     logger.warning(
         f"""The dataset {dataset_id}"""
@@ -470,7 +470,7 @@ def _warning_dataset_not_yet_released(
 
 
 def _service_not_available_error(
-    dataset_version_part: CopernicusMarineVersionPart,
+    dataset_version_part: CopernicusMarinePart,
     command_type: CommandType,
 ) -> ServiceNotAvailable:
     dataset_available_service_names = [

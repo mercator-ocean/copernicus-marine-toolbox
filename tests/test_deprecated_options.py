@@ -32,6 +32,7 @@ class TestDeprecatedOptions:
             b"'--include-description' has been deprecated, use "
             b"'--returned-fields description' instead" in self.output.stderr
         )
+        assert self.output.returncode == 0
 
     def test_describe_include_options_are_deprecated_python_api(self, caplog):
         describe(

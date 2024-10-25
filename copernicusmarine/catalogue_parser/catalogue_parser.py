@@ -9,8 +9,9 @@ from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCatalogue,
+    CopernicusMarineDataset,
     CopernicusMarineProduct,
-    CopernicusMarineProductDataset,
+    DatasetIsNotPartOfTheProduct,
     DatasetNotFound,
     get_version_and_part_from_full_dataset_id,
 )
@@ -66,7 +67,7 @@ class CatalogParserConnection:
 
 def get_dataset_metadata(
     dataset_id: str, staging: bool
-) -> Optional[CopernicusMarineProductDataset]:
+) -> Optional[CopernicusMarineDataset]:
     with CatalogParserConnection() as connection:
         stac_url = (
             MARINE_DATA_STORE_STAC_URL
@@ -144,7 +145,7 @@ def _parse_product_json_to_pystac_collection(
 
 def _parse_and_sort_dataset_items(
     dataset_items: list[pystac.Item],
-) -> Optional[CopernicusMarineProductDataset]:
+) -> Optional[CopernicusMarineDataset]:
     """
     Return all dataset metadata parsed and sorted.
     The first version and part are the default.
@@ -153,7 +154,7 @@ def _parse_and_sort_dataset_items(
     dataset_id, _, _ = get_version_and_part_from_full_dataset_id(
         dataset_item_example.id
     )
-    dataset_part_version_merged = CopernicusMarineProductDataset(
+    dataset_part_version_merged = CopernicusMarineDataset(
         dataset_id=dataset_id,
         dataset_name=dataset_item_example.properties.get("title", dataset_id),
         versions=[],
@@ -352,7 +353,7 @@ def parse_catalogue(
         total=2, desc="Fetching catalogue", disable=disable_progress_bar
     )
     with CatalogParserConnection() as connection:
-        if force_dataset_id and not force_product_id:
+        if force_dataset_id:
             root_url = (
                 MARINE_DATA_STORE_ROOT_METADATA_URL
                 if not staging
@@ -361,11 +362,19 @@ def parse_catalogue(
             dataset_product_mapping_url = (
                 f"{root_url}/dataset_product_id_mapping.json"
             )
-            force_product_id = connection.get_json_file(
+            product_id_from_mapping = connection.get_json_file(
                 dataset_product_mapping_url
             ).get(force_dataset_id)
-            if not force_product_id:
+            if not product_id_from_mapping:
                 raise DatasetNotFound(force_dataset_id)
+            if (
+                force_product_id
+                and product_id_from_mapping != force_product_id
+            ):
+                raise DatasetIsNotPartOfTheProduct(
+                    force_dataset_id, force_product_id
+                )
+            force_product_id = product_id_from_mapping
         marine_data_store_root_collections = fetch_all_products_items(
             connection=connection,
             force_product_id=force_product_id,

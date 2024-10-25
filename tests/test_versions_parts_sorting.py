@@ -1,57 +1,57 @@
 from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     VERSION_DEFAULT,
-    CopernicusMarineDatasetVersion,
-    CopernicusMarineProductDataset,
-    CopernicusMarineVersionPart,
+    CopernicusMarineDataset,
+    CopernicusMarinePart,
+    CopernicusMarineVersion,
 )
 
-version_default = CopernicusMarineDatasetVersion(
+version_default = CopernicusMarineVersion(
     label=VERSION_DEFAULT,
     parts=[
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="latest", services=[], retired_date=None, released_date=None
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="latest_to_be_released",
             services=[],
             retired_date=None,
             released_date="2060-01-01",
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="bathy", services=[], retired_date=None, released_date=None
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="history", services=[], retired_date=None, released_date=None
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date=None,
             released_date=None,
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="latest_will_be_retired_in_2060",
             services=[],
             retired_date="2060-01-01",
             released_date=None,
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="latest_will_be_retired_in_2030",
             services=[],
             retired_date="2030-01-01",
             released_date=None,
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="monthly", services=[], retired_date=None, released_date=None
         ),
     ],
 )
 
-to_be_released_version = CopernicusMarineDatasetVersion(
+to_be_released_version = CopernicusMarineVersion(
     label="206011",
     parts=[
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date=None,
@@ -60,10 +60,10 @@ to_be_released_version = CopernicusMarineDatasetVersion(
     ],
 )
 
-will_be_retired_soon_version = CopernicusMarineDatasetVersion(
+will_be_retired_soon_version = CopernicusMarineVersion(
     label="202011",
     parts=[
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date="2025-01-01",
@@ -72,10 +72,10 @@ will_be_retired_soon_version = CopernicusMarineDatasetVersion(
     ],
 )
 
-will_be_retired_in_a_long_time_version = CopernicusMarineDatasetVersion(
+will_be_retired_in_a_long_time_version = CopernicusMarineVersion(
     label="202111",
     parts=[
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date="2060-01-01",
@@ -84,16 +84,16 @@ will_be_retired_in_a_long_time_version = CopernicusMarineDatasetVersion(
     ],
 )
 
-newly_released_version = CopernicusMarineDatasetVersion(
+newly_released_version = CopernicusMarineVersion(
     label="202201",
     parts=[
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date=None,
             released_date="2022-01-01",
         ),
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name="to_be_released_part",
             services=[],
             retired_date=None,
@@ -102,10 +102,10 @@ newly_released_version = CopernicusMarineDatasetVersion(
     ],
 )
 
-old_version = CopernicusMarineDatasetVersion(
+old_version = CopernicusMarineVersion(
     label="201901",
     parts=[
-        CopernicusMarineVersionPart(
+        CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date=None,
@@ -115,7 +115,7 @@ old_version = CopernicusMarineDatasetVersion(
 )
 
 
-example_dataset = CopernicusMarineProductDataset(
+example_dataset = CopernicusMarineDataset(
     dataset_id="example_dataset",
     dataset_name="Example Dataset",
     versions=[

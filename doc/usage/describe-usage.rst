@@ -64,7 +64,7 @@ To save the JSON output to a file, you can use the following command:
 ----------------------------------------------------------------
 
 You can use the ``--returned-fields`` (``-r``) and ``--returned-fields-exclude`` (``-e``) options to select the fields you want to see in the output.
-The options allow to select respectively the fileds you want to include or exclude from the output.
+The options allow to select respectively the fields you want to include or exclude from the output.
 You just need to add them as a comma-separated list.
 
 For example if you want only the URI of the services, you can use the following command:
@@ -73,9 +73,9 @@ For example if you want only the URI of the services, you can use the following 
 
 .. code-block:: bash
 
-    copernicusmarine describe --returned-fields uri,product_id,dataset_id
+    copernicusmarine describe --returned-fields uri,product_id,dataset_id,service_name
 
-The output will be something like this (only the first product are shown):
+The output will be something like this (only the first product is shown):
 
 .. code-block:: json
 
@@ -92,10 +92,12 @@ The output will be something like this (only the first product are shown):
                     {
                     "services": [
                         {
-                        "uri": "https://s3.waw3-1.cloudferro.com/mdl-native-10/native/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/antarctic_omi_si_extent_19930115_P20220328.nc"
+                            "service_name": "original-files",
+                            "uri": "https://s3.waw3-1.cloudferro.com/mdl-native-10/native/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/antarctic_omi_si_extent_19930115_P20220328.nc"
                         },
                         {
-                        "uri": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-001/arco/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/omi.zarr"
+                            "service_name": "omi-arco",
+                            "uri": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-001/arco/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/omi.zarr"
                         }
                     ]
                     }
@@ -107,6 +109,10 @@ The output will be something like this (only the first product are shown):
         }
         ]
     }
+
+
+.. note::
+    You can use ``--returned-fields all`` to show all fields.
 
 
 ``--contains`` option
@@ -177,7 +183,7 @@ The output will be something like this:
 
 Calling the whole catalogue can be time-consuming. If you know the dataset or product you are looking for, you can use the ``dataset_id`` or ``product_id`` options.
 It will drastically reduce the time to get the information you need.
-You can either use the ``--dataset_id`` or ``--product_id`` options or both.
+You can either use the ``--dataset_id`` option, the ``--product_id`` option or both.
 
 **Example:**
 

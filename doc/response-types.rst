@@ -77,19 +77,19 @@ Subtypes
     :exclude-members: model_computed_fields, model_config, model_fields, sort_versions, parse_dataset_metadata_items
     :member-order: bysource
 
-.. autoclass:: copernicusmarine.CopernicusMarineProductDataset()
+.. autoclass:: copernicusmarine.CopernicusMarineDataset()
     :members:
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields, get_version, sort_versions, parse_dataset_metadata_items
     :member-order: bysource
 
-.. autoclass:: copernicusmarine.CopernicusMarineDatasetVersion()
+.. autoclass:: copernicusmarine.CopernicusMarineVersion()
     :members:
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields, get_part, sort_parts
     :member-order: bysource
 
-.. autoclass:: copernicusmarine.CopernicusMarineVersionPart()
+.. autoclass:: copernicusmarine.CopernicusMarinePart()
     :members:
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_service_by_service_name

@@ -13,8 +13,6 @@ from copernicusmarine.core_functions.utils import (
     next_or_raise_exception,
 )
 
-# Output Types definitions
-
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
 
@@ -361,12 +359,13 @@ class CopernicusMarineService(BaseModel):
             return None
 
 
-VersionPart = TypeVar("VersionPart", bound="CopernicusMarineVersionPart")
+VersionPart = TypeVar("VersionPart", bound="CopernicusMarinePart")
 
 
-class CopernicusMarineVersionPart(BaseModel):
+class CopernicusMarinePart(BaseModel):
     """
     Part of a dataset. Datasets can have multiple parts.
+    Each part contains a distinct list of services and distinct data.
     """
 
     #: Name of the part
@@ -419,7 +418,7 @@ class CopernicusMarineVersionPart(BaseModel):
         )
 
 
-class CopernicusMarineDatasetVersion(BaseModel):
+class CopernicusMarineVersion(BaseModel):
     """
     Version of a dataset. Datasets can have multiple versions.
     Usually around data releases.
@@ -428,11 +427,9 @@ class CopernicusMarineDatasetVersion(BaseModel):
     #: Label of the version (eg: "latest", "202101")
     label: str
     #: List of parts of the version
-    parts: list[CopernicusMarineVersionPart]
+    parts: list[CopernicusMarinePart]
 
-    def get_part(
-        self, force_part: Optional[str]
-    ) -> CopernicusMarineVersionPart:
+    def get_part(self, force_part: Optional[str]) -> CopernicusMarinePart:
         wanted_part = force_part or PART_DEFAULT
         for part in self.parts:
             if part.name == wanted_part:
@@ -471,7 +468,7 @@ class CopernicusMarineDatasetVersion(BaseModel):
         return self.parts[0].released_date, self.parts[0].retired_date
 
 
-class CopernicusMarineProductDataset(BaseModel):
+class CopernicusMarineDataset(BaseModel):
     """
     Dataset of a product.
     Contains the dataset metadata and a list of versions.
@@ -482,11 +479,11 @@ class CopernicusMarineProductDataset(BaseModel):
     #: The dataset name
     dataset_name: str
     #: List of versions of the dataset
-    versions: list[CopernicusMarineDatasetVersion]
+    versions: list[CopernicusMarineVersion]
 
     def get_version(
         self, force_version: Optional[str]
-    ) -> CopernicusMarineDatasetVersion:
+    ) -> CopernicusMarineVersion:
         wanted_version = force_version or VERSION_DEFAULT
         for version in self.versions:
             if version.label == wanted_version:
@@ -528,7 +525,7 @@ class CopernicusMarineProductDataset(BaseModel):
                 dataset_version,
                 dataset_part,
             ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
-            part = CopernicusMarineVersionPart.from_metadata_item(
+            part = CopernicusMarinePart.from_metadata_item(
                 metadata_item, dataset_part
             )
             if not part:
@@ -540,7 +537,7 @@ class CopernicusMarineProductDataset(BaseModel):
                         break
             else:
                 all_versions.add(dataset_version)
-                version = CopernicusMarineDatasetVersion(
+                version = CopernicusMarineVersion(
                     label=dataset_version, parts=[part]
                 )
                 self.versions.append(version)
@@ -571,15 +568,14 @@ class CopernicusMarineProduct(BaseModel):
     #: Keywords of the product
     keywords: Optional[list[str]]
     #: List of datasets of the product
-    datasets: list[CopernicusMarineProductDataset]
+    datasets: list[CopernicusMarineDataset]
 
 
 class CopernicusMarineCatalogue(BaseModel):
     """
     Catalogue of the Copernicus Marine service.
-    You can find here all the products available in the catalogue
-    and their metadata as the response of the describe command/function.
-    """
+    You can find here the products of the catalogue and their metadata as the response of the describe command/function.
+    """  # noqa
 
     #: List of products in the catalogue
     products: list[CopernicusMarineProduct]
@@ -621,7 +617,7 @@ class DatasetVersionPartNotFound(Exception):
     If yes, please contact user support.
     """
 
-    def __init__(self, version: CopernicusMarineDatasetVersion):
+    def __init__(self, version: CopernicusMarineVersion):
         message = f"No part found for version {version.label}"
         super().__init__(message)
 
@@ -636,7 +632,7 @@ class DatasetVersionNotFound(Exception):
     If yes, please contact user support.
     """
 
-    def __init__(self, dataset: CopernicusMarineProductDataset):
+    def __init__(self, dataset: CopernicusMarineDataset):
         message = f"No version found for dataset {dataset.dataset_id}"
         super().__init__(message)
 
@@ -659,6 +655,24 @@ class DatasetNotFound(Exception):
         message = (
             f"{dataset_id} "
             f"Please check that the dataset exists and "
+            f"the input datasetID is correct."
+        )
+        super().__init__(message)
+
+
+class DatasetIsNotPartOfTheProduct(Exception):
+    """
+    Exception raised when the dataset is not part of the product.
+
+    If you request a datasetID and a productID
+    at the same time with the describe command,
+    please verify that the dataset is part of the product.
+    """
+
+    def __init__(self, dataset_id: str, product_id: str):
+        message = (
+            f"{dataset_id} not part of {product_id} "
+            f"Please check that the dataset is part of the product and "
             f"the input datasetID is correct."
         )
         super().__init__(message)

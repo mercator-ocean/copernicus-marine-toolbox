@@ -34,7 +34,7 @@ from copernicusmarine.python_interface.load_utils import (
 from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
-@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
+@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def open_dataset(
     dataset_id: str,

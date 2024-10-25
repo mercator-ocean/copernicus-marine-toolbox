@@ -34,6 +34,7 @@ class TestDescribe:
     def test_describe_product_id_dataset_id(self):
         dataset_id = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
         product_id = "GLOBAL_MULTIYEAR_PHY_001_030"
+        different_product_id = "ANTARCTIC_OMI_SI_extent"
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, None
         )
@@ -49,6 +50,10 @@ class TestDescribe:
         )
         self.then_stdout_can_be_load_as_json()
         self.then_I_have_only_one_product_and_one_dataset()
+        self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
+            different_product_id, dataset_id
+        )
+        self.then_I_have_an_error_message_about_dataset_id_and_product_id()
 
     def test_describe_contains_option(self):
         self.when_I_run_copernicus_marine_describe_with_contains_option()
@@ -72,6 +77,7 @@ class TestDescribe:
 
     def then_I_can_read_the_default_json(self):
         json_result = loads(self.output.stdout.decode("utf-8"))
+        # TODO: increase number after November release
         assert len(json_result["products"]) >= 270
         seen_processing_level = False
         seen_digital_object_identifier = False
@@ -285,7 +291,7 @@ class TestDescribe:
     def then_I_can_read_it_does_not_contain_weird_symbols(self):
         assert b"__" not in self.output.stdout
         assert b" _" not in self.output.stdout
-        # assert b"_ " not in self.output
+        assert b"_ " not in self.output.stdout
         assert b'"_' not in self.output.stdout
         assert b'_"' not in self.output.stdout
 
@@ -424,6 +430,10 @@ class TestDescribe:
         json_result = loads(self.output.stdout)
         assert len(json_result["products"]) == 1
         assert len(json_result["products"][0]["datasets"]) == 1
+
+    def then_I_have_an_error_message_about_dataset_id_and_product_id(self):
+        assert self.output.returncode == 1
+        assert b"Dataset is not part of the product" in self.output.stderr
 
     def when_I_use_staging_environment_in_debug_logging_level(self):
         command = [

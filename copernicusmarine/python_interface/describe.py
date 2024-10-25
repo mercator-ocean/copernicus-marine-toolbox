@@ -11,15 +11,10 @@ from copernicusmarine.python_interface.exception_handler import (
 )
 
 
-@deprecated_python_option(**DEPRECATED_OPTIONS.dict_old_names_to_new_names)
+@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def describe(
-    include_description: bool = False,
-    something: bool = False,
-    include_datasets: bool = False,
-    include_keywords: bool = False,
     include_versions: bool = False,
-    include_all: bool = False,
     contains: list[str] = [],
     product_id: Optional[str] = None,
     dataset_id: Optional[str] = None,
@@ -32,16 +27,8 @@ def describe(
 
     Parameters
     ----------
-    include_description : bool, optional
-        Deprecated. Include product description in output.
-    include_datasets : bool, optional
-        Deprecated. Include product dataset details in output.
-    include_keywords : bool, optional
-        Deprecated. Include product keyword details in output.
     include_versions : bool, optional
         Include dataset versions in output. By default, shows only the default version.
-    include_all : bool, optional
-        Deprecated. Include all the possible data in output: description, datasets, keywords, and versions.
     contains : list[str], optional
         Filter catalogue output. Returns products with attributes matching a string token.
     product_id : str, optional
