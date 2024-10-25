@@ -76,6 +76,7 @@ def _prepare_download_dataset_as_netcdf(
         compute=False,
         encoding=encoding,
         format=xarray_download_format,
+        engine="h5netcdf",
     )
 
 
