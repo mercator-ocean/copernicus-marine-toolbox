@@ -1,10 +1,12 @@
 name: Check format
 
-on: push
+on:
+  push:
+  pull_request:
 
 jobs:
   check-format:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
