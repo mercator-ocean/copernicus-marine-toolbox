@@ -2,6 +2,9 @@ name: Check format
 
 on:
   push:
+    branches:
+      - main
+      - copernicusmarine-toolbox-v2
   pull_request:
 
 jobs:
