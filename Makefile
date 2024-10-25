@@ -74,8 +74,8 @@ run-using-pyinstaller-ubuntu-latest:
 run-using-pyinstaller-ubuntu-20.04:
 	sudo apt update
 	sudo apt install software-properties-common
-	sudo apt install wget build-essential checkinstall
-	sudo apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+	sudo apt install wget build-essential checkinstall -y
+	sudo apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev -8 -4 -y
 	cd /opt
 	sudo wget https://www.python.org/ftp/python/3.9.16/Python-3.9.16.tgz
 	tar xzf Python-3.9.16.tgz
