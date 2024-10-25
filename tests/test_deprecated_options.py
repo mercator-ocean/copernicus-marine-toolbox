@@ -87,3 +87,6 @@ class TestDeprecatedOptions:
             include_all_versions=True,
         )
         assert describe_result == {}
+
+    def test_should_fail(self):
+        raise Exception("This test should fail")
