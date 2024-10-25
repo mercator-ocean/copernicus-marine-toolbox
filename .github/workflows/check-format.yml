@@ -1,10 +1,15 @@
 name: Check format
 
-on: push
+on:
+  push:
+    branches:
+      - main
+      - copernicusmarine-toolbox-v2
+  pull_request:
 
 jobs:
   check-format:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
