@@ -21,7 +21,7 @@ boto3 = ">=1.26"
 semver = ">=3.0.2"
 pystac = ">=1.8.3"
 lxml = ">=4.9.0"
-numpy = ">=1.23.0,<2.0.0"
+numpy = ">=1.23.0"
 pendulum = "^3.0.0"
 pydantic = "^2.9.1"
 
