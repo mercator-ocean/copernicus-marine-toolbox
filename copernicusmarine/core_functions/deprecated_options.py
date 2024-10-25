@@ -1,8 +1,9 @@
 import functools
+import logging
 from collections.abc import Iterator, Mapping
 from typing import Any, Callable, Optional
 
-from copernicusmarine.core_functions.utils import logger
+logger = logging.getLogger("copernicusmarine")
 
 
 class DeprecatedOption:
