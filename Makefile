@@ -72,28 +72,10 @@ run-using-pyinstaller-ubuntu-latest:
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_linux.cli
 
 run-using-pyinstaller-ubuntu-20.04:
-	sudo apt update
-	sudo apt install software-properties-common
-	sudo apt install wget build-essential checkinstall -y
-	yes Y 8 | sudo apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
-	cd /opt
-	sudo wget https://www.python.org/ftp/python/3.9.16/Python-3.9.16.tgz
-	tar xzf Python-3.9.16.tgz
-	cd Python-3.9.16
-	sudo ./configure --enable-optimizations
-	sudo make altinstall
-	python3.9 -V
-	sudo rm -f /opt/Python-3.9.6.tgz
-
-	python3.9 -m pip install --upgrade pip
-	pip install pyinstaller
-	pip install poetry
-	pip install distributed
-	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 	pip install -e .
 	ldd --version
-	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --icon=toolbox_icon.png --name copernicusmarine_linux-20.04.cli --add-data="/github/home/micromamba/envs/copernicusmarine-binary-old-linux/lib/python3.9/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.9.19/x64/lib/python3.9/site-packages --copy-metadata xarray
-	chmod +rwx /github/home/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_linux-20.04.cli
+	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --icon=toolbox_icon.png --name copernicusmarine_linux-20.04.cli --add-data="/home/runner/micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12/x64/lib/python3.12/site-packages --copy-metadata xarray
+	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_linux-20.04.cli
 
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
@@ -134,7 +116,12 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:latest
 
 build-and-prepare-for-binary:
-
+ 	python -m pip install --upgrade pip
+ 	pip install pyinstaller
+ 	pip install -e .
+ 	pip install poetry
+ 	pip install distributed
+ 	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
