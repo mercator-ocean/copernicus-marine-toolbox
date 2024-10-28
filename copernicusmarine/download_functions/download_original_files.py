@@ -84,6 +84,7 @@ def download_original_files(
             disable_progress_bar,
             only_list_root_path=get_request.index_parts,
             overwrite=get_request.overwrite_output_data,
+            skip_existing=get_request.skip_existing,
         )
         if result:
             (
@@ -108,6 +109,7 @@ def download_original_files(
     )
     filenames_out = create_filenames_out(
         filenames_in=filenames_in,
+        skip_existing=get_request.skip_existing,
         output_directory=pathlib.Path(get_request.output_directory),
         no_directories=get_request.no_directories,
         overwrite=(
@@ -142,6 +144,7 @@ def download_original_files(
         filenames_out_sync_ignored = create_filenames_out(
             filenames_in=filenames_to_be_ignored,
             output_directory=pathlib.Path(get_request.output_directory),
+            skip_existing=get_request.skip_existing,
             no_directories=get_request.no_directories,
             overwrite=False,
             unique_names_compared_to_local_files=False,
@@ -258,6 +261,7 @@ def _download_header(
     disable_progress_bar: bool,
     only_list_root_path: bool = False,
     overwrite: bool = False,
+    skip_existing: bool = False,
 ) -> Optional[
     tuple[
         tuple[str, str],
@@ -290,10 +294,6 @@ def _download_header(
         if not regex or re.search(regex, filename):
             filenames_without_sync.append(filename)
             last_modified_datetime = pendulum.instance(last_modified_datetime)
-            if sync or _already_downloaded(
-                filename, directory_out
-            ):  # these two lines are to use the funciton
-                filenames.append("")
             if not sync or _check_needs_to_be_synced(
                 filename, size, last_modified_datetime, directory_out
             ):
@@ -409,14 +409,6 @@ def _download_header_for_direct_download(
         filenames_without_sync,
         filenames_not_found,
     )
-
-
-def _already_downloaded(
-    filename: str,
-    directory_out: pathlib.Path,
-) -> bool:
-    filename_out = _local_path_from_s3_url(filename, directory_out)
-    return filename_out.is_file()
 
 
 def _check_needs_to_be_synced(
@@ -574,6 +566,7 @@ def _download_one_file(
 def create_filenames_out(
     filenames_in: list[str],
     overwrite: bool,
+    skip_existing: bool,
     output_directory: pathlib.Path = pathlib.Path("."),
     no_directories=False,
     unique_names_compared_to_local_files=True,
@@ -590,13 +583,15 @@ def create_filenames_out(
                 filename_in, output_directory
             )
         if unique_names_compared_to_local_files:
-            filename_out = get_unique_filename(
-                filepath=filename_out,
-                overwrite_option=overwrite,
-                skip_existing=False,
-            )
-
-        filenames_out.append(filename_out)
+            if not skip_existing:
+                filename_out = get_unique_filename(
+                    filepath=filename_out,
+                    overwrite_option=overwrite,
+                    skip_existing=False,
+                )
+                filenames_out.append(filename_out)
+        else:
+            filenames_out.append(filename_out)
     return filenames_out
 
 

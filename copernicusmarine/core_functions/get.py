@@ -51,6 +51,7 @@ def get_function(
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
+    skip_existing: bool,
 ) -> ResponseGet:
     VersionVerifier.check_version_get(staging)
     if staging:
@@ -85,6 +86,8 @@ def get_function(
         get_request.force_download = force_download
     if overwrite_output_data:
         get_request.overwrite_output_data = overwrite_output_data
+    if skip_existing:
+        get_request.skip_existing = skip_existing
     if filter:
         get_request.regex = filter_to_regex(filter)
     if regex:

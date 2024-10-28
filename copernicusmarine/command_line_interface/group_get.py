@@ -162,6 +162,12 @@ def cli_get() -> None:
     mutually_exclusive=["no-directories"],
 )
 @click.option(
+    "--skip-existing",
+    is_flag=True,
+    default=False,
+    help=documentation_utils.GET["SKIP_EXISTING_HELP"],
+)
+@click.option(
     "--index-parts",
     type=bool,
     is_flag=True,
@@ -216,6 +222,7 @@ def get(
     create_file_list: Optional[str],
     sync: bool,
     sync_delete: bool,
+    skip_existing: bool,
     index_parts: bool,
     dry_run: bool,
     max_concurrent_requests: int,
@@ -258,6 +265,7 @@ def get(
         create_file_list=create_file_list,
         sync=sync,
         sync_delete=sync_delete,
+        skip_existing=skip_existing,
         index_parts=index_parts,
         dry_run=dry_run,
         max_concurrent_requests=max_concurrent_requests,

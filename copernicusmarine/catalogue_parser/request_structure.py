@@ -221,6 +221,7 @@ class GetRequest:
     index_parts: bool = False
     direct_download: Optional[list[str]] = None
     dry_run: bool = False
+    skip_existing: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in GetRequest object.

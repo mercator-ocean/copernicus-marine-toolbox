@@ -34,6 +34,7 @@ def get(
     index_parts: bool = False,
     sync: bool = False,
     sync_delete: bool = False,
+    skip_existing: bool = False,
     dry_run: bool = False,
     max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
@@ -84,6 +85,8 @@ def get(
         Option to synchronize the local directory with the remote directory. See the documentation for more details.
     sync_delete : bool, optional
         Option to delete local files that are not present on the remote server while applying sync.
+    skip_existing : bool, optional
+        Option to skip files that already exist in the output directory.
     dry_run : bool, optional
         If True, runs query without downloading data.
     max_concurrent_requests : int, optional
@@ -125,6 +128,7 @@ def get(
         index_parts=index_parts,
         sync=sync,
         sync_delete=sync_delete,
+        skip_existing=skip_existing,
         dry_run=dry_run,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
