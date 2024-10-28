@@ -15,7 +15,22 @@ After any implementation:
 
 - run tests
 
-## Run tests on Linux
+## Release Process
+
+The Copernicus Marine toolbox might maintain several versions at the same time. To this end, we create a branch that will be used for bug fixes and maintenance of the older versions: `release/*`. This branch is created when the development of the new major version starts.
+
+Please be aware when you do a fork and create a pull request which of the branch is relevant: `main` or any of `release/*`.
+
+## Tests
+
+Note that some tests use snapshots (see [syrupy](https://github.com/syrupy-project/syrupy)) hence if your code has an influence on something tracked by snapshots you will need to update the snapshots using something like:
+
+``` bash
+# replace with the test you need
+pytest --snapshot-update tests/test_help_command_interface.py
+```
+
+### Run tests on Linux
 
 Create a test conda environment:
 
@@ -42,9 +57,7 @@ Finally run the tests:
 make run-tests
 ```
 
-> **_NOTE:_**  `test_login_is_prompt_when_configuration_file_doest_not_exist`  will fail.
-
-## Run tests on Mac/OS
+### Run tests on Mac/OS
 
 Create a test conda environment:
 
@@ -76,8 +89,6 @@ Finally run the tests:
 ```sh
 pytest tests --log-level -vv tests --durations=0 --log-level=info
 ```
-
-> **_NOTE:_**  `test_login_is_prompt_when_configuration_file_doest_not_exist`  will fail.
 
 ## Publish new release version
 

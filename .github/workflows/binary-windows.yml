@@ -4,10 +4,14 @@ on:
   push:
     branches:
        - main
-       - 'pre-releases/**'
+       - "release/**"
+       - "pre-releases/**"
+    branches-ignore:
+       - "release/v1"
 
 jobs:
   build:
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
     runs-on: windows-latest
     timeout-minutes: 20
 
