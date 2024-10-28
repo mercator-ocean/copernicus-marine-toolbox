@@ -40,7 +40,6 @@ jobs:
       shell: micromamba-shell {0}
       run: |
         make run-using-pyinstaller-${{ matrix.os }}
-        echo ${{ matrix.os }}[0:6]
 
     - name: Set VERSION environment variable
       id: set-version
