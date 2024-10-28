@@ -68,6 +68,18 @@ class TestDescribe:
         self.then_stdout_can_be_load_as_json()
         self.then_only_the_queried_fields_are_returned()
 
+    def test_describe_exclude_datasets(self):
+        product_id = "GLOBAL_MULTIYEAR_PHY_001_030"
+        self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
+            product_id, None, exclude="services"
+        )
+        json_result = loads(self.output.stdout.decode("utf-8"))
+        for product in json_result["products"]:
+            for dataset in product["datasets"]:
+                for version in dataset["versions"]:
+                    for part in version["parts"]:
+                        assert "services" not in part
+
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
         self.output = execute_in_terminal(command, timeout_second=30)
@@ -413,13 +425,15 @@ class TestDescribe:
         assert seen_digital_object_identifier
 
     def when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
-        self, product_id, dataset_id
+        self, product_id, dataset_id, exclude=None
     ):
         command = ["copernicusmarine", "describe", "--returned-fields", "all"]
         if product_id:
             command.extend(["--product-id", product_id])
         if dataset_id:
             command.extend(["--dataset-id", dataset_id])
+        if exclude:
+            command.extend(["--returned-fields-exclude", exclude])
         self.output = execute_in_terminal(command, timeout_second=10)
 
     def then_I_have_only_one_product(self):
