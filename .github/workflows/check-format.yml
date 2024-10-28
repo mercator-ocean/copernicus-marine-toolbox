@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-      - copernicusmarine-toolbox-v2
+      - "release/**"
+      - "pre-releases/**"
   pull_request:
 
 jobs:

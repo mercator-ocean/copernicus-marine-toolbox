@@ -4,7 +4,7 @@ on:
   pull_request_target:
     branches:
       - "main"
-      - "copernicusmarine-toolbox-v2"
+      - "release/**"
       - "pre-releases/**"
 
 
