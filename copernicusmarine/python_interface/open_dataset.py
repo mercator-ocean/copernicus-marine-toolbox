@@ -7,6 +7,7 @@ import xarray
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
+    deprecated_python_option,
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
@@ -14,7 +15,6 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     VerticalDimensionOutput,
 )
-from copernicusmarine.core_functions.utils import deprecated_python_option
 from copernicusmarine.download_functions.download_arco_series import (
     open_dataset_from_arco_series,
 )
@@ -100,7 +100,7 @@ def open_dataset(
     end_datetime : Union[datetime, str], optional
         The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
 
