@@ -58,6 +58,6 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           ARCH="linux"
         elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
-          ARCH="linux-20.04"
+          ARCH="linux-20-04"
         fi
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
