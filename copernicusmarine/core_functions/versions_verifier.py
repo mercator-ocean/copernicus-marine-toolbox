@@ -2,13 +2,13 @@ import logging
 
 import semver
 
-from copernicusmarine import __version__ as client_version
 from copernicusmarine.core_functions.sessions import (
     get_configured_requests_session,
 )
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
 )
+from copernicusmarine.versioner import __version__ as toolbox_version
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -44,22 +44,22 @@ class VersionVerifier:
         ]:
             required_version = marine_data_store_versions[service]
             try:
-                if not semver.Version.parse(client_version).match(
+                if not semver.Version.parse(toolbox_version).match(
                     required_version
                 ):
                     logger.debug(
-                        f"Client version {client_version} is not compatible with "
+                        f"Client version {toolbox_version} is not compatible with "
                         f"{service}. Service needs version {required_version}."
                     )
                     logger.error(
-                        f"Client version {client_version} is not "
+                        f"Client version {toolbox_version} is not "
                         f"compatible with current backend service. "
                         f"Please update to the latest client version."
                     )
             except ValueError:
                 logger.warning(
                     f"Using a pre-release or a non-official version "
-                    f"of the client. Client version: {client_version}"
+                    f"of the client. Client version: {toolbox_version}"
                 )
                 return
 
