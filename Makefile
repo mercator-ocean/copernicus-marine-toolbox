@@ -115,12 +115,12 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:latest
 
 build-and-prepare-for-binary:
- 	python -m pip install --upgrade pip
- 	pip install pyinstaller
- 	pip install -e .
- 	pip install poetry
- 	pip install distributed
- 	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
+	python -m pip install --upgrade pip
+	pip install pyinstaller
+	pip install -e .
+	pip install poetry
+	pip install distributed
+	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
 update-snapshots-tests:
 	pytest --snapshot-update tests/test_command_line_interface.py::TestCommandLineInterface::test_describe_including_datasets
