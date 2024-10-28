@@ -68,3 +68,11 @@ class CustomClickOptionsCommand(click.Command):
             option.process = make_process(option)
 
         return parser
+
+    def format_epilog(self, ctx, formatter):
+        if self.epilog:
+            formatter.write_paragraph()
+            for line in self.epilog.split("\n"):
+                if ".. code-block::" in line:
+                    continue
+                formatter.write(line + "\n")
