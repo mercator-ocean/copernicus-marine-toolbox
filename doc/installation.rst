@@ -122,4 +122,8 @@ And from a Windows os (cmd):
 
 .. note::
 
-    For the **Ubuntu** binaries you need a version of Glibc higher than the one that the binary has. Use older **Ubuntu** versions to access a lower version of said library.
+    For the **Linux** binaries you need a version of Glibc higher than the one that the binary has. Use older **Linux** versions to access a lower version of said library.
+
+.. note::
+
+    The **Linux** binaries are tested with Ubuntu machines.
