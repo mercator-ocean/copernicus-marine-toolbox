@@ -70,6 +70,7 @@ run-using-pyinstaller-macos-latest: run-using-pyinstaller-macos
 
 run-using-pyinstaller-linux:
 	pip install -e .
+	ldd --version
 	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --icon=toolbox_icon.png --name copernicusmarine_${DISTRIBUTION}.cli --add-data="/home/runner/micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed"  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}.cli
 
