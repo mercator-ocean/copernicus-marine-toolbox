@@ -60,8 +60,8 @@ jobs:
         elif [ "${{ matrix.os }}" == "macos-13" ]; then
           ARCH="macos-x86_64"
         elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
-          ARCH="linux-22.04"
+          ARCH="linux-glibc-2.35"
         elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
-          ARCH="linux-20.04"
+          ARCH="linux-glibc-2.31"
         fi
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
