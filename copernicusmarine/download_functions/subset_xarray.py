@@ -8,7 +8,7 @@ import xarray
 from pendulum import DateTime
 
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineDatasetServiceType,
+    CopernicusMarineServiceNames,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndSpaceSubset,
@@ -566,23 +566,23 @@ def check_dataset_subset_bounds(
     username: str,
     password: str,
     dataset_url: str,
-    service_type: CopernicusMarineDatasetServiceType,
+    service_name: CopernicusMarineServiceNames,
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_valid_date: Optional[Union[str, int, float]],
 ) -> None:
-    if service_type in [
-        CopernicusMarineDatasetServiceType.GEOSERIES,
-        CopernicusMarineDatasetServiceType.TIMESERIES,
-        CopernicusMarineDatasetServiceType.OMI_ARCO,
-        CopernicusMarineDatasetServiceType.STATIC_ARCO,
+    if service_name in [
+        CopernicusMarineServiceNames.GEOSERIES,
+        CopernicusMarineServiceNames.TIMESERIES,
+        CopernicusMarineServiceNames.OMI_ARCO,
+        CopernicusMarineServiceNames.STATIC_ARCO,
     ]:
         dataset = custom_open_zarr.open_zarr(
             dataset_url, copernicus_marine_username=username
         )
         dataset_coordinates = dataset.coords
     else:
-        raise ServiceNotSupported(service_type)
+        raise ServiceNotSupported(service_name)
     for coordinate_label in COORDINATES_LABEL["latitude"]:
         if coordinate_label in dataset.sizes:
             latitudes = dataset_coordinates[coordinate_label].values

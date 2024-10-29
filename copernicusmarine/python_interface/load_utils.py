@@ -4,7 +4,7 @@ import pandas
 import xarray
 
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineDatasetServiceType,
+    CopernicusMarineServiceNames,
 )
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.credentials_utils import (
@@ -30,7 +30,7 @@ def load_data_object_from_load_request(
         dataset_id=load_request.dataset_id,
         force_dataset_version_label=load_request.force_dataset_version,
         force_dataset_part_label=load_request.force_dataset_part,
-        force_service_type_string=load_request.force_service,
+        force_service_name_or_short_name=load_request.force_service,
         command_type=CommandType.LOAD,
         dataset_subset=load_request.get_time_and_space_subset(),
     )
@@ -44,16 +44,16 @@ def load_data_object_from_load_request(
         username=username,
         password=password,
         dataset_url=load_request.dataset_url,
-        service_type=retrieval_service.service_type,
+        service_name=retrieval_service.service_name,
         dataset_subset=load_request.get_time_and_space_subset(),
         coordinates_selection_method=load_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
     )
-    if retrieval_service.service_type in [
-        CopernicusMarineDatasetServiceType.GEOSERIES,
-        CopernicusMarineDatasetServiceType.TIMESERIES,
-        CopernicusMarineDatasetServiceType.OMI_ARCO,
-        CopernicusMarineDatasetServiceType.STATIC_ARCO,
+    if retrieval_service.service_name in [
+        CopernicusMarineServiceNames.GEOSERIES,
+        CopernicusMarineServiceNames.TIMESERIES,
+        CopernicusMarineServiceNames.OMI_ARCO,
+        CopernicusMarineServiceNames.STATIC_ARCO,
     ]:
         if retrieval_service.dataset_valid_start_date:
             parsed_start_datetime = timestamp_or_datestring_to_datetime(
@@ -79,5 +79,5 @@ def load_data_object_from_load_request(
             chunks=None,
         )
     else:
-        raise ServiceNotSupported(retrieval_service.service_type)
+        raise ServiceNotSupported(retrieval_service.service_name)
     return dataset

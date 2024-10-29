@@ -1,11 +1,9 @@
 import re
-
-# TODO: change to pydantic
-from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Type, TypeVar, Union
 
 import pystac
+from pydantic import BaseModel, ConfigDict
 
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_debug,
@@ -15,14 +13,15 @@ from copernicusmarine.core_functions.utils import (
     next_or_raise_exception,
 )
 
-# Output Types definitions
-
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
 
 
-# Service types
-class _ServiceName(str, Enum):
+class CopernicusMarineServiceNames(str, Enum):
+    """
+    Services parsed by the Copernicus Marine toolbox.
+    """
+
     GEOSERIES = "arco-geo-series"
     TIMESERIES = "arco-time-series"
     FILES = "original-files"
@@ -31,7 +30,12 @@ class _ServiceName(str, Enum):
     STATIC_ARCO = "static-arco"
 
 
-class _ServiceShortName(str, Enum):
+class CoperniusMarineServiceShortNames(str, Enum):
+    """
+    Short names or the services parsed by the Copernicus Marine toolbox.
+    Also accepted when a service is requested.
+    """
+
     GEOSERIES = "geoseries"
     TIMESERIES = "timeseries"
     FILES = "files"
@@ -40,40 +44,23 @@ class _ServiceShortName(str, Enum):
     STATIC_ARCO = "static-arco"
 
 
-@dataclass(frozen=True)
-class _Service:
-    service_name: _ServiceName
-    short_name: _ServiceShortName
-
-    def aliases(self) -> list[str]:
-        return (
-            [self.service_name.value, self.short_name.value]
-            if self.short_name.value != self.service_name.value
-            else [self.service_name.value]
-        )
-
-    def to_json_dict(self):
-        return {
-            "service_name": self.service_name.value,
-            "short_name": self.short_name.value,
-        }
-
-
-class CopernicusMarineDatasetServiceType(_Service, Enum):
-    GEOSERIES = _ServiceName.GEOSERIES, _ServiceShortName.GEOSERIES
-    TIMESERIES = (
-        _ServiceName.TIMESERIES,
-        _ServiceShortName.TIMESERIES,
-    )
-    FILES = _ServiceName.FILES, _ServiceShortName.FILES
-    WMTS = _ServiceName.WMTS, _ServiceShortName.WMTS
-    OMI_ARCO = _ServiceName.OMI_ARCO, _ServiceShortName.OMI_ARCO
-    STATIC_ARCO = _ServiceName.STATIC_ARCO, _ServiceShortName.STATIC_ARCO
+def short_name_from_service_name(
+    service_name: CopernicusMarineServiceNames,
+) -> CoperniusMarineServiceShortNames:
+    mapping = {
+        CopernicusMarineServiceNames.GEOSERIES: CoperniusMarineServiceShortNames.GEOSERIES,  # noqa
+        CopernicusMarineServiceNames.TIMESERIES: CoperniusMarineServiceShortNames.TIMESERIES,  # noqa
+        CopernicusMarineServiceNames.FILES: CoperniusMarineServiceShortNames.FILES,  # noqa
+        CopernicusMarineServiceNames.WMTS: CoperniusMarineServiceShortNames.WMTS,  # noqa
+        CopernicusMarineServiceNames.OMI_ARCO: CoperniusMarineServiceShortNames.OMI_ARCO,  # noqa
+        CopernicusMarineServiceNames.STATIC_ARCO: CoperniusMarineServiceShortNames.STATIC_ARCO,  # noqa
+    }
+    return mapping[service_name]
 
 
 def _service_type_from_web_api_string(
     name: str,
-) -> CopernicusMarineDatasetServiceType:
+) -> CopernicusMarineServiceNames:
     class WebApi(Enum):
         GEOSERIES = "timeChunked"
         TIMESERIES = "geoChunked"
@@ -82,13 +69,13 @@ def _service_type_from_web_api_string(
         OMI_ARCO = "omi"
         STATIC_ARCO = "static"
 
-    web_api_mapping = {
-        WebApi.GEOSERIES: CopernicusMarineDatasetServiceType.GEOSERIES,
-        WebApi.TIMESERIES: CopernicusMarineDatasetServiceType.TIMESERIES,
-        WebApi.FILES: CopernicusMarineDatasetServiceType.FILES,
-        WebApi.WMTS: CopernicusMarineDatasetServiceType.WMTS,
-        WebApi.OMI_ARCO: CopernicusMarineDatasetServiceType.OMI_ARCO,
-        WebApi.STATIC_ARCO: CopernicusMarineDatasetServiceType.STATIC_ARCO,
+    web_api_mapping: dict[WebApi, CopernicusMarineServiceNames] = {
+        WebApi.GEOSERIES: CopernicusMarineServiceNames.GEOSERIES,
+        WebApi.TIMESERIES: CopernicusMarineServiceNames.TIMESERIES,
+        WebApi.FILES: CopernicusMarineServiceNames.FILES,
+        WebApi.WMTS: CopernicusMarineServiceNames.WMTS,
+        WebApi.OMI_ARCO: CopernicusMarineServiceNames.OMI_ARCO,
+        WebApi.STATIC_ARCO: CopernicusMarineServiceNames.STATIC_ARCO,
     }
 
     return next_or_raise_exception(
@@ -115,24 +102,43 @@ class ServiceNotHandled(Exception):
 
 # service formats
 class CopernicusMarineServiceFormat(str, Enum):
+    """
+    Format of the data for a service.
+    For example, "arco-geo-series" and "arco-time-series" can be "zarr" or "sqlite"
+    """
+
     ZARR = "zarr"
     SQLITE = "sqlite"
 
 
-@dataclass
-class CopernicusMarineCoordinate:
-    coordinate_id: str
-    units: str
-    minimum_value: Optional[float]
-    maximum_value: Optional[float]
-    step: Optional[float]
-    values: Optional[list[Union[float, int]]]
-    chunking_length: Optional[int]
-    chunk_type: Optional[str]
-    chunk_reference_coordinate: Optional[int]
-    chunk_geometric_factor: Optional[int]
+Coordinate = TypeVar("Coordinate", bound="CopernicusMarineCoordinate")
 
-    Coordinate = TypeVar("Coordinate", bound="CopernicusMarineCoordinate")
+
+class CopernicusMarineCoordinate(BaseModel):
+    """
+    Coordinate for a variable.
+    """
+
+    #: Coordinate id
+    coordinate_id: str
+    #: Coordinate units
+    coordinate_unit: str
+    #: Minimum value of the coordinate
+    minimum_value: Optional[Union[float, str]]
+    #: Maximum value of the coordinate
+    maximum_value: Optional[Union[float, str]]
+    #: Step of the coordinate
+    step: Optional[float]
+    #: Values of the coordinate
+    values: Optional[list[Union[float, int, str]]]
+    #: Chunking length of the coordinate
+    chunking_length: Optional[Union[float, int]]
+    #: Chunk type of the coordinate
+    chunk_type: Optional[str]
+    #: Chunk reference coordinate of the coordinate
+    chunk_reference_coordinate: Optional[Union[float, int]]
+    #: Chunk geometric factor of the coordinate
+    chunk_geometric_factor: Optional[Union[float, int]]
 
     @classmethod
     def from_metadata_item(
@@ -171,7 +177,7 @@ class CopernicusMarineCoordinate:
 
         coordinate = cls(
             coordinate_id=dimension,
-            units=dimension_metadata.get("units") or "",
+            coordinate_unit=dimension_metadata.get("units") or "",
             minimum_value=minimum_value or coordinates_info.get("min"),  # type: ignore
             maximum_value=coordinates_info.get("max"),
             step=coordinates_info.get("step"),
@@ -205,27 +211,41 @@ class CopernicusMarineCoordinate:
         self.coordinate_id = "depth"
         minimum_elevation = self.minimum_value
         maximum_elevation = self.maximum_value
-        if minimum_elevation is not None:
+        if minimum_elevation is not None and isinstance(
+            minimum_elevation, (int, float)
+        ):
             self.maximum_value = -minimum_elevation
         else:
             self.maximum_value = None
-        if maximum_elevation is not None:
+        if maximum_elevation is not None and isinstance(
+            maximum_elevation, (int, float)
+        ):
             self.minimum_value = -maximum_elevation
         else:
             self.minimum_value = None
         if self.values is not None:
-            self.values = [-value for value in self.values]
+            self.values = [-value for value in self.values]  # type: ignore
 
 
-@dataclass
-class CopernicusMarineVariable:
+Variable = TypeVar("Variable", bound="CopernicusMarineVariable")
+
+
+class CopernicusMarineVariable(BaseModel):
+    """
+    Variable of the dataset.
+    Contains the variable metadata and a list of coordinates.
+    """
+
+    #: Short name of the variable
     short_name: str
-    standard_name: str
-    units: str
+    #: Standard name of the variable
+    standard_name: Optional[str]
+    #: Units of the variable
+    units: Optional[str]
+    #: Bounding box of the variable
     bbox: Optional[list[float]]
+    #: List of coordinates of the variable
     coordinates: list[CopernicusMarineCoordinate]
-
-    Variable = TypeVar("Variable", bound="CopernicusMarineVariable")
 
     @classmethod
     def from_metadata_item(
@@ -259,14 +279,31 @@ class CopernicusMarineVariable:
         )
 
 
-@dataclass
-class CopernicusMarineService:
-    service_type: CopernicusMarineDatasetServiceType
-    service_format: Optional[CopernicusMarineServiceFormat]
-    uri: str
-    variables: list[CopernicusMarineVariable]
+Service = TypeVar("Service", bound="CopernicusMarineService")
 
-    Service = TypeVar("Service", bound="CopernicusMarineService")
+
+class CopernicusMarineService(BaseModel):
+    """
+    Service available for a dataset.
+    Contains the service metadata and a list of variables.
+    For original files service, there are no variables.
+    """
+
+    model_config = ConfigDict(use_enum_values=True)
+
+    #: Service name
+    service_name: CopernicusMarineServiceNames
+
+    #: Service short name
+    service_short_name: Optional[CoperniusMarineServiceShortNames]
+
+    #: Service format: format of the service
+    #: (eg:"arco-geo-series" can be "zarr", "sqlite")
+    service_format: Optional[CopernicusMarineServiceFormat]
+    #: Service uri: uri of the service
+    uri: str
+    #: List of variables of the service
+    variables: list[CopernicusMarineVariable]
 
     @classmethod
     def from_metadata_item(
@@ -279,7 +316,12 @@ class CopernicusMarineService:
             service_uri = asset.get_absolute_href()
             if not service_uri:
                 raise ServiceNotHandled(service_name)
-            service_type = _service_type_from_web_api_string(service_name)
+            service_name_parsed = _service_type_from_web_api_string(
+                service_name
+            )
+            service_short_name = short_name_from_service_name(
+                service_name_parsed
+            )
             service_format = None
             admp_in_preparation = metadata_item.properties.get(
                 "admp_in_preparation"
@@ -291,16 +333,15 @@ class CopernicusMarineService:
 
             if not service_uri.endswith("/"):
                 if admp_in_preparation and (
-                    service_type
-                    == CopernicusMarineDatasetServiceType.GEOSERIES
-                    or service_type
-                    == CopernicusMarineDatasetServiceType.TIMESERIES
+                    service_name == CopernicusMarineServiceNames.GEOSERIES
+                    or service_name == CopernicusMarineServiceNames.TIMESERIES
                 ):
                     return None
                 else:
                     bbox = metadata_item.bbox
                     return cls(
-                        service_type=service_type,
+                        service_name=service_name_parsed,
+                        service_short_name=service_short_name,
                         uri=service_uri,
                         variables=[
                             CopernicusMarineVariable.from_metadata_item(
@@ -318,14 +359,23 @@ class CopernicusMarineService:
             return None
 
 
-@dataclass
-class CopernicusMarineVersionPart:
-    name: str
-    services: list[CopernicusMarineService]
-    retired_date: Optional[str]
-    released_date: Optional[str]
+VersionPart = TypeVar("VersionPart", bound="CopernicusMarinePart")
 
-    VersionPart = TypeVar("VersionPart", bound="CopernicusMarineVersionPart")
+
+class CopernicusMarinePart(BaseModel):
+    """
+    Part of a dataset. Datasets can have multiple parts.
+    Each part contains a distinct list of services and distinct data.
+    """
+
+    #: Name of the part
+    name: str
+    #: List of services available for the part
+    services: list[CopernicusMarineService]
+    #: Date when the part will be retired
+    retired_date: Optional[str]
+    #: Date when the part will be/was released
+    released_date: Optional[str]
 
     @classmethod
     def from_metadata_item(
@@ -358,24 +408,28 @@ class CopernicusMarineVersionPart:
             released_date=released_date,
         )
 
-    def get_service_by_service_type(
-        self, service_type: CopernicusMarineDatasetServiceType
-    ):
+    def get_service_by_service_name(
+        self, service_name: CopernicusMarineServiceNames
+    ) -> CopernicusMarineService:
         return next(
             service
             for service in self.services
-            if service.service_type == service_type
+            if service.service_name == service_name
         )
 
 
-@dataclass
-class CopernicusMarineDatasetVersion:
-    label: str
-    parts: list[CopernicusMarineVersionPart]
+class CopernicusMarineVersion(BaseModel):
+    """
+    Version of a dataset. Datasets can have multiple versions.
+    Usually around data releases.
+    """
 
-    def get_part(
-        self, force_part: Optional[str]
-    ) -> CopernicusMarineVersionPart:
+    #: Label of the version (eg: "latest", "202101")
+    label: str
+    #: List of parts of the version
+    parts: list[CopernicusMarinePart]
+
+    def get_part(self, force_part: Optional[str]) -> CopernicusMarinePart:
         wanted_part = force_part or PART_DEFAULT
         for part in self.parts:
             if part.name == wanted_part:
@@ -414,15 +468,22 @@ class CopernicusMarineDatasetVersion:
         return self.parts[0].released_date, self.parts[0].retired_date
 
 
-@dataclass
-class CopernicusMarineProductDataset:
+class CopernicusMarineDataset(BaseModel):
+    """
+    Dataset of a product.
+    Contains the dataset metadata and a list of versions.
+    """
+
+    #: The datasetID
     dataset_id: str
+    #: The dataset name
     dataset_name: str
-    versions: list[CopernicusMarineDatasetVersion]
+    #: List of versions of the dataset
+    versions: list[CopernicusMarineVersion]
 
     def get_version(
         self, force_version: Optional[str]
-    ) -> CopernicusMarineDatasetVersion:
+    ) -> CopernicusMarineVersion:
         wanted_version = force_version or VERSION_DEFAULT
         for version in self.versions:
             if version.label == wanted_version:
@@ -464,7 +525,7 @@ class CopernicusMarineProductDataset:
                 dataset_version,
                 dataset_part,
             ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
-            part = CopernicusMarineVersionPart.from_metadata_item(
+            part = CopernicusMarinePart.from_metadata_item(
                 metadata_item, dataset_part
             )
             if not part:
@@ -476,28 +537,47 @@ class CopernicusMarineProductDataset:
                         break
             else:
                 all_versions.add(dataset_version)
-                version = CopernicusMarineDatasetVersion(
+                version = CopernicusMarineVersion(
                     label=dataset_version, parts=[part]
                 )
                 self.versions.append(version)
 
 
-@dataclass
-class CopernicusMarineProduct:
+class CopernicusMarineProduct(BaseModel):
+    """
+    Product of the catalogue.
+    Contains the product metadata and a list of datasets.
+    """
+
+    #: Title of the product
     title: str
+    #: ProductID
     product_id: str
+    #: Thumbnail url of the product
     thumbnail_url: str
-    description: str
+    #: Description of the product
+    description: Optional[str]
+    #: Digital object identifier of the product
     digital_object_identifier: Optional[str]
+    #: Sources of the product
     sources: list[str]
+    #: Processing level of the product
     processing_level: Optional[str]
+    #: Production center of the product
     production_center: str
+    #: Keywords of the product
     keywords: Optional[list[str]]
-    datasets: list[CopernicusMarineProductDataset]
+    #: List of datasets of the product
+    datasets: list[CopernicusMarineDataset]
 
 
-@dataclass
-class CopernicusMarineCatalogue:
+class CopernicusMarineCatalogue(BaseModel):
+    """
+    Catalogue of the Copernicus Marine service.
+    You can find here the products of the catalogue and their metadata as the response of the describe command/function.
+    """  # noqa
+
+    #: List of products in the catalogue
     products: list[CopernicusMarineProduct]
 
     def filter_only_official_versions_and_parts(self):
@@ -537,7 +617,7 @@ class DatasetVersionPartNotFound(Exception):
     If yes, please contact user support.
     """
 
-    def __init__(self, version: CopernicusMarineDatasetVersion):
+    def __init__(self, version: CopernicusMarineVersion):
         message = f"No part found for version {version.label}"
         super().__init__(message)
 
@@ -552,7 +632,7 @@ class DatasetVersionNotFound(Exception):
     If yes, please contact user support.
     """
 
-    def __init__(self, dataset: CopernicusMarineProductDataset):
+    def __init__(self, dataset: CopernicusMarineDataset):
         message = f"No version found for dataset {dataset.dataset_id}"
         super().__init__(message)
 
@@ -575,6 +655,24 @@ class DatasetNotFound(Exception):
         message = (
             f"{dataset_id} "
             f"Please check that the dataset exists and "
+            f"the input datasetID is correct."
+        )
+        super().__init__(message)
+
+
+class DatasetIsNotPartOfTheProduct(Exception):
+    """
+    Exception raised when the dataset is not part of the product.
+
+    If you request a datasetID and a productID
+    at the same time with the describe command,
+    please verify that the dataset is part of the product.
+    """
+
+    def __init__(self, dataset_id: str, product_id: str):
+        message = (
+            f"{dataset_id} not part of {product_id} "
+            f"Please check that the dataset is part of the product and "
             f"the input datasetID is correct."
         )
         super().__init__(message)

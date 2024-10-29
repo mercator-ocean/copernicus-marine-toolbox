@@ -4,9 +4,8 @@ import logging
 import click
 
 from copernicusmarine.core_functions.deprecated_options import (
-    DEPRECATED_OPTIONS,
+    log_deprecated_message,
 )
-from copernicusmarine.core_functions.utils import log_deprecated_message
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -26,15 +25,16 @@ class CustomClickOptionsCommand(click.Command):
         options = set(parser._short_opt.values())
         options |= set(parser._long_opt.values())
 
-        # get name of the command
-        command_name = ctx.command.name
-
         for option in options:
+            if not isinstance(option.obj, DeprecatedClickOption):
+                continue
 
             def make_process(an_option):
                 orig_process = an_option.process
-                deprecated = getattr(an_option.obj, "deprecated", [])
-                preferred = getattr(an_option.obj, "preferred", [])
+                deprecated = getattr(an_option.obj, "deprecated", None)
+                preferred = getattr(an_option.obj, "preferred", None)
+                msg = "Expected `deprecated` value for `{}`"
+                assert deprecated is not None, msg.format(an_option.obj.name)
 
                 def process(value, state):
                     frame = inspect.currentframe()
@@ -42,25 +42,9 @@ class CustomClickOptionsCommand(click.Command):
                         opt = frame.f_back.f_locals.get("opt")
                     finally:
                         del frame
-                    old_alias = opt.replace("--", "").replace("-", "_")  # type: ignore
-                    if (
-                        opt in deprecated
-                        or old_alias
-                        in DEPRECATED_OPTIONS.deprecated_options_by_old_names
-                    ):
-                        alias_info = (
-                            DEPRECATED_OPTIONS.deprecated_options_by_old_names[
-                                old_alias
-                            ]
-                        )
-                        if command_name in alias_info.targeted_functions:
-                            log_deprecated_message(
-                                opt,
-                                preferred,
-                                alias_info.deleted_for_v2,
-                                alias_info.deprecated_for_v2,
-                                alias_info.only_for_v2,
-                            )
+
+                    if opt in deprecated:
+                        log_deprecated_message(opt, preferred)
                     return orig_process(value, state)
 
                 return process

@@ -82,24 +82,41 @@ DESCRIBE: dict[str, str] = {
     "DESCRIBE_RESPONSE_HELP": (
         "JSON\n A dictionary containing the retrieved metadata information."
     ),
-    "MAX_CONCURRENT_REQUESTS_HELP": (
-        "Maximum number of concurrent requests (>=1). Default 15. The command uses "
-        "a thread pool executor to manage concurrent requests."
-    ),
-    "INCLUDE_DESCRIPTION_HELP": "Include product description in output.",
-    "INCLUDE_DATASETS_HELP": "Include product dataset details in output.",
-    "INCLUDE_KEYWORDS_HELP": "Include product keyword details in output.",
+    "INCLUDE_DESCRIPTION_HELP": "Deprecated. Include product description in output.",
+    "INCLUDE_DATASETS_HELP": "Deprecated. Include product dataset details in output.",
+    "INCLUDE_KEYWORDS_HELP": "Deprecated. Include product keyword details in output.",
     "INCLUDE_VERSIONS_HELP": (
         "Include dataset versions in output. By default, shows only the default "
         "version."
     ),
     "INCLUDE_ALL_HELP": (
-        "Include all the possible data in output: description, datasets, keywords, "
+        "Deprecated. Include all the possible data in output: "
+        "description, datasets, keywords, "
         "and versions."
+    ),
+    "RETURNED_FIELDS_HELP": (
+        "Option to specify the fields to return in the output. "
+        "The fields are separated by a comma. You can use 'all' to return all fields."
+    ),
+    "RETURNED_FIELDS_EXCLUDE_HELP": (
+        "Option to specify the fields to exclude from the output. "
+        "The fields are separated by a comma."
     ),
     "CONTAINS_HELP": (
         "Filter catalogue output. Returns products with attributes matching a string "
         "token."
+    ),
+    "PRODUCT_ID_HELP": (
+        "Force the productID to be used for the describe command. Will not parse the "
+        "whole catalogue, but only the product with the given productID."
+    ),
+    "DATASET_ID_HELP": (
+        "Force the datasetID to be used for the describe command. Will not "
+        "parse the whole catalogue, but only the dataset with the given datasetID."
+    ),
+    "MAX_CONCURRENT_REQUESTS_HELP": (
+        "Maximum number of concurrent requests (>=1). Default 15. The command uses "
+        "a thread pool executor to manage concurrent requests."
     ),
 }
 
@@ -115,7 +132,7 @@ SUBSET: dict[str, str] = {
     "SERVICE_HELP": (
         f"Force download through one of the available services using the service name "
         f"among {CommandType.SUBSET.service_names()} or "
-        f"its short name among {CommandType.SUBSET.service_names()}."
+        f"its short name among {CommandType.SUBSET.short_names_services()}."
     ),
     "VARIABLES_HELP": "Specify dataset variable. Can be used multiple times.",
     "MINIMUM_LONGITUDE_HELP": (
@@ -243,4 +260,4 @@ GET: dict[str, str] = {
 SUBSET.update(SHARED)
 GET.update(SHARED)
 LOGIN.update(SHARED)
-DESCRIBE.update(SHARED)
+DESCRIBE.update({k: v for k, v in SHARED.items() if k not in DESCRIBE})

@@ -1,5 +1,4 @@
 import concurrent.futures
-import functools
 import logging
 import pathlib
 import re
@@ -7,7 +6,6 @@ from importlib.metadata import version
 from typing import (
     Any,
     Callable,
-    Iterable,
     Iterator,
     Literal,
     Optional,
@@ -27,9 +25,6 @@ from requests import PreparedRequest
 from tqdm import tqdm
 
 from copernicusmarine import __version__ as copernicusmarine_version
-from copernicusmarine.core_functions.deprecated_options import (
-    DeprecatedOptionMapping,
-)
 from copernicusmarine.core_functions.exceptions import WrongDatetimeFormat
 
 logger = logging.getLogger("copernicusmarine")
@@ -69,12 +64,6 @@ def get_unique_filename(
 
 _T = TypeVar("_T")
 _S = TypeVar("_S")
-
-
-def map_reject_none(
-    function: Callable[[_S], Optional[_T]], iterable: Iterable[_S]
-) -> Iterable[_T]:
-    return (element for element in map(function, iterable) if element)
 
 
 def next_or_raise_exception(
@@ -219,93 +208,3 @@ def create_custom_query_function(username: Optional[str]) -> Callable:
         )
 
     return _add_custom_query_param
-
-
-# Deprecation utils
-def get_deprecated_message(
-    old_value,
-    preferred_value,
-    deleted_for_v2: bool = False,
-    deprecated_for_v2: bool = False,
-    only_for_v2: bool = False,
-):
-    message = ""
-    if only_for_v2:
-        message = f"Deprecation warning for option '{old_value}'. "
-    else:
-        message = f"'{old_value}' has been deprecated. "
-    if old_value != preferred_value and not only_for_v2:
-        message += f"Use '{preferred_value}' instead. "
-    if deleted_for_v2:
-        message += (
-            "This option will no longer be "
-            + "available in copernicusmarine>=2.0.0. "
-            + "Please refer to the documentation when the new major "
-            + "version is released for more information."
-        )
-    if deprecated_for_v2:
-        message += (
-            "This option will be deprecated in copernicusmarine>=2.0.0 i.e. "
-            + "it will not break but it might have an unexpected effect."
-        )
-    return message
-
-
-def log_deprecated_message(
-    old_value,
-    preferred_value,
-    deleted_for_v2: bool,
-    deprecated_for_v2: bool,
-    only_for_v2: bool,
-):
-    logger.warning(
-        get_deprecated_message(
-            old_value,
-            preferred_value,
-            deleted_for_v2=deleted_for_v2,
-            deprecated_for_v2=deprecated_for_v2,
-            only_for_v2=only_for_v2,
-        )
-    )
-
-
-def raise_both_old_and_new_value_error(old_value, new_value):
-    raise TypeError(
-        f"Received both {old_value} and {new_value} as arguments! "
-        f"{get_deprecated_message(old_value, new_value)}"
-    )
-
-
-def deprecated_python_option(
-    deprecated_option: DeprecatedOptionMapping,
-) -> Callable:
-    def deco(f: Callable):
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            rename_kwargs(f.__name__, kwargs, deprecated_option)
-            return f(*args, **kwargs)
-
-        return wrapper
-
-    return deco
-
-
-def rename_kwargs(
-    func_name: str, kwargs: dict[str, Any], aliases: DeprecatedOptionMapping
-):
-    for old, alias_info in aliases.deprecated_options_by_old_names.items():
-        if func_name not in alias_info.targeted_functions:
-            continue
-        new = alias_info.new_name
-        if old in kwargs:
-            if new in kwargs and old != new:
-                raise_both_old_and_new_value_error(old, new)
-            log_deprecated_message(
-                old,
-                new,
-                alias_info.deleted_for_v2,
-                alias_info.deprecated_for_v2,
-                alias_info.only_for_v2,
-            )
-            if alias_info.replace:
-                kwargs[new] = kwargs.pop(old)
