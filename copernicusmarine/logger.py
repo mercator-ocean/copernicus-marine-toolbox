@@ -1,3 +1,7 @@
+import logging
+import logging.config
+import time
+
 logging_configuration_dict = {
     "disable_existing_loggers": False,
     "formatters": {
@@ -34,3 +38,6 @@ logging_configuration_dict = {
     },
     "version": 1,
 }
+
+logging.config.dictConfig(logging_configuration_dict)
+logging.Formatter.converter = time.gmtime
