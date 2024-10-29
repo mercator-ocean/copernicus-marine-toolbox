@@ -133,7 +133,7 @@ def download_dataset(
         filepath=output_path, overwrite_option=overwrite_output_data
     )
     response = ResponseSubset(
-        output=output_path,
+        file_path=output_path,
         output_directory=output_directory,
         filename=output_path.name,
         file_size=final_result_size_estimation,

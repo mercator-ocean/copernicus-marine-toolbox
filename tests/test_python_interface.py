@@ -75,7 +75,7 @@ class TestPythonInterface:
         )
 
         assert subset_result is not None
-        assert subset_result.output.exists()
+        assert subset_result.file_path.exists()
 
     def test_open_dataset(self):
         dataset = open_dataset(

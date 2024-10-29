@@ -319,6 +319,29 @@ class TestCommandLineInterface:
             not in self.output.stderr
         )
 
+    def test_get_by_default_returns_status_message(self, tmp_path):
+        filter = "*_200[123]*.nc"
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--filter",
+            f"{filter}",
+            "--force-download",
+            "--output-directory",
+            f"{tmp_path}",
+        ]
+
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout)
+        assert returned_value["status"]
+        assert returned_value["message"]
+        assert "files" not in returned_value
+        assert "total_size" not in returned_value
+
     def test_get_download_with_dry_run_option(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
@@ -333,17 +356,52 @@ class TestCommandLineInterface:
         ]
 
         self.output = execute_in_terminal(command)
-        # weirdly add \n at the end of the output
-        returned_value = loads(self.output.stdout[:-1])
+        returned_value = loads(self.output.stdout)
         assert self.output.returncode == 0
         assert len(returned_value["files"]) != 0
+        assert returned_value["total_size"]
+        assert returned_value["status"]
+        assert returned_value["message"]
         for get_file in returned_value["files"]:
-            assert get_file["output"] is not None
-            assert get_file["size"] is not None
-            assert get_file["url"] is not None
-            assert get_file["last_modified"] is not None
-            assert str(tmp_path) in get_file["output"]
+            assert get_file["s3_url"] is not None
+            assert get_file["https_url"] is not None
+            assert get_file["file_size"] is not None
+            assert get_file["last_modified_datetime"] is not None
+            assert get_file["etag"] is not None
+            assert get_file["file_format"] is not None
+            assert get_file["output_directory"] is not None
+            assert get_file["filename"] is not None
+            assert get_file["file_path"] is not None
+            assert str(tmp_path) in get_file["file_path"]
             assert not os.path.exists(get_file["output"])
+
+    def test_get_can_choose_returned_fields(self, tmp_path):
+        filter = "*_200[123]*.nc"
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--filter",
+            f"{filter}",
+            "--force-download",
+            "--output-directory",
+            f"{tmp_path}",
+            "-r",
+            "https_url",
+        ]
+
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout)
+        assert "status" not in returned_value
+        assert "message" not in returned_value
+        assert "files" in returned_value
+        for get_file in returned_value["files"]:
+            assert "s3_url" not in get_file
+            assert "https_url" in get_file
+            assert "https://" in get_file["https_url"]
 
     def test_subset_with_dry_run_option(self, tmp_path):
         command = [
@@ -364,9 +422,60 @@ class TestCommandLineInterface:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        returned_value = loads(self.output.stdout[:-1])
-        assert str(tmp_path) in returned_value["output"]
-        assert not os.path.exists(returned_value["output"])
+        returned_value = loads(self.output.stdout)
+        assert str(tmp_path) in returned_value["file_path"]
+        assert not os.path.exists(returned_value["file_path"])
+
+    def test_subset_by_default_returns_status_message(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            "-9.9",
+            "--maximum-longitude",
+            "-9.6",
+            "--force-download",
+            "-o",
+            f"{tmp_path}",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout)
+        assert returned_value["status"]
+        assert returned_value["message"]
+        assert "file_path" not in returned_value
+        assert "coordinates_extent" not in returned_value
+
+    def test_subset_can_choose_returned_fields(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            "-9.9",
+            "--maximum-longitude",
+            "-9.6",
+            "--force-download",
+            "-o",
+            f"{tmp_path}",
+            "--dry-run",
+            "-r",
+            "file_path",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout)
+        assert "status" not in returned_value
+        assert "message" not in returned_value
+        assert "file_path" in returned_value
+        assert "coordinates_extent" not in returned_value
 
     def test_subset_output_file_as_netcdf(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"

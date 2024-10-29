@@ -178,7 +178,7 @@ def cli_get() -> None:
     help=documentation_utils.GET["DRY_RUN_HELP"],
 )
 @click.option(
-    "--return-query-metadata",
+    "--returned-query-metadata",
     "-r",
     type=str,
     default=None,
@@ -227,7 +227,7 @@ def get(
     sync_delete: bool,
     index_parts: bool,
     dry_run: bool,
-    return_query_metadata: Optional[str],
+    returned_query_metadata: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
@@ -275,16 +275,15 @@ def get(
         staging=staging,
     )
 
-    if return_query_metadata:
-        fields_to_include = set(return_query_metadata.split(","))
+    if returned_query_metadata:
+        fields_to_include = set(returned_query_metadata.split(","))
     elif dry_run:
         fields_to_include = {"all"}
     else:
         fields_to_include = {"status", "message"}
-
     if "all" in fields_to_include:
         included_fields = None
-    if "none" in fields_to_include:
+    elif "none" in fields_to_include:
         included_fields = set()
     else:
         query_builder = QueryBuilder(set(fields_to_include))

@@ -41,6 +41,11 @@ DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
 
 
 class StatusCode(str, Enum):
+    """
+    Enumeration of the possible of a request.
+    Only concerns ``get`` and ``subset`` functions.
+    """
+
     SUCCESS = "SUCCESS"
     DRY_RUN = "DRY_RUN"
     ERROR = "ERROR"
@@ -49,6 +54,11 @@ class StatusCode(str, Enum):
 
 
 class StatusMessage(str, Enum):
+    """
+    Enumeration of the possible messages of a request.
+    Only concerns ``get`` and ``subset`` functions.
+    """
+
     SUCCESS = "The request was successful."
     DRY_RUN = "The request was successful but no data was transferred."
     ERROR = "An error occurred during the request."
@@ -129,7 +139,7 @@ class ResponseSubset(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
     #: Path to the result file.
-    output: pathlib.Path
+    file_path: pathlib.Path
     #: Output directory where the file stored.
     output_directory: pathlib.Path
     #: File name.
