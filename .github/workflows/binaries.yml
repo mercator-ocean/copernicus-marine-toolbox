@@ -12,11 +12,9 @@ on:
     branches:
        - main
        - 'pre-releases/**'
-       - copernicusmarine-toolbox-v2
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
     strategy:
       fail-fast: false
       matrix:
