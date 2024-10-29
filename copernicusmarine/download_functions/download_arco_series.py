@@ -12,6 +12,8 @@ from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     ResponseSubset,
+    StatusCode,
+    StatusMessage,
 )
 from copernicusmarine.core_functions.utils import (
     FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
@@ -132,12 +134,18 @@ def download_dataset(
     )
     response = ResponseSubset(
         output=output_path,
-        size=final_result_size_estimation,
-        data_needed=data_needed_approximation,
+        output_directory=output_directory,
+        filename=output_path.name,
+        file_size=final_result_size_estimation,
+        data_transfer_size=data_needed_approximation,
         coordinates_extent=get_dataset_coordinates_extent(dataset),
+        status=StatusCode.SUCCESS,
+        message=StatusMessage.SUCCESS,
     )
 
     if dry_run:
+        response.status = StatusCode.DRY_RUN
+        response.message = StatusMessage.DRY_RUN
         return response
 
     logger.info("Writing to local storage. Please wait...")

@@ -53,7 +53,7 @@ def _build_filename_from_dataset(
     dataset_id: str,
     file_format: FileFormat,
 ) -> str:
-    dataset_variables = "-".join(list(dataset.keys()))
+    dataset_variables = "-".join([key for key in dataset.keys()])
     variables = (
         "multi-vars"
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
@@ -196,25 +196,30 @@ def get_dataset_coordinates_extent(
         longitude=GeographicalExtent(
             minimum=_get_min_coordinate(dataset, "longitude"),
             maximum=_get_max_coordinate(dataset, "longitude"),
+            unit=dataset.longitude.attrs.get("units"),
         ),
         latitude=GeographicalExtent(
             minimum=_get_min_coordinate(dataset, "latitude"),
             maximum=_get_max_coordinate(dataset, "latitude"),
+            unit=dataset.latitude.attrs.get("units"),
         ),
         time=TimeExtent(
             minimum=minimum_time,
             maximum=maximum_time,
+            unit="iso8601",
         ),
     )
     if "depth" in dataset.sizes:
         coordinates_extent.depth = GeographicalExtent(
             minimum=_get_min_coordinate(dataset, "depth"),
             maximum=_get_max_coordinate(dataset, "depth"),
+            unit=dataset.depth.attrs.get("units"),
         )
     elif "elevation" in dataset.sizes:
         coordinates_extent.elevation = GeographicalExtent(
             minimum=_get_min_coordinate(dataset, "depth"),
             maximum=_get_max_coordinate(dataset, "depth"),
+            unit=dataset.depth.attrs.get("units"),
         )
     return coordinates_extent
 

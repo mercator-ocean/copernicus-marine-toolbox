@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import click
 
+from copernicusmarine.catalogue_parser.fields_query_builder import QueryBuilder
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -26,6 +27,7 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_VERTICAL_DIMENSION_OUTPUTS,
     CoordinatesSelectionMethod,
     FileFormat,
+    ResponseSubset,
     VerticalDimensionOutput,
 )
 from copernicusmarine.core_functions.subset import (
@@ -225,6 +227,13 @@ def cli_subset() -> None:
     default=False,
     help=documentation_utils.SUBSET["DRY_RUN_HELP"],
 )
+@click.option(
+    "--return-query-metadata",
+    "-r",
+    type=str,
+    default=None,
+    help=documentation_utils.GET["RETURN_QUERY_METADATA_HELP"],
+)
 @tqdm_disable_option
 @click.option(
     "--log-level",
@@ -286,6 +295,7 @@ def subset(
     force_download: bool,
     overwrite_output_data: bool,
     dry_run: bool,
+    return_query_metadata: Optional[str],
     disable_progress_bar: bool,
     log_level: str,
     staging: bool = False,
@@ -340,4 +350,28 @@ def subset(
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
     )
-    blank_logger.info(response.model_dump_json(indent=2))
+    if return_query_metadata:
+        fields_to_include = set(return_query_metadata.split(","))
+    elif dry_run:
+        fields_to_include = {"all"}
+    else:
+        fields_to_include = {"status", "message"}
+
+    if "all" in fields_to_include:
+        included_fields = None
+    if "none" in fields_to_include:
+        included_fields = set()
+    else:
+        query_builder = QueryBuilder(set(fields_to_include))
+        included_fields = query_builder.build_query(ResponseSubset)
+
+    logger.info(included_fields)
+
+    blank_logger.info(
+        response.model_dump_json(
+            indent=2,
+            include=included_fields,
+            exclude_none=True,
+            exclude_unset=True,
+        )
+    )
