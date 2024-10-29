@@ -122,7 +122,7 @@ And from a Windows os (cmd):
 
 .. note::
 
-    For the **Linux** binaries you need a version of Glibc higher than the one that the binary has. Use older **Linux** versions to access a lower version of said library.
+    For the **Linux** binaries you need a version of Glibc higher than the one the binary has. To check your version of Glibc, use ``ldd --version`` in your terminal.
 
 .. note::
 
