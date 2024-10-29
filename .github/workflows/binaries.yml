@@ -6,8 +6,6 @@ on:
        - "main"
        - "release/**"
        - "pre-releases/**"
-    branches-ignore:
-       - "release/v1"
   pull_request:
     branches:
        - main
