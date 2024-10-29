@@ -373,7 +373,7 @@ class TestCommandLineInterface:
             assert get_file["filename"] is not None
             assert get_file["file_path"] is not None
             assert str(tmp_path) in get_file["file_path"]
-            assert not os.path.exists(get_file["output"])
+            assert not os.path.exists(get_file["file_path"])
 
     def test_get_can_choose_returned_fields(self, tmp_path):
         filter = "*_200[123]*.nc"

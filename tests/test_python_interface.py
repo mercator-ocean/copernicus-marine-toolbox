@@ -32,7 +32,7 @@ class TestPythonInterface:
         assert all(
             map(
                 lambda x: x.exists(),
-                [result.output for result in get_result.files],
+                [result.file_path for result in get_result.files],
             )
         )
 

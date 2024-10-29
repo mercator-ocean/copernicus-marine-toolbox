@@ -142,7 +142,7 @@ class TestGetDirectDownload:
             overwrite_output_data=True,
             output_directory=tmp_path,
         )
-        result_paths = [result.output for result in get_result.files]
+        result_paths = [result.file_path for result in get_result.files]
         assert set(result_paths) == {
             pathlib.Path(
                 f"{tmp_path}/"

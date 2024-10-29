@@ -120,11 +120,11 @@ class TimeExtent(BaseModel):
 
 class DatasetCoordinatesExtent(BaseModel):
     #: Longitude interval of the subsetted data.
-    longitude: GeographicalExtent
+    longitude: Optional[GeographicalExtent]
     #: Latitude interval of the subsetted data.
-    latitude: GeographicalExtent
+    latitude: Optional[GeographicalExtent]
     #: Time interval of the subsetted data in iso8601 string
-    time: TimeExtent
+    time: Optional[TimeExtent]
     #: Depth interval of the subsetted data.
     depth: Optional[GeographicalExtent] = None
     #: Elevation interval of the subsetted data.
