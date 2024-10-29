@@ -6,13 +6,11 @@ on:
        - "main"
        - "release/**"
        - "pre-releases/**"
-  pull_request:
-    branches:
-       - main
-       - 'pre-releases/**'
+       - "!release/v1"
 
 jobs:
   build:
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine')
     strategy:
       fail-fast: false
       matrix:
