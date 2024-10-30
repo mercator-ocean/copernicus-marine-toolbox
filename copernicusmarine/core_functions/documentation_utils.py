@@ -35,6 +35,11 @@ SHARED: dict[str, str] = {
     "DISABLE_PROGRESS_BAR_HELP": "Flag to hide progress bar.",
     "FORCE_DOWNLOAD_HELP": "Flag to skip confirmation before download.",
     "DRY_RUN_HELP": "If True, runs query without downloading data.",
+    "RETURN_QUERY_METADATA_HELP": (
+        "List of fields to include in the query metadata. "
+        "The fields are separated by a comma."
+        "To return all fields, use 'all'."
+    ),
     "OUTPUT_DIRECTORY_HELP": (
         "The destination folder for the downloaded files. Default is the current "
         "directory."

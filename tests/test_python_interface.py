@@ -32,7 +32,7 @@ class TestPythonInterface:
         assert all(
             map(
                 lambda x: x.exists(),
-                [result.output for result in get_result.files],
+                [result.file_path for result in get_result.files],
             )
         )
 
@@ -75,7 +75,7 @@ class TestPythonInterface:
         )
 
         assert subset_result is not None
-        assert subset_result.output.exists()
+        assert subset_result.file_path.exists()
 
     def test_open_dataset(self):
         dataset = open_dataset(

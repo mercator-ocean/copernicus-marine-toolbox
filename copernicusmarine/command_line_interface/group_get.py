@@ -4,6 +4,7 @@ from typing import Optional
 
 import click
 
+from copernicusmarine.catalogue_parser.fields_query_builder import QueryBuilder
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -22,6 +23,7 @@ from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
 )
+from copernicusmarine.core_functions.models import ResponseGet
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
@@ -176,6 +178,13 @@ def cli_get() -> None:
     help=documentation_utils.GET["DRY_RUN_HELP"],
 )
 @click.option(
+    "--returned-query-metadata",
+    "-r",
+    type=str,
+    default=None,
+    help=documentation_utils.GET["RETURN_QUERY_METADATA_HELP"],
+)
+@click.option(
     "--max-concurrent-requests",
     type=int,
     default=15,
@@ -218,6 +227,7 @@ def get(
     sync_delete: bool,
     index_parts: bool,
     dry_run: bool,
+    returned_query_metadata: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
@@ -239,7 +249,7 @@ def get(
         create_get_template()
         return
 
-    result = get_function(
+    response = get_function(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -264,4 +274,26 @@ def get(
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
-    blank_logger.info(result.model_dump_json(indent=2))
+
+    if returned_query_metadata:
+        fields_to_include = set(returned_query_metadata.split(","))
+    elif dry_run:
+        fields_to_include = {"all"}
+    else:
+        fields_to_include = {"status", "message"}
+    if "all" in fields_to_include:
+        included_fields = None
+    elif "none" in fields_to_include:
+        included_fields = set()
+    else:
+        query_builder = QueryBuilder(set(fields_to_include))
+        included_fields = query_builder.build_query(ResponseGet)
+
+    blank_logger.info(
+        response.model_dump_json(
+            indent=2,
+            include=included_fields,
+            exclude_none=True,
+            exclude_unset=True,
+        )
+    )

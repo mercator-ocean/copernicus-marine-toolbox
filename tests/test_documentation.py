@@ -130,7 +130,6 @@ class TestDocumentation:
                 continue
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
-            print(name_of_variable)
 
             assert text_read_dataframe["Parameters"][i].desc == [
                 documentation_utils.SUBSET[name_of_variable.upper() + "_HELP"]

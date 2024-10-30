@@ -53,7 +53,7 @@ def _build_filename_from_dataset(
     dataset_id: str,
     file_format: FileFormat,
 ) -> str:
-    dataset_variables = "-".join(list(dataset.keys()))
+    dataset_variables = "-".join([key for key in dataset.keys()])
     variables = (
         "multi-vars"
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
@@ -109,6 +109,13 @@ def _get_max_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
     for coord_label in COORDINATES_LABEL[coordinate]:
         if coord_label in dataset.sizes:
             return max(dataset[coord_label].values)
+    return None
+
+
+def _get_unit_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
+    for coord_label in COORDINATES_LABEL[coordinate]:
+        if coord_label in dataset.sizes:
+            return dataset[coord_label].attrs.get("units")
     return None
 
 
@@ -182,41 +189,47 @@ def _format_datetimes(
 def get_dataset_coordinates_extent(
     dataset: xarray.Dataset,
 ) -> DatasetCoordinatesExtent:
-    minimum_time = _get_min_coordinate(dataset, "time")
-    if minimum_time:
-        minimum_time = timestamp_or_datestring_to_datetime(
-            minimum_time
-        ).to_iso8601_string()
-    maximum_time = _get_max_coordinate(dataset, "time")
-    if maximum_time:
-        maximum_time = timestamp_or_datestring_to_datetime(
-            maximum_time
-        ).to_iso8601_string()
     coordinates_extent = DatasetCoordinatesExtent(
-        longitude=GeographicalExtent(
-            minimum=_get_min_coordinate(dataset, "longitude"),
-            maximum=_get_max_coordinate(dataset, "longitude"),
-        ),
-        latitude=GeographicalExtent(
-            minimum=_get_min_coordinate(dataset, "latitude"),
-            maximum=_get_max_coordinate(dataset, "latitude"),
-        ),
-        time=TimeExtent(
-            minimum=minimum_time,
-            maximum=maximum_time,
-        ),
+        longitude=_get_coordinate_extent(dataset, "longitude"),  # type: ignore
+        latitude=_get_coordinate_extent(dataset, "latitude"),  # type: ignore
+        time=_get_coordinate_extent(dataset, "time"),  # type: ignore
     )
+    depth_or_elevation_extent = _get_coordinate_extent(dataset, "depth")
     if "depth" in dataset.sizes:
-        coordinates_extent.depth = GeographicalExtent(
-            minimum=_get_min_coordinate(dataset, "depth"),
-            maximum=_get_max_coordinate(dataset, "depth"),
-        )
+        coordinates_extent.depth = depth_or_elevation_extent  # type: ignore
     elif "elevation" in dataset.sizes:
-        coordinates_extent.elevation = GeographicalExtent(
-            minimum=_get_min_coordinate(dataset, "depth"),
-            maximum=_get_max_coordinate(dataset, "depth"),
-        )
+        coordinates_extent.elevation = depth_or_elevation_extent  # type: ignore
     return coordinates_extent
+
+
+def _get_coordinate_extent(
+    dataset: xarray.Dataset,
+    coordinate: str,
+) -> Optional[Union[GeographicalExtent, TimeExtent]]:
+    for coord_label in COORDINATES_LABEL[coordinate]:
+        if coord_label in dataset.sizes:
+            minimum = _get_min_coordinate(dataset, coordinate)
+            maximum = _get_max_coordinate(dataset, coordinate)
+            unit = _get_unit_coordinate(dataset, coordinate)
+            if coordinate == "time":
+                minimum = timestamp_or_datestring_to_datetime(
+                    minimum
+                ).to_iso8601_string()
+                maximum = timestamp_or_datestring_to_datetime(
+                    maximum
+                ).to_iso8601_string()
+                unit = "iso8601"
+                return TimeExtent(
+                    minimum=minimum,
+                    maximum=maximum,
+                    unit=unit,
+                )
+            return GeographicalExtent(
+                minimum=minimum,
+                maximum=maximum,
+                unit=unit,
+            )
+    return None
 
 
 def get_message_formatted_dataset_size_estimation(

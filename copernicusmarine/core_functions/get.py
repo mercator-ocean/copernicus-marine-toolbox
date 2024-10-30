@@ -167,7 +167,6 @@ def _run_get_request(
         disable_progress_bar,
         create_file_list,
     )
-    logger.debug(downloaded_files)
     return downloaded_files
 
 
