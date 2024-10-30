@@ -119,3 +119,11 @@ And from a Windows os (cmd):
     copernicusmarine_windows-latest.exe describe
 
 (``describe`` or any other command)
+
+.. note::
+
+    For the **Linux** binaries you need a version of Glibc higher than the one the binary has. To check your version of Glibc, use ``ldd --version`` in your terminal.
+
+.. note::
+
+    The **Linux** binaries are tested with Ubuntu machines.
