@@ -1605,12 +1605,6 @@ class TestCommandLineInterface:
             "--force-download",
         ]
         self.output = execute_in_terminal(command)
-        assert self.output.returncode == 1
-
-        command_install_netcdf4 = ["pip", "install", "netcdf4"]
-        _ = execute_in_terminal(command_install_netcdf4)
-
-        self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
         output_netcdf_format = execute_in_terminal(
@@ -1618,15 +1612,6 @@ class TestCommandLineInterface:
         )
         assert output_netcdf_format.returncode == 0
         assert output_netcdf_format.stdout == b"classic\n"
-
-        command_uninstall_netcdf4 = [
-            "pip",
-            "uninstall",
-            "-y",
-            "netcdf4",
-            "cftime",
-        ]
-        _ = execute_in_terminal(command_uninstall_netcdf4)
 
     def test_that_requested_interval_fully_included_with_coords_sel_method_outside(
         self, tmp_path
