@@ -128,7 +128,7 @@ And from a Windows os (cmd):
 .. note::
 
     The **Linux** binaries are tested with Ubuntu machines.
-    
+
 .. _installation-page-dependencies:
 
 Dependencies
