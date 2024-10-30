@@ -1607,7 +1607,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
 
-        command_install_netcdf4 = ["python", "-m", "pip", "install", "netcdf4"]
+        command_install_netcdf4 = ["pip", "install", "netcdf4"]
         _ = execute_in_terminal(command_install_netcdf4)
 
         self.output = execute_in_terminal(command)
@@ -1620,8 +1620,6 @@ class TestCommandLineInterface:
         assert output_netcdf_format.stdout == b"classic\n"
 
         command_uninstall_netcdf4 = [
-            "python",
-            "-m",
             "pip",
             "uninstall",
             "-y",
