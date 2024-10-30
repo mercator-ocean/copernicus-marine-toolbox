@@ -25,21 +25,6 @@ DEFAULT_VERTICAL_DIMENSION_OUTPUT: VerticalDimensionOutput = "depth"
 DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
 
 
-# class Status(BaseModel):
-#     """Indicate the status of a request."""
-
-#     #: Status of the request.
-#     status: Literal["SUCCESS", "DRY_RUN", "ERROR", "NO_DATA_TO_DOWNLOAD"]
-#     #: Message explaning the status.
-#     message: Literal[
-#         "The request was successful.",
-#         "The request was successful but no data was transferred.",
-#         "An error occurred during the request.",
-#         "No data to download from the remote server"
-#         " corresponding to your request.",
-#     ]
-
-
 class StatusCode(str, Enum):
     """
     Enumeration of the possible of a request.
