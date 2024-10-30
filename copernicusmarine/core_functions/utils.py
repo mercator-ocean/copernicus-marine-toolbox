@@ -13,9 +13,7 @@ from typing import (
     Union,
 )
 
-import cftime
 import numpy
-import pandas as pd
 import pendulum
 import pendulum.exceptions
 import xarray
@@ -30,17 +28,6 @@ logger = logging.getLogger("copernicusmarine")
 
 
 FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE = "Do you want to proceed with download?"
-
-
-DATETIME_SUPPORTED_FORMATS = [
-    "%Y",
-    "%Y-%m-%d",
-    "%Y-%m-%dT%H:%M:%S",
-    "%Y-%m-%d %H:%M:%S",
-    "%Y-%m-%dT%H:%M:%S.%f",
-    "%Y-%m-%dT%H:%M:%S.%fZ",
-    "%Y-%m-%d %H:%M:%S.%f%Z",
-]
 
 
 def get_unique_filename(
@@ -127,14 +114,6 @@ def timestamp_or_datestring_to_datetime(
         return timestamp_parser(date)
     else:
         return datetime_parser(date)
-
-
-def convert_datetime64_to_netcdf_timestamp(
-    datetime_value: numpy.datetime64,
-    cftime_unit: str,
-) -> int:
-    pandas_datetime = pd.to_datetime(datetime_value)
-    return cftime.date2num(pandas_datetime, cftime_unit)
 
 
 def add_copernicusmarine_version_in_dataset_attributes(

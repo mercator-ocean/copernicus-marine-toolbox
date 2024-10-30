@@ -41,10 +41,6 @@ def get_ssl_context() -> Optional[ssl.SSLContext]:
     return ssl.create_default_context(cafile=certifi.where())
 
 
-def get_https_proxy() -> Optional[str]:
-    return PROXIES.get("https")
-
-
 def get_configured_boto3_session(
     endpoint_url: str,
     operation_type: List[Literal["ListObjects", "HeadObject", "GetObject"]],

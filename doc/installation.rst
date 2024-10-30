@@ -14,11 +14,12 @@ Alternatively, you can use a binary.
 
 .. note::
 
-    Requires Python ``>=3.9`` and ``<3.13``.
+    Requires Python ``>=3.9``.
 
 .. note::
 
-    Note that the use of ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue <https://github.com/pydata/xarray/issues/9179>`_.
+    Note that the use of ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results.
+    See :ref:`later on this page <installation-page-dependencies>` for more details.
 
 Via pip
 **************
@@ -127,3 +128,28 @@ And from a Windows os (cmd):
 .. note::
 
     The **Linux** binaries are tested with Ubuntu machines.
+    
+.. _installation-page-dependencies:
+
+Dependencies
+**************
+
+The Copernicus Marine toolbox uses the xarray library to handle the data when using the ``subset`` command.
+There are some compatibility issues with the latest versions of xarray and numpy:
+
+- ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
+- ``xarray<2024.10.0`` with ``numpy>=2.0.0`` leads to some time overhead. See this issue: `xarray issue 2 <https://github.com/pydata/xarray/issues/9545>`_.
+
+Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
+and ``h5netcdf`` library as the backend.
+
+The ``h5netcdf`` library is not compatible with the NetCDF3 format.
+If you want to use it please make sure to install the ``netcdf4`` library:
+
+.. code-block:: bash
+
+    python -m pip install netcdf4
+
+.. note::
+
+    The image of the toolbox should already have the ``netcdf4`` library installed.

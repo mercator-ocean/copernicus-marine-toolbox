@@ -39,7 +39,8 @@ class CustomClickOptionsCommand(click.Command):
                 def process(value, state):
                     frame = inspect.currentframe()
                     try:
-                        opt = frame.f_back.f_locals.get("opt")
+                        if frame and frame.f_back:
+                            opt = frame.f_back.f_locals.get("opt")
                     finally:
                         del frame
 

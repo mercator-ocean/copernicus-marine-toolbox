@@ -70,13 +70,14 @@ def _prepare_download_dataset_as_netcdf(
         encoding = None
 
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
+    engine = "h5netcdf" if not netcdf3_compatible else "netcdf4"
     return dataset.to_netcdf(
         output_path,
         mode="w",
         compute=False,
         encoding=encoding,
         format=xarray_download_format,
-        engine="h5netcdf",
+        engine=engine,
     )
 
 
