@@ -200,12 +200,12 @@ def get_size_of_coordinate_subset(
     minimum: Optional[Union[float, DateTime]],
     maximum: Optional[Union[float, DateTime]],
 ) -> int:
-    for label in COORDINATES_LABEL[coordinate]:
-        if label in dataset.sizes:
+    for coordinate_label in COORDINATES_LABEL[coordinate]:
+        if coordinate_label in dataset.sizes:
             return (
-                dataset.coords[coordinate]
-                .sel({coordinate: slice(minimum, maximum)}, method=None)
-                .coords[coordinate]
+                dataset.coords[coordinate_label]
+                .sel({coordinate_label: slice(minimum, maximum)}, method=None)
+                .coords[coordinate_label]
                 .size
             )
     else:
