@@ -1,10 +1,10 @@
 dependencies:
-  - python==3.12
+  - python==3.13
   - pytest==8.1.1
   - pip
   - pystac==1.8.3
-  - tox==4.11.4
-  - netcdf4==1.6.5
+  - netcdf4
+  # - tox==4.11.4
   - syrupy==4.6.1
   - compliance-checker==5.1.1
   - numpydoc==1.8.0

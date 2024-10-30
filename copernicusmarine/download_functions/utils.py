@@ -53,7 +53,9 @@ def _build_filename_from_dataset(
     dataset_id: str,
     file_format: FileFormat,
 ) -> str:
-    dataset_variables = "-".join([key for key in dataset.keys()])
+    dataset_variables = "-".join(
+        [str(variable_name) for variable_name in dataset.data_vars]
+    )
     variables = (
         "multi-vars"
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
@@ -380,11 +382,3 @@ def get_number_of_chunks_for_coordinate(
             (index_left + 1) / chunking_length
         )
     return chunk_of_requested_maximum - chunk_of_requested_minimum + 1
-
-
-def early_exit_message(message: str) -> str:
-    return (
-        message
-        + "\n Couldn't compute the approximation "
-        + "of the downloaded data size."
-    )
