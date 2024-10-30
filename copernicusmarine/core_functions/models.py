@@ -1,7 +1,8 @@
 import pathlib
+from enum import Enum
 from typing import Literal, Optional, get_args
 
-from pydantic import BaseModel, model_serializer
+from pydantic import BaseModel, ConfigDict
 
 FileFormat = Literal["netcdf", "zarr"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
@@ -24,22 +25,66 @@ DEFAULT_VERTICAL_DIMENSION_OUTPUT: VerticalDimensionOutput = "depth"
 DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
 
 
+class StatusCode(str, Enum):
+    """
+    Enumeration of the possible of a request.
+    Only concerns ``get`` and ``subset`` functions.
+    """
+
+    SUCCESS = "SUCCESS"
+    DRY_RUN = "DRY_RUN"
+    ERROR = "ERROR"
+    NO_DATA_TO_DOWNLOAD = "NO_DATA_TO_DOWNLOAD"
+    FILE_LIST_CREATED = "FILE_LIST_CREATED"
+
+
+class StatusMessage(str, Enum):
+    """
+    Enumeration of the possible messages of a request.
+    Only concerns ``get`` and ``subset`` functions.
+    """
+
+    SUCCESS = "The request was successful."
+    DRY_RUN = "The request was successful but no data was transferred."
+    ERROR = "An error occurred during the request."
+    NO_DATA_TO_DOWNLOAD = "No data to download from the remote server corresponding to your request."  # noqa: E501
+    FILE_LIST_CREATED = "The request created a file list and then stopped."
+
+
 class FileGet(BaseModel):
     #: Full url of the location of the file on remote server.
-    url: str
+    s3_url: str
+    #: Location of the file on the remote server, https url.
+    https_url: str
     #: Size of the file in MB.
-    size: float
+    file_size: float
     #: Last modified date.
-    last_modified: str
-    #: Path to the local downloaded file
-    output: pathlib.Path
+    last_modified_datetime: str
+    #: ETag of the file.
+    etag: str
+    #: File format.
+    file_format: str
+    #: Output directory where the file stored.
+    output_directory: pathlib.Path
+    #: File name.
+    filename: str
+    #: Path to the file.
+    file_path: pathlib.Path
 
 
 class ResponseGet(BaseModel):
     """Metadata returned when using :func:`~copernicusmarine.get`"""
 
+    model_config = ConfigDict(use_enum_values=True)
+
     #: Description of the files concerned by the query
     files: list[FileGet]
+    #: Total size of the files in MB.
+    total_size: Optional[float]
+    #: status of the request.
+    status: StatusCode
+    #: Message explaning the status.
+    message: StatusMessage
 
 
 class GeographicalExtent(BaseModel):
@@ -47,6 +92,7 @@ class GeographicalExtent(BaseModel):
 
     minimum: Optional[float]
     maximum: Optional[float]
+    unit: Optional[str]
 
 
 class TimeExtent(BaseModel):
@@ -54,15 +100,16 @@ class TimeExtent(BaseModel):
 
     minimum: Optional[str]
     maximum: Optional[str]
+    unit: Optional[str]
 
 
 class DatasetCoordinatesExtent(BaseModel):
     #: Longitude interval of the subsetted data.
-    longitude: GeographicalExtent
+    longitude: Optional[GeographicalExtent]
     #: Latitude interval of the subsetted data.
-    latitude: GeographicalExtent
+    latitude: Optional[GeographicalExtent]
     #: Time interval of the subsetted data in iso8601 string
-    time: TimeExtent
+    time: Optional[TimeExtent]
     #: Depth interval of the subsetted data.
     depth: Optional[GeographicalExtent] = None
     #: Elevation interval of the subsetted data.
@@ -70,25 +117,26 @@ class DatasetCoordinatesExtent(BaseModel):
     #: instead of depth
     elevation: Optional[GeographicalExtent] = None
 
-    @model_serializer(mode="wrap")
-    def _serialize(self, handler):
-        d = handler(self)
-        if not self.depth:
-            del d["depth"]
-        if not self.elevation:
-            del d["elevation"]
-        return d
-
 
 class ResponseSubset(BaseModel):
     """Metadata returned when using :func:`~copernicusmarine.subset`"""
 
+    model_config = ConfigDict(use_enum_values=True)
+
     #: Path to the result file.
-    output: pathlib.Path
+    file_path: pathlib.Path
+    #: Output directory where the file stored.
+    output_directory: pathlib.Path
+    #: File name.
+    filename: str
     #: Estimation of the size of the final result file in MB.
-    size: Optional[float]
+    file_size: Optional[float]
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.
-    data_needed: Optional[float]
+    data_transfer_size: Optional[float]
     #: The bounds of the subsetted dataset.
     coordinates_extent: DatasetCoordinatesExtent
+    #: status of the request.
+    status: StatusCode
+    #: Message explaning the status.
+    message: StatusMessage

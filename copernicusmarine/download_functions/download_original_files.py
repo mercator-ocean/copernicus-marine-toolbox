@@ -16,7 +16,12 @@ from copernicusmarine.catalogue_parser.request_structure import (
     GetRequest,
     overload_regex_with_additionnal_filter,
 )
-from copernicusmarine.core_functions.models import FileGet, ResponseGet
+from copernicusmarine.core_functions.models import (
+    FileGet,
+    ResponseGet,
+    StatusCode,
+    StatusMessage,
+)
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
 )
@@ -46,6 +51,7 @@ def download_original_files(
     sizes: list[float] = []
     last_modified_datetimes: list[DateTime] = []
     filenames_in: list[str] = []
+    etags: list[str] = []
     if get_request.direct_download:
         (
             locator,
@@ -55,6 +61,7 @@ def download_original_files(
             total_size,
             filenames_in_sync_ignored,
             files_not_found,
+            etags,
         ) = _download_header_for_direct_download(
             get_request.direct_download,
             str(get_request.dataset_url),
@@ -85,6 +92,14 @@ def download_original_files(
             only_list_root_path=get_request.index_parts,
             overwrite=get_request.overwrite_output_data,
         )
+        if result is None:
+            # When creating a file list, None is returned
+            return ResponseGet(
+                files=[],
+                status=StatusCode.FILE_LIST_CREATED,
+                message=StatusMessage.FILE_LIST_CREATED,
+                total_size=None,
+            )
         if result:
             (
                 locator,
@@ -93,16 +108,21 @@ def download_original_files(
                 last_modified_datetimes_listing,
                 total_size_listing,
                 filenames_in_sync_ignored_listing,
+                etags_listing,
             ) = result
             filenames_in.extend(filenames_in_listing)
             filenames_in_sync_ignored.extend(filenames_in_sync_ignored_listing)
             total_size += total_size_listing
             sizes.extend(sizes_listing)
             last_modified_datetimes.extend(last_modified_datetimes_listing)
-        elif not get_request.direct_download or len(files_not_found) == len(
-            get_request.direct_download
-        ):
-            return ResponseGet(files=[])
+            etags.extend(etags_listing)
+        else:
+            return ResponseGet(
+                files=[],
+                status=StatusCode.NO_DATA_TO_DOWNLOAD,
+                message=StatusMessage.NO_DATA_TO_DOWNLOAD,
+                total_size=total_size,
+            )
     message = _create_information_message_before_download(
         filenames_in, sizes, last_modified_datetimes, total_size
     )
@@ -115,22 +135,6 @@ def download_original_files(
             if not get_request.sync
             else False
         ),
-    )
-    response = ResponseGet(
-        files=[
-            FileGet(
-                url=s3_url,
-                size=size_to_MB(size),
-                last_modified=last_modified.to_iso8601_string(),
-                output=filename_out,
-            )
-            for s3_url, size, last_modified, filename_out in zip(
-                filenames_in,
-                sizes,
-                last_modified_datetimes,
-                filenames_out,
-            )
-        ]
     )
     if not get_request.force_download and total_size:
         logger.info(message)
@@ -158,7 +162,12 @@ def download_original_files(
     if not total_size:
         logger.info("No data to download")
         if not files_to_delete:
-            return ResponseGet(files=[])
+            return ResponseGet(
+                files=[],
+                status=StatusCode.NO_DATA_TO_DOWNLOAD,
+                message=StatusMessage.NO_DATA_TO_DOWNLOAD,
+                total_size=total_size,
+            )
     if not get_request.force_download:
         click.confirm(
             FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
@@ -169,10 +178,39 @@ def download_original_files(
     endpoint: str
     bucket: str
     endpoint, bucket = locator
+
     if get_request.sync_delete and files_to_delete:
         for file_to_delete in files_to_delete:
             file_to_delete.unlink()
+    endpoint, bucket = locator
+    response = ResponseGet(
+        files=[
+            FileGet(
+                s3_url=s3_url,
+                https_url=s3_url.replace("s3://", endpoint + "/"),
+                file_size=size_to_MB(size),
+                last_modified_datetime=last_modified.to_iso8601_string(),
+                output_directory=pathlib.Path(get_request.output_directory),
+                filename=filename_out.name,
+                file_path=filename_out,
+                etag=etag,
+                file_format=filename_out.suffix,
+            )
+            for s3_url, size, last_modified, filename_out, etag in zip(
+                filenames_in,
+                sizes,
+                last_modified_datetimes,
+                filenames_out,
+                etags,
+            )
+        ],
+        status=StatusCode.SUCCESS,
+        message=StatusMessage.SUCCESS,
+        total_size=size_to_MB(total_size),
+    )
     if get_request.dry_run:
+        response.status = StatusCode.DRY_RUN
+        response.message = StatusMessage.DRY_RUN
         return response
     download_files(
         username,
@@ -266,6 +304,7 @@ def _download_header(
         list[DateTime],
         float,
         list[str],
+        list[str],
     ]
 ]:
     (endpoint_url, bucket, path) = parse_access_dataset_url(
@@ -332,6 +371,7 @@ def _download_header(
         last_modified_datetimes,
         total_size,
         filenames_without_sync,
+        etags,
     )
 
 
@@ -349,6 +389,7 @@ def _download_header_for_direct_download(
     float,
     list[str],
     list[str],
+    list[str],
 ]:
     (endpoint_url, bucket, path) = parse_access_dataset_url(dataset_url)
     splitted_path = path.split("/")
@@ -361,6 +402,7 @@ def _download_header_for_direct_download(
     filenames_in = []
     filenames_without_sync = []
     filenames_not_found = []
+    etags = []
     for file_to_download in files_to_download:
         file_path = file_to_download.split(f"{dataset_id_with_tag}/")[-1]
         if not file_path:
@@ -373,17 +415,18 @@ def _download_header_for_direct_download(
             f"s3://{bucket}/{root_folder}/{product_id}/"
             f"{dataset_id_with_tag}/{file_path}"
         )
-        size_and_last_modified = _get_file_size_and_last_modified(
+        size_last_modified_and_etag = _get_file_size_last_modified_and_etag(
             endpoint_url, bucket, full_path, username
         )
-        if size_and_last_modified:
-            size, last_modified = size_and_last_modified
+        if size_last_modified_and_etag:
+            size, last_modified, etag = size_last_modified_and_etag
             if not sync or _check_needs_to_be_synced(
                 full_path, size, last_modified, directory_out
             ):
                 filenames_in.append(full_path)
                 sizes.append(float(size))
                 last_modified_datetimes.append(last_modified)
+                etags.append(etag)
             else:
                 filenames_without_sync.append(full_path)
         else:
@@ -404,6 +447,7 @@ def _download_header_for_direct_download(
         total_size,
         filenames_without_sync,
         filenames_not_found,
+        etags,
     )
 
 
@@ -495,9 +539,9 @@ def _list_files_on_marine_data_lake_s3(
     return files_already_found
 
 
-def _get_file_size_and_last_modified(
+def _get_file_size_last_modified_and_etag(
     endpoint_url: str, bucket: str, file_in: str, username: str
-) -> Optional[tuple[int, DateTime]]:
+) -> Optional[tuple[int, DateTime, str]]:
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["HeadObject"], username
     )
@@ -507,8 +551,10 @@ def _get_file_size_and_last_modified(
             Bucket=bucket,
             Key=file_in.replace(f"s3://{bucket}/", ""),
         )
-        return s3_object["ContentLength"], pendulum.instance(
-            s3_object["LastModified"]
+        return (
+            s3_object["ContentLength"],
+            pendulum.instance(s3_object["LastModified"]),
+            s3_object["ETag"],
         )
     except ClientError as e:
         if "404" in str(e):

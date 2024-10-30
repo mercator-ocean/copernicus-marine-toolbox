@@ -83,8 +83,6 @@ class TestSubfunctions:
         dataset_1 = _dataset_custom_sel(
             dataset_1, "longitude", coord_selection, "outside"
         )
-        print(dataset_1.longitude.values.min())
-        print(dataset_1.longitude.values.max())
         assert dataset_1.longitude.values.min() <= min_value
         assert dataset_1.longitude.max().values >= max_value
         dataset_1 = _dataset_custom_sel(

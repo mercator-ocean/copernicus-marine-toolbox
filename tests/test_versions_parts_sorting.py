@@ -132,7 +132,6 @@ example_dataset = CopernicusMarineDataset(
 class TestVersionsPartsSorting:
     def test_sort_versions(self):
         example_dataset.sort_versions()
-        print([version.label for version in example_dataset.versions])
         assert [version.label for version in example_dataset.versions] == [
             "202201",
             "201901",
@@ -144,7 +143,6 @@ class TestVersionsPartsSorting:
 
     def test_sort_parts(self):
         version_default.sort_parts()
-        print([part.name for part in version_default.parts])
         assert [part.name for part in version_default.parts] == [
             PART_DEFAULT,
             "latest",

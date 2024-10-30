@@ -130,3 +130,15 @@ Subtypes
     :undoc-members:
     :exclude-members: model_computed_fields, model_config, model_fields
     :member-order: bysource
+
+.. autoclass:: copernicusmarine.StatusCode()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields
+    :member-order: bysource
+
+.. autoclass:: copernicusmarine.StatusMessage()
+    :members:
+    :undoc-members:
+    :exclude-members: model_computed_fields, model_config, model_fields
+    :member-order: bysource

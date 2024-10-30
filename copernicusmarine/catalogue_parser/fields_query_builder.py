@@ -76,5 +76,8 @@ class QueryBuilder:
             elif check_type_is_base_model(field_type):
                 if field_name not in query:
                     query[field_name] = {}
-                self.build_query(field_type, query)
+                result = self.build_query(field_type, query[field_name])
+                if not result:
+                    del query[field_name]
+
         return query
