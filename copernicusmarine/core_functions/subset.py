@@ -152,6 +152,7 @@ def subset_function(
         subset_request.force_service,
         CommandType.SUBSET,
         dataset_subset=subset_request.get_time_and_space_subset(),
+        staging=staging,
     )
     subset_request.dataset_url = retrieval_service.uri
     check_dataset_subset_bounds(

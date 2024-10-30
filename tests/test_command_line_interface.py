@@ -1860,3 +1860,37 @@ class TestCommandLineInterface:
         assert datetime.datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.datetime.strptime("2023-01-03", "%Y-%m-%d")
+
+    def test_get_goes_to_staging(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "--staging",
+            "--log-level",
+            "DEBUG",
+        ]
+        self.output = execute_in_terminal(command)
+        assert (
+            b"mdl-metadata-dta/dataset_product_id_mapping.json"
+            in self.output.stderr
+        )
+
+    def test_subset_goes_to_staging(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "--variable",
+            "thetao",
+            "--staging",
+            "--log-level",
+            "DEBUG",
+        ]
+        self.output = execute_in_terminal(command)
+        assert (
+            b"mdl-metadata-dta/dataset_product_id_mapping.json"
+            in self.output.stderr
+        )
