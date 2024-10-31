@@ -17,7 +17,6 @@ on:
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release') || startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release') || startsWith(github.event.head_commit.message, 'add-distributed')
     strategy:
       fail-fast: false
       matrix:
