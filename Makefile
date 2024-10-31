@@ -60,7 +60,7 @@ run-using-pyinstaller-windows-latest:
 
 run-using-pyinstaller-macos:
 	pip install -e .
-	python -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-${ARCH}.cli --add-data="/home/runner/micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=${ARCH}
+	python -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-${ARCH}.cli --add-data="/Users/runner/micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/distributed/distributed.yaml:./distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=${ARCH}
 
 run-using-pyinstaller-macos-13: ARCH = x86_64
 run-using-pyinstaller-macos-13: run-using-pyinstaller-macos
