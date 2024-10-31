@@ -7,11 +7,17 @@ on:
        - "release/**"
        - "pre-releases/**"
        - "!release/v1"
+  pull_request:
+    branches:
+       - "main"
+       - "release/**"
+       - "pre-releases/**"
+       - "!release/v1"
 
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release') || startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release')
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release') || startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release') || startsWith(github.event.head_commit.message, 'add-distributed')
     strategy:
       fail-fast: false
       matrix:
