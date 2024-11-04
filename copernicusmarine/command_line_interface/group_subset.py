@@ -236,13 +236,6 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["LOG_LEVEL_HELP"],
 )
 @click.option(
-    "--staging",
-    type=bool,
-    default=False,
-    is_flag=True,
-    hidden=True,
-)
-@click.option(
     "--netcdf-compression-level",
     type=click.IntRange(0, 9),
     is_flag=False,
@@ -260,9 +253,16 @@ def cli_subset() -> None:
 )
 @click.option(
     "--dask-chunk-size-limit",
-    type=int,
+    type=click.IntRange(min=0),
     default=100,
-    help="TODO",
+    help=documentation_utils.SUBSET["DASK_CHUNK_SIZE_LIMIT_HELP"],
+)
+@click.option(
+    "--staging",
+    type=bool,
+    default=False,
+    is_flag=True,
+    hidden=True,
 )
 @log_exception_and_exit
 def subset(
@@ -298,7 +298,7 @@ def subset(
     disable_progress_bar: bool,
     log_level: str,
     dask_chunk_size_limit: int,
-    staging: bool = False,
+    staging: bool,
 ):
     if log_level == "QUIET":
         logger.disabled = True

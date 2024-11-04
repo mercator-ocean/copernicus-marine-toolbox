@@ -28,6 +28,7 @@ from copernicusmarine.download_functions.subset_xarray import (
 def load_data_object_from_load_request(
     load_request: LoadRequest,
     arco_series_load_function: Callable,
+    chunks_factor_size_limit: int,
 ) -> Union[xarray.Dataset, pandas.DataFrame]:
     retrieval_service: RetrievalService = get_retrieval_service(
         dataset_id=load_request.dataset_id,
@@ -76,7 +77,7 @@ def load_data_object_from_load_request(
             load_request.temporal_parameters,
             load_request.depth_parameters,
             load_request.variables,
-            100,
+            chunks_factor_size_limit,
         )
         dataset = arco_series_load_function(
             username=username,

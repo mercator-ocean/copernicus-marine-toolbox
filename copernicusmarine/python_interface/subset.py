@@ -119,8 +119,8 @@ def subset(
         Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
     netcdf3_compatible : bool, optional
         Enable downloading the dataset in a netCDF3 compatible format.
-    dask_chunk_size_limit : int, optional
-        Limit the size of the dask chunks for the downloaded dataset. Default is 100.
+    dask_chunk_size_limit : int, default 100
+        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted.
 
     Returns
     -------
@@ -166,8 +166,8 @@ def subset(
         overwrite_output_data,
         dry_run,
         disable_progress_bar,
-        staging=staging,
-        netcdf_compression_level=netcdf_compression_level,
-        netcdf3_compatible=netcdf3_compatible,
-        dask_chunk_size_limit=dask_chunk_size_limit,
+        staging,
+        netcdf_compression_level,
+        netcdf3_compatible,
+        dask_chunk_size_limit,
     )
