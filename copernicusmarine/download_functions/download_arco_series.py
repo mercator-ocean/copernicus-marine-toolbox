@@ -35,6 +35,7 @@ from copernicusmarine.download_functions.subset_parameters import (
 )
 from copernicusmarine.download_functions.subset_xarray import (
     COORDINATES_LABEL,
+    apply_longitude_modulus,
     subset,
 )
 from copernicusmarine.download_functions.utils import (
@@ -409,11 +410,26 @@ def _extract_requested_min_max(
             geographical_parameters.latitude_parameters.maximum_latitude,
         )
     if coordinate_id in COORDINATES_LABEL["longitude"]:
-        # TODO: adapt this with the modulo to work the same as the .sel
-        return (
-            geographical_parameters.longitude_parameters.minimum_longitude,
-            geographical_parameters.longitude_parameters.maximum_longitude,
+        longitude_moduli = apply_longitude_modulus(
+            geographical_parameters.longitude_parameters
         )
+        if longitude_moduli:
+            (
+                minimum_longitude_modulus,
+                maximum_longitude_modulus,
+            ) = longitude_moduli
+            if (
+                maximum_longitude_modulus
+                and minimum_longitude_modulus
+                and maximum_longitude_modulus < minimum_longitude_modulus
+            ):
+                maximum_longitude_modulus += 360
+            return (
+                minimum_longitude_modulus,
+                maximum_longitude_modulus,
+            )
+        else:
+            return (None, None)
     if coordinate_id in COORDINATES_LABEL["depth"]:
         return depth_parameters.minimum_depth, depth_parameters.maximum_depth
     return None, None
