@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.models import (
+    PART_DEFAULT,
     CopernicusMarineCatalogue,
     CopernicusMarineDataset,
     CopernicusMarineProduct,
@@ -151,12 +152,26 @@ def _parse_and_sort_dataset_items(
     The first version and part are the default.
     """
     dataset_item_example = dataset_items[0]
-    dataset_id, _, _ = get_version_and_part_from_full_dataset_id(
-        dataset_item_example.id
-    )
+    dataset_without_parts: list[tuple[pystac.Item, str]] = []
+    for dataset_item in dataset_items:
+        dataset_id, _, part = get_version_and_part_from_full_dataset_id(
+            dataset_item.id
+        )
+        if part == PART_DEFAULT:
+            dataset_without_parts.append((dataset_item, dataset_id))
+            break
+    if not dataset_without_parts:
+        dataset_id, _, _ = get_version_and_part_from_full_dataset_id(
+            dataset_item_example.id
+        )
+        dataset_title = dataset_id
+    else:
+        dataset_item, dataset_id = dataset_without_parts[0]
+        dataset_title = dataset_item.properties.get("title", dataset_id)
+
     dataset_part_version_merged = CopernicusMarineDataset(
         dataset_id=dataset_id,
-        dataset_name=dataset_item_example.properties.get("title", dataset_id),
+        dataset_name=dataset_title,
         versions=[],
     )
     dataset_part_version_merged.parse_dataset_metadata_items(dataset_items)
