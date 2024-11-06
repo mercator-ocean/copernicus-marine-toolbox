@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.models import (
+    PART_DEFAULT,
     CopernicusMarineCatalogue,
     CopernicusMarineDataset,
     CopernicusMarineProduct,
@@ -156,7 +157,7 @@ def _parse_and_sort_dataset_items(
         dataset_id, _, part = get_version_and_part_from_full_dataset_id(
             dataset_item.id
         )
-        if not part:
+        if part == PART_DEFAULT:
             dataset_without_parts.append((dataset_item, dataset_id))
             break
     if not dataset_without_parts:
