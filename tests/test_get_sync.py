@@ -1,3 +1,4 @@
+import json
 import os
 
 from tests.test_utils import execute_in_terminal
@@ -110,22 +111,35 @@ class TestGetSync:
             "202105",
             "-o",
             f"{tmp_path}",
+            "-r",
+            "file_path",
         ]
         self.output = execute_in_terminal(self.command)
-        assert (
-            b"ARCTIC_MULTIYEAR_BGC_002_005"
-            b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
-            b"/2007/01/"
-            b"20070110_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
-            in self.output.stderr
+        assert self.output.returncode == 0
+        response_get = json.loads(self.output.stdout)
+        to_check = (
+            "ARCTIC_MULTIYEAR_BGC_002_005"
+            "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
+            "/2007/01/"
+            "20070110_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
         )
-        assert (
-            b"ARCTIC_MULTIYEAR_BGC_002_005"
-            b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
-            b"/2007/01/"
-            b"20070111_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
-            not in self.output.stderr
+        assert [
+            "nice"
+            for file_get in response_get["files"]
+            if to_check in file_get["file_path"]
+        ]
+        to_check_not_in = (
+            "ARCTIC_MULTIYEAR_BGC_002_005"
+            "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
+            "/2007/01/"
+            "20070111_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
         )
+
+        assert not [
+            "not_nice"
+            for file_get in response_get["files"]
+            if to_check_not_in in file_get["file_path"]
+        ]
 
     def when_I_add_a_file_locally(self, tmp_path):
         self.command = [

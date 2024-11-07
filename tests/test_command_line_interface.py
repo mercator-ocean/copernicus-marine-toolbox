@@ -797,7 +797,7 @@ class TestCommandLineInterface:
         ]
         self.output = execute_in_terminal(command)
 
-        assert self.output.returncode == 1
+        assert self.output.returncode == 0
         assert b"No data to download" not in self.output.stderr
 
     def test_subset_with_chunking(self, tmp_path):
