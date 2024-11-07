@@ -26,7 +26,6 @@ class TestPythonInterface:
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
             output_directory=tmp_path,
-            force_download=True,
         )
         assert get_result is not None
         assert all(
@@ -42,7 +41,6 @@ class TestPythonInterface:
     ):
         get(
             dataset_id="METOFFICE-GLO-SST-L4-REP-OBS-SST",
-            force_download=True,
             filter="*2022053112000*",
             output_directory=f"{tmp_path}",
             no_directories=True,
@@ -71,7 +69,6 @@ class TestPythonInterface:
             minimum_longitude=0.2,
             maximum_longitude=0.3,
             output_directory=tmp_path,
-            force_download=True,
         )
 
         assert subset_result is not None
@@ -221,7 +218,6 @@ class TestPythonInterface:
             end_datetime="2024-02-23T23:59:59",
             minimum_depth=0,
             maximum_depth=1,
-            force_download=True,
             output_directory=tmp_path,
             output_filename="netcdf_fillval.nc",
             overwrite_output_data=True,
@@ -249,7 +245,6 @@ class TestPythonInterface:
             end_datetime="2024-02-23T23:59:59",
             minimum_depth=5,
             maximum_depth=10,
-            force_download=True,
             output_directory=tmp_path,
             output_filename="netcdf_fillval_compressed.nc",
             netcdf_compression_level=1,

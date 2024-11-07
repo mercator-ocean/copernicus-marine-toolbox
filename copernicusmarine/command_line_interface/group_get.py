@@ -80,12 +80,6 @@ def cli_get() -> None:
     mutually_exclusive=["sync"],
 )
 @click.option(
-    "--show-outputnames",
-    is_flag=True,
-    help=documentation_utils.GET["SHOW_OUTPUTNAMES_HELP"],
-    default=False,
-)
-@click.option(
     "--output-directory",
     "-o",
     type=click.Path(path_type=pathlib.Path),
@@ -95,12 +89,6 @@ def cli_get() -> None:
     "--credentials-file",
     type=click.Path(path_type=pathlib.Path),
     help=documentation_utils.GET["CREDENTIALS_FILE_HELP"],
-)
-@click.option(
-    "--force-download",
-    is_flag=True,
-    default=False,
-    help=documentation_utils.GET["FORCE_DOWNLOAD_HELP"],
 )
 @click.option(
     documentation_utils.GET["OVERWRITE_LONG_OPTION"],
@@ -212,10 +200,8 @@ def get(
     username: Optional[str],
     password: Optional[str],
     no_directories: bool,
-    show_outputnames: bool,
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
-    force_download: bool,
     overwrite_output_data: bool,
     create_template: bool,
     request_file: Optional[pathlib.Path],
@@ -256,10 +242,8 @@ def get(
         username=username,
         password=password,
         no_directories=no_directories,
-        show_outputnames=show_outputnames,
         output_directory=output_directory,
         credentials_file=credentials_file,
-        force_download=force_download,
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
         filter=filter,

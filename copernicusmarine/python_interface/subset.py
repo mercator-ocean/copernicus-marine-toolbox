@@ -50,7 +50,6 @@ def subset(
     output_directory: Optional[Union[pathlib.Path, str]] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
     motu_api_request: Optional[str] = None,
-    force_download: bool = False,
     overwrite_output_data: bool = False,
     dry_run: bool = False,
     disable_progress_bar: bool = False,
@@ -79,8 +78,6 @@ def subset(
         The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-    force_download : bool, optional
-        Flag to skip confirmation before download.
     overwrite_output_data : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
     request_file : Union[pathlib.Path, str], optional
@@ -163,7 +160,6 @@ def subset(
         output_directory,
         credentials_file,
         motu_api_request,
-        force_download,
         overwrite_output_data,
         dry_run,
         disable_progress_bar,

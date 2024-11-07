@@ -38,7 +38,6 @@ class TestLongitudesWithModulus:
             f"{folder}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
 
     def test_subset_with_modulus_longitude(self, tmp_path):

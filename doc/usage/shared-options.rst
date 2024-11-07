@@ -6,7 +6,7 @@ Both ``subset`` and ``get`` (and also some concern other options) commands provi
 Option ``--overwrite-output-data``
 **********************************
 
-When specified, existing files will be overwritten. If not, and the files already exist at the destination, new files will be created with a unique index once the download is accepted (or if ``--force-download`` is provided).
+When specified, existing files will be overwritten. If not, and the files already exist at the destination, new files will be created with a unique index.
 
 Option ``--create-template``
 *********************************
@@ -66,7 +66,6 @@ This option allows you to specify request parameters in a provided ``.json`` fil
         ],
         "output_directory": "copernicusmarine_data",
         "force_service": false,
-        "force_download": false,
         "request_file": false,
         "motu_api_request": false,
         "overwrite_output_data": false
@@ -92,8 +91,6 @@ This option allows you to specify request parameters in a provided ``.json`` fil
         "filter": "*01yav_200[0-2]*",
         "regex": null,
         "output_directory": "copernicusmarine_data",
-        "show_outputnames": true,
-        "force_download": false,
         "file_list": null,
         "sync": false,
         "sync_delete": false,
@@ -163,7 +160,7 @@ When used, the toolbox will by default, send the full return response of the com
 
 .. code:: bash
 
-      copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao --dry-run --force-download
+      copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao --dry-run
 
 **Returns:**
 
@@ -220,7 +217,7 @@ If requested ``-r all``, all fields will be included. If requested ``-r none``, 
 
 .. code:: bash
 
-    copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m --force-download --dry-run -r https_url,file_size
+    copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m --dry-run -r https_url,file_size
 
 **Returns:** (Only the two first files are shown)
 
@@ -247,7 +244,7 @@ Option ``--log-level``
 
 Set the level of detail printed to the console by the command, based on the standard logging library. Available values are: ``[DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]``.
 
-All logs of the library are by default logged in stderr, except the output of the ``describe`` command and the output of the ``--show-outputnames`` option, which are sent to stdout.
+All logs of the library are by default logged in stderr. The outputs of the commands which details can be found in :ref:`the response types documentation <response-types>`, are sent to stdout.
 
 .. note::
     For versions <=1.2.4, all logs are sent to stdout by default.

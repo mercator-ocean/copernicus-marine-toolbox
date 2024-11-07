@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from copernicusmarine import core_functions, subset
+from copernicusmarine import CoordinatesOutOfDatasetBounds, subset
 from tests.test_utils import execute_in_terminal
 
 
@@ -26,6 +26,7 @@ class TestWarningsSubsetBounds:
             f"{max_longitude}",
             "--coordinates-selection-method",
             f"{coordinates_selection_method}",
+            "--dry-run",
         ]
 
     def test_subset_send_warning_with_method_nearest(self):
@@ -35,7 +36,7 @@ class TestWarningsSubsetBounds:
         command = self._build_custom_command(
             dataset_id, "CHL", -180, 180, "nearest"
         )
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command)
 
         assert b"WARNING" in self.output.stderr
         assert (
@@ -52,7 +53,7 @@ class TestWarningsSubsetBounds:
         command = self._build_custom_command(
             dataset_id, "thetao", -179.9, 179.9, "nearest"
         )
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command)
 
         assert (
             b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
@@ -72,8 +73,8 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "CHL", -179.99, 179.99, "nearest"
         )
-        self.output1 = execute_in_terminal(command1, input=b"n")
-        self.output2 = execute_in_terminal(command2, input=b"n")
+        self.output1 = execute_in_terminal(command1)
+        self.output2 = execute_in_terminal(command2)
 
         assert (
             b"Some of your subset selection [-180.0, 180.0] for the longitude "
@@ -97,8 +98,8 @@ class TestWarningsSubsetBounds:
         command2 = self._build_custom_command(
             dataset_id, "CHL", -179.9, 179.9, "strict-inside"
         )
-        self.output1 = execute_in_terminal(command1, input=b"n")
-        self.output2 = execute_in_terminal(command2, input=b"n")
+        self.output1 = execute_in_terminal(command1)
+        self.output2 = execute_in_terminal(command2)
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) in self.output1.stderr
@@ -122,7 +123,7 @@ class TestWarningsSubsetBounds:
         command = self._build_custom_command(
             dataset_id, "thetao", -150, 180, "strict-inside"
         )
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command)
         assert (
             b"""one was selected: "arco-geo-series"\nERROR"""
         ) not in self.output.stderr
@@ -164,7 +165,7 @@ class TestWarningsSubsetBounds:
                 f"{output_filename}",
             ]
         )
-        output = execute_in_terminal(command, input=b"n")
+        output = execute_in_terminal(command)
 
         assert (
             b"Some of your subset selection [0.4, 50.0] for the depth "
@@ -208,7 +209,7 @@ class TestWarningsSubsetBounds:
                 f"{output_filename}",
             ]
         )
-        output = execute_in_terminal(command, input=b"n")
+        output = execute_in_terminal(command)
 
         assert (
             b"Some of your subset selection [0.4, 50.0] for the depth "
@@ -224,11 +225,10 @@ class TestWarningsSubsetBounds:
             _ = subset(
                 dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
                 start_datetime=datetime.today() + timedelta(10),
-                force_download=True,
                 end_datetime=datetime.today()
                 + timedelta(days=10, hours=23, minutes=59),
             )
-        except core_functions.exceptions.CoordinatesOutOfDatasetBounds as e:
+        except CoordinatesOutOfDatasetBounds as e:
             assert "Some of your subset selection" in e.__str__()
 
     def when_I_request_a_dataset_with_coordinates_selection_method_option(
@@ -253,7 +253,6 @@ class TestWarningsSubsetBounds:
             "1993-01-01T06:00:00",
             "-v",
             "VHM0",
-            "--force-download",
             "--coordinates-selection-method",
             f"{coordinates_selection_method}",
         ]

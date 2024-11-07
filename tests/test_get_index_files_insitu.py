@@ -10,8 +10,9 @@ class TestGetIndexInsituFiles:
             "--dataset-id",
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--index-parts",
+            "--dry-run",
         ]
-        self.output = execute_in_terminal(self.command, input=b"n\n")
+        self.output = execute_in_terminal(self.command)
 
         assert (
             b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
@@ -50,7 +51,6 @@ class TestGetIndexInsituFiles:
         get_result = get(
             dataset_id="cmems_obs-ins_blk_phybgcwav_mynrt_na_irr",
             index_parts=True,
-            force_download=True,
         )
         assert get_result is not None
         assert all(

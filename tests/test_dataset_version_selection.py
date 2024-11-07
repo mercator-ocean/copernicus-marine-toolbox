@@ -12,10 +12,10 @@ class TestDatasetVersionSelection:
             "get",
             "--dataset-id",
             "cmems_mod_blk_wav_anfc_2.5km_PT1H-i",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
-
         assert (
             b"Dataset version was not specified, the latest one was selected:"
             in self.output.stderr
@@ -31,6 +31,7 @@ class TestDatasetVersionSelection:
             "get",
             "--dataset-id",
             "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -48,6 +49,7 @@ class TestDatasetVersionSelection:
             "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
             "--dataset-version",
             "default",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -72,7 +74,7 @@ class TestDatasetVersionSelection:
         ]
 
         self.output = execute_in_terminal(command)
-
+        assert self.output.returncode == 1
         assert (
             b'You forced selection of dataset version "default"'
             in self.output.stderr
@@ -92,7 +94,7 @@ class TestDatasetVersionSelection:
         ]
 
         self.output = execute_in_terminal(command)
-
+        assert self.output.returncode == 1
         assert (
             b'You forced selection of dataset version "default"'
             in self.output.stderr
@@ -107,6 +109,7 @@ class TestDatasetVersionSelection:
             "cmems_mod_blk_wav_anfc_2.5km_PT1H-i",
             "--variable",
             "ice_concentration",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -128,6 +131,7 @@ class TestDatasetVersionSelection:
             "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
             "--variable",
             "ice_concentration",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -147,6 +151,7 @@ class TestDatasetVersionSelection:
             "ice_concentration",
             "--dataset-version",
             "default",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -173,7 +178,7 @@ class TestDatasetVersionSelection:
         ]
 
         self.output = execute_in_terminal(command)
-
+        assert self.output.returncode == 1
         assert (
             b'You forced selection of dataset version "default"'
             in self.output.stderr
@@ -197,7 +202,7 @@ class TestDatasetVersionSelection:
         ]
 
         self.output = execute_in_terminal(command)
-
+        assert self.output.returncode == 1
         assert (
             b'You forced selection of dataset version "default"'
             in self.output.stderr
@@ -205,13 +210,12 @@ class TestDatasetVersionSelection:
         assert b'No version "default" found' not in self.output.stderr
 
     def test_dataset_version_is_specifiable_in_python_with_get(self, caplog):
-        try:
-            copernicusmarine.get(
-                dataset_id="METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
-                dataset_version="default",
-            )
-        except OSError:
-            pass
+
+        copernicusmarine.get(
+            dataset_id="METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            dataset_version="default",
+            dry_run=True,
+        )
         assert (
             'You forced selection of dataset version "default"' in caplog.text
         )
@@ -223,18 +227,16 @@ class TestDatasetVersionSelection:
     def test_dataset_version_is_specifiable_in_python_with_subset(
         self, caplog
     ):
-        try:
-            copernicusmarine.subset(
-                dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
-                variables=["analysed_sst"],
-                minimum_longitude=0,
-                maximum_longitude=0,
-                minimum_latitude=40,
-                maximum_latitude=40,
-                dataset_version="202311",
-            )
-        except OSError:
-            pass
+        copernicusmarine.subset(
+            dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
+            variables=["analysed_sst"],
+            minimum_longitude=0,
+            maximum_longitude=0,
+            minimum_latitude=40,
+            maximum_latitude=40,
+            dataset_version="202311",
+            dry_run=True,
+        )
         assert (
             'You forced selection of dataset version "202311"' in caplog.text
         )

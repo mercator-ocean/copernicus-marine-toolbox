@@ -185,12 +185,6 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["FILE_FORMAT_HELP"],
 )
 @click.option(
-    "--force-download",
-    is_flag=True,
-    default=False,
-    help=documentation_utils.SUBSET["FORCE_DOWNLOAD_HELP"],
-)
-@click.option(
     documentation_utils.SUBSET["OVERWRITE_LONG_OPTION"],
     documentation_utils.SUBSET["OVERWRITE_SHORT_OPTION"],
     is_flag=True,
@@ -292,7 +286,6 @@ def subset(
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
     motu_api_request: Optional[str],
-    force_download: bool,
     overwrite_output_data: bool,
     dry_run: bool,
     returned_query_metadata: Optional[str],
@@ -342,7 +335,6 @@ def subset(
         output_directory=output_directory,
         credentials_file=credentials_file,
         motu_api_request=motu_api_request,
-        force_download=force_download,
         overwrite_output_data=overwrite_output_data,
         dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,

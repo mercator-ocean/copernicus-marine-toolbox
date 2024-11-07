@@ -94,7 +94,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
             f"{output_filename}",
             "--service",
             f"{force_service}",
-            "--force-download",
         ]
         return command
 
@@ -133,7 +132,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
             f"{output_filename}",
             "--service",
             "arco-geo-series",
-            "--force-download",
         ]
         self.output = execute_in_terminal(command)
 
@@ -199,7 +197,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
             f"{tmp_path}",
             "--output-filename",
             f"{output_filename}",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -322,7 +319,6 @@ class TestCommandLineInterfaceNearestLayerSubset:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)

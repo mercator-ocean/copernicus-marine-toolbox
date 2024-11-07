@@ -29,7 +29,6 @@ class TestGetSync:
             "--sync",
             "--dataset-version",
             "202311",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -64,7 +63,6 @@ class TestGetSync:
             "*202105/2007/01/2007011*",
             "--dataset-version",
             "202105",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -152,7 +150,6 @@ class TestGetSync:
             "*202105/2007/01/2007011*",
             "--dataset-version",
             "202105",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]

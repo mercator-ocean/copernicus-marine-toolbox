@@ -1,7 +1,6 @@
 {
   "dataset_id": "FAKE_ID",
   "end_datetime": "2021-01-02",
-  "force_download": false,
   "maximum_latitude": 0.1,
   "maximum_longitude": 0.1,
   "minimum_latitude": 0.0,

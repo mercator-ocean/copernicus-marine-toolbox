@@ -1,3 +1,4 @@
+import json
 import os
 import pathlib
 from unittest import mock
@@ -32,18 +33,24 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE,
-            "--force-download",
-            "--show-outputnames",
+            "-r",
+            "file_path",
             "--overwrite-output-data",
             "-o",
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert (
-            b"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
-            b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
-            b"history/BO/AR_PR_BO_58JM.nc"
-        ) in self.output.stdout
+        response_get = json.loads(self.output.stdout)
+        to_check = (
+            "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            "history/BO/AR_PR_BO_58JM.nc"
+        )
+        assert [
+            "nice"
+            for file_get in response_get["files"]
+            if to_check in file_get["file_path"]
+        ]
         assert b"Skipping" not in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58JM.nc"
@@ -68,7 +75,6 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_WITH_ONE_WRONG,
-            "--force-download",
             "-o",
             str(tmp_path),
         ]
@@ -95,7 +101,6 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIIFERENT_PATH_TYPES,
-            "--force-download",
             "-o",
             str(tmp_path),
         ]
@@ -112,7 +117,6 @@ class TestGetDirectDownload:
             "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
             "--file-list",
             DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS,
-            "--force-download",
             "-o",
             str(tmp_path),
         ]
@@ -137,8 +141,6 @@ class TestGetDirectDownload:
         get_result = get(
             dataset_id="cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             file_list=pathlib.Path(DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE),
-            force_download=True,
-            show_outputnames=True,
             overwrite_output_data=True,
             output_directory=tmp_path,
         )

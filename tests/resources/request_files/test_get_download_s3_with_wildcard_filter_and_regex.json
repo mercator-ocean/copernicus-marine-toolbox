@@ -1,7 +1,6 @@
 {
   "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
   "filter": "*_200[45]*.nc",
-  "force_download": true,
   "regex": ".*_(2001|2002|2003).*.nc",
   "service": "files"
 }

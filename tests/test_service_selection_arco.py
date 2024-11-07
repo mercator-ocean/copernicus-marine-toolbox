@@ -12,6 +12,7 @@ class TestArcoServiceSelection:
             f"{dataset_id}",
             "--variable",
             "thetao",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -39,6 +40,7 @@ class TestArcoServiceSelection:
             "33.96",
             "--maximum-latitude",
             "34.2",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -62,6 +64,7 @@ class TestArcoServiceSelection:
             "2001-01-01 00:00:00",
             "--end-datetime",
             "2005-01-01 00:00:00",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -95,6 +98,7 @@ class TestArcoServiceSelection:
             "2001-01-01 00:00:00",
             "--end-datetime",
             "2005-01-01 00:00:00",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -128,6 +132,7 @@ class TestArcoServiceSelection:
             "2001-01-01 00:00:00",
             "--end-datetime",
             "2001-01-01 00:00:00",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -159,6 +164,7 @@ class TestArcoServiceSelection:
             "2001-01-01 00:00:00",
             "--end-datetime",
             "2005-01-01 00:00:00",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -192,6 +198,7 @@ class TestArcoServiceSelection:
             "2023-11-26T00:00:00",
             "--end-datetime",
             "2023-11-28T23:59:59",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
