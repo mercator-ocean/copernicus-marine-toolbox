@@ -93,16 +93,16 @@ def download_dataset(
     service: CopernicusMarineService,
     dry_run: bool,
     overwrite_output_data: bool,
-    dask_chunk_size_limit: Optional[int],
+    chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
-    if dask_chunk_size_limit:
+    if chunk_size_limit:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,
             temporal_parameters,
             depth_parameters,
             variables,
-            dask_chunk_size_limit,
+            chunk_size_limit,
         )
     else:
         optimum_dask_chunking = None
@@ -189,7 +189,7 @@ def download_zarr(
     disable_progress_bar: bool,
     dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
-    dask_chunk_size_limit: Optional[int],
+    chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
@@ -248,7 +248,7 @@ def download_zarr(
         netcdf3_compatible=subset_request.netcdf3_compatible,
         dry_run=subset_request.dry_run,
         service=service,
-        dask_chunk_size_limit=dask_chunk_size_limit,
+        chunk_size_limit=chunk_size_limit,
     )
     return response
 
@@ -311,7 +311,7 @@ def get_optimum_dask_chunking(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     variables: Optional[list[str]],
-    dask_chunk_size_limit: int,
+    chunk_size_limit: int,
 ) -> Optional[dict[str, Union[int, float]]]:
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
@@ -370,7 +370,7 @@ def get_optimum_dask_chunking(
     logger.debug(f"Max dask chunk factor: {max_dask_chunk_factor}")
     optimum_dask_factors = _get_optimum_factors(
         max_dask_chunk_factor,
-        dask_chunk_size_limit,
+        chunk_size_limit,
     )
     logger.debug(f"Optimum dask factors: {optimum_dask_factors}")
     optimum_dask_chunking = {
@@ -483,7 +483,7 @@ def _save_dataset_locally(
     if output_path.suffix == ".zarr":
         if netcdf_compression_level > 0:
             raise NetCDFCompressionNotAvailable(
-                "--netcdf-compression-enabled option cannot be used when "
+                "--netcdf-compression-level option cannot be used when "
                 "writing to ZARR"
             )
         _download_dataset_as_zarr(dataset, output_path)

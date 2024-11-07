@@ -203,7 +203,7 @@ SUBSET: dict[str, str] = {
     "NETCDF3_COMPATIBLE_HELP": (
         "Enable downloading the dataset in a netCDF3 compatible format."
     ),
-    "DASK_CHUNK_SIZE_LIMIT_HELP": (
+    "CHUNK_SIZE_LIMIT_HELP": (
         "Limit the size of the chunks in the dask array. Default is around 100MB. "
         "Can be set to 0 to disable chunking. Positive integer values are accepted."
     ),

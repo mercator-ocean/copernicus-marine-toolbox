@@ -252,10 +252,10 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["NETCDF3_COMPATIBLE_HELP"],
 )
 @click.option(
-    "--dask-chunk-size-limit",
+    "--chunk-size-limit",
     type=click.IntRange(min=0),
     default=100,
-    help=documentation_utils.SUBSET["DASK_CHUNK_SIZE_LIMIT_HELP"],
+    help=documentation_utils.SUBSET["CHUNK_SIZE_LIMIT_HELP"],
 )
 @click.option(
     "--staging",
@@ -297,7 +297,7 @@ def subset(
     returned_query_metadata: Optional[str],
     disable_progress_bar: bool,
     log_level: str,
-    dask_chunk_size_limit: int,
+    chunk_size_limit: int,
     staging: bool,
 ):
     if log_level == "QUIET":
@@ -348,7 +348,7 @@ def subset(
         staging=staging,
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
-        dask_chunk_size_limit=dask_chunk_size_limit,
+        chunk_size_limit=chunk_size_limit,
     )
     if returned_query_metadata:
         fields_to_include = set(returned_query_metadata.split(","))

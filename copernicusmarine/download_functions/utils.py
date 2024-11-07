@@ -369,37 +369,34 @@ def get_number_of_chunks_for_coordinate(
         requested_maximum = values[-1]  # type: ignore
 
     index_left_minimum = bisect.bisect_left(values, requested_minimum)  # type: ignore
-    if index_left_minimum == len(values) - 1:
-        chunk_of_requested_minimum = math.floor(
-            (index_left_minimum) / chunking_length
-        )
-    elif abs(values[index_left_minimum] - requested_minimum) <= abs(  # type: ignore
+    if index_left_minimum == len(values) - 1 or abs(
+        values[index_left_minimum] - requested_minimum  # type: ignore
+    ) <= abs(
         values[index_left_minimum + 1] - requested_minimum  # type: ignore
     ):
         chunk_of_requested_minimum = math.floor(
-            index_left_minimum / chunking_length
+            (index_left_minimum) / chunking_length
         )
     else:
         chunk_of_requested_minimum = math.floor(
             (index_left_minimum + 1) / chunking_length
         )
 
-    index_left_maximum = bisect.bisect_right(values, requested_maximum)  # type: ignore
-    index_left_maximum = index_left_maximum - 1
-    if index_left_maximum == len(values) - 1 or index_left_maximum == len(
-        values
-    ):
-        chunk_of_requested_maximum = math.floor(
-            (index_left_maximum) / chunking_length
+    index_right_maximum = bisect.bisect_right(values, requested_maximum)  # type: ignore
+    index_right_maximum = index_right_maximum - 1
+    if (
+        index_right_maximum == len(values) - 1
+        or index_right_maximum == len(values)
+        or abs(values[index_right_maximum] - requested_maximum)  # type: ignore
+        <= abs(
+            values[index_right_maximum + 1] - requested_maximum  # type: ignore
         )
-    elif abs(values[index_left_maximum] - requested_maximum) <= abs(  # type: ignore
-        values[index_left_maximum + 1] - requested_maximum  # type: ignore
     ):
         chunk_of_requested_maximum = math.floor(
-            index_left_maximum / chunking_length
+            (index_right_maximum) / chunking_length
         )
     else:
         chunk_of_requested_maximum = math.floor(
-            (index_left_maximum + 1) / chunking_length
+            (index_right_maximum + 1) / chunking_length
         )
     return chunk_of_requested_maximum - chunk_of_requested_minimum + 1

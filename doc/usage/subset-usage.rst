@@ -109,12 +109,12 @@ Imagine a dataset with longitudes from 5.0 to 36.5, with steps of 0.5.
 
 If you request a single point, the nearest point in that dimension will be returned.
 
-About ``--dask-chunk-size-limit`` option
+About ``--chunk-size-limit`` option
 """"""""""""""""""""""""""""""""""""""""""
 
 The Copernicus Marine toolbox uses ``xarray`` to open and subset datasets.
 In the backend, it uses ``dask`` to handle large datasets.
-Those are powerful tool for handling large datasets and will work right off the bat in most cases.
+Those are powerful tools for handling large datasets and will work directly in most cases.
 You can read more about it on the `xarray documentation page <https://docs.xarray.dev/en/stable/user-guide/dask.html>`_.
 
 However, in some cases the default chunk size might not be optimal for your use case. Indeed, by default,
@@ -135,3 +135,8 @@ For now, it does not seem like there is a one-size-fits-all solution and you mig
 
   The progress bar showed when using the ``subset`` command will be correlated to the chunk size used.
   The lower the chunk size, the more tasks you will see in the progress bar.
+
+To sum up, the ``--chunk-size-limit`` option allows you to play with the chunk size of the process.
+The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the ressources needed.
+If the chunk size is too small, many tasks are being created and handled by dask which means a consequent dask graph need to be handled.
+The latter can lead to huge overhead and slow down the process.
