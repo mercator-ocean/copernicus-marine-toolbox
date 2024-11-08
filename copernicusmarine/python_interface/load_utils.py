@@ -71,13 +71,17 @@ def load_data_object_from_load_request(
                 load_request.temporal_parameters.start_datetime = (
                     parsed_start_datetime
                 )
-        optimum_dask_chunking = get_optimum_dask_chunking(
-            retrieval_service.service,
-            load_request.geographical_parameters,
-            load_request.temporal_parameters,
-            load_request.depth_parameters,
-            load_request.variables,
-            chunks_factor_size_limit,
+        optimum_dask_chunking = (
+            get_optimum_dask_chunking(
+                retrieval_service.service,
+                load_request.geographical_parameters,
+                load_request.temporal_parameters,
+                load_request.depth_parameters,
+                load_request.variables,
+                chunks_factor_size_limit,
+            )
+            if chunks_factor_size_limit
+            else None
         )
         dataset = arco_series_load_function(
             username=username,
