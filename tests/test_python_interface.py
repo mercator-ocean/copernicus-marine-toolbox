@@ -58,7 +58,7 @@ class TestPythonInterface:
 
     def test_subset_function(self, tmp_path):
         self.when_subset_function(tmp_path)
-        self.and_skip_existing(tmp_path)
+        self.then_the_same_with_skip_existing_does_not_download(tmp_path)
 
     def when_subset_function(self, tmp_path):
         subset_result = subset(
@@ -78,7 +78,7 @@ class TestPythonInterface:
         assert subset_result is not None
         assert subset_result.file_path.exists()
 
-    def and_skip_existing(self, tmp_path):
+    def then_the_same_with_skip_existing_does_not_download(self, tmp_path):
         subset_result = subset(
             username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
@@ -95,7 +95,7 @@ class TestPythonInterface:
         )
         assert subset_result.file_path.exists()
         assert "IGNORED" == subset_result.file_status
-        assert "003" == subset_result.status
+        assert "000" == subset_result.status
 
     def test_open_dataset(self):
         dataset = open_dataset(

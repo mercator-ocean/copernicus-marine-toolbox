@@ -166,8 +166,6 @@ def download_dataset(
         response.message = StatusMessage.DRY_RUN
         return response
     elif skip_existing and os.path.exists(output_path):
-        response.status = StatusCode.NO_DATA_TO_DOWNLOAD
-        response.message = StatusMessage.NO_DATA_TO_DOWNLOAD
         response.file_status = FileStatus.IGNORED
         return response
 
