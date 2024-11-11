@@ -60,7 +60,7 @@ run-using-pyinstaller-windows-latest:
 
 run-using-pyinstaller-macos:
 	pip install -e .
-	python -m PyInstaller --copy-metadata xarray --collect-data dask --collect-data distributed --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-${ARCH}.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=${ARCH}
+	python -m PyInstaller --copy-metadata xarray --copy-metada pandas --collect-data dask --collect-data distributed --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-${ARCH}.cli copernicusmarine/command_line_interface/copernicus_marine.py --onefile --target-architecture=${ARCH}
 
 run-using-pyinstaller-macos-13: ARCH = x86_64
 run-using-pyinstaller-macos-13: run-using-pyinstaller-macos
