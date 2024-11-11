@@ -22,14 +22,17 @@ class MutuallyExclusiveOption(Option):
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
+        excluded_option_to_snake_case = {
+            name.replace("-", "_") for name in self.mutually_exclusive
+        }
         if (
-            self.mutually_exclusive.intersection(opts)
+            excluded_option_to_snake_case.intersection(opts)
             and self.name
             and self.name in opts
         ):
             raise UsageError(
                 f"Illegal usage: arguments '{self.name.replace('_', '-')}' and "
-                f"'{', '.join(self.mutually_exclusive).replace('_', '-')}'"
+                f"'{', '.join(self.mutually_exclusive)}'"
                 " are mutually exclusive."
             )
 
