@@ -121,12 +121,6 @@ def download_original_files(
         files_information=files_headers,
         output_directory=pathlib.Path(get_request.output_directory),
         no_directories=get_request.no_directories,
-        overwrite=(
-            get_request.overwrite_output_data
-            if not get_request.sync
-            else False
-            # TODO: check that with sync we should overwrite
-        ),
     )
 
     if get_request.dry_run and files_headers.total_size:
@@ -143,16 +137,13 @@ def download_original_files(
             logger.info("Some files will be deleted due to sync delete:")
             for file_to_delete in files_headers.files_to_delete:
                 logger.info(file_to_delete)
+                file_to_delete.unlink()
     if files_headers.total_size == 0:
         logger.info("No data to download")
         if not files_headers.files_to_delete:
             return create_response_get_from_files_headers(
                 files_headers, get_request, "NO_DATA_TO_DOWNLOAD"
             )
-
-    if get_request.sync_delete and files_headers.files_to_delete:
-        for file_to_delete in files_headers.files_to_delete:
-            file_to_delete.unlink()
 
     response = create_response_get_from_files_headers(
         files_headers, get_request, "SUCCESS"
@@ -162,12 +153,18 @@ def download_original_files(
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
         return response
+    filenames_in = []
+    filenames_out = []
+    for s3_file in files_headers.s3_files:
+        if not s3_file.ignore:
+            filenames_in.append(s3_file.filename_in)
+            filenames_out.append(s3_file.filename_out)
     download_files(
         username,
         endpoint,
         bucket,
-        [s3_file.filename_in for s3_file in files_headers.s3_files],
-        [s3_file.filename_out for s3_file in files_headers.s3_files],
+        filenames_in,
+        filenames_out,
         max_concurrent_requests,
         disable_progress_bar,
     )
@@ -207,7 +204,9 @@ def create_response_get_from_files_headers(
             else None
         ),
         files_not_found=(
-            files_headers.files_not_found if files_headers else None
+            files_headers.files_not_found
+            if files_headers.files_not_found
+            else None
         ),
         status=(
             StatusCode.NO_DATA_TO_DOWNLOAD
@@ -339,9 +338,14 @@ def _download_header(
                     sync,
                     no_directories,
                 ),
-                overwrite=overwrite
-                and _check_already_exists(
-                    filename, directory_out, no_directories
+                overwrite=_check_should_be_overwritten(
+                    filename,
+                    size,
+                    last_modified_datetime,
+                    directory_out,
+                    sync,
+                    overwrite,
+                    no_directories,
                 ),
             )
             files_headers.add_s3_file(file_to_append)
@@ -426,9 +430,14 @@ def _download_header_for_direct_download(
                     sync,
                     no_directories,
                 ),
-                overwrite=overwrite
-                and _check_already_exists(
-                    full_path, directory_out, no_directories
+                overwrite=_check_should_be_overwritten(
+                    full_path,
+                    size,
+                    last_modified,
+                    directory_out,
+                    sync,
+                    overwrite,
+                    no_directories,
                 ),
             )
             files_headers.add_s3_file(file_to_append)
@@ -494,8 +503,29 @@ def _check_should_be_ignored(
         and _check_already_exists(filename, directory_out, no_directories)
     ) or (
         sync
-        and _check_needs_to_be_synced(
+        and not _check_needs_to_be_synced(
             filename, size, last_modified_datetime, directory_out
+        )
+    )
+
+
+def _check_should_be_overwritten(
+    filename: str,
+    size: int,
+    last_modified_datetime: DateTime,
+    directory_out: pathlib.Path,
+    sync: bool,
+    overwrite: bool,
+    no_directories: bool,
+) -> bool:
+    return (
+        overwrite
+        and _check_already_exists(filename, directory_out, no_directories)
+        or (
+            sync
+            and _check_needs_to_be_synced(
+                filename, size, last_modified_datetime, directory_out
+            )
         )
     )
 
@@ -504,13 +534,17 @@ def _create_information_message_before_download(
     files_information: S3FilesDescriptor,
 ) -> str:
     message = "You requested the download of the following files:\n"
+    files_printed = 0
     for s3_file in files_information.s3_files:
         if not s3_file.ignore:
+            files_printed += 1
             message += str(s3_file.filename_in)
             message += (
                 f" - {format_file_size(float(s3_file.size))}"
                 f" - {s3_file.last_modified}\n"
             )
+        if files_printed == 20:
+            break
     if len(files_information.s3_files) > 20:
         message += (
             f"Printed 20 out of {len(files_information.s3_files)} files\n"
@@ -634,7 +668,6 @@ def _download_one_file(
 
 def _create_filenames_out(
     files_information: S3FilesDescriptor,
-    overwrite: bool,
     output_directory: pathlib.Path = pathlib.Path("."),
     no_directories=False,
 ) -> S3FilesDescriptor:
@@ -645,7 +678,7 @@ def _create_filenames_out(
             output_directory,
             no_directories,
         )
-        if not overwrite and not s3_file.ignore:
+        if not s3_file.overwrite and not s3_file.ignore:
             filename_out = get_unique_filename(
                 filepath=filename_out,
             )

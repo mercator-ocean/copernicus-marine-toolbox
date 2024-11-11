@@ -101,7 +101,6 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED,
-            "--force-download",
             "--show-outputnames",
             "--skip-existing",
             "-o",

@@ -201,7 +201,7 @@ def cli_subset() -> None:
     default=False,
     cls=MutuallyExclusiveOption,
     help=documentation_utils.SUBSET["SKIP_EXISTING_HELP"],
-    mutually_exclusive=["overwrite_output_data"],
+    mutually_exclusive=["overwrite-output-data"],
 )
 @click.option(
     "--service",

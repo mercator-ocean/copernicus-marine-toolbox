@@ -77,7 +77,7 @@ def cli_get() -> None:
     is_flag=True,
     help=documentation_utils.GET["NO_DIRECTORIES_HELP"],
     default=False,
-    mutually_exclusive=["sync", "sync_delete", "skip_existing"],
+    mutually_exclusive=["sync", "sync-delete", "skip-existing"],
 )
 @click.option(
     "--output-directory",
@@ -97,7 +97,7 @@ def cli_get() -> None:
     default=False,
     cls=MutuallyExclusiveOption,
     help=documentation_utils.GET["OVERWRITE_OUTPUT_DATA_HELP"],
-    mutually_exclusive=["skip_existing", "sync", "sync_delete"],
+    mutually_exclusive=["skip-existing", "sync", "sync-delete"],
 )
 @click.option(
     "--create-template",
@@ -143,7 +143,7 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=documentation_utils.GET["SYNC_HELP"],
-    mutually_exclusive=["no_directories", "skip_existing"],
+    mutually_exclusive=["no-directories", "skip-existing"],
 )
 @click.option(
     "--sync-delete",
@@ -151,7 +151,7 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=documentation_utils.GET["SYNC_DELETE_HELP"],
-    mutually_exclusive=["no_directories", "skip_existing"],
+    mutually_exclusive=["no-directories", "skip-existing"],
 )
 @click.option(
     "--skip-existing",

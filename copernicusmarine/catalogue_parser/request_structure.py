@@ -228,7 +228,15 @@ class GetRequest:
     def enforce_types(self):
         type_enforced_dict = {}
         for key, value in self.__dict__.items():
-            if key in ["no_directories"]:
+            if key in [
+                "no_directories",
+                "sync",
+                "sync_delete",
+                "dry_run",
+                "overwrite_output_data",
+                "skip_existing",
+                "index_parts",
+            ]:
                 new_value = bool(value) if value is not None else None
             else:
                 new_value = str(value) if value else None
