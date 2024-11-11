@@ -70,6 +70,7 @@ def subset_function(
     staging: bool,
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
+    chunk_size_limit: int,
 ) -> ResponseSubset:
     VersionVerifier.check_version_subset(staging)
     if staging:
@@ -181,7 +182,8 @@ def subset_function(
                 retrieval_service.dataset_id,
                 disable_progress_bar,
                 retrieval_service.dataset_valid_start_date,
-                service=retrieval_service.service,
+                retrieval_service.service,
+                None if chunk_size_limit == 0 else chunk_size_limit,
             )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)

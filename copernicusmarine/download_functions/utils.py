@@ -299,8 +299,31 @@ def get_approximation_size_data_downloaded(
             chunking_length = coordinate.chunking_length
             if not chunking_length:
                 continue
+            if coordinate.coordinate_id == "time":
+                requested_maximum = (
+                    timestamp_or_datestring_to_datetime(
+                        temp_dataset[coordinate.coordinate_id].values.max()
+                    ).timestamp()
+                    * 1e3
+                )
+                requested_minimum = (
+                    timestamp_or_datestring_to_datetime(
+                        temp_dataset[coordinate.coordinate_id].values.min()
+                    ).timestamp()
+                    * 1e3
+                )
+            else:
+                requested_maximum = float(
+                    temp_dataset[coordinate.coordinate_id].max().values
+                )
+                requested_minimum = float(
+                    temp_dataset[coordinate.coordinate_id].min().values
+                )
             number_of_chunks_needed = get_number_of_chunks_for_coordinate(
-                temp_dataset, coordinate, chunking_length
+                requested_minimum,
+                requested_maximum,
+                coordinate,
+                chunking_length,
             )
             if number_of_chunks_needed is None:
                 return None
@@ -315,12 +338,15 @@ def get_approximation_size_data_downloaded(
 
 
 def get_number_of_chunks_for_coordinate(
-    dataset: xarray.Dataset,
+    requested_minimum: Optional[float],
+    requested_maximum: Optional[float],
     coordinate: CopernicusMarineCoordinate,
     chunking_length: Union[int, float],
 ) -> Optional[int]:
     maximum_value = coordinate.maximum_value
     minimum_value = coordinate.minimum_value
+    # TODO: try to get rid of this type ignores
+    # check how bisect works with the time values
     values = coordinate.values
     step_value = coordinate.step
     if not values and (
@@ -328,7 +354,7 @@ def get_number_of_chunks_for_coordinate(
         and minimum_value is not None
         and step_value is not None
     ):
-        values = [minimum_value]
+        values = [minimum_value]  # type: ignore
         for _ in range(
             0, math.ceil((maximum_value - minimum_value) / step_value)  # type: ignore
         ):
@@ -336,49 +362,41 @@ def get_number_of_chunks_for_coordinate(
     elif not values:
         return None
 
-    if coordinate.coordinate_id == "time":
-        requested_maximum = (
-            timestamp_or_datestring_to_datetime(
-                dataset[coordinate.coordinate_id].values.max()
-            ).timestamp()
-            * 1e3
-        )
-        requested_minimum = (
-            timestamp_or_datestring_to_datetime(
-                dataset[coordinate.coordinate_id].values.min()
-            ).timestamp()
-            * 1e3
-        )
-    else:
-        requested_maximum = float(
-            dataset[coordinate.coordinate_id].max().values
-        )
-        requested_minimum = float(
-            dataset[coordinate.coordinate_id].min().values
-        )
-
     values.sort()
-    index_left = bisect.bisect_left(values, requested_minimum)
-    if index_left == len(values) - 1:
-        chunk_of_requested_minimum = math.floor((index_left) / chunking_length)
-    elif abs(values[index_left] - requested_minimum) <= abs(  # type: ignore
-        values[index_left + 1] - requested_minimum  # type: ignore
+    if requested_minimum is None or requested_minimum < values[0]:  # type: ignore
+        requested_minimum = values[0]  # type: ignore
+    if requested_maximum is None or requested_maximum > values[-1]:  # type: ignore
+        requested_maximum = values[-1]  # type: ignore
+
+    index_left_minimum = bisect.bisect_left(values, requested_minimum)  # type: ignore
+    if index_left_minimum == len(values) - 1 or abs(
+        values[index_left_minimum] - requested_minimum  # type: ignore
+    ) <= abs(
+        values[index_left_minimum + 1] - requested_minimum  # type: ignore
     ):
-        chunk_of_requested_minimum = math.floor(index_left / chunking_length)
+        chunk_of_requested_minimum = math.floor(
+            (index_left_minimum) / chunking_length
+        )
     else:
         chunk_of_requested_minimum = math.floor(
-            (index_left + 1) / chunking_length
+            (index_left_minimum + 1) / chunking_length
         )
 
-    index_left = bisect.bisect_left(values, requested_maximum)
-    if index_left == len(values) - 1 or index_left == len(values):
-        chunk_of_requested_maximum = math.floor((index_left) / chunking_length)
-    elif abs(values[index_left] - requested_maximum) <= abs(  # type: ignore
-        values[index_left + 1] - requested_maximum  # type: ignore
+    index_right_maximum = bisect.bisect_right(values, requested_maximum)  # type: ignore
+    index_right_maximum = index_right_maximum - 1
+    if (
+        index_right_maximum == len(values) - 1
+        or index_right_maximum == len(values)
+        or abs(values[index_right_maximum] - requested_maximum)  # type: ignore
+        <= abs(
+            values[index_right_maximum + 1] - requested_maximum  # type: ignore
+        )
     ):
-        chunk_of_requested_maximum = math.floor(index_left / chunking_length)
+        chunk_of_requested_maximum = math.floor(
+            (index_right_maximum) / chunking_length
+        )
     else:
         chunk_of_requested_maximum = math.floor(
-            (index_left + 1) / chunking_length
+            (index_right_maximum + 1) / chunking_length
         )
     return chunk_of_requested_maximum - chunk_of_requested_minimum + 1

@@ -16,6 +16,9 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
+from copernicusmarine.download_functions.download_arco_series import (
+    get_optimum_dask_chunking,
+)
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
     timestamp_or_datestring_to_datetime,
@@ -25,6 +28,7 @@ from copernicusmarine.download_functions.subset_xarray import (
 def load_data_object_from_load_request(
     load_request: LoadRequest,
     arco_series_load_function: Callable,
+    chunks_factor_size_limit: int,
 ) -> Union[xarray.Dataset, pandas.DataFrame]:
     retrieval_service: RetrievalService = get_retrieval_service(
         dataset_id=load_request.dataset_id,
@@ -67,6 +71,18 @@ def load_data_object_from_load_request(
                 load_request.temporal_parameters.start_datetime = (
                     parsed_start_datetime
                 )
+        optimum_dask_chunking = (
+            get_optimum_dask_chunking(
+                retrieval_service.service,
+                load_request.geographical_parameters,
+                load_request.temporal_parameters,
+                load_request.depth_parameters,
+                load_request.variables,
+                chunks_factor_size_limit,
+            )
+            if chunks_factor_size_limit
+            else None
+        )
         dataset = arco_series_load_function(
             username=username,
             password=password,
@@ -76,7 +92,7 @@ def load_data_object_from_load_request(
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
             coordinates_selection_method=load_request.coordinates_selection_method,
-            chunks=None,
+            chunks=optimum_dask_chunking,
         )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)

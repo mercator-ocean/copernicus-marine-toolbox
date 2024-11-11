@@ -56,6 +56,7 @@ def subset(
     staging: bool = False,
     netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
+    chunk_size_limit: int = 100,
 ) -> ResponseSubset:
     """
     Extracts a subset of data from a specified dataset using given parameters."
@@ -118,6 +119,8 @@ def subset(
         Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
     netcdf3_compatible : bool, optional
         Enable downloading the dataset in a netCDF3 compatible format.
+    chunk_size_limit : int, default 100
+        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted.
 
     Returns
     -------
@@ -163,7 +166,8 @@ def subset(
         overwrite_output_data,
         dry_run,
         disable_progress_bar,
-        staging=staging,
-        netcdf_compression_level=netcdf_compression_level,
-        netcdf3_compatible=netcdf3_compatible,
+        staging,
+        netcdf_compression_level,
+        netcdf3_compatible,
+        chunk_size_limit,
     )

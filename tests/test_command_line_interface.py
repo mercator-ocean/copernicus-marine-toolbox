@@ -1853,3 +1853,35 @@ class TestCommandLineInterface:
             b"mdl-metadata-dta/dataset_product_id_mapping.json"
             in self.output.stderr
         )
+
+    def test_subset_optimise_chunks(self, tmp_path):
+        """
+        This command can take several minutes or even end up in a memory issue
+        because of the dask graph
+
+        copernicusmarine subset -i cmems_mod_glo_phy_my_0.083deg_P1D-m -t "2013-08-01" -T "2013-08-01" -x 113.896034  -y -11.045679 -Y -6.366948 -z 0 -Z 5000 --force-download
+        """  # noqa
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+            "-t",
+            "2013-08-01",
+            "-T",
+            "2013-08-01",
+            "-x",
+            "113.896034",
+            "-y",
+            "-11.045679",
+            "-Y",
+            "-6.366948",
+            "-z",
+            "0",
+            "-Z",
+            "5000",
+            "--output-directory",
+            f"{tmp_path}",
+        ]
+        self.output = execute_in_terminal(command, timeout_second=60)
+        assert self.output.returncode == 0

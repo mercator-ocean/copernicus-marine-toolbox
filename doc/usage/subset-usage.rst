@@ -108,3 +108,35 @@ Imagine a dataset with longitudes from 5.0 to 36.5, with steps of 0.5.
   - Returns longitudes within the range: [0.5, 36.0]
 
 If you request a single point, the nearest point in that dimension will be returned.
+
+About ``--chunk-size-limit`` option
+""""""""""""""""""""""""""""""""""""""""""
+
+The Copernicus Marine toolbox uses ``xarray`` to open and subset datasets.
+In the backend, it uses ``dask`` to handle large datasets.
+Those are powerful tools for handling large datasets and will work directly in most cases.
+You can read more about it on the `xarray documentation page <https://docs.xarray.dev/en/stable/user-guide/dask.html>`_.
+
+However, in some cases the default chunk size might not be optimal for your use case. Indeed, by default,
+the Copernicus Marine ARCO datasets are organised in chunks of around 1MB.
+This might create a lot of overhead if you are working with a lot of small chunks and ``dask``.
+Please see the `dask documentation <https://docs.dask.org/en/stable/best-practices.html#avoid-very-large-graphs>`_ for the details.
+
+Hence, by default the Copernicus Marine toolbox will try to optimise the chunk size and
+will use a chunk size of 100 times the original chunk size. So approximately 100MB.
+If the subset is small enough it won't even use ``dask`` at all.
+
+In some cases, you might want to change this behaviour. For example, if you have a really large dataset
+to download and you have great computing power you might want to increase the chunk size.
+You can also not use ``dask`` at all by setting the chunk size to 0.
+For now, it does not seem like there is a one-size-fits-all solution and you might have to experiment a bit.
+
+.. note::
+
+  The progress bar showed when using the ``subset`` command will be correlated to the chunk size used.
+  The lower the chunk size, the more tasks you will see in the progress bar.
+
+To sum up, the ``--chunk-size-limit`` option allows you to play with the chunk size of the process.
+The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the ressources needed.
+If the chunk size is too small, many tasks are being created and handled by dask which means a consequent dask graph need to be handled.
+The latter can lead to huge overhead and slow down the process.

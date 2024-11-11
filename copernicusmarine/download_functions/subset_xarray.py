@@ -218,7 +218,15 @@ def get_size_of_coordinate_subset(
 def _shift_longitude_dimension(
     dataset: xarray.Dataset,
     minimum_longitude_modulus: float,
+    coordinates_selection_method: CoordinatesSelectionMethod,
 ):
+    if coordinates_selection_method == "outside":
+        minimum_longitude_modulus = _choose_extreme_point(
+            dataset,
+            "longitude",
+            minimum_longitude_modulus,
+            "pad",
+        )  # type: ignore
     window = (
         minimum_longitude_modulus + 180
     )  # compute the degrees needed to move the dataset
@@ -269,51 +277,57 @@ def _longitude_subset(
     longitude_parameters: LongitudeParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
+    longitude_moduli = apply_longitude_modulus(longitude_parameters)
+    if longitude_moduli is None:
+        return dataset
+    minimum_longitude_modulus, maximum_longitude_modulus = longitude_moduli
+    if (
+        maximum_longitude_modulus
+        and minimum_longitude_modulus
+        and maximum_longitude_modulus < minimum_longitude_modulus
+    ):
+        maximum_longitude_modulus += 360
+        dataset = _shift_longitude_dimension(
+            dataset,
+            minimum_longitude_modulus,
+            coordinates_selection_method,
+        )
+
+    longitude_selection = slice(
+        minimum_longitude_modulus,
+        maximum_longitude_modulus,
+    )
+
+    return _dataset_custom_sel(
+        dataset,
+        "longitude",
+        longitude_selection,
+        coordinates_selection_method,
+    )
+
+
+def apply_longitude_modulus(
+    longitude_parameters: LongitudeParameters,
+) -> Optional[tuple[Optional[float], Optional[float]]]:
     minimum_longitude = longitude_parameters.minimum_longitude
     maximum_longitude = longitude_parameters.maximum_longitude
-    if minimum_longitude is not None or maximum_longitude is not None:
-        if minimum_longitude is not None and maximum_longitude is not None:
-            if minimum_longitude > maximum_longitude:
-                raise MinimumLongitudeGreaterThanMaximumLongitude(
-                    "--minimum-longitude option must be smaller "
-                    "or equal to --maximum-longitude"
-                )
-            if maximum_longitude - minimum_longitude >= 360:
-                longitude_selection: Union[float, slice, None] = None
-            else:
-                minimum_longitude_modulus = longitude_modulus(
-                    minimum_longitude
-                )
-                maximum_longitude_modulus = longitude_modulus(
-                    maximum_longitude
-                )
-                if maximum_longitude_modulus < minimum_longitude_modulus:
-                    maximum_longitude_modulus += 360
-                    if coordinates_selection_method == "outside":
-                        minimum_longitude_modulus = _choose_extreme_point(
-                            dataset,
-                            "longitude",
-                            minimum_longitude_modulus,
-                            "pad",
-                        )
-                    dataset = _shift_longitude_dimension(
-                        dataset, minimum_longitude_modulus  # type: ignore
-                    )
-                longitude_selection = slice(
-                    minimum_longitude_modulus,
-                    maximum_longitude_modulus,
-                )
-        else:
-            longitude_selection = slice(minimum_longitude, maximum_longitude)
-
-        if longitude_selection is not None:
-            dataset = _dataset_custom_sel(
-                dataset,
-                "longitude",
-                longitude_selection,
-                coordinates_selection_method,
+    if minimum_longitude is None and maximum_longitude is None:
+        return None
+    if minimum_longitude is not None and maximum_longitude is not None:
+        if minimum_longitude > maximum_longitude:
+            raise MinimumLongitudeGreaterThanMaximumLongitude(
+                "--minimum-longitude option must be smaller "
+                "or equal to --maximum-longitude"
             )
-    return dataset
+        if maximum_longitude - minimum_longitude >= 360:
+            return None
+        else:
+            minimum_longitude_modulus = longitude_modulus(minimum_longitude)
+            maximum_longitude_modulus = longitude_modulus(maximum_longitude)
+            return minimum_longitude_modulus, maximum_longitude_modulus
+
+    else:
+        return minimum_longitude, maximum_longitude
 
 
 def _temporal_subset(

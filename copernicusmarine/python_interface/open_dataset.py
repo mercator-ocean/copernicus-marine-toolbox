@@ -57,6 +57,7 @@ def open_dataset(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    chunk_size_limit: int = 100,
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using 'lazy-loading' mode from a Copernicus Marine data source.
@@ -103,7 +104,8 @@ def open_dataset(
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-
+    chunk_size_limit : int, default 100
+        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted.
 
     Returns
     -------
@@ -148,5 +150,6 @@ def open_dataset(
     dataset = load_data_object_from_load_request(
         load_request,
         open_dataset_from_arco_series,
+        chunks_factor_size_limit=chunk_size_limit,
     )
     return dataset

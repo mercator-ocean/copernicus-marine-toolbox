@@ -236,13 +236,6 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["LOG_LEVEL_HELP"],
 )
 @click.option(
-    "--staging",
-    type=bool,
-    default=False,
-    is_flag=True,
-    hidden=True,
-)
-@click.option(
     "--netcdf-compression-level",
     type=click.IntRange(0, 9),
     is_flag=False,
@@ -257,6 +250,19 @@ def cli_subset() -> None:
     default=False,
     is_flag=True,
     help=documentation_utils.SUBSET["NETCDF3_COMPATIBLE_HELP"],
+)
+@click.option(
+    "--chunk-size-limit",
+    type=click.IntRange(min=0),
+    default=100,
+    help=documentation_utils.SUBSET["CHUNK_SIZE_LIMIT_HELP"],
+)
+@click.option(
+    "--staging",
+    type=bool,
+    default=False,
+    is_flag=True,
+    hidden=True,
 )
 @log_exception_and_exit
 def subset(
@@ -291,7 +297,8 @@ def subset(
     returned_query_metadata: Optional[str],
     disable_progress_bar: bool,
     log_level: str,
-    staging: bool = False,
+    chunk_size_limit: int,
+    staging: bool,
 ):
     if log_level == "QUIET":
         logger.disabled = True
@@ -341,6 +348,7 @@ def subset(
         staging=staging,
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
+        chunk_size_limit=chunk_size_limit,
     )
     if returned_query_metadata:
         fields_to_include = set(returned_query_metadata.split(","))
