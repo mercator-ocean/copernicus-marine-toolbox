@@ -60,7 +60,7 @@ class FileStatus(str, Enum):
 
     #: The file has been downloaded successfully.
     DOWNLOADED = "DOWNLOADED"
-    #: The file has been ignored.
+    #: The file has been ignored. Probably because it already exists.
     IGNORED = "IGNORED"
     #: The file has been overwritten and downloaded.
     OVERWRITTEN = "OVERWRITTEN"
