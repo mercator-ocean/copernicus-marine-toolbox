@@ -10,7 +10,7 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --log-level DEBUG
 
 **Returns:**
 
@@ -20,21 +20,19 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
     INFO - 2024-04-03T11:39:18Z - Dataset part was not specified, the first one was selected: "default"
     INFO - 2024-04-03T11:39:18Z - Service was not specified, the default one was selected: "original-files"
     INFO - 2024-04-03T11:39:18Z - Downloading using service original-files...
-    INFO - 2024-04-03T11:39:19Z - You requested the download of the following files:
+    DEBUG - 2024-04-03T11:39:19Z - You requested the download of the following files:
     s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_19930101_19931231_R20221101_RE01.nc - 8.83 MB - 2023-11-12T23:47:13Z
     [...]
     s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc - 8.62 MB - 2023-11-12T23:47:14Z
     Printed 20 out of 29 files
 
     Total size of the download: 252.94 MB
-    Do you want to proceed with download? [Y/n]:
 
 **By default:**
 
-- After the header displays a summary of the request, a download confirmation is asked. To skip this user's action, add the option ``--force-download``.
 - Files are downloaded to the current directory while maintaining the original folder structure. To avoid this behavior, add ``--no-directories`` and specify a destination with ``-o/--output-directory``.
-- Option ``--show-outputnames`` displays the full paths of the output files if required.
 - Option ``--create-file-list`` creates a file containing the names of the targeted files instead of downloading them. You must input a file name, e.g., ``--create-file-list my_files.txt``. The format must be ``.txt`` or ``.csv``.
+- This info can be accessed also using the ``--dry-run`` option without downloading anything.
 
 If the user inputs a filename that ends in ``.txt``, it will contain only the full S3 path to the targeted files, compatible with the ``--file-list`` option.
 

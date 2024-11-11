@@ -16,7 +16,7 @@ def build_command(filepath: Path, command: str):
         f"{command}",
         "--request-file",
         f"{filepath}",
-        "--force-download",
+        "--overwrite",
     ]
 
 

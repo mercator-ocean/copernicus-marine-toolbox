@@ -2,7 +2,6 @@ import logging
 import pathlib
 from typing import Hashable, Iterable, Literal, Optional, Union
 
-import click
 import pandas
 import xarray
 
@@ -16,7 +15,6 @@ from copernicusmarine.core_functions.models import (
     StatusMessage,
 )
 from copernicusmarine.core_functions.utils import (
-    FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     add_copernicusmarine_version_in_dataset_attributes,
     get_unique_filename,
 )
@@ -85,7 +83,6 @@ def download_dataset(
     netcdf3_compatible: bool,
     service: CopernicusMarineService,
     dry_run: bool,
-    force_download: bool,
     overwrite_output_data: bool,
 ) -> ResponseSubset:
     dataset = _rechunk(
@@ -117,17 +114,11 @@ def download_dataset(
     )
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
-    if not force_download:
+    if dry_run:
         logger.info(dataset)
-        logger.info(message_formatted_dataset_size_estimation)
-        click.confirm(
-            FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
-            default=True,
-            abort=True,
-            err=True,
-        )
     else:
-        logger.info(message_formatted_dataset_size_estimation)
+        logger.debug(dataset)
+    logger.info(message_formatted_dataset_size_estimation)
 
     output_path = get_unique_filename(
         filepath=output_path, overwrite_option=overwrite_output_data
@@ -207,7 +198,6 @@ def download_zarr(
         else pathlib.Path(".")
     )
     variables = subset_request.variables
-    force_download = subset_request.force_download
 
     response = download_dataset(
         username=username,
@@ -223,7 +213,6 @@ def download_zarr(
         file_format=subset_request.file_format,
         variables=variables,
         disable_progress_bar=disable_progress_bar,
-        force_download=force_download,
         overwrite_output_data=subset_request.overwrite_output_data,
         netcdf_compression_level=subset_request.netcdf_compression_level,
         netcdf3_compatible=subset_request.netcdf3_compatible,

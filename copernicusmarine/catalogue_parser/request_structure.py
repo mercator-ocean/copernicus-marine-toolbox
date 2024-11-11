@@ -73,7 +73,6 @@ class SubsetRequest:
     file_format: FileFormat = DEFAULT_FILE_FORMAT
     force_service: Optional[str] = None
     output_directory: pathlib.Path = pathlib.Path(".")
-    force_download: bool = False
     overwrite_output_data: bool = False
     netcdf_compression_level: int = 0
     netcdf3_compatible: bool = False
@@ -108,10 +107,6 @@ class SubsetRequest:
                 "end_datetime",
             ]:
                 new_value = datetime_parser(value) if value else None
-            elif key in ["force_download"]:
-                new_value = (
-                    True if value in [True, "true", "True", 1] else False
-                )
             elif key in ["variables"]:
                 new_value = list(value) if value is not None else None
             elif key in ["output_directory"]:
@@ -178,7 +173,6 @@ def convert_motu_api_request_to_structure(
     subset_request = SubsetRequest(
         dataset_id="",
         output_directory=pathlib.Path("."),
-        force_download=False,
         output_filename=None,
         force_service=None,
     )
@@ -208,9 +202,7 @@ class GetRequest:
     force_dataset_version: Optional[str] = None
     force_dataset_part: Optional[str] = None
     no_directories: bool = False
-    show_outputnames: bool = False
     output_directory: str = "."
-    force_download: bool = False
     overwrite_output_data: bool = False
     filter: Optional[str] = None
     regex: Optional[str] = None
@@ -234,11 +226,7 @@ class GetRequest:
     def enforce_types(self):
         type_enforced_dict = {}
         for key, value in self.__dict__.items():
-            if key in [
-                "no_directories",
-                "show_outputnames",
-                "force_download",
-            ]:
+            if key in ["no_directories"]:
                 new_value = bool(value) if value is not None else None
             else:
                 new_value = str(value) if value else None

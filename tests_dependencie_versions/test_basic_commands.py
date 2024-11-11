@@ -32,7 +32,6 @@ class TestBasicCommands:
             "1993-01-01T06:00:00",
             "-v",
             "VHM0",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)

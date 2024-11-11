@@ -10,13 +10,13 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
 
 .. code-block:: bash
 
-    copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
+    copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --log-level DEBUG
 
 **Returns:**
 
 .. code-block:: bash
 
-    INFO - 2024-04-03T10:18:18Z - <xarray.Dataset> Size: 3kB
+    DEBUG - 2024-04-03T10:18:18Z - <xarray.Dataset> Size: 3kB
     Dimensions:    (depth: 50, latitude: 2, longitude: 1, time: 3)
     Coordinates:
       * depth      (depth) float32 200B 0.5058 1.556 2.668 ... 5.292e+03 5.698e+03
@@ -35,9 +35,7 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
     Estimated size of the data that needs to be downloaded to obtain the result: 207 MB
     This a very rough estimation and usually its higher than the actual size of the data that needs to be downloaded.
 
-    Do you want to proceed with download? [Y/n]:
-
-By default, a summary of the dataset subset is displayed, and a download confirmation is prompted. You can skip this confirmation by using the ``--force-download`` option.
+Using log level DEBUG, a summary of the dataset subset is displayed. It is by default displayed when using the ``--dry-run`` option.
 
 Additional options
 ------------------

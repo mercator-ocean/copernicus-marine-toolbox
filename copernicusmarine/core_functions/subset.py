@@ -64,7 +64,6 @@ def subset_function(
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
     motu_api_request: Optional[str],
-    force_download: bool,
     overwrite_output_data: bool,
     dry_run: bool,
     disable_progress_bar: bool,
@@ -140,8 +139,6 @@ def subset_function(
         )
     # Specific treatment for default values:
     # In order to not overload arguments with default values
-    if force_download:
-        subset_request.force_download = force_download
     if overwrite_output_data:
         subset_request.overwrite_output_data = overwrite_output_data
 
@@ -210,10 +207,10 @@ def create_subset_template() -> None:
                 "variables": ["so", "thetao"],
                 "output_directory": "copernicusmarine_data",
                 "force_service": False,
-                "force_download": False,
                 "request_file": False,
                 "motu_api_request": False,
                 "overwrite_output_data": False,
+                "dry_run": False,
             },
             output_file,
             indent=4,

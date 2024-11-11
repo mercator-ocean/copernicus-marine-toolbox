@@ -135,7 +135,6 @@ class TestOverwriteOutputData:
                 ".*20120101.*",
                 "-o",
                 f"{folder}",
-                "--force-download",
             ]
         elif command == "subset":
             full_command = [
@@ -165,7 +164,6 @@ class TestOverwriteOutputData:
                 "2021-01-01",
                 "-o",
                 f"{folder}",
-                "--force-download",
                 "-f",
                 f"{filename}",
             ]

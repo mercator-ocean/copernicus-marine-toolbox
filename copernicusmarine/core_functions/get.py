@@ -34,10 +34,8 @@ def get_function(
     username: Optional[str],
     password: Optional[str],
     no_directories: bool,
-    show_outputnames: bool,
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
-    force_download: bool,
     overwrite_output_data: bool,
     request_file: Optional[pathlib.Path],
     filter: Optional[str],
@@ -79,10 +77,6 @@ def get_function(
         get_request.force_dataset_part = force_dataset_part
     if no_directories:
         get_request.no_directories = no_directories
-    if show_outputnames:
-        get_request.show_outputnames = show_outputnames
-    if force_download:
-        get_request.force_download = force_download
     if overwrite_output_data:
         get_request.overwrite_output_data = overwrite_output_data
     if filter:
@@ -186,8 +180,6 @@ def create_get_template() -> None:
                 "filter": "*01yav_200[0-2]*",
                 "regex": None,
                 "output_directory": "copernicusmarine_data",
-                "show_outputnames": True,
-                "force_download": False,
                 "file_list": None,
                 "sync": False,
                 "sync_delete": False,
@@ -195,6 +187,7 @@ def create_get_template() -> None:
                 "disable_progress_bar": False,
                 "overwrite_output_data": False,
                 "log_level": "INFO",
+                "dry_run": False,
             },
             output_file,
             indent=4,

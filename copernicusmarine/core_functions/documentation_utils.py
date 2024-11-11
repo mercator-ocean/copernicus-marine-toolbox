@@ -33,7 +33,6 @@ SHARED: dict[str, str] = {
         "The datasetID, required either as an argument or in the request_file option."
     ),
     "DISABLE_PROGRESS_BAR_HELP": "Flag to hide progress bar.",
-    "FORCE_DOWNLOAD_HELP": "Flag to skip confirmation before download.",
     "DRY_RUN_HELP": "If True, runs query without downloading data.",
     "RETURN_QUERY_METADATA_HELP": (
         "List of fields to include in the query metadata. "
@@ -220,9 +219,6 @@ GET: dict[str, str] = {
     ),
     "GET_RESPONSE_HELP": (
         "JSON \n A list of files that were downloaded and some metadata."
-    ),
-    "SHOW_OUTPUTNAMES_HELP": (
-        "Option to display the names of the output files before download."
     ),
     "FILTER_HELP": (
         "A pattern that must match the absolute paths of the files to download."

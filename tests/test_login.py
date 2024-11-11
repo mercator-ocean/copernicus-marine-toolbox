@@ -1,5 +1,4 @@
 import os
-import shutil
 from pathlib import Path
 
 from copernicusmarine import login
@@ -32,7 +31,6 @@ class TestLogin:
             f"{dataset_id}",
             "--variable",
             "thetao",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -117,9 +115,9 @@ class TestLogin:
             "11.4",
             "--username",
             f"{os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}",
-            "--force-download",
             "-o",
             f"{tmp_path}",
+            "--dry-run",
         ]
         password = os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD")
         assert password is not None
@@ -129,7 +127,6 @@ class TestLogin:
             input=bytes(password, "utf-8"),
         )
         assert self.output.returncode == 0, self.output.stderr
-        shutil.rmtree(Path(tmp_path))
 
     def test_login_command_with_username_and_password(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")

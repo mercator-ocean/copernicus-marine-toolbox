@@ -22,7 +22,11 @@ class MutuallyExclusiveOption(Option):
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        if self.mutually_exclusive.intersection(opts) and self.name in opts:
+        if (
+            self.mutually_exclusive.intersection(opts)
+            and self.name
+            and self.name in opts
+        ):
             raise UsageError(
                 f"Illegal usage: `{self.name.replace('_', '-')}` "
                 "is mutually exclusive with "

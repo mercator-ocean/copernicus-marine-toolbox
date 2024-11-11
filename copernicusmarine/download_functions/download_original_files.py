@@ -6,7 +6,6 @@ from itertools import chain
 from pathlib import Path
 from typing import Optional
 
-import click
 import pendulum
 from botocore.client import ClientError
 from pendulum import DateTime
@@ -26,7 +25,6 @@ from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
 )
 from copernicusmarine.core_functions.utils import (
-    FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
     get_unique_filename,
     parse_access_dataset_url,
     run_concurrently,
@@ -34,7 +32,6 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicusmarine")
-blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
 
 def download_original_files(
@@ -136,11 +133,10 @@ def download_original_files(
             else False
         ),
     )
-    if not get_request.force_download and total_size:
+    if get_request.dry_run:
         logger.info(message)
-    if get_request.show_outputnames:
-        for filename_out in filenames_out:
-            blank_logger.info(filename_out)
+    else:
+        logger.debug(message)
     files_to_delete = []
     if get_request.sync_delete:
         filenames_out_sync_ignored = create_filenames_out(
@@ -168,13 +164,6 @@ def download_original_files(
                 message=StatusMessage.NO_DATA_TO_DOWNLOAD,
                 total_size=total_size,
             )
-    if not get_request.force_download:
-        click.confirm(
-            FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE,
-            default=True,
-            abort=True,
-            err=True,
-        )
     endpoint: str
     bucket: str
     endpoint, bucket = locator

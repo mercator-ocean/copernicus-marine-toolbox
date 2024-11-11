@@ -38,7 +38,6 @@ class TestCFCompliance:
             output_filename=output_filename,
             start_datetime="2022-01-01T00:00:00",
             end_datetime="2022-01-05T00:00:00",
-            force_download=True,
         )
         assert (tmp_path / output_filename).exists()
 

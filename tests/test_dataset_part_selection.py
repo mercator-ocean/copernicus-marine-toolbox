@@ -11,6 +11,7 @@ class TestDatasetPartSelection:
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             "--dataset-part",
             "history",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -32,6 +33,7 @@ class TestDatasetPartSelection:
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             "--dataset-part",
             "default",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -40,16 +42,15 @@ class TestDatasetPartSelection:
             b'You forced selection of dataset part "default"'
             in self.output.stderr
         )
+        assert self.output.returncode == 1
         assert b'No part "default" found' not in self.output.stderr
 
     def test_dataset_part_is_specifiable_in_python_with_get(self, caplog):
-        try:
-            copernicusmarine.get(
-                dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
-                dataset_part="history",
-            )
-        except OSError:
-            pass
+        copernicusmarine.get(
+            dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            dataset_part="history",
+            dry_run=True,
+        )
         assert 'You forced selection of dataset part "history"' in caplog.text
         assert (
             "Dataset part was not specified, the first one was selected:"

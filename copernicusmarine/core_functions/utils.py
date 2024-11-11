@@ -27,9 +27,6 @@ from copernicusmarine.versioner import __version__ as copernicusmarine_version
 logger = logging.getLogger("copernicusmarine")
 
 
-FORCE_DOWNLOAD_CLI_PROMPT_MESSAGE = "Do you want to proceed with download?"
-
-
 def get_unique_filename(
     filepath: pathlib.Path, overwrite_option: bool
 ) -> pathlib.Path:

@@ -106,7 +106,6 @@ class TestCommandLineInterface:
         command = [
             "copernicusmarine",
             "subset",
-            "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
         self.output = execute_in_terminal(command)
@@ -119,7 +118,6 @@ class TestCommandLineInterface:
         unknown_dataset_request = [
             "copernicusmarine",
             "subset",
-            "--force-download",
         ] + self.flatten_request_dict(self.base_request_dict)
 
         self.output = execute_in_terminal(unknown_dataset_request)
@@ -167,9 +165,10 @@ class TestCommandLineInterface:
             "47.122926204435295",
             "--maximum-latitude",
             "48.13780081656672",
-            "--force-download",
             "--output-directory",
             tmp_path,
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(self.command)
@@ -195,9 +194,10 @@ class TestCommandLineInterface:
             "47.122926204435295",
             "--maximum-latitude",
             "48.13780081656672",
-            "--force-download",
             "--output-directory",
             tmp_path,
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(self.command)
@@ -228,7 +228,6 @@ class TestCommandLineInterface:
         command = [
             "copernicusmarine",
             "get",
-            "--force-download",
             "--output-directory",
             f"{folder}",
         ] + self.flatten_request_dict(self.base_get_request_dict)
@@ -243,7 +242,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             f"{dataset_id}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -263,7 +261,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--regex",
             f"{regex}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -276,7 +273,7 @@ class TestCommandLineInterface:
         for filename in downloaded_files:
             assert re.match(regex, filename) is not None
 
-    def test_files_to_download_are_displayed(self, tmp_path):
+    def test_files_to_download_are_displayed_with_dry_run(self, tmp_path):
         regex = ".*_(2001|2002|2003).*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
@@ -288,6 +285,7 @@ class TestCommandLineInterface:
             f"{regex}",
             "--output-directory",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -296,7 +294,7 @@ class TestCommandLineInterface:
             in self.output.stderr
         )
 
-    def test_downloaded_files_are_not_displayed_with_force_download_option(
+    def test_downloaded_files_are_not_displayed_by_default_option(
         self, tmp_path
     ):
         regex = ".*_(2001|2002|2003).*.nc"
@@ -308,7 +306,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--regex",
             f"{regex}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -329,7 +326,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--filter",
             f"{filter}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -352,7 +348,6 @@ class TestCommandLineInterface:
             "--output-directory",
             f"{tmp_path}",
             "--dry-run",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -385,7 +380,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--filter",
             f"{filter}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
             "-r",
@@ -415,7 +409,6 @@ class TestCommandLineInterface:
             "-9.9",
             "--maximum-longitude",
             "-9.6",
-            "--force-download",
             "--dry-run",
             "-o",
             f"{tmp_path}",
@@ -438,7 +431,6 @@ class TestCommandLineInterface:
             "-9.9",
             "--maximum-longitude",
             "-9.6",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -462,7 +454,6 @@ class TestCommandLineInterface:
             "-9.9",
             "--maximum-longitude",
             "-9.6",
-            "--force-download",
             "-o",
             f"{tmp_path}",
             "--dry-run",
@@ -506,7 +497,6 @@ class TestCommandLineInterface:
             f"{output_filename}",
             "--service",
             f"{self.GEOSERIES.name}",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -524,7 +514,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--filter",
             f"{filter}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -550,7 +539,6 @@ class TestCommandLineInterface:
             f"{filter}",
             "--regex",
             f"{regex}",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -576,6 +564,7 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--regex",
             f"{regex}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -647,7 +636,6 @@ class TestCommandLineInterface:
             f"{output_path}",
             "-f",
             "data.zarr",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -708,7 +696,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--filter",
             f"{filter}",
-            "--force-download",
             "--output-directory",
             f"{download_folder}",
             "--no-directories",
@@ -750,26 +737,6 @@ class TestCommandLineInterface:
             tmp_path, output_directory="test"
         )
 
-    def test_default_prompt_for_get_command(self, tmp_path):
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-            "-nd",
-            "--filter",
-            "*20120101_20121231_R20221101_RE01*",
-            "-o",
-            f"{tmp_path}",
-        ]
-        self.output = execute_in_terminal(command, input=b"y")
-
-        assert self.output.returncode == 0
-        assert (
-            Path(tmp_path)
-            / "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc"
-        )
-
     def test_default_service_for_get_command(self, tmp_path):
         self.when_I_run_copernicus_marine_get_with_default_service()
         self.then_I_can_see_the_original_files_service_is_choosen()
@@ -782,6 +749,7 @@ class TestCommandLineInterface:
             "get",
             "-i",
             "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -806,6 +774,7 @@ class TestCommandLineInterface:
             "cmems_mod_arc_bgc_anfc_ecosmo_P1M-m",
             "--variable",
             "thetao",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -824,10 +793,11 @@ class TestCommandLineInterface:
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
             "--filter",
             "*/2023/08/*",
+            "--dry-run",
         ]
         self.output = execute_in_terminal(command)
 
-        assert self.output.returncode == 1
+        assert self.output.returncode == 0
         assert b"No data to download" not in self.output.stderr
 
     def test_subset_with_chunking(self, tmp_path):
@@ -854,7 +824,6 @@ class TestCommandLineInterface:
             "0.49",
             "-Z",
             "8",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -918,9 +887,9 @@ class TestCommandLineInterface:
         command = [
             "copernicusmarine",
             "subset",
-            "--force-download",
             "--request-file",
             "./subset_template.json",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -943,13 +912,13 @@ class TestCommandLineInterface:
             "copernicusmarine",
             "get",
             "--create-template",
-            "--force-download",
+            "--no-directories",
         ]
 
         self.output = execute_in_terminal(command)
 
         assert (
-            b"Other options passed with create template: force_download"
+            b"Other options passed with create template: no_directories"
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
 
@@ -1034,7 +1003,6 @@ class TestCommandLineInterface:
             f"{output_filename}",
             "--service",
             f"{self.GEOSERIES.name}",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -1073,7 +1041,6 @@ class TestCommandLineInterface:
             f"{output_filename}",
             "--service",
             f"{self.GEOSERIES.name}",
-            "--force-download",
             "--log-level",
             "DEBUG",
         ]
@@ -1104,7 +1071,6 @@ class TestCommandLineInterface:
             "uo",
             "-v",
             "vo",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -1136,7 +1102,6 @@ class TestCommandLineInterface:
             "vo",
             "--file-format",
             "zarr",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -1203,7 +1168,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
 
         self.output = execute_in_terminal(command)
@@ -1246,7 +1210,6 @@ class TestCommandLineInterface:
             "uo",
             "-v",
             "vo",
-            "--force-download",
             "-o",
             f"{tmp_path}",
         ]
@@ -1300,9 +1263,9 @@ class TestCommandLineInterface:
             "blksea_omi_circulation_rim_current_index",
             "-v",
             "BSRCI",
-            "--force-download",
             "-o",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(base_command)
@@ -1321,11 +1284,11 @@ class TestCommandLineInterface:
             "cmems_mod_blk_phy_anfc_2.5km_static",
             "-v",
             "deptho",
-            "--force-download",
             "--dataset-part",
             "bathy",
             "-o",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(base_command)
@@ -1348,9 +1311,9 @@ class TestCommandLineInterface:
             "cmems_mod_blk_phy_anfc_2.5km_static",
             "-v",
             "deptho",
-            "--force-download",
             "-o",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(
@@ -1382,7 +1345,6 @@ class TestCommandLineInterface:
             "uo",
             "-v",
             "vo",
-            "--force-download",
             "-o",
             f"{tmp_path}",
             "-f",
@@ -1428,8 +1390,9 @@ class TestCommandLineInterface:
             "2023-03-20",
             "-T",
             "2023-03-20",
+            "--dry-run",
         ]
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command)
         assert (
             b"Estimated size of the data that needs"
             b" to be downloaded to obtain the result: 200 MB"
@@ -1470,8 +1433,9 @@ class TestCommandLineInterface:
             "0.5057600140571594",
             "-Z",
             "500",
+            "--dry-run",
         ]
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command)
         assert (
             b"Estimated size of the data that needs"
             b" to be downloaded to obtain the result: 71692 MB"
@@ -1487,7 +1451,6 @@ class TestCommandLineInterface:
             f"{dataset_id}",
             "--file-list",
             "./tests/resources/file_list_examples/file_list_example.txt",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -1552,7 +1515,6 @@ class TestCommandLineInterface:
             "get",
             "-i",
             "METOFFICE-GLO-SST-L4-REP-OBS-SST",
-            "--force-download",
             "--filter",
             "*2022053112000*",
             "--output-directory",
@@ -1602,7 +1564,6 @@ class TestCommandLineInterface:
             "-o",
             f"{tmp_path}",
             "--netcdf3-compatible",
-            "--force-download",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
@@ -1654,7 +1615,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
         output = execute_in_terminal(command)
         assert output.returncode == 0
@@ -1714,7 +1674,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
         output = execute_in_terminal(command)
         assert output.returncode == 0
@@ -1774,7 +1733,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
         output = execute_in_terminal(command)
         assert output.returncode == 0
@@ -1841,7 +1799,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--force-download",
         ]
         output = execute_in_terminal(command)
         assert output.returncode == 0
@@ -1870,6 +1827,7 @@ class TestCommandLineInterface:
             "--staging",
             "--log-level",
             "DEBUG",
+            "--dry-run",
         ]
         self.output = execute_in_terminal(command)
         assert (
@@ -1888,6 +1846,7 @@ class TestCommandLineInterface:
             "--staging",
             "--log-level",
             "DEBUG",
+            "--dry-run",
         ]
         self.output = execute_in_terminal(command)
         assert (

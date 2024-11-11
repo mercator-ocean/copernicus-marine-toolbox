@@ -1,7 +1,6 @@
 {
   "dataset_id": "cmems_obs-si_glo_phy-drift-south_my_l4_P1D-m",
   "end_datetime": "2021-01-02",
-  "force_download": false,
   "maximum_latitude": 0.1,
   "maximum_longitude": 0.1,
   "minimum_latitude": 0.0,
