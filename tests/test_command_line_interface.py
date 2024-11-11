@@ -1880,7 +1880,6 @@ class TestCommandLineInterface:
             "0",
             "-Z",
             "5000",
-            "--force-download",
             "--output-directory",
             f"{tmp_path}",
         ]
