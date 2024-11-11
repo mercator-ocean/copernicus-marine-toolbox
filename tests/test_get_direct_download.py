@@ -77,7 +77,6 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE,
-            "--show-outputnames",
             "--skip-existing",
             "-o",
             str(tmp_path),
@@ -100,17 +99,26 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED,
-            "--show-outputnames",
             "--skip-existing",
             "-o",
             str(tmp_path),
+            "-r",
+            "file_path",
         ]
         self.output = execute_in_terminal(self.command)
-        assert (
-            b"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
-            b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
-            b"history/BO/AR_PR_BO_LHUW.nc"
-        ) in self.output.stdout
+        assert self.output.returncode == 0
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            "history/BO/AR_PR_BO_LHUW.nc"
+        )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
+
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58JM.nc"
         )
