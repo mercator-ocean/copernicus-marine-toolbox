@@ -38,18 +38,18 @@ def get_function(
     credentials_file: Optional[pathlib.Path],
     overwrite_output_data: bool,
     request_file: Optional[pathlib.Path],
-    filter: Optional[str],
+    filter_option: Optional[str],
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
     create_file_list: Optional[str],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
+    skip_existing: bool,
     dry_run: bool,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
-    skip_existing: bool,
 ) -> ResponseGet:
     VersionVerifier.check_version_get(staging)
     if staging:
@@ -86,8 +86,8 @@ def get_function(
     if no_directories:
         get_request.no_directories = no_directories
 
-    if filter:
-        get_request.regex = filter_to_regex(filter)
+    if filter_option:
+        get_request.regex = filter_to_regex(filter_option)
     if regex:
         get_request.regex = overload_regex_with_additionnal_filter(
             regex, get_request.regex

@@ -91,11 +91,11 @@ class TestPythonInterface:
             minimum_longitude=0.2,
             maximum_longitude=0.3,
             output_directory=tmp_path,
-            force_download=True,
             skip_existing=True,
         )
         assert subset_result.file_path.exists()
-        assert "003" in subset_result.status
+        assert "IGNORED" == subset_result.file_status
+        assert "003" == subset_result.status
 
     def test_open_dataset(self):
         dataset = open_dataset(

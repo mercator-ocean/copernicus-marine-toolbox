@@ -141,7 +141,7 @@ def get(
         credentials_file=credentials_file,
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
-        filter=filter,
+        filter_option=filter,
         regex=regex,
         file_list_path=file_list,
         create_file_list=create_file_list,

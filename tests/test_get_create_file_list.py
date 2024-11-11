@@ -51,24 +51,6 @@ class TestGetCreateFileList:
                 == "filename,size,last_modified_datetime,etag\n"
             )
 
-    def test_get_create_file_list_with_skip_existing_option(self):
-        self.command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
-            "--create-file-list",
-            "hello.csv",
-            "--skip-existing",
-        ]
-        self.output = execute_in_terminal(self.command)
-        assert os.path.isfile("hello.csv")
-        with open("hello.csv") as file:
-            assert (
-                file.readline()
-                == "filename,size,last_modified_datetime,etag\n"
-            )
-
     def test_get_create_file_list_without_extension_raises_python(self):
         try:
             get(

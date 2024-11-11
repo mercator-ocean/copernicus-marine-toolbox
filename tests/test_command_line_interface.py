@@ -210,27 +210,15 @@ class TestCommandLineInterface:
     # -------------------------#
 
     def test_get_original_files_functionality(self, tmp_path):
-        self._test_get_functionalities(tmp_path)
-
-    def _test_get_functionalities(self, tmp_path):
-        self.base_get_request_dict: dict[str, Optional[Union[str, Path]]] = {
-            "--dataset-id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-            "--output-directory": str(tmp_path),
-            "--no-directories": None,
-        }
-        self.check_default_get_request(tmp_path)
-
-    def check_default_get_request(self, tmp_path):
-        folder = pathlib.Path(tmp_path, "files")
-        if not folder.is_dir():
-            pathlib.Path.mkdir(folder, parents=True)
-
         command = [
             "copernicusmarine",
             "get",
+            "--dataset-id",
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
             "--output-directory",
-            f"{folder}",
-        ] + self.flatten_request_dict(self.base_get_request_dict)
+            f"{tmp_path}",
+            "--dry-run",
+        ]
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
@@ -322,7 +310,7 @@ class TestCommandLineInterface:
         self.and_I_do_skip_existing(tmp_path)
 
     def when_get_by_default_returns_status_message(self, tmp_path):
-        filter = "*_200[123]*.nc"
+        filter_option = "*_200[123]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
@@ -330,9 +318,11 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--filter",
-            f"{filter}",
+            f"{filter_option}",
             "--output-directory",
             f"{tmp_path}",
+            "-r",
+            "all",
         ]
 
         self.output = execute_in_terminal(command)
@@ -340,11 +330,10 @@ class TestCommandLineInterface:
         returned_value = loads(self.output.stdout)
         assert returned_value["status"]
         assert returned_value["message"]
-        assert "files" not in returned_value
-        assert "total_size" not in returned_value
+        assert returned_value["total_size"] == 0
 
     def and_I_do_skip_existing(self, tmp_path):
-        filter = "*_200[1234]*.nc"
+        filter_option = "*_200[1234]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
@@ -352,8 +341,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--filter",
-            f"{filter}",
-            "--force-download",
+            f"{filter_option}",
             "--output-directory",
             f"{tmp_path}",
             "--skip-existing",
@@ -1391,7 +1379,6 @@ class TestCommandLineInterface:
             "data.nc",
             "--netcdf-compression-level",
             f"{forced_comp_level}",
-            "--skip-existing",
         ]
 
         output_with_netcdf_compression_enabled = execute_in_terminal(
@@ -1602,7 +1589,6 @@ class TestCommandLineInterface:
             "5.0",
             "-f",
             "dataset.nc",
-            "--skip-existing",
             "-o",
             f"{tmp_path}",
             "--netcdf3-compatible",

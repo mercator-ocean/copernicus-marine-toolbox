@@ -51,7 +51,7 @@ class StatusMessage(str, Enum):
     ERROR = "An error occurred during the request."
 
 
-class StatusFile(str, Enum):
+class FileStatus(str, Enum):
     """
     Gives an indication of how the file was handled.
 
@@ -66,12 +66,12 @@ class StatusFile(str, Enum):
     OVERWRITTEN = "OVERWRITTEN"
 
     @classmethod
-    def get_status(cls, ignore: bool, overwrite: bool) -> "StatusFile":
+    def get_status(cls, ignore: bool, overwrite: bool) -> "FileStatus":
         if ignore:
-            return StatusFile.IGNORED
+            return FileStatus.IGNORED
         if overwrite:
-            return StatusFile.OVERWRITTEN
-        return StatusFile.DOWNLOADED
+            return FileStatus.OVERWRITTEN
+        return FileStatus.DOWNLOADED
 
 
 class FileGet(BaseModel):
@@ -95,7 +95,7 @@ class FileGet(BaseModel):
     #: Path to the file.
     file_path: pathlib.Path
     #: status of the file.
-    status_file: StatusFile
+    file_status: FileStatus
 
 
 class ResponseGet(BaseModel):
@@ -106,9 +106,9 @@ class ResponseGet(BaseModel):
     #: Description of the files concerned by the query
     files: list[FileGet]
     #: List of deleted files
-    files_deleted: list[str]
+    files_deleted: Optional[list[str]]
     #: List of not found files from the file list input
-    files_not_found: list[str]
+    files_not_found: Optional[list[str]]
     #: Total size of the files that would be downloaded.
     total_size: Optional[float]
     #: status of the request.
@@ -204,4 +204,4 @@ class ResponseSubset(BaseModel):
     #: Message explaning the status.
     message: StatusMessage
     #: Status of the files.
-    status_file: StatusFile
+    file_status: FileStatus

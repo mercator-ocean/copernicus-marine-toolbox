@@ -17,11 +17,11 @@ from copernicusmarine.catalogue_parser.request_structure import (
 )
 from copernicusmarine.core_functions.models import (
     FileGet,
+    FileStatus,
     ResponseGet,
     S3FileInfo,
     S3FilesDescriptor,
     StatusCode,
-    StatusFile,
     StatusMessage,
 )
 from copernicusmarine.core_functions.sessions import (
@@ -50,16 +50,16 @@ def download_original_files(
     )
     if get_request.direct_download:
         files_headers = _download_header_for_direct_download(
-            get_request.direct_download,
-            endpoint,
-            bucket,
-            path,
-            get_request.sync,
-            pathlib.Path(get_request.output_directory),
-            username,
-            get_request.no_directories,
-            get_request.overwrite_output_data,
-            get_request.skip_existing,
+            files_to_download=get_request.direct_download,
+            endpoint_url=endpoint,
+            bucket=bucket,
+            path=path,
+            sync=get_request.sync,
+            directory_out=pathlib.Path(get_request.output_directory),
+            username=username,
+            no_directories=get_request.no_directories,
+            overwrite=get_request.overwrite_output_data,
+            skip_existing=get_request.skip_existing,
         )
     else:
         files_headers = S3FilesDescriptor(endpoint=endpoint, bucket=bucket)
@@ -83,26 +83,25 @@ def download_original_files(
                 str(get_request.dataset_url), only_dataset_root_path=True
             )
         files_headers_listing = _download_header(
-            endpoint,
-            bucket,
-            path,
-            get_request.regex,
-            username,
-            password,
-            get_request.sync,
-            create_file_list,
-            pathlib.Path(get_request.output_directory),
-            get_request.overwrite_output_data,
-            get_request.skip_existing,
-            get_request.no_directories,
-            disable_progress_bar,
+            endpoint_url=endpoint,
+            bucket=bucket,
+            path=path,
+            regex=get_request.regex,
+            username=username,
+            sync=get_request.sync,
+            create_file_list=create_file_list,
+            directory_out=pathlib.Path(get_request.output_directory),
+            no_directories=get_request.no_directories,
+            skip_existing=get_request.skip_existing,
+            overwrite=get_request.overwrite_output_data,
+            disable_progress_bar=disable_progress_bar,
             only_list_root_path=get_request.index_parts,
         )
         if files_headers_listing.create_file_list is True:
             return ResponseGet(
                 files=[],
-                files_deleted=[],
-                files_not_found=[],
+                files_deleted=None,
+                files_not_found=None,
                 status=StatusCode.FILE_LIST_CREATED,
                 message=StatusMessage.FILE_LIST_CREATED,
                 total_size=None,
@@ -193,17 +192,23 @@ def create_response_get_from_files_headers(
                 filename=s3_file.filename_out.name,
                 file_path=s3_file.filename_out,
                 file_format=s3_file.filename_out.suffix,
-                status_file=StatusFile.get_status(
+                file_status=FileStatus.get_status(
                     ignore=s3_file.ignore, overwrite=s3_file.overwrite
                 ),
             )
             for s3_file in files_headers.s3_files
         ],
-        files_deleted=[
-            str(file_to_delete)
-            for file_to_delete in files_headers.files_to_delete
-        ],
-        files_not_found=files_headers.files_not_found,
+        files_deleted=(
+            [
+                str(file_to_delete)
+                for file_to_delete in files_headers.files_to_delete
+            ]
+            if files_headers.files_to_delete
+            else None
+        ),
+        files_not_found=(
+            files_headers.files_not_found if files_headers else None
+        ),
         status=(
             StatusCode.NO_DATA_TO_DOWNLOAD
             if status == "NO_DATA_TO_DOWNLOAD"
@@ -296,7 +301,6 @@ def _download_header(
     path: str,
     regex: Optional[str],
     username: str,
-    _password: str,
     sync: bool,
     create_file_list: Optional[str],
     directory_out: pathlib.Path,
@@ -348,7 +352,6 @@ def _download_header(
             download_filename = get_unique_filename(
                 directory_out / create_file_list,
             )
-        logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
             for s3_file in files_headers.s3_files:
                 if not s3_file.ignore:
@@ -360,7 +363,6 @@ def _download_header(
             download_filename = get_unique_filename(
                 directory_out / create_file_list,
             )
-        logger.info(f"The file list is written at {download_filename}")
         with open(download_filename, "w") as file_out:
             file_out.write("filename,size,last_modified_datetime,etag\n")
             for s3_file in files_headers.s3_files:
@@ -425,7 +427,7 @@ def _download_header_for_direct_download(
                     no_directories,
                 ),
                 overwrite=overwrite
-                or _check_already_exists(
+                and _check_already_exists(
                     full_path, directory_out, no_directories
                 ),
             )

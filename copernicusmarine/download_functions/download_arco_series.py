@@ -19,9 +19,9 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
+    FileStatus,
     ResponseSubset,
     StatusCode,
-    StatusFile,
     StatusMessage,
 )
 from copernicusmarine.core_functions.utils import (
@@ -158,7 +158,7 @@ def download_dataset(
         coordinates_extent=get_dataset_coordinates_extent(dataset),
         status=StatusCode.SUCCESS,
         message=StatusMessage.SUCCESS,
-        status_file=StatusFile.DOWNLOADED,
+        file_status=FileStatus.DOWNLOADED,
     )
 
     if dry_run:
@@ -168,7 +168,7 @@ def download_dataset(
     elif skip_existing and os.path.exists(output_path):
         response.status = StatusCode.NO_DATA_TO_DOWNLOAD
         response.message = StatusMessage.NO_DATA_TO_DOWNLOAD
-        response.status_file = StatusFile.IGNORED
+        response.file_status = FileStatus.IGNORED
         return response
 
     logger.info("Writing to local storage. Please wait...")
@@ -191,7 +191,7 @@ def download_dataset(
     if overwrite_output_data:
         response.status = StatusCode.SUCCESS
         response.message = StatusMessage.SUCCESS
-        response.status_file = StatusFile.OVERWRITTEN
+        response.file_status = FileStatus.OVERWRITTEN
 
     return response
 
