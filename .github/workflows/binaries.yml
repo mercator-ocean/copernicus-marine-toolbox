@@ -63,4 +63,4 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
           ARCH="linux-glibc-2.31"
         fi
-          gh release upload v2024.9.16 dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v2024.9.16
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
