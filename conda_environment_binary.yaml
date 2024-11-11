@@ -4,9 +4,14 @@ dependencies:
   - git==2.44.0
   - pip==24.0
   - gh==2.45.0
-  - pyinstaller==6.10.0
+  - pyinstaller==6.11.1
   - pip:
+    - numpy==1.26.4
     - xarray
     - distributed
     - tzdata
     - pillow
+    - pydantic
+    - pystac
+    - pendulum
+    - tqdm
