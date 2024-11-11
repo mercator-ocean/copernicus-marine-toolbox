@@ -6,6 +6,9 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
 )
+from copernicusmarine.core_functions.exceptions import (
+    MutuallyExclusiveArguments,
+)
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
@@ -51,6 +54,7 @@ def subset(
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
     motu_api_request: Optional[str] = None,
     overwrite_output_data: bool = False,
+    skip_existing: bool = False,
     dry_run: bool = False,
     disable_progress_bar: bool = False,
     staging: bool = False,
@@ -59,7 +63,7 @@ def subset(
     chunk_size_limit: int = 100,
 ) -> ResponseSubset:
     """
-    Extracts a subset of data from a specified dataset using given parameters."
+    Extracts a subset of data from a specified dataset using given parameters.
 
     The datasetID is required and can be found via the ``describe`` command.
 
@@ -81,6 +85,8 @@ def subset(
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     overwrite_output_data : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
+    skip_existing : bool, optional
+        If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with an index (eg 'filename_(1).nc').
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     service : str, optional
@@ -128,6 +134,12 @@ def subset(
         A description of the downloaded data and its destination.
 
     """  # noqa
+    if overwrite_output_data:
+        if skip_existing:
+            raise MutuallyExclusiveArguments(
+                "overwrite_output_data", "skip_existing"
+            )
+
     request_file = pathlib.Path(request_file) if request_file else None
     output_directory = (
         pathlib.Path(output_directory) if output_directory else None
@@ -164,6 +176,7 @@ def subset(
         credentials_file,
         motu_api_request,
         overwrite_output_data,
+        skip_existing,
         dry_run,
         disable_progress_bar,
         staging,

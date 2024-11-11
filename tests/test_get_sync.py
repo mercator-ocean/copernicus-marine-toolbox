@@ -14,7 +14,6 @@ class TestGetSync:
         )
 
     def test_get_sync_delete(self, tmp_path):
-
         self.when_I_get_some_native_files_with_sync(tmp_path)
         self.when_I_add_a_file_locally(tmp_path)
         self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
@@ -112,7 +111,7 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
             "-r",
-            "file_path",
+            "file_path,file_status",
         ]
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
@@ -139,6 +138,7 @@ class TestGetSync:
             "not_nice"
             for file_get in response_get["files"]
             if to_check_not_in in file_get["file_path"]
+            and file_get["file_status"] != "IGNORED"
         ]
 
     def when_I_add_a_file_locally(self, tmp_path):

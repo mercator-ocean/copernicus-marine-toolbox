@@ -4,7 +4,7 @@ import pathlib
 import re
 from itertools import chain
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 import pendulum
 from botocore.client import ClientError
@@ -17,7 +17,10 @@ from copernicusmarine.catalogue_parser.request_structure import (
 )
 from copernicusmarine.core_functions.models import (
     FileGet,
+    FileStatus,
     ResponseGet,
+    S3FileInfo,
+    S3FilesDescriptor,
     StatusCode,
     StatusMessage,
 )
@@ -42,165 +45,120 @@ def download_original_files(
     disable_progress_bar: bool,
     create_file_list: Optional[str],
 ) -> ResponseGet:
-    files_not_found: list[str] = []
-    filenames_in_sync_ignored: list[str] = []
-    total_size: float = 0.0
-    sizes: list[float] = []
-    last_modified_datetimes: list[DateTime] = []
-    filenames_in: list[str] = []
-    etags: list[str] = []
+    endpoint, bucket, path = parse_access_dataset_url(
+        str(get_request.dataset_url)
+    )
     if get_request.direct_download:
-        (
-            locator,
-            filenames_in,
-            sizes,
-            last_modified_datetimes,
-            total_size,
-            filenames_in_sync_ignored,
-            files_not_found,
-            etags,
-        ) = _download_header_for_direct_download(
-            get_request.direct_download,
-            str(get_request.dataset_url),
-            get_request.sync,
-            pathlib.Path(get_request.output_directory),
-            username,
+        files_headers = _download_header_for_direct_download(
+            files_to_download=get_request.direct_download,
+            endpoint_url=endpoint,
+            bucket=bucket,
+            path=path,
+            sync=get_request.sync,
+            directory_out=pathlib.Path(get_request.output_directory),
+            username=username,
+            no_directories=get_request.no_directories,
+            overwrite=get_request.overwrite_output_data,
+            skip_existing=get_request.skip_existing,
         )
-    if not get_request.direct_download or files_not_found or get_request.regex:
-        if files_not_found:
+    else:
+        files_headers = S3FilesDescriptor(endpoint=endpoint, bucket=bucket)
+    if (
+        not get_request.direct_download
+        or files_headers.files_not_found
+        or get_request.regex
+    ):
+        if files_headers.files_not_found:
             files_not_found_regex = "|".join(
                 [
                     re.escape(file_not_found)
-                    for file_not_found in files_not_found
+                    for file_not_found in files_headers.files_not_found
                 ]
             )
             get_request.regex = overload_regex_with_additionnal_filter(
                 files_not_found_regex, get_request.regex
             )
-        result = _download_header(
-            str(get_request.dataset_url),
-            get_request.regex,
-            username,
-            password,
-            get_request.sync,
-            create_file_list,
-            pathlib.Path(get_request.output_directory),
-            disable_progress_bar,
-            only_list_root_path=get_request.index_parts,
+        if get_request.index_parts:
+            _, _, path = parse_access_dataset_url(
+                str(get_request.dataset_url), only_dataset_root_path=True
+            )
+        files_headers_listing = _download_header(
+            endpoint_url=endpoint,
+            bucket=bucket,
+            path=path,
+            regex=get_request.regex,
+            username=username,
+            sync=get_request.sync,
+            create_file_list=create_file_list,
+            directory_out=pathlib.Path(get_request.output_directory),
+            no_directories=get_request.no_directories,
+            skip_existing=get_request.skip_existing,
             overwrite=get_request.overwrite_output_data,
+            disable_progress_bar=disable_progress_bar,
+            only_list_root_path=get_request.index_parts,
         )
-        if result is None:
-            # When creating a file list, None is returned
+        if files_headers_listing.create_file_list is True:
             return ResponseGet(
                 files=[],
+                files_deleted=None,
+                files_not_found=None,
                 status=StatusCode.FILE_LIST_CREATED,
                 message=StatusMessage.FILE_LIST_CREATED,
                 total_size=None,
             )
-        if result:
-            (
-                locator,
-                filenames_in_listing,
-                sizes_listing,
-                last_modified_datetimes_listing,
-                total_size_listing,
-                filenames_in_sync_ignored_listing,
-                etags_listing,
-            ) = result
-            filenames_in.extend(filenames_in_listing)
-            filenames_in_sync_ignored.extend(filenames_in_sync_ignored_listing)
-            total_size += total_size_listing
-            sizes.extend(sizes_listing)
-            last_modified_datetimes.extend(last_modified_datetimes_listing)
-            etags.extend(etags_listing)
-        else:
-            return ResponseGet(
-                files=[],
-                status=StatusCode.NO_DATA_TO_DOWNLOAD,
-                message=StatusMessage.NO_DATA_TO_DOWNLOAD,
-                total_size=total_size,
+        if files_headers_listing:
+            files_headers.endpoint = files_headers_listing.endpoint
+            files_headers.bucket = files_headers_listing.bucket
+            files_headers.s3_files.extend(files_headers_listing.s3_files)
+            files_headers.total_size += files_headers_listing.total_size
+            files_headers.files_not_found.extend(
+                files_headers_listing.files_not_found
             )
-    message = _create_information_message_before_download(
-        filenames_in, sizes, last_modified_datetimes, total_size
-    )
-    filenames_out = create_filenames_out(
-        filenames_in=filenames_in,
+
+    message = _create_information_message_before_download(files_headers)
+
+    files_headers = _create_filenames_out(
+        files_information=files_headers,
         output_directory=pathlib.Path(get_request.output_directory),
         no_directories=get_request.no_directories,
-        overwrite=(
-            get_request.overwrite_output_data
-            if not get_request.sync
-            else False
-        ),
     )
-    if get_request.dry_run:
+
+    if get_request.dry_run and files_headers.total_size:
         logger.info(message)
     else:
         logger.debug(message)
-    files_to_delete = []
-    if get_request.sync_delete:
-        filenames_out_sync_ignored = create_filenames_out(
-            filenames_in=filenames_in_sync_ignored,
-            output_directory=pathlib.Path(get_request.output_directory),
-            no_directories=get_request.no_directories,
-            overwrite=False,
-            unique_names_compared_to_local_files=False,
-        )
-        files_to_delete = _get_files_to_delete_with_sync(
-            filenames_in=filenames_in_sync_ignored,
-            output_directory=pathlib.Path(get_request.output_directory),
-            filenames_out=filenames_out_sync_ignored,
-        )
-        if files_to_delete:
-            logger.info("Some files will be deleted due to sync delete:")
-            for file_to_delete in files_to_delete:
-                logger.info(file_to_delete)
-    if not total_size:
-        logger.info("No data to download")
-        if not files_to_delete:
-            return ResponseGet(
-                files=[],
-                status=StatusCode.NO_DATA_TO_DOWNLOAD,
-                message=StatusMessage.NO_DATA_TO_DOWNLOAD,
-                total_size=total_size,
-            )
-    endpoint: str
-    bucket: str
-    endpoint, bucket = locator
 
-    if get_request.sync_delete and files_to_delete:
-        for file_to_delete in files_to_delete:
-            file_to_delete.unlink()
-    endpoint, bucket = locator
-    response = ResponseGet(
-        files=[
-            FileGet(
-                s3_url=s3_url,
-                https_url=s3_url.replace("s3://", endpoint + "/"),
-                file_size=size_to_MB(size),
-                last_modified_datetime=last_modified.to_iso8601_string(),
-                output_directory=pathlib.Path(get_request.output_directory),
-                filename=filename_out.name,
-                file_path=filename_out,
-                etag=etag,
-                file_format=filename_out.suffix,
+    if get_request.sync_delete:
+        files_headers = _get_files_to_delete_with_sync(
+            files_information=files_headers,
+            output_directory=pathlib.Path(get_request.output_directory),
+        )
+        if files_headers.files_to_delete:
+            logger.info("Some files will be deleted due to sync delete:")
+            for file_to_delete in files_headers.files_to_delete:
+                logger.info(file_to_delete)
+                file_to_delete.unlink()
+    if files_headers.total_size == 0:
+        logger.info("No data to download")
+        if not files_headers.files_to_delete:
+            return create_response_get_from_files_headers(
+                files_headers, get_request, "NO_DATA_TO_DOWNLOAD"
             )
-            for s3_url, size, last_modified, filename_out, etag in zip(
-                filenames_in,
-                sizes,
-                last_modified_datetimes,
-                filenames_out,
-                etags,
-            )
-        ],
-        status=StatusCode.SUCCESS,
-        message=StatusMessage.SUCCESS,
-        total_size=size_to_MB(total_size),
+
+    response = create_response_get_from_files_headers(
+        files_headers, get_request, "SUCCESS"
     )
+
     if get_request.dry_run:
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
         return response
+    filenames_in = []
+    filenames_out = []
+    for s3_file in files_headers.s3_files:
+        if not s3_file.ignore:
+            filenames_in.append(s3_file.filename_in)
+            filenames_out.append(s3_file.filename_out)
     download_files(
         username,
         endpoint,
@@ -213,22 +171,84 @@ def download_original_files(
     return response
 
 
+def create_response_get_from_files_headers(
+    files_headers: S3FilesDescriptor,
+    get_request: GetRequest,
+    status: Literal["SUCCESS", "DRY_RUN", "NO_DATA_TO_DOWNLOAD"],
+) -> ResponseGet:
+    endpoint = files_headers.endpoint
+    return ResponseGet(
+        files=[
+            FileGet(
+                s3_url=s3_file.filename_in,
+                https_url=s3_file.filename_in.replace("s3://", endpoint + "/"),
+                file_size=size_to_MB(s3_file.size),
+                last_modified_datetime=s3_file.last_modified,
+                etag=s3_file.etag,
+                output_directory=pathlib.Path(get_request.output_directory),
+                filename=s3_file.filename_out.name,
+                file_path=s3_file.filename_out,
+                file_format=s3_file.filename_out.suffix,
+                file_status=FileStatus.get_status(
+                    ignore=s3_file.ignore, overwrite=s3_file.overwrite
+                ),
+            )
+            for s3_file in files_headers.s3_files
+        ],
+        files_deleted=(
+            [
+                str(file_to_delete)
+                for file_to_delete in files_headers.files_to_delete
+            ]
+            if files_headers.files_to_delete
+            else None
+        ),
+        files_not_found=(
+            files_headers.files_not_found
+            if files_headers.files_not_found
+            else None
+        ),
+        status=(
+            StatusCode.NO_DATA_TO_DOWNLOAD
+            if status == "NO_DATA_TO_DOWNLOAD"
+            else (
+                StatusCode.DRY_RUN
+                if status == "DRY_RUN"
+                else StatusCode.SUCCESS
+            )
+        ),
+        message=(
+            StatusMessage.NO_DATA_TO_DOWNLOAD
+            if status == "NO_DATA_TO_DOWNLOAD"
+            else (
+                StatusMessage.DRY_RUN
+                if status == "DRY_RUN"
+                else StatusMessage.SUCCESS
+            )
+        ),
+        total_size=size_to_MB(files_headers.total_size),
+    )
+
+
 def _get_files_to_delete_with_sync(
-    filenames_in: list[str],
+    files_information: S3FilesDescriptor,
     output_directory: pathlib.Path,
-    filenames_out: list[Path],
-) -> list[pathlib.Path]:
+) -> S3FilesDescriptor:
     product_structure = str(
-        _local_path_from_s3_url(filenames_in[0], Path(""))
+        _local_path_from_s3_url(
+            files_information.s3_files[0].filename_in, Path("")
+        )
     ).split("/")
     product_id = product_structure[0]
     dataset_id = product_structure[1]
     dataset_level_local_folder = output_directory / product_id / dataset_id
-    files_to_delete = []
+    filenames_out = {
+        s3_file.filename_out for s3_file in files_information.s3_files
+    }
     for local_file in dataset_level_local_folder.glob("**/*"):
         if local_file.is_file() and local_file not in filenames_out:
-            files_to_delete.append(local_file)
-    return files_to_delete
+            files_information.files_to_delete.append(local_file)
+    return files_information
 
 
 def download_files(
@@ -275,36 +295,23 @@ def download_files(
 
 
 def _download_header(
-    data_path: str,
+    endpoint_url: str,
+    bucket: str,
+    path: str,
     regex: Optional[str],
     username: str,
-    _password: str,
     sync: bool,
     create_file_list: Optional[str],
     directory_out: pathlib.Path,
+    no_directories: bool,
+    overwrite: bool,
+    skip_existing: bool,
     disable_progress_bar: bool,
     only_list_root_path: bool = False,
-    overwrite: bool = False,
-) -> Optional[
-    tuple[
-        tuple[str, str],
-        list[str],
-        list[float],
-        list[DateTime],
-        float,
-        list[str],
-        list[str],
-    ]
-]:
-    (endpoint_url, bucket, path) = parse_access_dataset_url(
-        data_path, only_dataset_root_path=only_list_root_path
-    )
+) -> S3FilesDescriptor:
 
-    filenames: list[str] = []
-    sizes: list[float] = []
-    total_size = 0.0
-    last_modified_datetimes: list[DateTime] = []
-    etags: list[str] = []
+    files_headers = S3FilesDescriptor(endpoint=endpoint_url, bucket=bucket)
+
     raw_filenames = _list_files_on_marine_data_lake_s3(
         username,
         endpoint_url,
@@ -313,92 +320,92 @@ def _download_header(
         not only_list_root_path,
         disable_progress_bar,
     )
-    filenames_without_sync = []
     for filename, size, last_modified_datetime, etag in raw_filenames:
         if not regex or re.search(regex, filename):
-            filenames_without_sync.append(filename)
-            last_modified_datetime = pendulum.instance(last_modified_datetime)
-            if not sync or _check_needs_to_be_synced(
-                filename, size, last_modified_datetime, directory_out
-            ):
-                filenames.append(filename)
-                sizes.append(float(size))
-                last_modified_datetimes.append(last_modified_datetime)
-                etags.append(etag)
-    total_size = sum(sizes)
+            file_to_append = S3FileInfo(
+                filename_in=filename,
+                size=float(size),
+                last_modified=last_modified_datetime.in_tz(
+                    "UTC"
+                ).to_iso8601_string(),
+                etag=etag,
+                ignore=_check_should_be_ignored(
+                    filename,
+                    size,
+                    last_modified_datetime,
+                    directory_out,
+                    skip_existing,
+                    sync,
+                    no_directories,
+                ),
+                overwrite=_check_should_be_overwritten(
+                    filename,
+                    size,
+                    last_modified_datetime,
+                    directory_out,
+                    sync,
+                    overwrite,
+                    no_directories,
+                ),
+            )
+            files_headers.add_s3_file(file_to_append)
+
     if create_file_list and create_file_list.endswith(".txt"):
-        download_filename = get_unique_filename(
-            directory_out / create_file_list, overwrite
-        )
-        logger.info(f"The file list is written at {download_filename}")
+        download_filename = directory_out / create_file_list
+        if not overwrite:
+            download_filename = get_unique_filename(
+                directory_out / create_file_list,
+            )
         with open(download_filename, "w") as file_out:
-            for filename in filenames:
-                file_out.write(f"{filename}\n")
-        return None
+            for s3_file in files_headers.s3_files:
+                if not s3_file.ignore:
+                    file_out.write(f"{s3_file.filename_in}\n")
+        files_headers.create_file_list = True
     elif create_file_list and create_file_list.endswith(".csv"):
-        download_filename = get_unique_filename(
-            directory_out / create_file_list, overwrite
-        )
-        logger.info(f"The file list is written at {download_filename}")
+        download_filename = directory_out / create_file_list
+        if not overwrite:
+            download_filename = get_unique_filename(
+                directory_out / create_file_list,
+            )
         with open(download_filename, "w") as file_out:
             file_out.write("filename,size,last_modified_datetime,etag\n")
-            for (
-                filename,
-                size_file,
-                last_modified_datetime,
-                etag,
-            ) in zip(filenames, sizes, last_modified_datetimes, etags):
-                file_out.write(
-                    f"{filename},{size_file},{last_modified_datetime},{etag}\n"
-                )
-        return None
-    locator = (endpoint_url, bucket)
-    return (
-        locator,
-        filenames,
-        sizes,
-        last_modified_datetimes,
-        total_size,
-        filenames_without_sync,
-        etags,
-    )
+            for s3_file in files_headers.s3_files:
+                if not s3_file.ignore:
+                    file_out.write(
+                        f"{s3_file.filename_in},{s3_file.size},"
+                        f"{s3_file.last_modified},{s3_file.etag}\n"
+                    )
+        files_headers.create_file_list = True
+    return files_headers
 
 
 def _download_header_for_direct_download(
     files_to_download: list[str],
-    dataset_url: str,
+    endpoint_url: str,
+    bucket: str,
+    path: str,
     sync: bool,
     directory_out: pathlib.Path,
     username: str,
-) -> tuple[
-    tuple[str, str],
-    list[str],
-    list[float],
-    list[DateTime],
-    float,
-    list[str],
-    list[str],
-    list[str],
-]:
-    (endpoint_url, bucket, path) = parse_access_dataset_url(dataset_url)
-    splitted_path = path.split("/")
-    root_folder = splitted_path[0]
-    product_id = splitted_path[1]
-    dataset_id_with_tag = splitted_path[2]
+    no_directories: bool,
+    overwrite: bool,
+    skip_existing: bool,
+) -> S3FilesDescriptor:
 
-    sizes = []
-    last_modified_datetimes = []
-    filenames_in = []
-    filenames_without_sync = []
-    filenames_not_found = []
-    etags = []
+    files_headers = S3FilesDescriptor(endpoint=endpoint_url, bucket=bucket)
+
+    split_path = path.split("/")
+    root_folder = split_path[0]
+    product_id = split_path[1]
+    dataset_id_with_tag = split_path[2]
+
     for file_to_download in files_to_download:
         file_path = file_to_download.split(f"{dataset_id_with_tag}/")[-1]
         if not file_path:
             logger.warning(
                 f"{file_to_download} does not seem to be valid. Skipping."
             )
-            filenames_not_found.append(file_path)
+            files_headers.files_not_found.append(file_to_download)
             continue
         full_path = (
             f"s3://{bucket}/{root_folder}/{product_id}/"
@@ -409,35 +416,54 @@ def _download_header_for_direct_download(
         )
         if size_last_modified_and_etag:
             size, last_modified, etag = size_last_modified_and_etag
-            if not sync or _check_needs_to_be_synced(
-                full_path, size, last_modified, directory_out
-            ):
-                filenames_in.append(full_path)
-                sizes.append(float(size))
-                last_modified_datetimes.append(last_modified)
-                etags.append(etag)
-            else:
-                filenames_without_sync.append(full_path)
+            file_to_append = S3FileInfo(
+                filename_in=full_path,
+                size=size,
+                last_modified=last_modified.in_tz("UTC").to_iso8601_string(),
+                etag=etag,
+                ignore=_check_should_be_ignored(
+                    full_path,
+                    size,
+                    last_modified,
+                    directory_out,
+                    skip_existing,
+                    sync,
+                    no_directories,
+                ),
+                overwrite=_check_should_be_overwritten(
+                    full_path,
+                    size,
+                    last_modified,
+                    directory_out,
+                    sync,
+                    overwrite,
+                    no_directories,
+                ),
+            )
+            files_headers.add_s3_file(file_to_append)
         else:
-            filenames_not_found.append(file_path)
-    if not filenames_in:
+            files_headers.files_not_found.append(file_to_download)
+
+    if not files_headers.s3_files:
         logger.warning(
             "No files found to download for direct download. "
             "Please check the files to download. "
             "We will try to list the files available for download "
             "and compare them with the requested files."
         )
-    total_size = sum([size for size in sizes])
-    return (
-        (endpoint_url, bucket),
-        filenames_in,
-        sizes,
-        last_modified_datetimes,
-        total_size,
-        filenames_without_sync,
-        filenames_not_found,
-        etags,
+
+    return files_headers
+
+
+def _check_already_exists(
+    filename: str,
+    directory_out: pathlib.Path,
+    no_directories: bool,
+) -> bool:
+    filename_out = _create_filename_out(
+        filename, directory_out, no_directories
     )
+    return filename_out.is_file()
 
 
 def _check_needs_to_be_synced(
@@ -463,23 +489,69 @@ def _check_needs_to_be_synced(
             return last_modified_datetime > last_created_datetime_out
 
 
+def _check_should_be_ignored(
+    filename: str,
+    size: int,
+    last_modified_datetime: DateTime,
+    directory_out: pathlib.Path,
+    skip_existing: bool,
+    sync: bool,
+    no_directories: bool,
+) -> bool:
+    return (
+        skip_existing
+        and _check_already_exists(filename, directory_out, no_directories)
+    ) or (
+        sync
+        and not _check_needs_to_be_synced(
+            filename, size, last_modified_datetime, directory_out
+        )
+    )
+
+
+def _check_should_be_overwritten(
+    filename: str,
+    size: int,
+    last_modified_datetime: DateTime,
+    directory_out: pathlib.Path,
+    sync: bool,
+    overwrite: bool,
+    no_directories: bool,
+) -> bool:
+    return (
+        overwrite
+        and _check_already_exists(filename, directory_out, no_directories)
+        or (
+            sync
+            and _check_needs_to_be_synced(
+                filename, size, last_modified_datetime, directory_out
+            )
+        )
+    )
+
+
 def _create_information_message_before_download(
-    filenames: list[str],
-    sizes: list[float],
-    last_modified_datetimes: list[DateTime],
-    total_size: float,
+    files_information: S3FilesDescriptor,
 ) -> str:
     message = "You requested the download of the following files:\n"
-    for filename, size, last_modified_datetime in zip(
-        filenames[:20], sizes[:20], last_modified_datetimes[:20]
-    ):
-        message += str(filename)
-        datetime_iso = last_modified_datetime.in_tz("UTC").to_iso8601_string()
-        message += f" - {format_file_size(float(size))} - {datetime_iso}\n"
-    if len(filenames) > 20:
-        message += f"Printed 20 out of {len(filenames)} files\n"
+    files_printed = 0
+    for s3_file in files_information.s3_files:
+        if not s3_file.ignore:
+            files_printed += 1
+            message += str(s3_file.filename_in)
+            message += (
+                f" - {format_file_size(float(s3_file.size))}"
+                f" - {s3_file.last_modified}\n"
+            )
+        if files_printed == 20:
+            break
+    if len(files_information.s3_files) > 20:
+        message += (
+            f"Printed 20 out of {len(files_information.s3_files)} files\n"
+        )
     message += (
-        f"\nTotal size of the download: {format_file_size(total_size)}\n\n"
+        f"\nTotal size of the download: "
+        f"{format_file_size(files_information.total_size)}\n\n"
     )
     return message
 
@@ -521,7 +593,7 @@ def _list_files_on_marine_data_lake_s3(
             (
                 f"s3://{bucket}/" + s3_object["Key"],
                 s3_object["Size"],
-                s3_object["LastModified"],
+                pendulum.instance(s3_object["LastModified"]),
                 s3_object["ETag"],
             )
         )
@@ -594,31 +666,40 @@ def _download_one_file(
 # /////////////////////////////
 
 
-def create_filenames_out(
-    filenames_in: list[str],
-    overwrite: bool,
+def _create_filenames_out(
+    files_information: S3FilesDescriptor,
     output_directory: pathlib.Path = pathlib.Path("."),
     no_directories=False,
-    unique_names_compared_to_local_files=True,
-) -> list[pathlib.Path]:
-    filenames_out = []
-    for filename_in in filenames_in:
-        if no_directories:
-            filename_out = (
-                pathlib.Path(output_directory) / pathlib.Path(filename_in).name
-            )
-        else:
-            # filename_in: s3://mdl-native-xx/native/<product-id>..
-            filename_out = _local_path_from_s3_url(
-                filename_in, output_directory
-            )
-        if unique_names_compared_to_local_files:
+) -> S3FilesDescriptor:
+    for s3_file in files_information.s3_files:
+        filename_in = s3_file.filename_in
+        filename_out = _create_filename_out(
+            filename_in,
+            output_directory,
+            no_directories,
+        )
+        if not s3_file.overwrite and not s3_file.ignore:
             filename_out = get_unique_filename(
-                filepath=filename_out, overwrite_option=overwrite
+                filepath=filename_out,
             )
+        s3_file.filename_out = filename_out
 
-        filenames_out.append(filename_out)
-    return filenames_out
+    return files_information
+
+
+def _create_filename_out(
+    file_path: str,
+    output_directory: pathlib.Path = pathlib.Path("."),
+    no_directories=False,
+):
+    if no_directories:
+        filename_out = (
+            pathlib.Path(output_directory) / pathlib.Path(file_path).name
+        )
+    else:
+        # filename_in: s3://mdl-native-xx/native/<product-id>..
+        filename_out = _local_path_from_s3_url(file_path, output_directory)
+    return filename_out
 
 
 def format_file_size(

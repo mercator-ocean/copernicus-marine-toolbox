@@ -77,7 +77,7 @@ def cli_get() -> None:
     is_flag=True,
     help=documentation_utils.GET["NO_DIRECTORIES_HELP"],
     default=False,
-    mutually_exclusive=["sync"],
+    mutually_exclusive=["sync", "sync-delete", "skip-existing"],
 )
 @click.option(
     "--output-directory",
@@ -95,7 +95,9 @@ def cli_get() -> None:
     documentation_utils.GET["OVERWRITE_SHORT_OPTION"],
     is_flag=True,
     default=False,
+    cls=MutuallyExclusiveOption,
     help=documentation_utils.GET["OVERWRITE_OUTPUT_DATA_HELP"],
+    mutually_exclusive=["skip-existing", "sync", "sync-delete"],
 )
 @click.option(
     "--create-template",
@@ -141,7 +143,7 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=documentation_utils.GET["SYNC_HELP"],
-    mutually_exclusive=["no-directories"],
+    mutually_exclusive=["no-directories", "skip-existing"],
 )
 @click.option(
     "--sync-delete",
@@ -149,7 +151,15 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=documentation_utils.GET["SYNC_DELETE_HELP"],
-    mutually_exclusive=["no-directories"],
+    mutually_exclusive=["no-directories", "skip-existing"],
+)
+@click.option(
+    "--skip-existing",
+    cls=MutuallyExclusiveOption,
+    is_flag=True,
+    default=False,
+    help=documentation_utils.GET["SKIP_EXISTING_HELP"],
+    mutually_exclusive=["no-directories", "sync", "sync-delete"],
 )
 @click.option(
     "--index-parts",
@@ -211,6 +221,7 @@ def get(
     create_file_list: Optional[str],
     sync: bool,
     sync_delete: bool,
+    skip_existing: bool,
     index_parts: bool,
     dry_run: bool,
     returned_query_metadata: Optional[str],
@@ -246,12 +257,13 @@ def get(
         credentials_file=credentials_file,
         overwrite_output_data=overwrite_output_data,
         request_file=request_file,
-        filter=filter,
+        filter_option=filter,
         regex=regex,
         file_list_path=file_list,
         create_file_list=create_file_list,
         sync=sync,
         sync_delete=sync_delete,
+        skip_existing=skip_existing,
         index_parts=index_parts,
         dry_run=dry_run,
         max_concurrent_requests=max_concurrent_requests,

@@ -9,6 +9,7 @@ from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
 from copernicusmarine.command_line_interface.utils import (
+    MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
     force_dataset_part_option,
     force_dataset_version_option,
@@ -189,7 +190,18 @@ def cli_subset() -> None:
     documentation_utils.SUBSET["OVERWRITE_SHORT_OPTION"],
     is_flag=True,
     default=False,
+    cls=MutuallyExclusiveOption,
     help=documentation_utils.SUBSET["OVERWRITE_OUTPUT_DATA_HELP"],
+    mutually_exclusive=["skip-existing"],
+)
+@click.option(
+    "--skip-existing",
+    is_flag=True,
+    type=bool,
+    default=False,
+    cls=MutuallyExclusiveOption,
+    help=documentation_utils.SUBSET["SKIP_EXISTING_HELP"],
+    mutually_exclusive=["overwrite-output-data"],
 )
 @click.option(
     "--service",
@@ -293,6 +305,7 @@ def subset(
     credentials_file: Optional[pathlib.Path],
     motu_api_request: Optional[str],
     overwrite_output_data: bool,
+    skip_existing: bool,
     dry_run: bool,
     returned_query_metadata: Optional[str],
     disable_progress_bar: bool,
@@ -343,6 +356,7 @@ def subset(
         credentials_file=credentials_file,
         motu_api_request=motu_api_request,
         overwrite_output_data=overwrite_output_data,
+        skip_existing=skip_existing,
         dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
         staging=staging,

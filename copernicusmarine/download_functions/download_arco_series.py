@@ -1,4 +1,5 @@
 import logging
+import os
 import pathlib
 from typing import Hashable, Iterable, Literal, Optional, Union
 
@@ -18,6 +19,7 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
+    FileStatus,
     ResponseSubset,
     StatusCode,
     StatusMessage,
@@ -94,6 +96,7 @@ def download_dataset(
     dry_run: bool,
     overwrite_output_data: bool,
     chunk_size_limit: Optional[int],
+    skip_existing: bool,
 ) -> ResponseSubset:
     if chunk_size_limit:
         optimum_dask_chunking = get_optimum_dask_chunking(
@@ -141,9 +144,11 @@ def download_dataset(
         logger.debug(dataset)
     logger.info(message_formatted_dataset_size_estimation)
 
-    output_path = get_unique_filename(
-        filepath=output_path, overwrite_option=overwrite_output_data
-    )
+    if not overwrite_output_data and not skip_existing:
+        output_path = get_unique_filename(
+            filepath=output_path,
+        )
+
     response = ResponseSubset(
         file_path=output_path,
         output_directory=output_directory,
@@ -153,11 +158,15 @@ def download_dataset(
         coordinates_extent=get_dataset_coordinates_extent(dataset),
         status=StatusCode.SUCCESS,
         message=StatusMessage.SUCCESS,
+        file_status=FileStatus.DOWNLOADED,
     )
 
     if dry_run:
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
+        return response
+    elif skip_existing and os.path.exists(output_path):
+        response.file_status = FileStatus.IGNORED
         return response
 
     logger.info("Writing to local storage. Please wait...")
@@ -177,6 +186,10 @@ def download_dataset(
                 netcdf3_compatible,
             )
     logger.info(f"Successfully downloaded to {output_path}")
+    if overwrite_output_data:
+        response.status = StatusCode.SUCCESS
+        response.message = StatusMessage.SUCCESS
+        response.file_status = FileStatus.OVERWRITTEN
 
     return response
 
@@ -249,6 +262,7 @@ def download_zarr(
         dry_run=subset_request.dry_run,
         service=service,
         chunk_size_limit=chunk_size_limit,
+        skip_existing=subset_request.skip_existing,
     )
     return response
 

@@ -38,13 +38,14 @@ def get_function(
     credentials_file: Optional[pathlib.Path],
     overwrite_output_data: bool,
     request_file: Optional[pathlib.Path],
-    filter: Optional[str],
+    filter_option: Optional[str],
     regex: Optional[str],
     file_list_path: Optional[pathlib.Path],
     create_file_list: Optional[str],
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
+    skip_existing: bool,
     dry_run: bool,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
@@ -77,10 +78,16 @@ def get_function(
         get_request.force_dataset_part = force_dataset_part
     if no_directories:
         get_request.no_directories = no_directories
+
     if overwrite_output_data:
         get_request.overwrite_output_data = overwrite_output_data
-    if filter:
-        get_request.regex = filter_to_regex(filter)
+    if skip_existing:
+        get_request.skip_existing = skip_existing
+    if no_directories:
+        get_request.no_directories = no_directories
+
+    if filter_option:
+        get_request.regex = filter_to_regex(filter_option)
     if regex:
         get_request.regex = overload_regex_with_additionnal_filter(
             regex, get_request.regex
@@ -90,7 +97,7 @@ def get_function(
         if not get_request.force_dataset_version:
             raise ValueError(
                 "Sync requires to set a dataset version. "
-                "Please use --force-dataset-version option."
+                "Please use --dataset-version option."
             )
     if sync_delete:
         get_request.sync_delete = sync_delete
@@ -165,9 +172,11 @@ def _run_get_request(
 
 
 def create_get_template() -> None:
-    filename = get_unique_filename(
-        filepath=pathlib.Path("get_template.json"), overwrite_option=False
-    )
+    filename = pathlib.Path("get_template.json")
+    if filename.exists():
+        get_unique_filename(
+            filepath=pathlib.Path("get_template.json"),
+        )
     with open(filename, "w") as output_file:
         json.dump(
             {
@@ -196,16 +205,13 @@ def create_get_template() -> None:
 
 
 def get_direct_download_files(
-    file_list_path: Optional[pathlib.Path],
-) -> Optional[list[str]]:
-    if file_list_path:
-        if not os.path.exists(file_list_path):
-            raise FileNotFoundError(
-                f"File {file_list_path} does not exist."
-                " Please provide a valid path to a '.txt' file."
-            )
-        with open(file_list_path) as f:
-            direct_download_files = [line.strip() for line in f.readlines()]
-        return direct_download_files
-    else:
-        return None
+    file_list_path: pathlib.Path,
+) -> list[str]:
+    if not os.path.exists(file_list_path):
+        raise FileNotFoundError(
+            f"File {file_list_path} does not exist."
+            " Please provide a valid path to a '.txt' file."
+        )
+    with open(file_list_path) as f:
+        direct_download_files = [line.strip() for line in f.readlines()]
+    return direct_download_files

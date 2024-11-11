@@ -57,6 +57,10 @@ class TestPythonInterface:
         )
 
     def test_subset_function(self, tmp_path):
+        self.when_subset_function(tmp_path)
+        self.then_the_same_with_skip_existing_does_not_download(tmp_path)
+
+    def when_subset_function(self, tmp_path):
         subset_result = subset(
             username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
@@ -73,6 +77,25 @@ class TestPythonInterface:
 
         assert subset_result is not None
         assert subset_result.file_path.exists()
+
+    def then_the_same_with_skip_existing_does_not_download(self, tmp_path):
+        subset_result = subset(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
+            dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
+            variables=["so"],
+            start_datetime=datetime(year=2024, month=1, day=1),
+            end_datetime=datetime(year=2024, month=1, day=2),
+            minimum_latitude=0.0,
+            maximum_latitude=0.1,
+            minimum_longitude=0.2,
+            maximum_longitude=0.3,
+            output_directory=tmp_path,
+            skip_existing=True,
+        )
+        assert subset_result.file_path.exists()
+        assert "IGNORED" == subset_result.file_status
+        assert "000" == subset_result.status
 
     def test_open_dataset(self):
         dataset = open_dataset(

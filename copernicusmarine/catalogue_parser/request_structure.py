@@ -74,6 +74,7 @@ class SubsetRequest:
     force_service: Optional[str] = None
     output_directory: pathlib.Path = pathlib.Path(".")
     overwrite_output_data: bool = False
+    skip_existing: bool = False
     netcdf_compression_level: int = 0
     netcdf3_compatible: bool = False
     dry_run: bool = False
@@ -212,6 +213,7 @@ class GetRequest:
     index_parts: bool = False
     direct_download: Optional[list[str]] = None
     dry_run: bool = False
+    skip_existing: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in GetRequest object.
@@ -226,7 +228,15 @@ class GetRequest:
     def enforce_types(self):
         type_enforced_dict = {}
         for key, value in self.__dict__.items():
-            if key in ["no_directories"]:
+            if key in [
+                "no_directories",
+                "sync",
+                "sync_delete",
+                "dry_run",
+                "overwrite_output_data",
+                "skip_existing",
+                "index_parts",
+            ]:
                 new_value = bool(value) if value is not None else None
             else:
                 new_value = str(value) if value else None

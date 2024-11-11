@@ -36,6 +36,7 @@ from copernicusmarine.core_functions.exceptions import (
 from copernicusmarine.core_functions.models import (
     DatasetCoordinatesExtent,
     FileGet,
+    FileStatus,
     GeographicalExtent,
     ResponseGet,
     ResponseSubset,
@@ -94,6 +95,7 @@ __all__ = [
     "ServiceNotHandled",
     "ServiceNotSupported",
     "StatusCode",
+    "FileStatus",
     "StatusMessage",
     "TimeExtent",
     "VariableDoesNotExistInTheDataset",
