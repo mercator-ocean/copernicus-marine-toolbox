@@ -145,7 +145,7 @@ def cli_subset() -> None:
     "-t",
     type=str,
     help=documentation_utils.SUBSET["START_DATETIME_HELP"]
-    + "Caution: encapsulate date with “ “ to ensure valid "
+    + " Caution: encapsulate date with “ “ to ensure valid "
     "expression for format “%Y-%m-%d %H:%M:%S”.",
 )
 @click.option(
@@ -153,7 +153,7 @@ def cli_subset() -> None:
     "-T",
     type=str,
     help=documentation_utils.SUBSET["END_DATETIME_HELP"]
-    + "Caution: encapsulate date with “ “ to ensure valid "
+    + " Caution: encapsulate date with “ “ to ensure valid "
     "expression for format “%Y-%m-%d %H:%M:%S”.",
 )
 @click.option(

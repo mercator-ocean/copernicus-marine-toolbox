@@ -104,7 +104,7 @@ class ServiceNotHandled(Exception):
 class CopernicusMarineServiceFormat(str, Enum):
     """
     Format of the data for a service.
-    For example, "arco-geo-series" and "arco-time-series" can be "zarr" or "sqlite"
+    For example, "arco-geo-series" and "arco-time-series" can be "zarr" or "sqlite".
     """
 
     ZARR = "zarr"
@@ -119,25 +119,25 @@ class CopernicusMarineCoordinate(BaseModel):
     Coordinate for a variable.
     """
 
-    #: Coordinate id
+    #: Coordinate id.
     coordinate_id: str
-    #: Coordinate units
+    #: Coordinate units.
     coordinate_unit: str
-    #: Minimum value of the coordinate
+    #: Minimum value of the coordinate.
     minimum_value: Optional[Union[float, str]]
-    #: Maximum value of the coordinate
+    #: Maximum value of the coordinate.
     maximum_value: Optional[Union[float, str]]
-    #: Step of the coordinate
+    #: Step of the coordinate.
     step: Optional[float]
-    #: Values of the coordinate
+    #: Values of the coordinate.
     values: Optional[list[Union[float, int, str]]]
-    #: Chunking length of the coordinate
+    #: Chunking length of the coordinate.
     chunking_length: Optional[Union[float, int]]
-    #: Chunk type of the coordinate
+    #: Chunk type of the coordinate.
     chunk_type: Optional[str]
-    #: Chunk reference coordinate of the coordinate
+    #: Chunk reference coordinate of the coordinate.
     chunk_reference_coordinate: Optional[Union[float, int]]
-    #: Chunk geometric factor of the coordinate
+    #: Chunk geometric factor of the coordinate.
     chunk_geometric_factor: Optional[Union[float, int]]
 
     @classmethod
@@ -236,15 +236,15 @@ class CopernicusMarineVariable(BaseModel):
     Contains the variable metadata and a list of coordinates.
     """
 
-    #: Short name of the variable
+    #: Short name of the variable.
     short_name: str
-    #: Standard name of the variable
+    #: Standard name of the variable.
     standard_name: Optional[str]
-    #: Units of the variable
+    #: Units of the variable.
     units: Optional[str]
-    #: Bounding box of the variable
+    #: Bounding box of the variable.
     bbox: Optional[list[float]]
-    #: List of coordinates of the variable
+    #: List of coordinates of the variable.
     coordinates: list[CopernicusMarineCoordinate]
 
     @classmethod
@@ -291,18 +291,18 @@ class CopernicusMarineService(BaseModel):
 
     model_config = ConfigDict(use_enum_values=True)
 
-    #: Service name
+    #: Service name.
     service_name: CopernicusMarineServiceNames
 
-    #: Service short name
+    #: Service short name.
     service_short_name: Optional[CoperniusMarineServiceShortNames]
 
     #: Service format: format of the service
-    #: (eg:"arco-geo-series" can be "zarr", "sqlite")
+    #: (eg:"arco-geo-series" can be "zarr", "sqlite").
     service_format: Optional[CopernicusMarineServiceFormat]
-    #: Service uri: uri of the service
+    #: Service uri: uri of the service.
     uri: str
-    #: List of variables of the service
+    #: List of variables of the service.
     variables: list[CopernicusMarineVariable]
 
     @classmethod
@@ -368,13 +368,13 @@ class CopernicusMarinePart(BaseModel):
     Each part contains a distinct list of services and distinct data.
     """
 
-    #: Name of the part
+    #: Name of the part.
     name: str
-    #: List of services available for the part
+    #: List of services available for the part.
     services: list[CopernicusMarineService]
-    #: Date when the part will be retired
+    #: Date when the part will be retired.
     retired_date: Optional[str]
-    #: Date when the part will be/was released
+    #: Date when the part will be/was released.
     released_date: Optional[str]
 
     @classmethod
@@ -424,9 +424,9 @@ class CopernicusMarineVersion(BaseModel):
     Usually around data releases.
     """
 
-    #: Label of the version (eg: "latest", "202101")
+    #: Label of the version (eg: "latest", "202101").
     label: str
-    #: List of parts of the version
+    #: List of parts of the version.
     parts: list[CopernicusMarinePart]
 
     def get_part(self, force_part: Optional[str]) -> CopernicusMarinePart:
@@ -474,11 +474,11 @@ class CopernicusMarineDataset(BaseModel):
     Contains the dataset metadata and a list of versions.
     """
 
-    #: The datasetID
+    #: The datasetID.
     dataset_id: str
-    #: The dataset name
+    #: The dataset name.
     dataset_name: str
-    #: List of versions of the dataset
+    #: List of versions of the dataset.
     versions: list[CopernicusMarineVersion]
 
     def get_version(
@@ -549,25 +549,25 @@ class CopernicusMarineProduct(BaseModel):
     Contains the product metadata and a list of datasets.
     """
 
-    #: Title of the product
+    #: Title of the product.
     title: str
-    #: ProductID
+    #: ProductID.
     product_id: str
-    #: Thumbnail url of the product
+    #: Thumbnail url of the product.
     thumbnail_url: str
-    #: Description of the product
+    #: Description of the product.
     description: Optional[str]
-    #: Digital object identifier of the product
+    #: Digital object identifier of the product.
     digital_object_identifier: Optional[str]
-    #: Sources of the product
+    #: Sources of the product.
     sources: list[str]
-    #: Processing level of the product
+    #: Processing level of the product.
     processing_level: Optional[str]
-    #: Production center of the product
+    #: Production center of the product.
     production_center: str
-    #: Keywords of the product
+    #: Keywords of the product.
     keywords: Optional[list[str]]
-    #: List of datasets of the product
+    #: List of datasets of the product.
     datasets: list[CopernicusMarineDataset]
 
 
@@ -577,7 +577,7 @@ class CopernicusMarineCatalogue(BaseModel):
     You can find here the products of the catalogue and their metadata as the response of the describe command/function.
     """  # noqa
 
-    #: List of products in the catalogue
+    #: List of products in the catalogue.
     products: list[CopernicusMarineProduct]
 
     def filter_only_official_versions_and_parts(self):

@@ -146,5 +146,5 @@ Subtypes
 .. autoclass:: copernicusmarine.FileStatus()
     :members:
     :undoc-members:
-    :exclude-members: model_computed_fields, model_config, model_fields
+    :exclude-members: model_computed_fields, model_config, model_fields, get_status
     :member-order: bysource
