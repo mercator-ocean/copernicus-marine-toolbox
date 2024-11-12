@@ -4,7 +4,7 @@ from pathlib import Path
 from tests.test_utils import execute_in_terminal
 
 
-class TestBasicCommands:
+class TestBasicCommandsBinaries:
     def test_help(self):
         self.output = execute_in_terminal(
             ["./copernicusmarine.cli", "describe", "--help"]
