@@ -54,9 +54,6 @@ run-tests-dependencie-versions:
 	${ACTIVATE_ENVIRONMENT}
 	tox run
 
-run-tests-binaries:
-	pytest tests_binaries -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
-
 run-using-pyinstaller-windows-latest:
 	pip install -e .
 	python -m PyInstaller --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine.exe --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile
