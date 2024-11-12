@@ -63,7 +63,7 @@ run-using-pyinstaller-macos:
 	python -m PyInstaller --noconfirm --clean --onedir --copy-metadata xarray --name copernicusmarine_${DISTRIBUTION}.cli  --copy-metada pandas --collect-data dask --collect-data distributed --collect-all tzdata --copy-metadata copernicusmarine copernicusmarine/command_line_interface/copernicus_marine.py --target-architecture=${ARCH}
 	ls -la
 	cd dist
-	ls
+	ls ./dist
 
 
 run-using-pyinstaller-macos-13: ARCH = x86_64
