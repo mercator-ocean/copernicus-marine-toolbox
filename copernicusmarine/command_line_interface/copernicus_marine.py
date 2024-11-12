@@ -1,4 +1,4 @@
-import multiprocessing
+from multiprocessing import freeze_support
 
 import click
 
@@ -28,5 +28,5 @@ def command_line_interface():
 
 
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
+    freeze_support()
     command_line_interface()
