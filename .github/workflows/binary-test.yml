@@ -1,0 +1,63 @@
+name: Run tests binaries
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release that we want to check its binaries'
+        required: true
+        default: 'latest'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        fetch-depth: 0
+
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: '1.5.6-0'
+        micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+        environment-file: conda_environment_test.yaml
+        environment-name: copernicusmarine_test
+        condarc-file: .condarc
+        cache-environment: true
+        post-cleanup: 'all'
+
+    - name: Download the binary
+      shell: micromamba-shell {0}
+      run: |
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          ARCH="macos-arm64"
+          COMMAND = curl -sL -o copernicusmarine_${ARCH}
+        elif [ "${{ matrix.os }}" == "macos-13" ]; then
+          ARCH="macos-x86_64"
+          COMMAND = curl -sL -o copernicusmarine_${ARCH}
+        elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
+          COMMAND=wget
+          ARCH="linux-glibc-2.35"
+        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
+          COMMAND=wget
+          ARCH="linux-glibc-2.31"
+        fi
+        ${COMMAND} "https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/${{inputs.release_tag}}/copernicusmarine_${ARCH}.cli"
+        chmod +rwx copernicusmarine_${ARCH}.cli
+        mv copernicusmarine_${ARCH}.cli copernicusmarine.cli
+
+
+    - name: Run tests
+      env:
+        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+      run: make run-tests-binaries
+      shell: micromamba-shell {0}

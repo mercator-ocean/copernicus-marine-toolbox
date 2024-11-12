@@ -129,6 +129,10 @@ And from a Windows os (cmd):
 
     The **Linux** binaries are tested with Ubuntu machines.
 
+.. note::
+
+    The **MacOS** binaries are contained within a folder, with all it's dependencies. The binary must run inside the folder to work correctly.
+
 .. _installation-page-dependencies:
 
 Dependencies

@@ -54,13 +54,16 @@ run-tests-dependencie-versions:
 	${ACTIVATE_ENVIRONMENT}
 	tox run
 
+run-tests-binaries:
+	pytest tests_binaries -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+
 run-using-pyinstaller-windows-latest:
 	pip install -e .
 	python -m PyInstaller --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine.exe --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile
 
 run-using-pyinstaller-macos:
 	pip install -e .
-	python -m PyInstaller --copy-metadata xarray --copy-metada pandas --collect-data dask --collect-data distributed --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-${ARCH}.cli copernicusmarine/command_line_interface/copernicus_marine.py --onedir--target-architecture=${ARCH}
+	python -m PyInstaller --copy-metadata xarray --copy-metada pandas --collect-data dask --collect-data distributed --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_macos-${ARCH}.cli copernicusmarine/command_line_interface/copernicus_marine.py --onedir --target-architecture=${ARCH}
 
 run-using-pyinstaller-macos-13: ARCH = x86_64
 run-using-pyinstaller-macos-13: run-using-pyinstaller-macos
