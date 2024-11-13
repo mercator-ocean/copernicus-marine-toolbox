@@ -1,4 +1,4 @@
-from multiprocessing import freeze_support
+import multiprocessing
 
 import click
 
@@ -6,6 +6,8 @@ from copernicusmarine.command_line_interface.group_describe import cli_describe
 from copernicusmarine.command_line_interface.group_get import cli_get
 from copernicusmarine.command_line_interface.group_login import cli_login
 from copernicusmarine.command_line_interface.group_subset import cli_subset
+
+multiprocessing.freeze_support()
 
 
 @click.command(
@@ -28,5 +30,4 @@ def command_line_interface():
 
 
 if __name__ == "__main__":
-    freeze_support()
     command_line_interface()
