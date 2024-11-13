@@ -63,7 +63,7 @@ def get(
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     overwrite_output_data : bool, optional
-        If specified and if the file already exists on destination, then it will be overwritten instead of creating new one with unique index.
+        If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     no_directories : bool, optional
@@ -83,7 +83,7 @@ def get(
     sync_delete : bool, optional
         Option to delete local files that are not present on the remote server while applying sync.
     skip_existing : bool, optional
-        If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with an index (eg 'filename_(1).nc').
+        If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
     dry_run : bool, optional
         If True, runs query without downloading data.
     max_concurrent_requests : int, optional

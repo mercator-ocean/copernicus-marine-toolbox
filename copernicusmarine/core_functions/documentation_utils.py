@@ -3,10 +3,7 @@ from copernicusmarine.core_functions.services_utils import CommandType
 SHARED: dict[str, str] = {
     "OVERWRITE_SHORT_OPTION": "--overwrite",
     "OVERWRITE_LONG_OPTION": "--overwrite-output-data",
-    "OVERWRITE_OUTPUT_DATA_HELP": (
-        "If specified and if the file already exists on destination, then it will be "
-        "overwritten instead of creating new one with unique index."
-    ),
+    "OVERWRITE_OUTPUT_DATA_HELP": "If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').",  # noqa: E501
     "USERNAME_HELP": (
         "The username for authentication."
     ),  # a little hardcoding in Python API
@@ -51,7 +48,7 @@ SHARED: dict[str, str] = {
     "SKIP_EXISTING_HELP": (
         "If the files already exists where it would be downloaded, then "
         "the download is skipped for this file. By default, the toolbox "
-        "creates a new file with an index (eg 'filename_(1).nc')."
+        "creates a new file with a new index (eg 'filename_(1).nc')."
     ),
 }
 

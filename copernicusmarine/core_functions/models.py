@@ -92,9 +92,9 @@ class FileGet(BaseModel):
     output_directory: pathlib.Path
     #: File name.
     filename: str
-    #: Path to the file.
+    #: Relative path to the file.
     file_path: pathlib.Path
-    #: status of the file.
+    #: Status of the file.
     file_status: FileStatus
 
 
@@ -103,15 +103,15 @@ class ResponseGet(BaseModel):
 
     model_config = ConfigDict(use_enum_values=True)
 
-    #: Description of the files concerned by the query
+    #: Description of the files concerned by the query.
     files: list[FileGet]
-    #: List of deleted files
+    #: List of deleted files. Only if option ``sync-delete`` is passed.
     files_deleted: Optional[list[str]]
-    #: List of not found files from the file list input
+    #: List of not found files from the file list input.
     files_not_found: Optional[list[str]]
     #: Total size of the files that would be downloaded.
     total_size: Optional[float]
-    #: status of the request.
+    #: Status of the request.
     status: StatusCode
     #: Message explaning the status.
     message: StatusMessage
@@ -171,7 +171,7 @@ class DatasetCoordinatesExtent(BaseModel):
     longitude: Optional[GeographicalExtent]
     #: Latitude interval of the subsetted data.
     latitude: Optional[GeographicalExtent]
-    #: Time interval of the subsetted data in iso8601 string
+    #: Time interval of the subsetted data in iso8601 string.
     time: Optional[TimeExtent]
     #: Depth interval of the subsetted data.
     depth: Optional[GeographicalExtent] = None
@@ -186,7 +186,7 @@ class ResponseSubset(BaseModel):
 
     model_config = ConfigDict(use_enum_values=True)
 
-    #: Path to the result file.
+    #: Relative path to the file.
     file_path: pathlib.Path
     #: Output directory where the file stored.
     output_directory: pathlib.Path
