@@ -396,7 +396,7 @@ class TestCommandLineInterface:
             assert str(tmp_path) in get_file["file_path"]
             assert not os.path.exists(get_file["file_path"])
 
-    def test_get_can_choose_returned_fields(self, tmp_path):
+    def test_get_can_choose_return_fields(self, tmp_path):
         filter = "*_200[123]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
@@ -468,7 +468,7 @@ class TestCommandLineInterface:
         assert "file_path" not in returned_value
         assert "coordinates_extent" not in returned_value
 
-    def test_subset_can_choose_returned_fields(self, tmp_path):
+    def test_subset_can_choose_return_fields(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -629,7 +629,7 @@ class TestCommandLineInterface:
     def when_I_request_subset_dataset_with_zarr_service(
         self,
         output_path,
-        vertical_dimension_output: Literal["depth", "elevation"] = "depth",
+        vertical_axis: Literal["depth", "elevation"] = "depth",
     ):
         command = [
             "copernicusmarine",
@@ -654,8 +654,8 @@ class TestCommandLineInterface:
             "10",
             "-v",
             "thetao",
-            "--vertical-dimension-output",
-            f"{vertical_dimension_output}",
+            "--vertical-axis",
+            f"{vertical_axis}",
             "--service",
             "arco-time-series",
             "-o",
@@ -1819,7 +1819,7 @@ class TestCommandLineInterface:
             f"{max_depth}",
             "--coordinates-selection-method",
             "outside",
-            "--vertical-dimension-output",
+            "--vertical-axis",
             "elevation",
             "-o",
             f"{tmp_path}",

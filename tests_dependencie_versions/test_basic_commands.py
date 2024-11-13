@@ -59,7 +59,7 @@ class TestBasicCommands:
         command = [
             "copernicusmarine",
             "login",
-            "--overwrite-configuration-file",
+            "--force-overwrite",
             "--configuration-file-directory",
             f"{non_existing_directory}",
             "--username",

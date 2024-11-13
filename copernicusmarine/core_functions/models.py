@@ -21,8 +21,8 @@ DEFAULT_COORDINATES_SELECTION_METHODS = list(
 )
 
 VerticalDimensionOutput = Literal["depth", "elevation"]
-DEFAULT_VERTICAL_DIMENSION_OUTPUT: VerticalDimensionOutput = "depth"
-DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
+DEFAULT_vertical_axis: VerticalDimensionOutput = "depth"
+DEFAULT_vertical_axisS = list(get_args(VerticalDimensionOutput))
 
 
 class StatusCode(str, Enum):
@@ -197,6 +197,8 @@ class ResponseSubset(BaseModel):
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.
     data_transfer_size: Optional[float]
+    #: Variables of the subsetted dataset.
+    variables: list[str]
     #: The bounds of the subsetted dataset.
     coordinates_extent: DatasetCoordinatesExtent
     #: Status of the request.

@@ -12,8 +12,8 @@ from copernicusmarine.core_functions.exceptions import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
-    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
     CoordinatesSelectionMethod,
+    DEFAULT_vertical_axis,
     FileFormat,
     ResponseSubset,
     VerticalDimensionOutput,
@@ -40,7 +40,7 @@ def subset(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
+    vertical_axis: VerticalDimensionOutput = DEFAULT_vertical_axis,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
@@ -53,7 +53,7 @@ def subset(
     output_directory: Optional[Union[pathlib.Path, str]] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
     motu_api_request: Optional[str] = None,
-    overwrite_output_data: bool = False,
+    overwrite: bool = False,
     skip_existing: bool = False,
     dry_run: bool = False,
     disable_progress_bar: bool = False,
@@ -83,7 +83,7 @@ def subset(
         The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-    overwrite_output_data : bool, optional
+    overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
     skip_existing : bool, optional
         If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
@@ -105,7 +105,7 @@ def subset(
         Minimum depth for the subset. Requires a positive float (or 0).
     maximum_depth : float, optional
         Maximum depth for the subset. Requires a positive float (or 0).
-    vertical_dimension_output : str, optional
+    vertical_axis : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
     start_datetime : Union[datetime, str], optional
         The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
@@ -126,7 +126,7 @@ def subset(
     netcdf3_compatible : bool, optional
         Enable downloading the dataset in a netCDF3 compatible format.
     chunk_size_limit : int, default 100
-        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted.
+        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
 
     Returns
     -------
@@ -134,11 +134,9 @@ def subset(
         A description of the downloaded data and its destination.
 
     """  # noqa
-    if overwrite_output_data:
+    if overwrite:
         if skip_existing:
-            raise MutuallyExclusiveArguments(
-                "overwrite_output_data", "skip_existing"
-            )
+            raise MutuallyExclusiveArguments("overwrite", "skip_existing")
 
     request_file = pathlib.Path(request_file) if request_file else None
     output_directory = (
@@ -164,7 +162,7 @@ def subset(
         maximum_latitude,
         minimum_depth,
         maximum_depth,
-        vertical_dimension_output,
+        vertical_axis,
         start_datetime,
         end_datetime,
         coordinates_selection_method,
@@ -175,7 +173,7 @@ def subset(
         output_directory,
         credentials_file,
         motu_api_request,
-        overwrite_output_data,
+        overwrite,
         skip_existing,
         dry_run,
         disable_progress_bar,

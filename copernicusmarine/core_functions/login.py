@@ -15,7 +15,7 @@ def login_function(
     username: Optional[str],
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
-    overwrite_configuration_file: bool,
+    force_overwrite: bool,
     check_credentials_valid: bool,
 ) -> bool:
     if check_credentials_valid:
@@ -30,7 +30,7 @@ def login_function(
         username=username,
         password=password,
         configuration_file_directory=configuration_file_directory,
-        overwrite_configuration_file=overwrite_configuration_file,
+        force_overwrite=force_overwrite,
     )
     if credentials_file is not None:
         logger.info(f"Credentials file stored in {credentials_file}.")

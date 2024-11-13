@@ -310,7 +310,7 @@ def create_copernicusmarine_configuration_file(
     username: str,
     password: str,
     configuration_file_directory: pathlib.Path,
-    overwrite_configuration_file: bool,
+    force_overwrite: bool,
 ) -> pathlib.Path:
     configuration_lines = [
         "[credentials]\n",
@@ -320,7 +320,7 @@ def create_copernicusmarine_configuration_file(
     configuration_filename = pathlib.Path(
         configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
     )
-    if configuration_filename.exists() and not overwrite_configuration_file:
+    if configuration_filename.exists() and not force_overwrite:
         click.confirm(
             f"File {configuration_filename} already exists, overwrite it ?",
             abort=True,
@@ -549,7 +549,7 @@ def credentials_file_builder(
     username: Optional[str],
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
-    overwrite_configuration_file: bool,
+    force_overwrite: bool,
 ) -> Optional[pathlib.Path]:
     username = _get_credential_from_environment_variable_or_prompt(
         username, "username", False
@@ -565,7 +565,7 @@ def credentials_file_builder(
             username=username,
             password=password,
             configuration_file_directory=configuration_file_directory,
-            overwrite_configuration_file=overwrite_configuration_file,
+            force_overwrite=force_overwrite,
         )
         return configuration_file
     return None

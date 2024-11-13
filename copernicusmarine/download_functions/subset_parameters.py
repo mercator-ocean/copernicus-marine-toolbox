@@ -4,7 +4,7 @@ from typing import Optional
 from pendulum import DateTime
 
 from copernicusmarine.core_functions.models import (
-    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
+    DEFAULT_vertical_axis,
     VerticalDimensionOutput,
 )
 
@@ -41,6 +41,4 @@ class TemporalParameters:
 class DepthParameters:
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
-    vertical_dimension_output: VerticalDimensionOutput = (
-        DEFAULT_VERTICAL_DIMENSION_OUTPUT
-    )
+    vertical_axis: VerticalDimensionOutput = DEFAULT_vertical_axis

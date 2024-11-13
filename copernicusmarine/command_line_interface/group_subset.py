@@ -18,15 +18,16 @@ from copernicusmarine.command_line_interface.utils import (
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
+    DeprecatedClickOption,
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_COORDINATES_SELECTION_METHODS,
     DEFAULT_FILE_FORMAT,
     DEFAULT_FILE_FORMATS,
-    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
-    DEFAULT_VERTICAL_DIMENSION_OUTPUTS,
     CoordinatesSelectionMethod,
+    DEFAULT_vertical_axis,
+    DEFAULT_vertical_axisS,
     FileFormat,
     ResponseSubset,
     VerticalDimensionOutput,
@@ -134,11 +135,11 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["MAXIMUM_DEPTH_HELP"],
 )
 @click.option(
-    "--vertical-dimension-output",
+    "--vertical-axis",
     "-V",
-    type=click.Choice(DEFAULT_VERTICAL_DIMENSION_OUTPUTS),
-    default=DEFAULT_VERTICAL_DIMENSION_OUTPUT,
-    help=documentation_utils.SUBSET["VERTICAL_DIMENSION_OUTPUT_HELP"],
+    type=click.Choice(DEFAULT_vertical_axisS),
+    default=DEFAULT_vertical_axis,
+    help=documentation_utils.SUBSET["VERTICAL_AXIS_HELP"],
 )
 @click.option(
     "--start-datetime",
@@ -186,12 +187,11 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["FILE_FORMAT_HELP"],
 )
 @click.option(
-    documentation_utils.SUBSET["OVERWRITE_LONG_OPTION"],
-    documentation_utils.SUBSET["OVERWRITE_SHORT_OPTION"],
+    "--overwrite",
     is_flag=True,
     default=False,
     cls=MutuallyExclusiveOption,
-    help=documentation_utils.SUBSET["OVERWRITE_OUTPUT_DATA_HELP"],
+    help=documentation_utils.SUBSET["OVERWRITE_HELP"],
     mutually_exclusive=["skip-existing"],
 )
 @click.option(
@@ -201,7 +201,7 @@ def cli_subset() -> None:
     default=False,
     cls=MutuallyExclusiveOption,
     help=documentation_utils.SUBSET["SKIP_EXISTING_HELP"],
-    mutually_exclusive=["overwrite-output-data"],
+    mutually_exclusive=["overwrite"],
 )
 @click.option(
     "--service",
@@ -225,6 +225,8 @@ def cli_subset() -> None:
     "--motu-api-request",
     type=str,
     help=documentation_utils.SUBSET["MOTU_API_REQUEST_HELP"],
+    cls=DeprecatedClickOption,
+    deprecated=["--motu-api-request"],
 )
 @click.option(
     "--dry-run",
@@ -234,11 +236,11 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["DRY_RUN_HELP"],
 )
 @click.option(
-    "--returned-query-metadata",
+    "--response-fields",
     "-r",
     type=str,
     default=None,
-    help=documentation_utils.GET["RETURN_QUERY_METADATA_HELP"],
+    help=documentation_utils.GET["RESPONSE_FIELDS_HELP"],
 )
 @tqdm_disable_option
 @click.option(
@@ -290,7 +292,7 @@ def subset(
     maximum_latitude: Optional[float],
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
-    vertical_dimension_output: VerticalDimensionOutput,
+    vertical_axis: VerticalDimensionOutput,
     start_datetime: Optional[str],
     end_datetime: Optional[str],
     coordinates_selection_method: CoordinatesSelectionMethod,
@@ -304,10 +306,10 @@ def subset(
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
     motu_api_request: Optional[str],
-    overwrite_output_data: bool,
+    overwrite: bool,
     skip_existing: bool,
     dry_run: bool,
-    returned_query_metadata: Optional[str],
+    response_fields: Optional[str],
     disable_progress_bar: bool,
     log_level: str,
     chunk_size_limit: int,
@@ -342,7 +344,7 @@ def subset(
         maximum_latitude=maximum_latitude,
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
-        vertical_dimension_output=vertical_dimension_output,
+        vertical_axis=vertical_axis,
         start_datetime=(
             datetime_parser(start_datetime) if start_datetime else None
         ),
@@ -355,7 +357,7 @@ def subset(
         output_directory=output_directory,
         credentials_file=credentials_file,
         motu_api_request=motu_api_request,
-        overwrite_output_data=overwrite_output_data,
+        overwrite=overwrite,
         skip_existing=skip_existing,
         dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
@@ -364,8 +366,8 @@ def subset(
         netcdf3_compatible=netcdf3_compatible,
         chunk_size_limit=chunk_size_limit,
     )
-    if returned_query_metadata:
-        fields_to_include = set(returned_query_metadata.split(","))
+    if response_fields:
+        fields_to_include = set(response_fields.split(","))
     elif dry_run:
         fields_to_include = {"all"}
     else:

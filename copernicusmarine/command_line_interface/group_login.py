@@ -72,11 +72,10 @@ def cli_login() -> None:
     help=documentation_utils.LOGIN["CONFIGURATION_FILE_DIRECTORY_HELP"],
 )
 @click.option(
-    "--overwrite-configuration-file",
-    "-overwrite",
+    "--force-overwrite",
     is_flag=True,
     default=False,
-    help=documentation_utils.LOGIN["OVERWRITE_CONFIGURATION_FILE_HELP"],
+    help=documentation_utils.LOGIN["FORCE_OVERWRITE_HELP"],
 )
 @click.option(
     "--check-credentials-valid",
@@ -95,7 +94,7 @@ def login(
     username: Optional[str],
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
-    overwrite_configuration_file: bool,
+    force_overwrite: bool,
     check_credentials_valid: bool,
     log_level: str = "INFO",
 ) -> None:
@@ -108,7 +107,7 @@ def login(
         username=username,
         password=password,
         configuration_file_directory=configuration_file_directory,
-        overwrite_configuration_file=overwrite_configuration_file,
+        force_overwrite=force_overwrite,
         check_credentials_valid=check_credentials_valid,
     ):
         exit(1)

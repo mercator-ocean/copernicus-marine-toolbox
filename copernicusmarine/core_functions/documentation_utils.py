@@ -1,9 +1,7 @@
 from copernicusmarine.core_functions.services_utils import CommandType
 
 SHARED: dict[str, str] = {
-    "OVERWRITE_SHORT_OPTION": "--overwrite",
-    "OVERWRITE_LONG_OPTION": "--overwrite-output-data",
-    "OVERWRITE_OUTPUT_DATA_HELP": "If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').",  # noqa: E501
+    "OVERWRITE_HELP": "If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').",  # noqa: E501
     "USERNAME_HELP": (
         "The username for authentication."
     ),  # a little hardcoding in Python API
@@ -31,7 +29,7 @@ SHARED: dict[str, str] = {
     ),
     "DISABLE_PROGRESS_BAR_HELP": "Flag to hide progress bar.",
     "DRY_RUN_HELP": "If True, runs query without downloading data.",
-    "RETURN_QUERY_METADATA_HELP": (
+    "RESPONSE_FIELDS_HELP": (
         "List of fields to include in the query metadata. "
         "The fields are separated by a comma."
         "To return all fields, use 'all'."
@@ -55,8 +53,7 @@ SHARED: dict[str, str] = {
 LOGIN: dict[str, str] = {
     "LOGIN_DESCRIPTION_HELP": (
         "Create a configuration file with your Copernicus Marine credentials"
-        " under the ``$HOME/.copernicusmarine`` directory"
-        " (overwritable with the ``overwrite_configuration_file`` option)."
+        " under the ``$HOME/.copernicusmarine`` directory."
     ),
     "LOGIN_RESPONSE_HELP": (
         "Exit code\n 0 exit code if the login was successfully "
@@ -65,7 +62,7 @@ LOGIN: dict[str, str] = {
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
         "Path to the directory where the configuration file is stored."
     ),
-    "OVERWRITE_CONFIGURATION_FILE_HELP": (
+    "FORCE_OVERWRITE_HELP": (
         "Flag to skip confirmation before overwriting configuration file."
     ),
     "CHECK_CREDENTIALS_VALID_HELP": (
@@ -88,23 +85,15 @@ DESCRIBE: dict[str, str] = {
     "DESCRIBE_RESPONSE_HELP": (
         "JSON\n A dictionary containing the retrieved metadata information."
     ),
-    "INCLUDE_DESCRIPTION_HELP": "Deprecated. Include product description in output.",
-    "INCLUDE_DATASETS_HELP": "Deprecated. Include product dataset details in output.",
-    "INCLUDE_KEYWORDS_HELP": "Deprecated. Include product keyword details in output.",
-    "INCLUDE_VERSIONS_HELP": (
+    "SHOW_ALL_VERSIONS_HELP": (
         "Include dataset versions in output. By default, shows only the default "
         "version."
     ),
-    "INCLUDE_ALL_HELP": (
-        "Deprecated. Include all the possible data in output: "
-        "description, datasets, keywords, "
-        "and versions."
-    ),
-    "RETURNED_FIELDS_HELP": (
+    "RETURN_FIELDS_HELP": (
         "Option to specify the fields to return in the output. "
         "The fields are separated by a comma. You can use 'all' to return all fields."
     ),
-    "RETURNED_FIELDS_EXCLUDE_HELP": (
+    "EXCLUDE_FIELDS_HELP": (
         "Option to specify the fields to exclude from the output. "
         "The fields are separated by a comma."
     ),
@@ -163,7 +152,7 @@ SUBSET: dict[str, str] = {
     "MAXIMUM_DEPTH_HELP": (
         "Maximum depth for the subset. Requires a positive float (or 0)."
     ),
-    "VERTICAL_DIMENSION_OUTPUT_HELP": (
+    "VERTICAL_AXIS_HELP": (
         "Consolidate the vertical dimension (the z-axis) as requested: depth with "
         "descending positive values, elevation with ascending positive values. "
         "Default is depth."
@@ -207,7 +196,8 @@ SUBSET: dict[str, str] = {
     ),
     "CHUNK_SIZE_LIMIT_HELP": (
         "Limit the size of the chunks in the dask array. Default is around 100MB. "
-        "Can be set to 0 to disable chunking. Positive integer values are accepted."
+        "Can be set to 0 to disable chunking. Positive integer values are accepted. "
+        "This is an experimental feature."
     ),
 }
 

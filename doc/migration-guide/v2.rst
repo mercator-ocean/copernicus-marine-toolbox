@@ -1,0 +1,5 @@
+Migration guide v2
+===================
+
+Still in construction, please refer to the help desk of mercator for more information about the
+v2 prereleases.

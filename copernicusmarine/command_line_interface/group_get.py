@@ -91,12 +91,11 @@ def cli_get() -> None:
     help=documentation_utils.GET["CREDENTIALS_FILE_HELP"],
 )
 @click.option(
-    documentation_utils.GET["OVERWRITE_LONG_OPTION"],
-    documentation_utils.GET["OVERWRITE_SHORT_OPTION"],
+    "--overwrite",
     is_flag=True,
     default=False,
     cls=MutuallyExclusiveOption,
-    help=documentation_utils.GET["OVERWRITE_OUTPUT_DATA_HELP"],
+    help=documentation_utils.GET["OVERWRITE_HELP"],
     mutually_exclusive=["skip-existing", "sync", "sync-delete"],
 )
 @click.option(
@@ -176,11 +175,11 @@ def cli_get() -> None:
     help=documentation_utils.GET["DRY_RUN_HELP"],
 )
 @click.option(
-    "--returned-query-metadata",
+    "--response-fields",
     "-r",
     type=str,
     default=None,
-    help=documentation_utils.GET["RETURN_QUERY_METADATA_HELP"],
+    help=documentation_utils.GET["RESPONSE_FIELDS_HELP"],
 )
 @click.option(
     "--max-concurrent-requests",
@@ -212,7 +211,7 @@ def get(
     no_directories: bool,
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
-    overwrite_output_data: bool,
+    overwrite: bool,
     create_template: bool,
     request_file: Optional[pathlib.Path],
     filter: Optional[str],
@@ -224,7 +223,7 @@ def get(
     skip_existing: bool,
     index_parts: bool,
     dry_run: bool,
-    returned_query_metadata: Optional[str],
+    response_fields: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
@@ -255,7 +254,7 @@ def get(
         no_directories=no_directories,
         output_directory=output_directory,
         credentials_file=credentials_file,
-        overwrite_output_data=overwrite_output_data,
+        overwrite=overwrite,
         request_file=request_file,
         filter_option=filter,
         regex=regex,
@@ -271,8 +270,8 @@ def get(
         staging=staging,
     )
 
-    if returned_query_metadata:
-        fields_to_include = set(returned_query_metadata.split(","))
+    if response_fields:
+        fields_to_include = set(response_fields.split(","))
     elif dry_run:
         fields_to_include = {"all"}
     else:

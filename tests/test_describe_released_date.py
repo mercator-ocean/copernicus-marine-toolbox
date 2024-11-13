@@ -18,10 +18,10 @@ class TestDescribeReleaseDate:
     def when_I_describe_the_marine_data_store(
         self,
         mock_get,
-        include_versions=False,
+        show_all_versions=False,
     ):
         return describe(
-            include_versions=include_versions,
+            show_all_versions=show_all_versions,
         )
 
     def test_only_released_dataset_by_default(self, snapshot):
@@ -43,7 +43,7 @@ class TestDescribeReleaseDate:
 
     def test_describe_all_versions(self, snapshot):
         describe_result = self.when_I_describe_the_marine_data_store(
-            include_versions=True
+            show_all_versions=True
         )
         self.then_I_get_all_products_versions_and_datasets(
             describe_result, snapshot

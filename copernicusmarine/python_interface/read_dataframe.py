@@ -11,8 +11,8 @@ from copernicusmarine.core_functions.deprecated_options import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
-    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
     CoordinatesSelectionMethod,
+    DEFAULT_vertical_axis,
     VerticalDimensionOutput,
 )
 from copernicusmarine.download_functions.download_arco_series import (
@@ -49,7 +49,7 @@ def read_dataframe(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
+    vertical_axis: VerticalDimensionOutput = DEFAULT_vertical_axis,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
@@ -90,7 +90,7 @@ def read_dataframe(
         Minimum depth for the subset. Requires a positive float (or 0).
     maximum_depth : float, optional
         Maximum depth for the subset. Requires a positive float (or 0).
-    vertical_dimension_output : str, optional
+    vertical_axis : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
     start_datetime : Union[datetime, str], optional
         The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
@@ -140,7 +140,7 @@ def read_dataframe(
         depth_parameters=DepthParameters(
             minimum_depth=minimum_depth,
             maximum_depth=maximum_depth,
-            vertical_dimension_output=vertical_dimension_output,
+            vertical_axis=vertical_axis,
         ),
         force_service=service,
         credentials_file=credentials_file,

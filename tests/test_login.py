@@ -133,7 +133,7 @@ class TestLogin:
         command = [
             "copernicusmarine",
             "login",
-            "--overwrite-configuration-file",
+            "--force-overwrite",
             "--configuration-file-directory",
             f"{non_existing_directory}",
             "--username",
@@ -321,7 +321,7 @@ class TestLogin:
             username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password="FAKEPASSWORD",
             configuration_file_directory=folder,
-            overwrite_configuration_file=True,
+            force_overwrite=True,
         )
 
         assert folder.is_dir() is False
@@ -329,7 +329,7 @@ class TestLogin:
             username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
             configuration_file_directory=folder,
-            overwrite_configuration_file=True,
+            force_overwrite=True,
         )
 
         assert (folder / ".copernicusmarine-credentials").is_file()
