@@ -9,6 +9,8 @@ from copernicusmarine.command_line_interface.group_get import cli_get
 from copernicusmarine.command_line_interface.group_login import cli_login
 from copernicusmarine.command_line_interface.group_subset import cli_subset
 
+multiprocessing.freeze_support()
+
 
 @click.command(
     cls=click.CommandCollection,
