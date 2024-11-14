@@ -20,9 +20,9 @@ DEFAULT_COORDINATES_SELECTION_METHODS = list(
     get_args(CoordinatesSelectionMethod)
 )
 
-VerticalDimensionOutput = Literal["depth", "elevation"]
-DEFAULT_vertical_axis: VerticalDimensionOutput = "depth"
-DEFAULT_vertical_axisS = list(get_args(VerticalDimensionOutput))
+VerticalAxis = Literal["depth", "elevation"]
+DEFAULT_VERTICAL_AXIS: VerticalAxis = "depth"
+DEFAULT_VERTICAL_AXISS = list(get_args(VerticalAxis))
 
 
 class StatusCode(str, Enum):

@@ -20,7 +20,7 @@ from copernicusmarine.core_functions.exceptions import ServiceNotSupported
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     ResponseSubset,
-    VerticalDimensionOutput,
+    VerticalAxis,
 )
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
@@ -53,7 +53,7 @@ def subset_function(
     maximum_latitude: Optional[float],
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
-    vertical_axis: VerticalDimensionOutput,
+    vertical_axis: VerticalAxis,
     start_datetime: Optional[DateTime],
     end_datetime: Optional[DateTime],
     coordinates_selection_method: CoordinatesSelectionMethod,

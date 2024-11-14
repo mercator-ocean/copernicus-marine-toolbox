@@ -14,10 +14,10 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
+    DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
-    DEFAULT_vertical_axis,
     FileFormat,
-    VerticalDimensionOutput,
+    VerticalAxis,
 )
 from copernicusmarine.core_functions.utils import datetime_parser
 from copernicusmarine.download_functions.subset_parameters import (
@@ -61,7 +61,7 @@ class SubsetRequest:
     maximum_latitude: Optional[float] = None
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
-    vertical_axis: VerticalDimensionOutput = DEFAULT_vertical_axis
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
     start_datetime: Optional[DateTime] = None
     end_datetime: Optional[DateTime] = None
     coordinates_selection_method: CoordinatesSelectionMethod = (

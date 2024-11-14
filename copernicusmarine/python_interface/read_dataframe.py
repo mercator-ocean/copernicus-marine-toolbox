@@ -11,9 +11,9 @@ from copernicusmarine.core_functions.deprecated_options import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
+    DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
-    DEFAULT_vertical_axis,
-    VerticalDimensionOutput,
+    VerticalAxis,
 )
 from copernicusmarine.download_functions.download_arco_series import (
     read_dataframe_from_arco_series,
@@ -49,7 +49,7 @@ def read_dataframe(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_axis: VerticalDimensionOutput = DEFAULT_vertical_axis,  # noqa
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
