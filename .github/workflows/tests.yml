@@ -3,7 +3,6 @@ name: Run tests
 on:
   pull_request_target:
     branches:
-      - "main"
       - "release/**"
       - "pre-releases/**"
 
