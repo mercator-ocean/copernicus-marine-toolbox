@@ -1,4 +1,5 @@
 import os
+from json import loads
 from pathlib import Path
 
 from tests.test_utils import execute_in_terminal
@@ -55,8 +56,40 @@ class TestBasicCommandsBinaries:
         ]
         self.output = execute_in_terminal(command)
 
-        assert self.output.returncode == 1
+        assert self.output.returncode == 0
         assert b"No data to download" not in self.output.stderr
+        returned_value = loads(self.output.stdout)
+        assert self.output.returncode == 0
+        assert len(returned_value["files"]) != 0
+        assert returned_value["total_size"]
+        assert returned_value["status"]
+        assert returned_value["message"]
+        for get_file in returned_value["files"]:
+            assert get_file["s3_url"] is not None
+            assert get_file["https_url"] is not None
+            assert get_file["file_size"] is not None
+            assert get_file["last_modified_datetime"] is not None
+            assert get_file["etag"] is not None
+            assert get_file["file_format"] is not None
+            assert get_file["output_directory"] is not None
+            assert get_file["filename"] is not None
+            assert get_file["file_path"] is not None
+            assert not os.path.exists(get_file["file_path"])
+
+    def test_get_download(self, tmp_path):
+        command = [
+            "./copernicusmarine.cli",
+            "get",
+            "--dataset-id",
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+            "--filter",
+            "*/2023/09/*",
+            "--output-directory",
+            f"{tmp_path}",
+        ]
+        self.output = execute_in_terminal(command)
+
+        assert self.output.returncode == 0
 
     def test_login(self, tmp_path):
         assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
@@ -66,7 +99,7 @@ class TestBasicCommandsBinaries:
         command = [
             "./copernicusmarine.cli",
             "login",
-            "--overwrite-configuration-file",
+            "--force-overwrite",
             "--configuration-file-directory",
             f"{non_existing_directory}",
             "--username",
