@@ -4,7 +4,7 @@ set -eufo pipefail
 
 PRE_RELEASE_BRANCH=$(git branch --show-current)
 
-if [ -z `git status --porcelain` ] && [ ! -z "${BUMP_TYPE}" ] && [[ "${BUMP_TYPE}" == pre* ]]; then
+if [ ! -z "${BUMP_TYPE}" ] && [[ "${BUMP_TYPE}" == pre* ]]; then
   poetry version ${BUMP_TYPE}
   VERSION=$(poetry version --short)
   if [ "${PRE_RELEASE_BRANCH}" != "pre-releases/${VERSION}" ]; then
