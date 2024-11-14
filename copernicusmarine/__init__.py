@@ -1,4 +1,6 @@
 import copernicusmarine.logger as logger
+from copernicusmarine.versioner import __version__
+
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCatalogue,
     CopernicusMarineCoordinate,
@@ -59,7 +61,7 @@ from copernicusmarine.python_interface.read_dataframe import (
     read_dataframe,
 )
 from copernicusmarine.python_interface.subset import subset
-from copernicusmarine.versioner import __version__
+
 
 __all__ = [
     "CoordinatesOutOfDatasetBounds",

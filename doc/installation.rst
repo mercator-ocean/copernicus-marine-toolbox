@@ -129,6 +129,10 @@ And from a Windows os (cmd):
 
     The **Linux** binaries are tested with Ubuntu machines.
 
+.. note::
+
+    The **MacOS** binaries might have to be authorized to run in your system. Follow the steps in the popup window to authorize the binary.
+
 .. _installation-page-dependencies:
 
 Dependencies
