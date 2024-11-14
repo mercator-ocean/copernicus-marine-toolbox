@@ -61,7 +61,7 @@ jobs:
           echo $$NAME
           echo $${NAME}
           echo ${NAME}
-          mv dist/copernicusmarine_$NAME.cli ./copernicusmarine.cli
+          mv dist/copernicusmarine_$$NAME.cli ./copernicusmarine.cli
 
     - name: Run tests
       env:
