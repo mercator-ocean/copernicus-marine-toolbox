@@ -54,22 +54,22 @@ jobs:
           NAME="macos-arm64"
         elif [ "${{ matrix.os }}" == "macos-13" ]; then
           echo "ARCH=macos-x86_64" >> $GITHUB_ENV
-          NAME="macos-x86_64"
+          NAME="macos-x86_64" >> $GITHUB_ENV
         elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
-          echo "linux-glibc-2.35" >> $GITHUB_ENV
-          NAME="linux-glibc-2.35"
+          echo "ARCH=linux-glibc-2.35" >> $GITHUB_ENV
+          NAME="linux-glibc-2.35" >> $GITHUB_ENV
         elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
           echo "ARCH=linux-glibc-2.31" >> $GITHUB_ENV
           NAME="linux-glibc-2.31"
         fi
-          echo NAME
-          echo ARCH
-          echo $NAME
-          echo $ARCH
-          echo $$NAME
-          echo $$ARCH
-          echo $${NAME}
-          echo ${NAME}
+          echo "NAME"
+          echo "ARCH"
+          echo "$NAME"
+          echo "$ARCH"
+          echo "$$NAME"
+          echo "$$ARCH"
+          echo "$${NAME}"
+          echo "${NAME}"
           mv dist/copernicusmarine_$$NAME.cli ./copernicusmarine.cli
 
     - name: Run tests
