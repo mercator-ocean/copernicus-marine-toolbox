@@ -1,5 +1,7 @@
 Migration guide v2
 ===================
 
-Still in construction, please refer to the help desk of mercator for more information about the
+Still in construction, please refer to the `help desk of mercator <https://help.marine.copernicus.eu/en/articles/9978784-what-s-new-in-the-pre-release-of-version-2-0-0-of-the-copernicus-marine-toolbox>`_ for more information about the
 v2 prereleases.
+
+You can also check the :ref:`changelogs <changelog>` for more information about the changes.
