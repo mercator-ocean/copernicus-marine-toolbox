@@ -45,31 +45,8 @@ jobs:
 
     - name: Standarise name to make the tests easy
       shell: micromamba-shell {0}
-      env:
-        GITHUB_ENV: $GITHUB_ENV
-      run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          echo "ARCH=macos-arm64" >> $GITHUB_ENV
-          NAME="macos-arm64"
-        elif [ "${{ matrix.os }}" == "macos-13" ]; then
-          echo "ARCH=macos-x86_64" >> $GITHUB_ENV
-          NAME="macos-x86_64" >> $GITHUB_ENV
-        elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
-          echo "ARCH=linux-glibc-2.35" >> $GITHUB_ENV
-          NAME="linux-glibc-2.35" >> $GITHUB_ENV
-        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
-          echo "ARCH=linux-glibc-2.31" >> $GITHUB_ENV
-          NAME="linux-glibc-2.31"
-        fi
-          echo "NAME"
-          echo "ARCH"
-          echo "$NAME"
-          echo "$ARCH"
-          echo "$$NAME"
-          echo "$$ARCH"
-          echo "$${NAME}"
-          echo "${NAME}"
-          mv dist/copernicusmarine_$$NAME.cli ./copernicusmarine.cli
+      run:
+        make change-name-binary
 
     - name: Run tests
       env:

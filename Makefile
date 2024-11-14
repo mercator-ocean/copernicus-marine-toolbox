@@ -131,3 +131,6 @@ run-using-pyinstaller-ubuntu-20.04: run-using-pyinstaller-linux
 # Tests for the binaries
 run-tests-binaries:
 	pytest tests_binaries -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+
+change-name-binary:
+	mv dist/copernicusmari* ./copernicusmarine.cli
