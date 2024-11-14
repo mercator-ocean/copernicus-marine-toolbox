@@ -41,7 +41,7 @@ jobs:
     - name: Build with PyInstaller
       shell: micromamba-shell {0}
       run: |
-        make run-using-pyinstaller2-${{ matrix.os }}
+        make run-using-pyinstaller-${{ matrix.os }}
 
     - name: Standarise name to make the tests easy
       shell: micromamba-shell {0}
@@ -56,6 +56,11 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
           NAME="linux-glibc-2.31"
         fi
+          echo NAME
+          echo $NAME
+          echo $$NAME
+          echo $${NAME}
+          echo ${NAME}
           mv dist/copernicusmarine_$NAME.cli ./copernicusmarine.cli
 
     - name: Run tests
