@@ -36,3 +36,4 @@ python:
 
 #TODO: add environment variables if we want to build the notebook when building the documentation
 # https://docs.readthedocs.io/en/stable/environment-variables.html
+# push
