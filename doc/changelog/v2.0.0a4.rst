@@ -28,12 +28,13 @@ Describe
 
 Describe command got a lot of new features and changes:
 
-* ``--dataset-id`` and ``product-id`` are now available making the retrival of metadata information way faster and optimised.
-* **B** Created a documented type for the output of the describe see :class:`copernicusmarine.CopernicusMarineCatalogue`. The Python interface will return this object direclty.
-* Added options ``--return-fields`` and ``exclude-fields`` to filter the fields returned by the describe command in the command line interface.
-* **B** "service_type" in the output of the describe command has been removed. The "service_name" is direclty displayed in the output.
+* ``--dataset-id`` and ``--product-id`` are now available making the retrieval of metadata information way faster and optimised.
+* **B** Created a documented type for the output of the describe. See :class:`copernicusmarine.CopernicusMarineCatalogue`. The Python interface will return this object directly.
+* Added options ``--return-fields`` and ``--exclude-fields`` to filter the fields returned by the describe command in the command line interface.
+* **B** "service_type" in the output of the describe command has been removed. The "service_name" is directly displayed in the output.
 * **B** ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
 * **B** "unit" for coordinates has be renamed to "coordinate_unit" see :class:`copernicusmarine.CopernicusMarineCoordinate`.
+* **B** Rename ``--include-versions`` to ``--show-all-versions`` option.
 
 Get
 '''''
@@ -47,7 +48,7 @@ Subset
 * Included "variables" in the ResponseSubset object.
 * Rename ``--vertical-dimension-output`` to ``--vertical-axis``.
 * Improve dask chunk size handling. The default chunk size is bigger and should be more optimal. Please refer to the :ref:`paragraph about chunk size limit <chunk-size-limit>` for more information.
-* ``--moth-api-request`` has been deprecated. Please contact user support if you need to translate legacy motu requests.
+* ``--motu-api-request`` has been deprecated. Please contact user support if you need to translate legacy motu requests.
 
 Login
 ''''''

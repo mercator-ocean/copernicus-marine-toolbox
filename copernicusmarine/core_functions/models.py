@@ -22,7 +22,7 @@ DEFAULT_COORDINATES_SELECTION_METHODS = list(
 
 VerticalAxis = Literal["depth", "elevation"]
 DEFAULT_VERTICAL_AXIS: VerticalAxis = "depth"
-DEFAULT_VERTICAL_AXISS = list(get_args(VerticalAxis))
+DEFAULT_VERTICAL_AXES = list(get_args(VerticalAxis))
 
 
 class StatusCode(str, Enum):

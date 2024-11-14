@@ -25,8 +25,8 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHODS,
     DEFAULT_FILE_FORMAT,
     DEFAULT_FILE_FORMATS,
+    DEFAULT_VERTICAL_AXES,
     DEFAULT_VERTICAL_AXIS,
-    DEFAULT_VERTICAL_AXISS,
     CoordinatesSelectionMethod,
     FileFormat,
     ResponseSubset,
@@ -137,7 +137,7 @@ def cli_subset() -> None:
 @click.option(
     "--vertical-axis",
     "-V",
-    type=click.Choice(DEFAULT_VERTICAL_AXISS),
+    type=click.Choice(DEFAULT_VERTICAL_AXES),
     default=DEFAULT_VERTICAL_AXIS,
     help=documentation_utils.SUBSET["VERTICAL_AXIS_HELP"],
 )

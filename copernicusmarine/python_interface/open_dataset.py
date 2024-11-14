@@ -49,7 +49,7 @@ def open_dataset(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
