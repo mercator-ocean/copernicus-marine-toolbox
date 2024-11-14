@@ -88,7 +88,7 @@ class FileGet(BaseModel):
     etag: str
     #: File format.
     file_format: str
-    #: Output directory where the file stored.
+    #: Output directory where the file is stored.
     output_directory: pathlib.Path
     #: File name.
     filename: str
