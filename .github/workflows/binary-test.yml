@@ -50,12 +50,13 @@ jobs:
         make run-using-pyinstaller-${{ matrix.os }}
 
     - name: Standarise name to make the tests easy
+      env:
+        GH_TOKEN: ${{ github.token }}
       shell: micromamba-shell {0}
       run: |
         run: |
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           ARCH="macos-arm64"
-          mv dist/copernicusmarine_macos-arm64.cli ./copernicusmarine.cli
         elif [ "${{ matrix.os }}" == "macos-13" ]; then
           ARCH="macos-x86_64"
         elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
