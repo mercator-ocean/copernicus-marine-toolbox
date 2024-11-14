@@ -53,6 +53,7 @@ class TestBasicCommandsBinaries:
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
             "--filter",
             "*/2023/08/*",
+            "dry-run",
         ]
         self.output = execute_in_terminal(command)
 
