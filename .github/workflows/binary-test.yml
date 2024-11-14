@@ -45,6 +45,8 @@ jobs:
 
     - name: Standarise name to make the tests easy
       shell: micromamba-shell {0}
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         run: |
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
