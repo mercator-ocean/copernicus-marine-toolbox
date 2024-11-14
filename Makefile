@@ -54,10 +54,6 @@ run-tests-dependencie-versions:
 	${ACTIVATE_ENVIRONMENT}
 	tox run
 
-
-run-tests-binaries:
-	pytest tests_binaries -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
-
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:
 	${ACTIVATE_ENVIRONMENT}
@@ -131,3 +127,7 @@ run-using-pyinstaller-ubuntu-22.04: run-using-pyinstaller-linux
 
 run-using-pyinstaller-ubuntu-20.04: DISTRIBUTION = linux-glibc-2.31
 run-using-pyinstaller-ubuntu-20.04: run-using-pyinstaller-linux
+
+# Tests for the binaries
+run-tests-binaries:
+	pytest tests_binaries -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
