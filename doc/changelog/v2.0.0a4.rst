@@ -1,0 +1,57 @@
+Pre-release 2.0.0a4
+====================
+
+Changes starting with **B** might introduce breaking changes.
+
+.. warning::
+    This is a pre-release version of the Copernicus Marine toolbox.
+    It is not recommended for production use.
+
+General
+''''''''
+
+* Quick overview notebook to provide a quick start guide and more examples especially for the Python interface.
+* Updated the reponse types especially :class:`copernicusmarine.ResponseGet` and :class:`copernicusmarine.ResponseSubset`. Especially a status code has been added to the response.
+* Added a new linux binary to cover more linux distributions. See the :ref:`installation page <installation-page>` for more information.
+* ``numpy>=2.0.0`` is supported
+* ``python>=3.13`` is now supported
+* Use the ``h5netcdf`` library to read and write NetCDF files. If you need to save files in NetCDF3 format please just manually install ``netcdf4``.
+* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
+* ``--skip-existing`` allow you to skip the download of files that already exist at the output destination.
+* ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
+
+
+Describe
+''''''''''
+
+* Fix a bug where the dataset name was the same for all parts. We put the datasetID in case there are several parts.
+
+Describe command got a lot of new features and changes:
+
+* ``--dataset-id`` and ``--product-id`` are now available making the retrieval of metadata information way faster and optimised.
+* **B** Created a documented type for the output of the describe. See :class:`copernicusmarine.CopernicusMarineCatalogue`. The Python interface will return this object directly.
+* Added options ``--return-fields`` and ``--exclude-fields`` to filter the fields returned by the describe command in the command line interface.
+* **B** "service_type" in the output of the describe command has been removed. The "service_name" is directly displayed in the output.
+* **B** ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
+* **B** "unit" for coordinates has be renamed to "coordinate_unit" see :class:`copernicusmarine.CopernicusMarineCoordinate`.
+* **B** Rename ``--include-versions`` to ``--show-all-versions`` option.
+
+Get
+'''''
+
+* Added ``--response-fields`` to filter the fields returned by the get command in the command line interface.
+
+Subset
+''''''''
+
+* Added ``--response-fields`` to filter the fields returned by the subset command in the command line interface.
+* Included "variables" in the ResponseSubset object.
+* Rename ``--vertical-dimension-output`` to ``--vertical-axis``.
+* Improve dask chunk size handling. The default chunk size is bigger and should be more optimal. Please refer to the :ref:`paragraph about chunk size limit <chunk-size-limit>` for more information.
+* ``--motu-api-request`` has been deprecated. Please contact user support if you need to translate legacy motu requests.
+
+Login
+''''''
+
+* Now support the new Copernicus Marine authentication system. The toolbox will try to connect to the new system then fallback to the old one if needed.
+* Rename ``--overwrite``, ``--overwrite-configuration-file`` to ``--force-overwrite``.

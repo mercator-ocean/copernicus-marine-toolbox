@@ -23,3 +23,5 @@ The ``copernicusmarine`` Python library offers capabilities through both **comma
    command-line-interface
    python-interface
    response-types
+   changelog/changelog
+   migration-guide/migration-guide

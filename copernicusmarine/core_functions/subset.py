@@ -20,7 +20,7 @@ from copernicusmarine.core_functions.exceptions import ServiceNotSupported
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     ResponseSubset,
-    VerticalDimensionOutput,
+    VerticalAxis,
 )
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
@@ -53,7 +53,7 @@ def subset_function(
     maximum_latitude: Optional[float],
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
-    vertical_dimension_output: VerticalDimensionOutput,
+    vertical_axis: VerticalAxis,
     start_datetime: Optional[DateTime],
     end_datetime: Optional[DateTime],
     coordinates_selection_method: CoordinatesSelectionMethod,
@@ -64,7 +64,7 @@ def subset_function(
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
     motu_api_request: Optional[str],
-    overwrite_output_data: bool,
+    overwrite: bool,
     skip_existing: bool,
     dry_run: bool,
     disable_progress_bar: bool,
@@ -98,7 +98,7 @@ def subset_function(
         "maximum_latitude": maximum_latitude,
         "minimum_depth": minimum_depth,
         "maximum_depth": maximum_depth,
-        "vertical_dimension_output": vertical_dimension_output,
+        "vertical_axis": vertical_axis,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
         "coordinates_selection_method": coordinates_selection_method,
@@ -141,8 +141,8 @@ def subset_function(
         )
     # Specific treatment for default values:
     # In order to not overload arguments with default values
-    if overwrite_output_data:
-        subset_request.overwrite_output_data = overwrite_output_data
+    if overwrite:
+        subset_request.overwrite = overwrite
     if skip_existing:
         subset_request.skip_existing = skip_existing
 
@@ -216,7 +216,7 @@ def create_subset_template() -> None:
                 "force_service": False,
                 "request_file": False,
                 "motu_api_request": False,
-                "overwrite_output_data": False,
+                "overwrite": False,
                 "dry_run": False,
             },
             output_file,

@@ -13,7 +13,7 @@ logger = logging.getLogger("copernicusmarine")
 class DeprecatedClickOption(click.Option):
     def __init__(self, *args, **kwargs):
         self.deprecated = kwargs.pop("deprecated", ())
-        self.preferred = kwargs.pop("preferred", args[0][-1])
+        self.preferred = kwargs.pop("preferred", None)
         super().__init__(*args, **kwargs)
 
 

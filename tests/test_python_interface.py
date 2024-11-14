@@ -151,7 +151,7 @@ class TestPythonInterface:
             maximum_latitude=0.1,
             minimum_longitude=0.2,
             maximum_longitude=0.3,
-            vertical_dimension_output="elevation",
+            vertical_axis="elevation",
         )
         assert dataset is not None
         assert (
@@ -243,7 +243,7 @@ class TestPythonInterface:
             maximum_depth=1,
             output_directory=tmp_path,
             output_filename="netcdf_fillval.nc",
-            overwrite_output_data=True,
+            overwrite=True,
         )
 
         subsetdata = xarray.open_dataset(
@@ -271,7 +271,7 @@ class TestPythonInterface:
             output_directory=tmp_path,
             output_filename="netcdf_fillval_compressed.nc",
             netcdf_compression_level=1,
-            overwrite_output_data=True,
+            overwrite=True,
         )
 
         subsetdata = xarray.open_dataset(

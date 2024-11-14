@@ -92,7 +92,7 @@ class TestGetCreateFileList:
         get(
             dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
             create_file_list="hello_python_overwrite.txt",
-            overwrite_output_data=True,
+            overwrite=True,
         )
         assert not os.path.isfile("hello_python_overwrite_(1).txt")
 

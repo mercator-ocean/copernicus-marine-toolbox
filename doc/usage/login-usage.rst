@@ -15,7 +15,7 @@ The ``login`` command creates a configuration file called ``.copernicusmarine-cr
     password :
     INFO - Configuration files stored in /Users/foo/.copernicusmarine
 
-If the ``.copernicusmarine-credentials`` file already exists, the system will ask for confirmation before overwriting it. You can also use option ``–-overwrite`` or ``--overwrite-configuration-file`` to skip confirmation.
+If the ``.copernicusmarine-credentials`` file already exists, the system will ask for confirmation before overwriting it. You can also use option ``–-force-overwrite`` to skip confirmation.
 
 You can also use the ``--skip-if-user-logged-in`` option to prevent overwriting the configuration file if the user is already logged in.
 

@@ -36,7 +36,7 @@ def get_function(
     no_directories: bool,
     output_directory: Optional[pathlib.Path],
     credentials_file: Optional[pathlib.Path],
-    overwrite_output_data: bool,
+    overwrite: bool,
     request_file: Optional[pathlib.Path],
     filter_option: Optional[str],
     regex: Optional[str],
@@ -79,8 +79,8 @@ def get_function(
     if no_directories:
         get_request.no_directories = no_directories
 
-    if overwrite_output_data:
-        get_request.overwrite_output_data = overwrite_output_data
+    if overwrite:
+        get_request.overwrite = overwrite
     if skip_existing:
         get_request.skip_existing = skip_existing
     if no_directories:
@@ -194,7 +194,7 @@ def create_get_template() -> None:
                 "sync_delete": False,
                 "index_parts": False,
                 "disable_progress_bar": False,
-                "overwrite_output_data": False,
+                "overwrite": False,
                 "log_level": "INFO",
                 "dry_run": False,
             },

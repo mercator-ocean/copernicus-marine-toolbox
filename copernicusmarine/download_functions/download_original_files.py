@@ -58,7 +58,7 @@ def download_original_files(
             directory_out=pathlib.Path(get_request.output_directory),
             username=username,
             no_directories=get_request.no_directories,
-            overwrite=get_request.overwrite_output_data,
+            overwrite=get_request.overwrite,
             skip_existing=get_request.skip_existing,
         )
     else:
@@ -93,7 +93,7 @@ def download_original_files(
             directory_out=pathlib.Path(get_request.output_directory),
             no_directories=get_request.no_directories,
             skip_existing=get_request.skip_existing,
-            overwrite=get_request.overwrite_output_data,
+            overwrite=get_request.overwrite,
             disable_progress_bar=disable_progress_bar,
             only_list_root_path=get_request.index_parts,
         )

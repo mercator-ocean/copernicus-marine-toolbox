@@ -3,10 +3,19 @@ Shared options
 
 Both ``subset`` and ``get`` (and also some concern other options) commands provide these options:
 
-Option ``--overwrite-output-data``
-**********************************
+Option ``--overwrite`` and ``--skip-existing``
+************************************************
 
-When specified, existing files will be overwritten. If not, and the files already exist at the destination, new files will be created with a unique index.
+By default, if the files already exist at the destination, new files will be created with a unique index (eg 'filename_(1).nc') if the file already exists.
+
+When ``--overwrite`` is specified, existing files will be overwritten.
+
+When ``--skip-existing`` is specified, the download of files that already exist at the output destination will be skipped.
+
+See in :ref:`Response types documentation <response-types>` the ``status`` and ``message`` fields for more information about request statuses.
+
+.. note::
+    The two options are mutually exclusive i.e. they cannot be used together.
 
 Option ``--create-template``
 *********************************
@@ -68,7 +77,7 @@ This option allows you to specify request parameters in a provided ``.json`` fil
         "force_service": false,
         "request_file": false,
         "motu_api_request": false,
-        "overwrite_output_data": false
+        "overwrite": false
     }
 
   **Example:**
@@ -96,7 +105,7 @@ This option allows you to specify request parameters in a provided ``.json`` fil
         "sync_delete": false,
         "index_parts": false,
         "disable_progress_bar": false,
-        "overwrite_output_data": false,
+        "overwrite": false,
         "log_level": "INFO"
     }
 
@@ -149,6 +158,49 @@ The parts of the dataset can be found through the ``describe`` command.
 
     INFO - 2024-10-07T08:53:18Z - You forced selection of dataset part "history"
 
+
+Option ``--response-fields`` or ``-r``
+***********************************************
+
+This option allows to choose the fields that will be included in the metadata of the query. The fields are separated by commas.
+It is useful to reduce the size of the amount of information in the response.
+If requested ``-r all``, all fields will be included. If requested ``-r none``, no fields will be included.
+
+.. note::
+    There are several behavior depending on the options used:
+
+    - If ``--response-fields`` is used then the requested fieds will be returned in the response.
+    - If ``--dry-run`` is used, all the fields will be returned in the response.
+    - By default, the response will include only the status code and status message of the request.
+
+**Example:**
+
+.. code:: bash
+
+    copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m --dry-run -r https_url,file_size
+
+**Returns:** (Only the two first files are shown)
+
+.. code:: bash
+
+    {
+    "files": [
+      {
+        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105/2022/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm202207.nc",
+        "file_size": 3.1228113174438477
+      },
+      {
+        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105/2022/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm202208.nc",
+        "file_size": 3.133638381958008
+      },
+      ]
+    }
+
+.. note::
+  This option is only relevant for the command line interface.
+
+.. _dry-run:
+
 Option ``--dry-run``
 *********************************
 
@@ -199,45 +251,6 @@ When used, the toolbox will by default, send the full return response of the com
 
 See :ref:`Response types documentation <response-types>` for more information about the response you can expect.
 
-Option ``--returned-query-metadata`` or ``-r``
-***********************************************
-
-This option allows to choose the fields that will be included in the metadata of the query. The fields are separated by commas.
-It is useful to reduce the size of the amount of information in the response.
-If requested ``-r all``, all fields will be included. If requested ``-r none``, no fields will be included.
-
-.. note::
-    There are several behavior depending on the options used:
-
-    - If ``--returned-query-metadata`` is used then the requested fieds will be returned in the response.
-    - If ``--dry-run`` is used, all the fields will be returned in the response.
-    - By default, the response will include only the status code and status message of the request.
-
-**Example:**
-
-.. code:: bash
-
-    copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m --dry-run -r https_url,file_size
-
-**Returns:** (Only the two first files are shown)
-
-.. code:: bash
-
-    {
-    "files": [
-      {
-        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105/2022/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm202207.nc",
-        "file_size": 3.1228113174438477
-      },
-      {
-        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105/2022/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm202208.nc",
-        "file_size": 3.133638381958008
-      },
-      ]
-    }
-
-.. note::
-  This option is only relevant for the command line interface.
 
 Option ``--log-level``
 *********************************
@@ -248,16 +261,3 @@ All logs of the library are by default logged in stderr. The outputs of the comm
 
 .. note::
     For versions <=1.2.4, all logs are sent to stdout by default.
-
-
-Option ``--skip-existing``
-*******************************
-
-This option allows you to skip the download of files that already exist at the output destination. If the file exists, the download will be skipped.
-
-Remember that by default, the toolbox creates a new file with an index (eg 'filename_(1).nc').
-
-See in :ref:`Response types documentation <response-types>` the ``status`` and ``message`` fields for more information about request statuses.
-
-.. note::
-    This option is incompatible with the ``--overwrite-output-data`` option and the ``--sync`` and ``--sync-delete`` options.

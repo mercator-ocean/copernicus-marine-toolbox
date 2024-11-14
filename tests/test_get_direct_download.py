@@ -44,7 +44,7 @@ class TestGetDirectDownload:
             DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE,
             "-r",
             "file_path",
-            "--overwrite-output-data",
+            "--overwrite",
             "-o",
             str(tmp_path),
         ]
@@ -211,7 +211,7 @@ class TestGetDirectDownload:
         get_result = get(
             dataset_id="cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             file_list=pathlib.Path(DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE),
-            overwrite_output_data=True,
+            overwrite=True,
             output_directory=tmp_path,
         )
         result_paths = [result.file_path for result in get_result.files]

@@ -201,7 +201,7 @@ class TestWarningsSubsetBounds:
                 f"{min_depth}",
                 "--maximum-depth",
                 f"{max_depth}",
-                "--vertical-dimension-output",
+                "--vertical-axis",
                 "elevation",
                 "-o",
                 f"{tmp_path}",

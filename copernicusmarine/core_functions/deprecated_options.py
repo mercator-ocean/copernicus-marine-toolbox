@@ -36,24 +36,9 @@ class DeprecatedOptionMapping(Mapping):
 DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
     [
         DeprecatedOption(
-            old_name="include_datasets",
-            new_name="include_datasets",
-            do_not_pass=True,
-        ),
-        DeprecatedOption(
-            old_name="include_keywords",
-            new_name="include_keywords",
-            do_not_pass=True,
-        ),
-        DeprecatedOption(
-            old_name="include_all",
-            new_name="include_all",
-            do_not_pass=True,
-        ),
-        DeprecatedOption(
-            old_name="include_description",
-            new_name="include_description",
-            do_not_pass=True,
+            old_name="motu_api_request",
+            new_name="motu_api_request",
+            replace=False,
         ),
     ]
 )
@@ -61,13 +46,13 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
 
 def get_deprecated_message(old_value, preferred_value):
     return (
-        f"'{old_value}' has been deprecated, use '{preferred_value}' instead"
+        f"'{old_value}' has been deprecated, use '{preferred_value}' instead."
     )
 
 
 def log_deprecated_message(old_value, preferred_value):
     if preferred_value is None:
-        logger.warning(f"'{old_value}' has been deprecated")
+        logger.warning(f"'{old_value}' has been deprecated.")
     else:
         logger.warning(get_deprecated_message(old_value, preferred_value))
 

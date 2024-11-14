@@ -26,7 +26,7 @@ def get(
     no_directories: bool = False,
     output_directory: Optional[Union[pathlib.Path, str]] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-    overwrite_output_data: bool = False,
+    overwrite: bool = False,
     request_file: Optional[Union[pathlib.Path, str]] = None,
     filter: Optional[str] = None,
     regex: Optional[str] = None,
@@ -62,7 +62,7 @@ def get(
         The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-    overwrite_output_data : bool, optional
+    overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
@@ -98,17 +98,13 @@ def get(
 
     """  # noqa
     # Mutually exclusive options:
-    if overwrite_output_data:
+    if overwrite:
         if skip_existing:
-            raise MutuallyExclusiveArguments(
-                "overwrite_output_data", "skip_existing"
-            )
+            raise MutuallyExclusiveArguments("overwrite", "skip_existing")
         elif sync:
-            raise MutuallyExclusiveArguments("overwrite_output_data", "sync")
+            raise MutuallyExclusiveArguments("overwrite", "sync")
         elif sync_delete:
-            raise MutuallyExclusiveArguments(
-                "overwrite_output_data", "sync_delete"
-            )
+            raise MutuallyExclusiveArguments("overwrite", "sync_delete")
     if skip_existing:
         if sync:
             raise MutuallyExclusiveArguments("skip_existing", "sync")
@@ -139,7 +135,7 @@ def get(
         no_directories=no_directories,
         output_directory=output_directory,
         credentials_file=credentials_file,
-        overwrite_output_data=overwrite_output_data,
+        overwrite=overwrite,
         request_file=request_file,
         filter_option=filter,
         regex=regex,

@@ -20,9 +20,9 @@ DEFAULT_COORDINATES_SELECTION_METHODS = list(
     get_args(CoordinatesSelectionMethod)
 )
 
-VerticalDimensionOutput = Literal["depth", "elevation"]
-DEFAULT_VERTICAL_DIMENSION_OUTPUT: VerticalDimensionOutput = "depth"
-DEFAULT_VERTICAL_DIMENSION_OUTPUTS = list(get_args(VerticalDimensionOutput))
+VerticalAxis = Literal["depth", "elevation"]
+DEFAULT_VERTICAL_AXIS: VerticalAxis = "depth"
+DEFAULT_VERTICAL_AXES = list(get_args(VerticalAxis))
 
 
 class StatusCode(str, Enum):
@@ -88,7 +88,7 @@ class FileGet(BaseModel):
     etag: str
     #: File format.
     file_format: str
-    #: Output directory where the file stored.
+    #: Output directory where the file is stored.
     output_directory: pathlib.Path
     #: File name.
     filename: str
@@ -197,6 +197,8 @@ class ResponseSubset(BaseModel):
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.
     data_transfer_size: Optional[float]
+    #: Variables of the subsetted dataset.
+    variables: list[str]
     #: The bounds of the subsetted dataset.
     coordinates_extent: DatasetCoordinatesExtent
     #: Status of the request.

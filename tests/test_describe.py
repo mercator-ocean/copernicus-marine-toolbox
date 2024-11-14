@@ -22,7 +22,7 @@ class TestDescribe:
         self.then_I_can_read_the_default_json()
         self.and_there_are_no_warnings_about_backend_versions()
 
-    def test_describe_returned_fields_datasets(self, snapshot):
+    def test_describe_return_fields_datasets(self, snapshot):
         self.when_I_run_copernicus_marine_describe_including_datasets()
         self.then_I_can_read_it_does_not_contain_weird_symbols()
         self.then_I_can_read_the_json_including_datasets()
@@ -63,8 +63,8 @@ class TestDescribe:
         self.when_I_use_staging_environment_in_debug_logging_level()
         self.then_I_check_that_the_urls_contains_only_dta()
 
-    def test_describe_function_with_returned_fields(self):
-        self.when_I_run_copernicus_marine_describe_with_returned_fields()
+    def test_describe_function_with_return_fields(self):
+        self.when_I_run_copernicus_marine_describe_with_return_fields()
         self.then_stdout_can_be_load_as_json()
         self.then_only_the_queried_fields_are_returned()
 
@@ -293,9 +293,7 @@ class TestDescribe:
         command = [
             "copernicusmarine",
             "describe",
-            "--returned-fields",
-            "all",
-            "--returned-fields-exclude",
+            "--exclude-fields",
             "keywords,description",
         ]
         self.output = execute_in_terminal(command, timeout_second=30)
@@ -427,13 +425,13 @@ class TestDescribe:
     def when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
         self, product_id, dataset_id, exclude=None
     ):
-        command = ["copernicusmarine", "describe", "--returned-fields", "all"]
+        command = ["copernicusmarine", "describe", "--return-fields", "all"]
         if product_id:
             command.extend(["--product-id", product_id])
         if dataset_id:
             command.extend(["--dataset-id", dataset_id])
         if exclude:
-            command.extend(["--returned-fields-exclude", exclude])
+            command.extend(["--exclude-fields", exclude])
         self.output = execute_in_terminal(command, timeout_second=10)
 
     def then_I_have_only_one_product(self):
@@ -465,15 +463,15 @@ class TestDescribe:
             not in self.output.stdout
         )
 
-    def when_I_run_copernicus_marine_describe_with_returned_fields(self):
+    def when_I_run_copernicus_marine_describe_with_return_fields(self):
         command = [
             "copernicusmarine",
             "describe",
             "-i",
             "cmems_mod_glo_phy_my_0.083deg_P1D-m",
-            "--returned-fields",
+            "--return-fields",
             "product_id,datasets",
-            "--returned-fields-exclude",
+            "--exclude-fields",
             "services",
         ]
         self.output = execute_in_terminal(command, timeout_second=10)

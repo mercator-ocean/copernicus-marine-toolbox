@@ -11,11 +11,11 @@ def login(
     username: Optional[str] = None,
     password: Optional[str] = None,
     configuration_file_directory: pathlib.Path = DEFAULT_CLIENT_BASE_DIRECTORY,
-    overwrite_configuration_file: bool = False,
+    force_overwrite: bool = False,
     check_credentials_valid: bool = False,
 ) -> bool:
     """
-    Create a configuration file with your Copernicus Marine credentials under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``overwrite_configuration_file`` option).
+    Create a configuration file with your Copernicus Marine credentials under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``force_overwrite`` option).
 
     Parameters
     ----------
@@ -25,7 +25,7 @@ def login(
         The password for authentication.
     configuration_file_directory : Union[pathlib.Path, str]
         Path to the directory where the configuration file is stored.
-    overwrite_configuration_file : bool
+    force_overwrite : bool
         Flag to skip confirmation before overwriting configuration file.
     check_credentials_valid : bool
         Flag to check if the credentials are valid. No other action will be performed. The validity will be check in this order:
@@ -43,6 +43,6 @@ def login(
         username=username,
         password=password,
         configuration_file_directory=configuration_file_directory,
-        overwrite_configuration_file=overwrite_configuration_file,
+        force_overwrite=force_overwrite,
         check_credentials_valid=check_credentials_valid,
     )

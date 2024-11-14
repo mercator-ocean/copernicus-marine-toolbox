@@ -109,8 +109,13 @@ Imagine a dataset with longitudes from 5.0 to 36.5, with steps of 0.5.
 
 If you request a single point, the nearest point in that dimension will be returned.
 
+.. _chunk-size-limit:
+
 About ``--chunk-size-limit`` option
 """"""""""""""""""""""""""""""""""""""""""
+
+.. warning::
+  This option might help for some very specific cases but it is still experimental and might not work as expected in all cases.
 
 The Copernicus Marine toolbox uses ``xarray`` to open and subset datasets.
 In the backend, it uses ``dask`` to handle large datasets.

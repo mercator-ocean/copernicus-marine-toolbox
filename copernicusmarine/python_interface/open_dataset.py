@@ -11,9 +11,9 @@ from copernicusmarine.core_functions.deprecated_options import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
-    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
+    DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
-    VerticalDimensionOutput,
+    VerticalAxis,
 )
 from copernicusmarine.download_functions.download_arco_series import (
     open_dataset_from_arco_series,
@@ -49,7 +49,7 @@ def open_dataset(
     maximum_latitude: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
-    vertical_dimension_output: VerticalDimensionOutput = DEFAULT_VERTICAL_DIMENSION_OUTPUT,  # noqa
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
@@ -94,7 +94,7 @@ def open_dataset(
         Maximum depth for the subset. Requires a positive float (or 0).
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
-    vertical_dimension_output : str, optional
+    vertical_axis : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
     start_datetime : Union[datetime, str], optional
         The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
@@ -105,7 +105,7 @@ def open_dataset(
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     chunk_size_limit : int, default 100
-        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted.
+        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
 
     Returns
     -------
@@ -141,7 +141,7 @@ def open_dataset(
         depth_parameters=DepthParameters(
             minimum_depth=minimum_depth,
             maximum_depth=maximum_depth,
-            vertical_dimension_output=vertical_dimension_output,
+            vertical_axis=vertical_axis,
         ),
         coordinates_selection_method=coordinates_selection_method,
         force_service=service,

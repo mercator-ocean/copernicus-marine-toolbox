@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: TestDescribe.test_describe_returned_fields_datasets
+# name: TestDescribe.test_describe_return_fields_datasets
   list([
     dict({
       'service_name': 'original-files',

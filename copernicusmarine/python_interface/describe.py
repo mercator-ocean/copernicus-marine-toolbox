@@ -14,7 +14,7 @@ from copernicusmarine.python_interface.exception_handler import (
 @deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def describe(
-    include_versions: bool = False,
+    show_all_versions: bool = False,
     contains: list[str] = [],
     product_id: Optional[str] = None,
     dataset_id: Optional[str] = None,
@@ -27,7 +27,7 @@ def describe(
 
     Parameters
     ----------
-    include_versions : bool, optional
+    show_all_versions : bool, optional
         Include dataset versions in output. By default, shows only the default version.
     contains : list[str], optional
         Filter catalogue output. Returns products with attributes matching a string token.
@@ -51,7 +51,7 @@ def describe(
         raise ValueError("contains must be of list type")
 
     return describe_function(
-        include_versions,
+        show_all_versions,
         contains,
         product_id,
         dataset_id,

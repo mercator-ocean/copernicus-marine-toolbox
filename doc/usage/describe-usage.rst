@@ -44,7 +44,7 @@ Here the first 2 products are shown:
     }
 
 
-By default, the command only shows the products. To include the datasets, you can use the ``--returned-fields datasets`` option.
+By default, the command only shows the products. To include the datasets, you can use the ``--return-fields datasets`` option.
 
 To save the JSON output to a file, you can use the following command:
 
@@ -54,16 +54,16 @@ To save the JSON output to a file, you can use the following command:
 
 .. note::
     At some point in the future, the command will be updated to include everything by default.
-    Then the user will be able to use the ``--returned-fields`` option or ``--returned-fields-exclude`` to filter the output.
+    Then the user will be able to use the ``--return-fields`` option or ``--exclude-fields`` to filter the output.
 
 .. note::
     In the case of the Python interface, the describe will return directly the :class:`copernicusmarine.CopernicusMarineCatalogue` object.
     The catalogue will be complete except if you use the ``dataset_id``, ``product_id`` or ``contains`` arguments.
 
-``--returned-fields`` and ``--returned-fields-exclude`` options
+``--return-fields`` and ``--exclude-fields`` options
 ----------------------------------------------------------------
 
-You can use the ``--returned-fields`` (``-r``) and ``--returned-fields-exclude`` (``-e``) options to select the fields you want to see in the output.
+You can use the ``--return-fields`` (``-r``) and ``--exclude-fields`` (``-e``) options to select the fields you want to see in the output.
 The options allow to select respectively the fields you want to include or exclude from the output.
 You just need to add them as a comma-separated list.
 
@@ -73,7 +73,7 @@ For example if you want only the URI of the services, you can use the following 
 
 .. code-block:: bash
 
-    copernicusmarine describe --returned-fields uri,product_id,dataset_id,service_name
+    copernicusmarine describe --return-fields uri,product_id,dataset_id,service_name
 
 The output will be something like this (only the first product is shown):
 
@@ -112,7 +112,7 @@ The output will be something like this (only the first product is shown):
 
 
 .. note::
-    You can use ``--returned-fields all`` to show all fields.
+    You can use ``--return-fields all`` to show all fields.
 
 
 ``--contains`` option
@@ -222,9 +222,9 @@ The output will be something like this:
         ]
     }
 
-``--include-versions`` option
------------------------------
+``--show-all-versions`` option
+-------------------------------
 
 The describe command will show you only one version of a dataset, prioritising the most recent version and the ones that are not planned to be retired.
-If you want to see all versions, you can use the ``--include-versions`` option.
+If you want to see all versions, you can use the ``--show-all-versions`` option.
 It allows in some cases to access the metadata of datasets that are to be released or datasets that will be retired soon.

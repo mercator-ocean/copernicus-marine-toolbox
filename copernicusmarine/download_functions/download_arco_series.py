@@ -94,7 +94,7 @@ def download_dataset(
     netcdf3_compatible: bool,
     service: CopernicusMarineService,
     dry_run: bool,
-    overwrite_output_data: bool,
+    overwrite: bool,
     chunk_size_limit: Optional[int],
     skip_existing: bool,
 ) -> ResponseSubset:
@@ -144,7 +144,7 @@ def download_dataset(
         logger.debug(dataset)
     logger.info(message_formatted_dataset_size_estimation)
 
-    if not overwrite_output_data and not skip_existing:
+    if not overwrite and not skip_existing:
         output_path = get_unique_filename(
             filepath=output_path,
         )
@@ -155,6 +155,7 @@ def download_dataset(
         filename=output_path.name,
         file_size=final_result_size_estimation,
         data_transfer_size=data_needed_approximation,
+        variables=list(dataset.data_vars),
         coordinates_extent=get_dataset_coordinates_extent(dataset),
         status=StatusCode.SUCCESS,
         message=StatusMessage.SUCCESS,
@@ -186,7 +187,7 @@ def download_dataset(
                 netcdf3_compatible,
             )
     logger.info(f"Successfully downloaded to {output_path}")
-    if overwrite_output_data:
+    if overwrite:
         response.status = StatusCode.SUCCESS
         response.message = StatusMessage.SUCCESS
         response.file_status = FileStatus.OVERWRITTEN
@@ -232,7 +233,7 @@ def download_zarr(
     depth_parameters = DepthParameters(
         minimum_depth=subset_request.minimum_depth,
         maximum_depth=subset_request.maximum_depth,
-        vertical_dimension_output=subset_request.vertical_dimension_output,
+        vertical_axis=subset_request.vertical_axis,
     )
     dataset_url = str(subset_request.dataset_url)
     output_directory = (
@@ -256,7 +257,7 @@ def download_zarr(
         file_format=subset_request.file_format,
         variables=variables,
         disable_progress_bar=disable_progress_bar,
-        overwrite_output_data=subset_request.overwrite_output_data,
+        overwrite=subset_request.overwrite,
         netcdf_compression_level=subset_request.netcdf_compression_level,
         netcdf3_compatible=subset_request.netcdf3_compatible,
         dry_run=subset_request.dry_run,

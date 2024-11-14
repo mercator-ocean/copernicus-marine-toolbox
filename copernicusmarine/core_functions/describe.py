@@ -12,7 +12,7 @@ logger = logging.getLogger("copernicusmarine")
 
 
 def describe_function(
-    include_versions: bool,
+    show_all_versions: bool,
     contains: list[str],
     force_product_id: Optional[str],
     force_dataset_id: Optional[str],
@@ -35,7 +35,7 @@ def describe_function(
         disable_progress_bar=disable_progress_bar,
         staging=staging,
     )
-    if not include_versions:
+    if not show_all_versions:
         base_catalogue.filter_only_official_versions_and_parts()
 
     response_catalogue = (

@@ -14,10 +14,10 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
-    DEFAULT_VERTICAL_DIMENSION_OUTPUT,
+    DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
-    VerticalDimensionOutput,
+    VerticalAxis,
 )
 from copernicusmarine.core_functions.utils import datetime_parser
 from copernicusmarine.download_functions.subset_parameters import (
@@ -61,9 +61,7 @@ class SubsetRequest:
     maximum_latitude: Optional[float] = None
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
-    vertical_dimension_output: VerticalDimensionOutput = (
-        DEFAULT_VERTICAL_DIMENSION_OUTPUT
-    )
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
     start_datetime: Optional[DateTime] = None
     end_datetime: Optional[DateTime] = None
     coordinates_selection_method: CoordinatesSelectionMethod = (
@@ -73,7 +71,7 @@ class SubsetRequest:
     file_format: FileFormat = DEFAULT_FILE_FORMAT
     force_service: Optional[str] = None
     output_directory: pathlib.Path = pathlib.Path(".")
-    overwrite_output_data: bool = False
+    overwrite: bool = False
     skip_existing: bool = False
     netcdf_compression_level: int = 0
     netcdf3_compatible: bool = False
@@ -204,7 +202,7 @@ class GetRequest:
     force_dataset_part: Optional[str] = None
     no_directories: bool = False
     output_directory: str = "."
-    overwrite_output_data: bool = False
+    overwrite: bool = False
     filter: Optional[str] = None
     regex: Optional[str] = None
     file_list: Optional[pathlib.Path] = None
@@ -233,7 +231,7 @@ class GetRequest:
                 "sync",
                 "sync_delete",
                 "dry_run",
-                "overwrite_output_data",
+                "overwrite",
                 "skip_existing",
                 "index_parts",
             ]:
