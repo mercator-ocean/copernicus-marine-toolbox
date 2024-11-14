@@ -48,7 +48,6 @@ jobs:
       env:
         GITHUB_ENV: $GITHUB_ENV
       run: |
-        run: |
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           echo "ARCH=macos-arm64" >> $GITHUB_ENV
           NAME="macos-arm64"
