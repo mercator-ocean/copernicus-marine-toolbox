@@ -1,4 +1,4 @@
-name: Run tests binaries
+name: Run tests binaries windows
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
         post-cleanup: 'all'
 
     - name: Build with PyInstaller
-      shell: micromamba-shell {0}
+      shell: bash -el {0}
       run: |
         make run-using-pyinstaller-windows-latest
 
@@ -42,4 +42,4 @@ jobs:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
       run: make run-tests-binaries
-      shell: micromamba-shell {0}
+      shell: bash -el {0}

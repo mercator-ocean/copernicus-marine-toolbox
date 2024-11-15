@@ -121,8 +121,7 @@ run-using-pyinstaller-linux:
 	ldd --version
 	which openssl
 	openssl version -a
-	find / -name libcrypto.so.3
-	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/test/lib
+	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/
 	echo $$LD_LIBRARY_PATH
 	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}.cli
