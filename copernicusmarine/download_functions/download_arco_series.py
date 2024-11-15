@@ -543,11 +543,12 @@ def _download_dataset_as_netcdf(
             name: {**var.encoding, **comp}
             for name, var in dataset.data_vars.items()
         }
+        print(long_encoding)
         for var in dataset.data_vars:
             keys_to_keep = [
                 "dtype",
-                "blosc_shuffle",
                 "shuffle",
+                "blosc_shuffle",
                 "chunksizes",
                 "szip_coding",
                 "zlib",
@@ -562,7 +563,11 @@ def _download_dataset_as_netcdf(
                 "quantize_mode",
                 "endian",
             ]
-            encoding = {key: long_encoding[var][key] for key in keys_to_keep}
+            encoding = {
+                key: long_encoding[var][key]
+                for key in long_encoding[var].items()
+                if key in keys_to_keep
+            }
     else:
         encoding = None
 
