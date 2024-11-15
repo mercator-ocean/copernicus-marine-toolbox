@@ -1,4 +1,4 @@
-name: Create Binaries
+name: Create Binaries Windows
 
 on:
   push:
