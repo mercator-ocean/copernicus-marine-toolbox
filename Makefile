@@ -121,9 +121,9 @@ run-using-pyinstaller-linux:
 	ldd --version
 	which openssl
 	openssl version -a
-	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/
+	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/lib
 	echo $$LD_LIBRARY_PATH
-	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray
+	python3 -m PyInstaller --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}.cli
 
 run-using-pyinstaller-ubuntu-22.04: DISTRIBUTION = linux-glibc-2.35
@@ -134,7 +134,11 @@ run-using-pyinstaller-ubuntu-20.04: run-using-pyinstaller-linux
 
 # Tests for the binaries
 run-tests-binaries:
-	pytest tests_binaries -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	pytest tests_binaries/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+
+run-tests-binaries-windows:
+	pytest tests_binaries/test_windows_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+
 
 change-name-binary:
 	mv dist/copernicusmari* ./copernicusmarine.cli

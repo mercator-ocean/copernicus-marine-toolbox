@@ -8,7 +8,7 @@ from tests.test_utils import execute_in_terminal
 class TestBasicCommandsBinaries:
     def test_help(self):
         self.output = execute_in_terminal(
-            ["./copernicusmarine.exe", "describe", "--help"]
+            ["./dist/copernicusmarine.exe", "describe", "--help"]
         )
         assert self.output.returncode == 0
 
@@ -22,7 +22,7 @@ class TestBasicCommandsBinaries:
 
     def test_subset(self):
         command = [
-            "./copernicusmarine.exe",
+            "./dist/copernicusmarine.exe",
             "subset",
             "-i",
             "med-hcmr-wav-rean-h",
@@ -47,7 +47,7 @@ class TestBasicCommandsBinaries:
 
     def test_get(self):
         command = [
-            "./copernicusmarine.exe",
+            "./dist/copernicusmarine.exe",
             "get",
             "--dataset-id",
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
@@ -79,7 +79,7 @@ class TestBasicCommandsBinaries:
 
     def test_get_download(self, tmp_path):
         command = [
-            "./copernicusmarine.exe",
+            "./dist/copernicusmarine.exe",
             "get",
             "--dataset-id",
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
@@ -98,7 +98,7 @@ class TestBasicCommandsBinaries:
 
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         command = [
-            "./copernicusmarine.exe",
+            "./dist/copernicusmarine.exe",
             "login",
             "--force-overwrite",
             "--configuration-file-directory",
