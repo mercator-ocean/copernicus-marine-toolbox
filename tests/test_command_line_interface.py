@@ -1277,7 +1277,7 @@ class TestCommandLineInterface:
         assert dataset_without_option.uo.encoding["complevel"] == 0
 
         assert dataset_with_option.uo.encoding["zlib"] is True
-        assert dataset_with_option.uo.encoding["complevel"] == 1
+        assert dataset_with_option.uo.encoding["complevel"] == 4
         assert dataset_with_option.uo.encoding["contiguous"] is False
         assert dataset_with_option.uo.encoding["shuffle"] is True
 

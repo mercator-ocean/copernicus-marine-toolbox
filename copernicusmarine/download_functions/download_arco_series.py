@@ -552,6 +552,7 @@ def _download_dataset_as_netcdf(
                 "preferred_chunks",
                 "compressor",
                 "filters",
+                "coordinates",
             ]:
                 encoding[var].pop(key, None)
     else:
