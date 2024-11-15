@@ -495,6 +495,7 @@ def _save_dataset_locally(
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ):
+    logger.info(output_path)
     if output_path.suffix == ".zarr":
         if netcdf_compression_level > 0:
             raise NetCDFCompressionNotAvailable(
@@ -538,7 +539,21 @@ def _download_dataset_as_netcdf(
             contiguous=False,
             shuffle=True,
         )
-        encoding = {var: comp for var in dataset.data_vars}
+        encoding = {
+            name: {**var.encoding, **comp}
+            for name, var in dataset.data_vars.items()
+        }
+        for var in dataset.data_vars:
+            for key in [
+                "szip",
+                "zstd",
+                "bzip2",
+                "blosc",
+                "preferred_chunks",
+                "compressor",
+                "filters",
+            ]:
+                encoding[var].pop(key, None)
     else:
         encoding = None
 
