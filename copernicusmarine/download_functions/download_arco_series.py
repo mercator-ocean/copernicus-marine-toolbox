@@ -539,22 +539,30 @@ def _download_dataset_as_netcdf(
             contiguous=False,
             shuffle=True,
         )
-        encoding = {
+        long_encoding = {
             name: {**var.encoding, **comp}
             for name, var in dataset.data_vars.items()
         }
         for var in dataset.data_vars:
-            for key in [
-                "szip",
-                "zstd",
-                "bzip2",
-                "blosc",
-                "preferred_chunks",
-                "compressor",
-                "filters",
-                "coordinates",
-            ]:
-                encoding[var].pop(key, None)
+            keys_to_keep = [
+                "dtype",
+                "blosc_shuffle",
+                "shuffle",
+                "chunksizes",
+                "szip_coding",
+                "zlib",
+                "_FillValue",
+                "significant_digits",
+                "fletcher32",
+                "contiguous",
+                "szip_pixels_per_block",
+                "complevel",
+                "compression_opts",
+                "compression",
+                "quantize_mode",
+                "endian",
+            ]
+            encoding = {key: long_encoding[var][key] for key in keys_to_keep}
     else:
         encoding = None
 
