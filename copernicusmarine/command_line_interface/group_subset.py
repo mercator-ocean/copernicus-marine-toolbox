@@ -249,7 +249,7 @@ def cli_subset() -> None:
     flag_value=4,
     default=0,
     help=documentation_utils.SUBSET["NETCDF_COMPRESSION_LEVEL_HELP"]
-    + " If used as a flag, the assigned value will be 1.",
+    + " If used as a flag, the assigned value will be 4.",
 )
 @click.option(
     "--netcdf3-compatible",
