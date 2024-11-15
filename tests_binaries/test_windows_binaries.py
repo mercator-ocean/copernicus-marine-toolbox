@@ -14,7 +14,7 @@ class TestBasicCommandsBinaries:
 
     def test_describe(self):
         command = [
-            "./copernicusmarine.exe",
+            "./dist/copernicusmarine.exe",
             "describe",
         ]
         self.output = execute_in_terminal(command)
