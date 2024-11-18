@@ -1,4 +1,4 @@
-name: Create Binaries
+name: Create Binaries MacOS and Linux
 
 on:
   push:
