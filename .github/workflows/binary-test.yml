@@ -7,11 +7,11 @@ on:
       - "main"
       - "release/**"
       - "pre-releases/**"
-  pull_request:
+  pull_request_target:
     branches:
       - "main"
-    # paths:
-    #   - 'pyproject.toml'
+    paths:
+      - 'pyproject.toml'
 
 
 
