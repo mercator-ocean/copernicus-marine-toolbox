@@ -365,7 +365,7 @@
     '                                  NetCDF output file. A value of 0 means no',
     '                                  compression, and 9 is the highest level of',
     '                                  compression available. If used as a flag,',
-    '                                  the assigned value will be 1.  [0<=x<=9]',
+    '                                  the assigned value will be 4.  [0<=x<=9]',
     '  --netcdf3-compatible            Enable downloading the dataset in a netCDF3',
     '                                  compatible format.',
     '  --chunk-size-limit INTEGER RANGE',

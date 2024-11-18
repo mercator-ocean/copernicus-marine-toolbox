@@ -62,7 +62,7 @@ Default NetCDF compression settings for xarray:
 
 .. code-block:: text
 
-    {'zlib': True, 'complevel': 1, 'contiguous': False, 'shuffle': True}
+    {'zlib': True, 'complevel': 4, 'contiguous': False, 'shuffle': True}
 
 Set the ``--netcdf-compression-level`` to a custom compression level between 0 (no compression, by default) and 9 (maximum compression).
 
