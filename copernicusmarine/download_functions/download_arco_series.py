@@ -546,8 +546,8 @@ def _download_dataset_as_netcdf(
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
     engine = "h5netcdf"
     if netcdf3_compatible:
-        assert importlib.util.find_spec("netcdf4"), (
-            "To use the NETCDF3_COMPATIBLE option you need to have 'netcdf4' "
+        assert importlib.util.find_spec("netCDF4"), (
+            "To use the NETCDF3_COMPATIBLE option you need to have 'netCDF4' "
             "installed. You can install it with 'pip install netcdf4'."
         )
         engine = "netcdf4"
