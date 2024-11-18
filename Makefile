@@ -134,11 +134,16 @@ run-using-pyinstaller-ubuntu-20.04: run-using-pyinstaller-linux
 
 # Tests for the binaries
 run-tests-binaries:
-	pytest tests_binaries/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	BINARY=${BINARY_NAME} pytest tests_binaries/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
-run-tests-binaries-windows:
-	pytest tests_binaries/test_windows_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+# run-tests-binaries-windows:
+# 	pytest tests_binaries/test_windows_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
+run-tests-binaries-cli: BINARY_NAME = ./copernicusmarine.cli
+run-tests-binaries-cli: run-tests-binaries
+
+run-tests-binaries-windows: BINARY_NAME = ./dist/copernicusmarine.exe
+run-tests-binaries-windows: run-tests-binaries
 
 change-name-binary:
 	mv dist/copernicusmari* ./copernicusmarine.cli

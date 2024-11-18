@@ -10,6 +10,8 @@ on:
   pull_request: # for the moment, to test that it works.
     branches:
       - "main"
+    paths:
+      - 'pyproject.toml'
 
 jobs:
   build:
