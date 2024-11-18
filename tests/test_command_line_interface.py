@@ -1281,6 +1281,54 @@ class TestCommandLineInterface:
         assert dataset_with_option.uo.encoding["contiguous"] is False
         assert dataset_with_option.uo.encoding["shuffle"] is True
 
+    def test_netcdf_compression_with_optimised_files(self, tmp_path):
+        filename_without_option = "without_option.nc"
+        filename_with_option = "with_option.nc"
+
+        netcdf_compression_option = "--netcdf-compression-level"
+
+        base_command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+            "-x",
+            "3.08",
+            "-X",
+            "3.17",
+            "-y",
+            "-35",
+            "-Y",
+            "-30",
+            "-t",
+            "1993-01-01T00:00:00",
+            "-T",
+            "1995-01-31T00:00:00",
+            "-v",
+            "thetao",
+            "-o",
+            f"{tmp_path}",
+        ]
+
+        output_without_option = execute_in_terminal(
+            base_command + ["-f", filename_without_option]
+        )
+        output_with_option = execute_in_terminal(
+            base_command
+            + ["-f", filename_with_option, netcdf_compression_option]
+        )
+
+        assert output_without_option.returncode == 0
+        assert output_with_option.returncode == 0
+
+        filepath_without_option = Path(tmp_path / filename_without_option)
+        filepath_with_option = Path(tmp_path / filename_with_option)
+
+        size_without_option = get_file_size(filepath_without_option)
+        size_with_option = get_file_size(filepath_with_option)
+        logger.info(f"{size_without_option=}, {size_with_option=}")
+        assert 4 * size_with_option < size_without_option
+
     def test_omi_arco_service(self, tmp_path):
         base_command = [
             "copernicusmarine",

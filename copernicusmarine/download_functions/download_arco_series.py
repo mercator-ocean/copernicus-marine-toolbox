@@ -559,8 +559,8 @@ def _download_dataset_as_netcdf(
         encoding = {
             name: {
                 **{
-                    key: var.encoding[key]
-                    for key in var.encoding.keys()
+                    key: value
+                    for key, value in var.encoding.items()
                     if key in keys_to_keep
                 },
                 **comp,
