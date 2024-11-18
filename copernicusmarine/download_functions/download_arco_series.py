@@ -1,4 +1,3 @@
-import importlib.util
 import logging
 import os
 import pathlib
@@ -544,13 +543,7 @@ def _download_dataset_as_netcdf(
         encoding = None
 
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
-    engine = "h5netcdf"
-    if netcdf3_compatible:
-        assert importlib.util.find_spec("netCDF4"), (
-            "To use the NETCDF3_COMPATIBLE option you need to have 'netCDF4' "
-            "installed. You can install it with 'pip install netcdf4'."
-        )
-        engine = "netcdf4"
+    engine = "h5netcdf" if not netcdf3_compatible else "netcdf4"
     return dataset.to_netcdf(
         output_path,
         mode="w",

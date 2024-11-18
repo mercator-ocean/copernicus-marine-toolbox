@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import logging
 import pathlib
@@ -81,6 +82,11 @@ def subset_function(
         )
 
     subset_request = SubsetRequest(dataset_id=dataset_id or "")
+    if netcdf3_compatible:
+        assert importlib.util.find_spec("netCDF4"), (
+            "To use the NETCDF3_COMPATIBLE option you need to have 'netCDF4' "
+            "installed. You can install it with 'pip install netcdf4'."
+        )
     if request_file:
         subset_request.from_file(request_file)
     if motu_api_request:
