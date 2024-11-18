@@ -242,13 +242,6 @@ def cli_subset() -> None:
     default=None,
     help=documentation_utils.GET["RESPONSE_FIELDS_HELP"],
 )
-@tqdm_disable_option
-@click.option(
-    "--log-level",
-    type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
-    default="INFO",
-    help=documentation_utils.SUBSET["LOG_LEVEL_HELP"],
-)
 @click.option(
     "--netcdf-compression-level",
     type=click.IntRange(0, 9),
@@ -277,6 +270,13 @@ def cli_subset() -> None:
     default=False,
     is_flag=True,
     hidden=True,
+)
+@tqdm_disable_option
+@click.option(
+    "--log-level",
+    type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
+    default="INFO",
+    help=documentation_utils.SUBSET["LOG_LEVEL_HELP"],
 )
 @log_exception_and_exit
 def subset(

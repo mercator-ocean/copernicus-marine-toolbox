@@ -79,18 +79,6 @@ def subset(
         The username for authentication. See also :func:`~copernicusmarine.login`
     password : str, optional
         The password for authentication. See also :func:`~copernicusmarine.login`
-    output_directory : Union[pathlib.Path, str], optional
-        The destination folder for the downloaded files. Default is the current directory.
-    credentials_file : Union[pathlib.Path, str], optional
-        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-    overwrite : bool, optional
-        If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
-    skip_existing : bool, optional
-        If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
-    request_file : Union[pathlib.Path, str], optional
-        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
-    service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
     variables : List[str], optional
         List of variable names to extract.
     minimum_longitude : float, optional
@@ -113,10 +101,22 @@ def subset(
         The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
+    output_directory : Union[pathlib.Path, str], optional
+        The destination folder for the downloaded files. Default is the current directory.
+    credentials_file : Union[pathlib.Path, str], optional
+        Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     output_filename : str, optional
         Save the downloaded data with the given file name (under the output directory).
     file_format : str, optional
         Format of the downloaded dataset. Default to NetCDF '.nc'.
+    overwrite : bool, optional
+        If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
+    skip_existing : bool, optional
+        If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
+    service : str, optional
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
+    request_file : Union[pathlib.Path, str], optional
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     motu_api_request : str, optional
         Option to pass a complete MOTU API request as a string. Caution, user has to replace double quotes “ with single quotes ' in the request.
     dry_run : bool, optional
