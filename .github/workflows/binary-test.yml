@@ -10,8 +10,8 @@ on:
   pull_request: # for the moment, to test that it works.
     branches:
       - "main"
-    paths:
-      - 'pyproject.toml'
+    # paths:
+    #   - 'pyproject.toml'
 
 
 
@@ -54,5 +54,6 @@ jobs:
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        BINARY_NAME: "./copernicusmarine.cli"
       shell: micromamba-shell {0}
       run: make run-tests-binaries-cli

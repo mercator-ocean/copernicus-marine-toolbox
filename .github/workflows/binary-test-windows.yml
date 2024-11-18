@@ -43,5 +43,6 @@ jobs:
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        BINARY_NAME: "./dist/copernicusmarine.exe"
       run: make run-tests-binaries-windows
       shell: bash -el {0}
