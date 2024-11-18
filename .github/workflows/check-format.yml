@@ -3,7 +3,7 @@ name: Check format
 on:
   push:
     branches:
-      - main
+      - "main"
       - "release/**"
       - "pre-releases/**"
   pull_request:
