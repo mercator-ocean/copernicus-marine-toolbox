@@ -7,7 +7,7 @@ on:
       - "main"
       - "release/**"
       - "pre-releases/**"
-  pull_request: # for the moment, to test that it works.
+  pull_request:
     branches:
       - "main"
     # paths:
@@ -56,4 +56,4 @@ jobs:
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         BINARY_NAME: "./copernicusmarine.cli"
       shell: micromamba-shell {0}
-      run: make run-tests-binaries-cli
+      run: make run-tests-binaries

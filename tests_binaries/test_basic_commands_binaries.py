@@ -4,14 +4,11 @@ from pathlib import Path
 
 from tests.test_utils import execute_in_terminal
 
-BINARY = "./copernicusmarine.cli"
-NAME_BINARY = os.getenv("BINARY_NAME")
+BINARY = os.getenv("BINARY_NAME")
 
 
 class TestBasicCommandsBinaries:
     def test_help(self):
-        print(BINARY)
-        print(NAME_BINARY)
         self.output = execute_in_terminal([BINARY, "describe", "--help"])
         assert self.output.returncode == 0
 
