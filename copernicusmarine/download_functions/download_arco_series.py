@@ -495,7 +495,6 @@ def _save_dataset_locally(
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ):
-    logger.info(output_path)
     if output_path.suffix == ".zarr":
         if netcdf_compression_level > 0:
             raise NetCDFCompressionNotAvailable(
