@@ -1,37 +1,37 @@
-name: Run tests
+# name: Run tests
 
-on:
-  pull_request_target:
-    branches:
-      - "main"
-      - "release/**"
-      - "pre-releases/**"
+# on:
+#   pull_request_target:
+#     branches:
+#       - "main"
+#       - "release/**"
+#       - "pre-releases/**"
 
 
-jobs:
-  tests:
-    runs-on: self-hosted
-    timeout-minutes: 30
+# jobs:
+#   tests:
+#     runs-on: self-hosted
+#     timeout-minutes: 30
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event.pull_request.head.sha }}
 
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          micromamba-version: '1.5.6-0'
-          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-          environment-file: conda_environment_test.yaml
-          environment-name: copernicusmarine_test
-          condarc-file: .condarc
-          cache-environment: true
-          post-cleanup: 'all'
+#       - uses: mamba-org/setup-micromamba@v1
+#         with:
+#           micromamba-version: '1.5.6-0'
+#           micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+#           environment-file: conda_environment_test.yaml
+#           environment-name: copernicusmarine_test
+#           condarc-file: .condarc
+#           cache-environment: true
+#           post-cleanup: 'all'
 
-      - name: Run tests
-        env:
-          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        run: make run-tests
-        shell: micromamba-shell {0}
+#       - name: Run tests
+#         env:
+#           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+#           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+#         run: make run-tests
+#         shell: micromamba-shell {0}

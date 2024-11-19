@@ -1,8 +1,11 @@
 import json
 import os
+import sys
 from pathlib import Path
 
-from tests.test_utils import execute_in_terminal
+sys.path.append(".")
+
+from tests.test_utils import execute_in_terminal  # noqa
 
 
 class TestBasicCommands:
