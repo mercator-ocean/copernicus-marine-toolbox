@@ -15,7 +15,6 @@ from copernicusmarine.core_functions.utils import (
 
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
-PART_ORIGINAL = "originalGrid"
 
 
 class CopernicusMarineServiceNames(str, Enum):

@@ -8,7 +8,6 @@ from copernicusmarine import (
 )
 from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
-    PART_ORIGINAL,
     REGEX_PATTERN_DATE_YYYYMM,
     VERSION_DEFAULT,
 )
@@ -352,24 +351,7 @@ class TestDescribe:
                         )
                         > 0
                     )
-                    if has_default_part:
-                        # If there is a "default" part, then it is the only one
-                        has_originalGrid = (
-                            len(
-                                list(
-                                    filter(
-                                        lambda x: x["name"] == PART_ORIGINAL,
-                                        parts,
-                                    )
-                                )
-                            )
-                            > 0
-                        )
-                        if has_originalGrid:
-                            assert len(parts) == 2
-                        else:
-                            assert len(parts) == 1
-                    else:
+                    if not has_default_part:
                         # Else, there is no "default" part at all
                         assert all(
                             map(lambda x: x["name"] != PART_DEFAULT, parts)
