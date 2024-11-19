@@ -98,6 +98,7 @@ To download directly the latest stable releases:
 - Linux (with glibc 2.31): `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine_linux-glibc-2.31.cli>`_
 - Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine.exe>`_
 
+
 Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
 
 In mac-os or linux:
