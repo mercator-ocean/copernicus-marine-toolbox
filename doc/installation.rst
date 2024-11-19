@@ -92,10 +92,11 @@ In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbo
 
 To download directly the latest stable releases:
 
-- MacOS arm64: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine_macos-arm64.cli>`_
-- MacOS x86_64: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine_macos-x86_64.cli>`_
-- Linux: `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine_linux.cli>`_
-- Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a3/copernicusmarine.exe>`_
+- MacOS arm64: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine_macos-arm64.cli>`_
+- MacOS x86_64: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine_macos-x86_64.cli>`_
+- Linux (with glibc 2.35): `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine_linux-glibc-2.35.cli>`_
+- Linux (with glibc 2.31): `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine_linux-glibc-2.31.cli>`_
+- Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v2.0.0a4/copernicusmarine.exe>`_
 
 Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
 
@@ -103,7 +104,7 @@ In mac-os or linux:
 
 .. code-block:: bash
 
-    ./copernicusmarine_macos-latest.cli describe
+    ./copernicusmarine_macos-x86_64.cli describe
 
 (``describe`` or any other command)
 
@@ -111,13 +112,13 @@ You might have to update the permissions of the binary to be able to execute it 
 
 .. code-block:: bash
 
-    chmod +rwx cmt_ubuntu-latest.cli
+    chmod +rwx copernicusmarine_linux-glibc-2.31.cli
 
 And from a Windows os (cmd):
 
 .. code-block:: bash
 
-    copernicusmarine_windows-latest.exe describe
+    copernicusmarine.exe describe
 
 (``describe`` or any other command)
 
