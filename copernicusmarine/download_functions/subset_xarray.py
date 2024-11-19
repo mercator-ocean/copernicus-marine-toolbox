@@ -585,7 +585,6 @@ def check_dataset_subset_bounds(
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_valid_date: Optional[Union[str, int, float]],
-    isOriginalGrid: bool,
 ) -> None:
     if service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -599,16 +598,22 @@ def check_dataset_subset_bounds(
         dataset_coordinates = dataset.coords
     else:
         raise ServiceNotSupported(service_name)
-    if ("x" or "y") in dataset.sizes or isOriginalGrid:
-        logger.warning("Dataset part is in stereographic projection.")
-        setting_geospatial = (
-            dataset_subset.minimum_latitude
-            or dataset_subset.maximum_latitude
-            or dataset_subset.minimum_longitude
-            or dataset_subset.maximum_longitude
-        )
-        if setting_geospatial:
-            raise GeospatialSubsetNotAvailableForStereographicProjection()
+    if ("x" or "y") in dataset.sizes:
+        if (
+            dataset.y.units == "100  km"
+            and dataset.y.standard_name == "projection_y_coordinate"
+        ) or (
+            dataset.x.units == "100  km"
+            and dataset.x.standard_name == "projection_x_coordinate"
+        ):
+            logger.warning("Dataset part is in stereographic projection.")
+            if (
+                dataset_subset.minimum_latitude
+                or dataset_subset.maximum_latitude
+                or dataset_subset.minimum_longitude
+                or dataset_subset.maximum_longitude
+            ):
+                raise GeospatialSubsetNotAvailableForStereographicProjection()
 
     for coordinate_label in COORDINATES_LABEL["latitude"]:
         if coordinate_label in dataset.sizes:
