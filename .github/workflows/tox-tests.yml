@@ -3,6 +3,8 @@ name: Tox tests
 on:
   schedule:
     - cron: '0 0 * * 6'
+  pull_request:
+
 
 jobs:
   tests:

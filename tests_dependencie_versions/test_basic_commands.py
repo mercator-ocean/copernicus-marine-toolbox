@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -11,8 +12,9 @@ class TestBasicCommands:
             "describe",
         ]
         self.output = execute_in_terminal(command)
+        json.loads(self.output.stdout)
 
-    def test_subset(self):
+    def test_subset(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -32,24 +34,29 @@ class TestBasicCommands:
             "1993-01-01T06:00:00",
             "-v",
             "VHM0",
+            "-o",
+            f"{tmp_path}",
         ]
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
+        json.loads(self.output.stdout)
 
-    def test_get(self):
+    def test_get(self, tmp_path):
         command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
             "--filter",
-            "*/2023/08/*",
+            "*glo12_rg_1d-m_20230831-20230831_2D_hcst_R20230913*",
+            "-o",
+            f"{tmp_path}",
         ]
         self.output = execute_in_terminal(command)
 
-        assert self.output.returncode == 1
-        assert b"No data to download" not in self.output.stderr
+        assert self.output.returncode == 0
+        json.loads(self.output.stdout)
 
     def test_login(self, tmp_path):
         assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
