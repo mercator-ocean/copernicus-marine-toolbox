@@ -1,7 +1,95 @@
 Migration guide v2
 ===================
 
-Still in construction, please refer to the `help desk of mercator <https://help.marine.copernicus.eu/en/articles/9978784-what-s-new-in-the-pre-release-of-version-2-0-0-of-the-copernicus-marine-toolbox>`_ for more information about the
-v2 prereleases.
-
 You can also check the :ref:`changelogs <changelog>` for more information about the changes.
+
+.. warning::
+    One of the important breaking changes is that there is no prompt to confirm the download. Please use ``--dry-run`` if you do not want to download the files.
+    The ``--force-download`` option has been removed.
+
+Describe
+------------------
+For all the new features, please refer to the documentation page of the describe function.
+
+CopernicusMarineCatalogue as response in python API
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+When doing a describe in the python API, the response will be a :class:`copernicusmarine.CopernicusMarineCatalogue`. That changes from the old dictionary response.
+
+.. code-block:: Python
+
+    NowACopernicusMarineCatalogue = copernicusmarine.describe()
+
+
+New options ``--return-fields`` and ``--exclude-fields``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+To filter the output of a describe, now you can use the ``--return-fields`` and ``--exclude-fields`` options. The old options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
+
+Such options allow to select respectively the fields you want to include or exclude from the output. You just need to add them as a comma-separated list.
+
+.. code-block:: bash
+
+    copernicusmarine describe --return-fields uri,product_id,dataset_id,service_name
+
+Here the first product is shown. As you can see, only the required fields and their respective parents are shown.
+
+.. code-block:: json
+
+    {
+      "product_id": "ANTARCTIC_OMI_SI_extent",
+      "datasets": [
+        {
+          "dataset_id": "antarctic_omi_si_extent",
+          "versions": [
+            {
+              "parts": [
+                {
+                  "services": [
+                    {
+                      "service_name": "original-files",
+                      "uri": "https://s3.waw3-1.cloudferro.com/mdl-native-10/native/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/antarctic_omi_si_extent_19930115_P20220328.nc"
+                    },
+                    {
+                      "service_name": "omi-arco",
+                      "uri": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-001/arco/ANTARCTIC_OMI_SI_extent/antarctic_omi_si_extent_202207/omi.zarr"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+You can also use the 'all' shortcut to return all the fields and then exclude if necessary:
+
+.. code-block:: bash
+
+    copernicusmarine describe --return-fields all --exclude-fields uri,product_id,dataset_id,service_name,descrpition,keywords
+
+
+Deleted options can also be still included
+"""""""""""""""""""""""""""""""""""""""""""""""
+As explained in the changelog, the options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed. However, you can still include them using the new options ``--return-fields`` and ``--exclude-fields``.
+
+.. code-block:: bash
+
+    copernicusmarine describe --return-fields dataset_id,keywords,description
+
+The logic of having these functions as separate options was to not crowd too much the output of the describe. If you didn't use them you can still exclude them with the option ``--exclude-fields`` to have a similar output as before:
+
+.. code-block:: bash
+
+    copernicusmarine describe --return-fields all --exclude-fields datasets,description,keywords
+
+The different usage option ``--include-versions`` has been renamed to ``--show-all-versions``.
+
+
+Get
+------------------
+For all the new features, please refer to the documentation page of the get function.
+
+Deletion of ``--force-download`` and new ``--dry-run`` option
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

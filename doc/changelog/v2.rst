@@ -1,7 +1,9 @@
-Pre-release 2.0.0a4
+Release 2.0.0
 ====================
 
 Changes starting with **B** might introduce breaking changes.
+
+Check the migration guide for information about the breaking changes and the documentation for more information abot the new functionalities.
 
 .. warning::
     One of the important breaking changes is that there is no prompt to confirm the download. Please use ``--dry-run`` if you do not want to download the files.
@@ -11,17 +13,17 @@ General
 ''''''''
 
 * Created reponse types, especially :class:`copernicusmarine.ResponseGet` and :class:`copernicusmarine.ResponseSubset`. A status code has been added to the response.
-* Added binaries to be able to widely use the toolbox. See the :ref:`installation page <installation-page>` for more information.
+* Added binaries to be able to use the toolbox. See the :ref:`installation page <installation-page>` for more information.
 * ``numpy>=2.0.0`` is supported
 * ``python>=3.13`` is now supported
-* Created a automatic documentation for the library, with help for the installation, descriptions of the functions and their responses, an example Quick Start Guide, a changelog and migration guide.
+* Created an automatic documentation for the library, with help for the installation, descriptions of the functions and their responses, an example Quick Start Guide, a changelog and migration guide.
 * Use the ``h5netcdf`` library to read and write NetCDF files. If you need to save files in NetCDF3 format please just manually install ``netcdf4``.
-* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
-* ``--skip-existing`` allow you to skip the download of files that already exist at the output destination.
-* ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
 * Use ``pendulum`` for date handling. The date format is now more flexible and should be more robust.
 * Improved the libraries regarding multiprocessing, so users can handle it easier by themselves.
 * Improved the output of the command line interface. The output is now more readable and more informative.
+* Perfomed some refactoring to improve the conventions of netcdf files.
+* Deleted the deprecated options.
+* Fixed the some of the major bugs, creating a more robust and stable version.
 
 Describe
 ''''''''''
@@ -42,8 +44,12 @@ Get
 '''''
 
 * Added ``--response-fields`` to filter the fields returned by the get command in the command line interface.
+* Included a ResponseGet object as output of the python function.
 * Add timeout to requests and being able to set the number of retries.
-
+* New ``--skip-existing`` allows you to skip the download of files that already exist at the output destination.
+* **B** ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
+* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
+* **B** Deleted ``--show-outputnames``option.
 
 Subset
 ''''''''
@@ -52,11 +58,18 @@ Subset
 * Now it outputs an estimation of the size of the data throughput (the data that will be downloaded) and not only the size of the file.
 * Included a ResponseSubset object as output of the python function.
 * Rename ``--vertical-dimension-output`` to ``--vertical-axis``.
+* **B** Removed ``--subset-method`` option. Some of the functionalities can now be achieved with the new ``--coordinates-selection-method`` option.
+* **B** New feature ``--coordinates-selection-method``. The default method maintains the behaviour as before, including some new functionalities.
 * Improve dask chunk size handling. The default chunk size is bigger and should be more optimal. Please refer to the :ref:`paragraph about chunk size limit <chunk-size-limit>` for more information.
 * **B** Removed the cache system. A new way to access the data has been put in place, more robust and with the same performance.
 * **B** Removed the ``--force-download`` option. Please use the ``--dry-run`` option if you do not want to download the files.
 * Removed the ``--netcdf-compression-enabled`` option. The compression doesn't need now to be enabled and can be done with the ``--netcdf-compression-level`` option (as before).
 * ``--motu-api-request`` has been deprecated. Please contact user support if you need to translate legacy motu requests.
+* ``--skip-existing`` allow you to skip the download of files that already exist at the output destination.
+* **B**``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
+* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
+* **B** Deleted ``--show-outputnames``option.
+* Fixed some bugs with compressing datasets (with option ``--netcdf-compression-level``).
 
 Login
 ''''''
