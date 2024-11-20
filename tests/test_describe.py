@@ -341,21 +341,6 @@ class TestDescribe:
                     )
                     parts = version["parts"]
                     assert len(parts) != 0
-                    has_default_part = (
-                        len(
-                            list(
-                                filter(
-                                    lambda x: x["name"] == PART_DEFAULT, parts
-                                )
-                            )
-                        )
-                        > 0
-                    )
-                    if not has_default_part:
-                        # Else, there is no "default" part at all
-                        assert all(
-                            map(lambda x: x["name"] != PART_DEFAULT, parts)
-                        )
                     part_names = list(
                         map(lambda x: x["name"], version["parts"])
                     )
