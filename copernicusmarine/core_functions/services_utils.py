@@ -263,6 +263,7 @@ class RetrievalService:
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
     service: CopernicusMarineService
+    isOriginalGrid: bool = False
 
 
 def get_retrieval_service(
@@ -408,6 +409,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
         service=service,
+        isOriginalGrid=dataset_part.name == "originalGrid",
     )
 
 

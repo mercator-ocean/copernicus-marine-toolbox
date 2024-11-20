@@ -41,16 +41,16 @@ class CoordinatesOutOfDatasetBounds(Exception):
         self.__setattr__("custom_exception_message", message)
 
 
-class GeospatialSubsetNotAvailableForStereographicProjection(Exception):
+class GeospatialSubsetNotAvailableForOriginalProjection(Exception):
     """
-    The part you want to subset has a stereo graphic projection.
+    The part you want to subset has a original projection.
 
     The geospatial subset of such datasets is not yet available.
     """
 
     def __init__(self):
         super().__init__(
-            "The geospatial subset of datasets with stereographic projection is not "
+            "The geospatial subset of datasets with original projection is not "
             "yet available. "
             "We are developing such feature and will be supported in future versions."
         )
