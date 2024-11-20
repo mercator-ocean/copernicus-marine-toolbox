@@ -121,12 +121,9 @@ class TestDescribe:
             for dataset in product["datasets"]:
                 for version in dataset["versions"]:
                     for part in version["parts"]:
-                        assert "omi" not in list(
-                            map(
-                                lambda x: x["service_name"],
-                                part["services"],
-                            )
-                        )
+                        assert "omi" not in [
+                            x["service_name"] for x in part["services"]
+                        ]
 
     def then_products_from_marine_data_store_catalog_are_available(self):
         expected_product_id = "NWSHELF_ANALYSISFORECAST_PHY_004_013"
@@ -139,29 +136,25 @@ class TestDescribe:
         ]
 
         json_result = loads(self.output.stdout)
-        expected_product = list(
-            filter(
-                lambda product: product["product_id"] == expected_product_id,
-                json_result["products"],
-            )
-        )
+        expected_product = [
+            product
+            for product in json_result["products"]
+            if product["product_id"] == expected_product_id
+        ]
         assert len(expected_product) == 1
         product = expected_product[0]
         product_datasets = product["datasets"]
-        expected_dataset = list(
-            filter(
-                lambda product: product["dataset_id"] == expected_dataset_id,
-                product_datasets,
-            )
-        )
+        expected_dataset = [
+            product
+            for product in product_datasets
+            if product["dataset_id"] == expected_dataset_id
+        ]
         assert len(expected_dataset) == 1
         dataset = expected_dataset[0]
-        expected_dataset_services = list(
-            map(
-                lambda x: x["service_name"],
-                dataset["versions"][0]["parts"][0]["services"],
-            )
-        )
+        expected_dataset_services = [
+            x["service_name"]
+            for x in dataset["versions"][0]["parts"][0]["services"]
+        ]
         assert all(
             map(lambda x: x in expected_services, expected_dataset_services)
         )
@@ -175,27 +168,24 @@ class TestDescribe:
             "arco-time-series",
         ]
         json_result = loads(self.output.stdout)
-        expected_product = list(
-            filter(
-                lambda product: product["product_id"] == expected_product_id,
-                json_result["products"],
-            )
-        )
+        expected_product = [
+            product
+            for product in json_result["products"]
+            if product["product_id"] == expected_product_id
+        ]
         product = expected_product[0]
         product_datasets = product["datasets"]
-        expected_dataset = list(
-            filter(
-                lambda product: product["dataset_id"] == expected_dataset_id,
-                product_datasets,
-            )
-        )
+        expected_dataset = [
+            product
+            for product in product_datasets
+            if product["dataset_id"] == expected_dataset_id
+        ]
         dataset = expected_dataset[0]
-        wanted_services_in_dataset = list(
-            filter(
-                lambda x: x["service_name"] in wanted_services,
-                dataset["versions"][0]["parts"][0]["services"],
-            )
-        )
+        wanted_services_in_dataset = [
+            x
+            for x in dataset["versions"][0]["parts"][0]["services"]
+            if x["service_name"] in wanted_services
+        ]
         assert snapshot == wanted_services_in_dataset
 
     def then_all_dataset_parts_are_filled(self):
@@ -212,22 +202,21 @@ class TestDescribe:
         assert len(expected_product) == 1
         product = expected_product[0]
 
-        expected_dataset = list(
-            filter(
-                lambda product: product["dataset_id"] == expected_dataset_id,
-                product["datasets"],
-            )
-        )
+        expected_dataset = [
+            product
+            for product in product["datasets"]
+            if product["dataset_id"] == expected_dataset_id
+        ]
 
         assert len(expected_dataset) == 1
         dataset = expected_dataset[0]
 
         for version in dataset["versions"]:
-            non_default_parts = list(
-                filter(
-                    lambda part: part["name"] != PART_DEFAULT, version["parts"]
-                )
-            )
+            non_default_parts = [
+                part
+                for part in version["parts"]
+                if part["name"] != PART_DEFAULT
+            ]
 
             assert len(non_default_parts) > 0
 
@@ -240,12 +229,12 @@ class TestDescribe:
         )
 
         latest_version = version_ordered[0]
-        maybe_default_part = list(
-            filter(
-                lambda part: part["name"] == PART_DEFAULT,
-                latest_version["parts"],
-            )
-        )
+        maybe_default_part = [
+            part
+            for part in latest_version["parts"]
+            if part["name"] == PART_DEFAULT
+        ]
+
         assert len(maybe_default_part) == 0
 
     def when_I_run_copernicus_marine_describe_with_contains_option(self):
@@ -330,9 +319,7 @@ class TestDescribe:
             for dataset in product["datasets"]:
                 assert dataset["dataset_id"] is not None
                 assert dataset["dataset_name"] is not None
-                version_labels = list(
-                    map(lambda x: x["label"], dataset["versions"])
-                )
+                version_labels = [x["label"] for x in dataset["versions"]]
                 assert len(version_labels) == len(set(version_labels))
                 for version in dataset["versions"]:
                     assert re.match(
@@ -341,39 +328,14 @@ class TestDescribe:
                     )
                     parts = version["parts"]
                     assert len(parts) != 0
-                    has_default_part = (
-                        len(
-                            list(
-                                filter(
-                                    lambda x: x["name"] == PART_DEFAULT, parts
-                                )
-                            )
-                        )
-                        > 0
-                    )
-                    if has_default_part:
-                        # If there is a "default" part, then it is the only one
-                        assert len(parts) == 1
-                    else:
-                        # Else, there is no "default" part at all
-                        assert all(
-                            map(lambda x: x["name"] != PART_DEFAULT, parts)
-                        )
-                    part_names = list(
-                        map(lambda x: x["name"], version["parts"])
-                    )
+                    part_names = [x["name"] for x in version["parts"]]
                     assert len(part_names) == len(set(part_names))
                     for part in parts:
                         assert part["name"] is not None
                         assert part["name"] != ""
                         services = part["services"]
                         assert len(services) != 0, dataset["dataset_id"]
-                        service_names = list(
-                            map(
-                                lambda x: x["service_name"],
-                                services,
-                            )
-                        )
+                        service_names = [x["service_name"] for x in services]
                         assert len(service_names) == len(set(service_names))
                         if (
                             CopernicusMarineServiceNames.OMI_ARCO.value  # noqa
