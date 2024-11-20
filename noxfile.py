@@ -1,14 +1,14 @@
 import nox
 
 # Define the supported versions of Python and xarray
-# PYTHON_VERSIONS = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+PYTHON_VERSIONS = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 XARRAY_VERSIONS = ["2023.4.0", "latest"]
 DASK_VERSIONS = ["2022.1.0", "latest"]
 BOTO3_VERSIONS = ["1.26.0", "latest"]
 NUMPY_VERSIONS = ["1.26.0", ">=2.0.0"]
 
 
-# @nox.session(python=PYTHON_VERSIONS)
+@nox.session(python=PYTHON_VERSIONS)
 @nox.parametrize("xarray_version", XARRAY_VERSIONS)
 @nox.parametrize("dask_version", DASK_VERSIONS)
 @nox.parametrize("boto3_version", BOTO3_VERSIONS)

@@ -32,7 +32,7 @@ jobs:
         run: pip install nox
 
       - name: Run tests with nox
-        run: nox
+        run: nox --force-python=${{ matrix.python-version }}
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
