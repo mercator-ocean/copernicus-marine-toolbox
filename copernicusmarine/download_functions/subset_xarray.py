@@ -585,7 +585,7 @@ def check_dataset_subset_bounds(
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_valid_date: Optional[Union[str, int, float]],
-    isOriginalGrid: bool,
+    is_original_grid: bool,
 ) -> None:
     if service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -599,13 +599,13 @@ def check_dataset_subset_bounds(
         dataset_coordinates = dataset.coords
     else:
         raise ServiceNotSupported(service_name)
-    if isOriginalGrid:
+    if is_original_grid:
         logger.warning("Dataset part has the original projection.")
         if (
-            dataset_subset.minimum_latitude
-            or dataset_subset.maximum_latitude
-            or dataset_subset.minimum_longitude
-            or dataset_subset.maximum_longitude
+            dataset_subset.minimum_latitude is not None
+            or dataset_subset.maximum_latitude is not None
+            or dataset_subset.minimum_longitude is not None
+            or dataset_subset.maximum_longitude is not None
         ):
             raise GeospatialSubsetNotAvailableForOriginalProjection()
 

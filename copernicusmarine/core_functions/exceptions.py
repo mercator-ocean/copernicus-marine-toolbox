@@ -50,8 +50,8 @@ class GeospatialSubsetNotAvailableForOriginalProjection(Exception):
 
     def __init__(self):
         super().__init__(
-            "The geospatial subset of datasets with original projection is not "
-            "yet available. "
+            "The geospatial subset of datasets in a projection that is not in "
+            "latitude and longitude is not yet available. "
             "We are developing such feature and will be supported in future versions."
         )
 

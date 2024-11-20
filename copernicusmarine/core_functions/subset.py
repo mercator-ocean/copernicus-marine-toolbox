@@ -170,7 +170,7 @@ def subset_function(
         dataset_subset=subset_request.get_time_and_space_subset(),
         coordinates_selection_method=subset_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
-        isOriginalGrid=retrieval_service.isOriginalGrid,
+        is_original_grid=retrieval_service.is_original_grid,
     )
     logger.info(
         "Downloading using service " f"{retrieval_service.service_name}..."
