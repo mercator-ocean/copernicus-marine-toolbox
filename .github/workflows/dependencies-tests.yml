@@ -3,6 +3,7 @@ name: Dependencies tests
 on:
   schedule:
     - cron: '0 0 * * 6'
+  pull_request:
 
 jobs:
   test-dependencies-combinations:

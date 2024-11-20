@@ -15,6 +15,7 @@ class TestBasicCommands:
             "describe",
         ]
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
         json.loads(self.output.stdout)
 
     def test_subset(self, tmp_path):

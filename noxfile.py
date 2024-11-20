@@ -24,6 +24,14 @@ def tests(session, xarray_version, dask_version, boto3_version, numpy_version):
         )
         session.skip()
 
+    # Numpy 1.26.0 is not supported with python 3.13
+    if numpy_version == "1.26" and session.python == "3.13":
+        session.log(
+            f"Skipping unsupported combination: "
+            f"numpy={numpy_version} and python={session.python}"
+        )
+        session.skip()
+
     session.install(
         format_to_correct_pip_command("xarray", xarray_version),
         format_to_correct_pip_command("dask", dask_version),
