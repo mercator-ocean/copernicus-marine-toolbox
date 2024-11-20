@@ -271,7 +271,7 @@ def download_files(
                 (username, endpoint_url, bucket, in_file, out_file)
                 for in_file, out_file in zip(
                     filenames_in,
-                    filenames_out,
+                    str(filenames_out),
                 )
             ],
             max_concurrent_requests,

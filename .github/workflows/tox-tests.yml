@@ -25,11 +25,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install tox
-        run: pip install tox tox-gh-actions
+      # - name: Install packages
+      #   run: pip install .
 
-      - name: Run tests with tox
-        run: tox
+      - name: Install nox
+        run: pip install nox
+
+      - name: Run tests with nox
+        run: nox
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
