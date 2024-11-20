@@ -4,8 +4,6 @@ ENVIRONMENT_NAME = ${PROJECT_NAME}
 ENVIRONMENT_FILE_NAME = conda_environment.yaml
 TEST_ENVIRONMENT_NAME = ${PROJECT_NAME}_test
 TEST_ENVIRONMENT_FILE_NAME = conda_environment_test.yaml
-TEST_TOX_ENVIRONMENT_NAME = ${PROJECT_NAME}_test_tox
-TEST_TOX_ENVIRONMENT_FILE_NAME = conda_environment_test_tox.yaml
 
 .ONESHELL:
 .SHELLFLAGS = -ec
@@ -34,10 +32,6 @@ create-test-environment: SELECTED_ENVIRONMENT_NAME = ${TEST_ENVIRONMENT_NAME}
 create-test-environment: SELECTED_ENVIRONMENT_FILE_NAME = ${TEST_ENVIRONMENT_FILE_NAME}
 create-test-environment: create-update-environment
 
-create-test-environment-tox: SELECTED_ENVIRONMENT_NAME = ${TEST_TOX_ENVIRONMENT_NAME}
-create-test-environment-tox: SELECTED_ENVIRONMENT_FILE_NAME = ${TEST_TOX_ENVIRONMENT_FILE_NAME}
-create-test-environment-tox: create-update-environment
-
 check-format: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 check-format:
 	${ACTIVATE_ENVIRONMENT}
@@ -48,10 +42,6 @@ run-tests:
 	${ACTIVATE_ENVIRONMENT}
 	pip install --editable .
 	pytest tests --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
-
-# run-tests-dependencie-versions: SELECTED_ENVIRONMENT_NAME = ${TEST_TOX_ENVIRONMENT_NAME}
-run-tests-dependencie-versions:
-	tox run
 
 release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 release:

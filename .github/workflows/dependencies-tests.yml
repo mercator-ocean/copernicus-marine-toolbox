@@ -1,4 +1,4 @@
-name: Tox tests
+name: Dependencies tests
 
 on:
   schedule:
@@ -7,16 +7,12 @@ on:
 
 
 jobs:
-  tests:
+  test-dependencies-combinations:
     runs-on: ubuntu-latest
-    # timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-        # xarray-version: ["2023.4.0", "latest"]
-        # boto3-version: ["1.26.0", "latest"]
-        # dask-version: ["2022.1.0", "latest"]
     steps:
       - name: Check out code
         uses: actions/checkout@v4
