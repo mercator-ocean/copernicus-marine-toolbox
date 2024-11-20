@@ -1,6 +1,5 @@
 import nox
 
-# Define the supported versions of Python and xarray
 PYTHON_VERSIONS = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 XARRAY_VERSIONS = ["2023.4.0", "latest"]
 DASK_VERSIONS = ["2022.1.0", "latest"]
@@ -17,14 +16,17 @@ def tests(session, xarray_version, dask_version, boto3_version, numpy_version):
     """
     Basic test of the toolbox against multiple versions.
     """
-    # Skip invalid combinations
+    # Skip invalid combinations, dask 2022.1.0 is not supported with numpy >= 2.0.0
     if dask_version == "2022.1.0" and numpy_version == ">=2.0.0":
         session.log(
             f"Skipping unsupported combination: dask={dask_version} and numpy={numpy_version}"  # noqa: E501
         )
         session.skip()
 
-    # Install dependencies
+    # Python 3.13 is not supported with numpy 1.26.0, lowest is 1.30.0
+    if session.python == "3.13" and numpy_version == "1.26.0":
+        numpy_version = "1.30.0"
+
     session.install(
         format_to_correct_pip_command("xarray", xarray_version),
         format_to_correct_pip_command("dask", dask_version),
@@ -33,10 +35,6 @@ def tests(session, xarray_version, dask_version, boto3_version, numpy_version):
         "pytest==7.4.0",
     )
 
-    # # Install the library itself (optional, if you're testing a local package)
-    # session.install(".")
-
-    # Run tests
     session.run("pytest", "tests_dependencie_versions/test_basic_commands.py")
 
 
