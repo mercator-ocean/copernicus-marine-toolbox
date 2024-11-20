@@ -268,10 +268,10 @@ def download_files(
         run_concurrently(
             _download_one_file,
             [
-                (username, endpoint_url, bucket, in_file, out_file)
+                (username, endpoint_url, bucket, in_file, str(out_file))
                 for in_file, out_file in zip(
                     filenames_in,
-                    str(filenames_out),
+                    filenames_out,
                 )
             ],
             max_concurrent_requests,
@@ -289,7 +289,7 @@ def download_files(
         ) as pbar:
             for in_file, out_file in zip(filenames_in, filenames_out):
                 _download_one_file(
-                    username, endpoint_url, bucket, in_file, out_file
+                    username, endpoint_url, bucket, in_file, str(out_file)
                 )
                 pbar.update(1)
 
@@ -632,7 +632,7 @@ def _download_one_file(
     endpoint_url: str,
     bucket: str,
     file_in: str,
-    file_out: pathlib.Path,
+    file_out: str,
 ) -> None:
     s3_client, s3_resource = get_configured_boto3_session(
         endpoint_url,
