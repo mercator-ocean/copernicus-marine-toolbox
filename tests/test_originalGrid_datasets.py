@@ -54,9 +54,9 @@ class TestOriginalGridDatasets:
         )
         assert b"ERROR" in self.output.stderr
         assert (
-            b"Geospatial subset not available for original projection: The geospatial"
-            b" subset of datasets in a projection that is not in latitude and "
-            b"longitude is not yet available. We are "
+            b"Geospatial subset not available for non lat lon: The "
+            b"geospatial subset of datasets in a projection that is not in "
+            b"latitude and longitude is not yet available. We are "
             b"developing such feature and will be supported in future versions."
         ) in self.output.stderr
 
