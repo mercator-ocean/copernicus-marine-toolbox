@@ -25,8 +25,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # - name: Install packages
-      #   run: pip install .
+      - name: Install Copernicus Marine toolbox
+        run: pip install .
 
       - name: Install nox
         run: pip install nox
