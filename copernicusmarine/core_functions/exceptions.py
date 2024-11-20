@@ -41,7 +41,7 @@ class CoordinatesOutOfDatasetBounds(Exception):
         self.__setattr__("custom_exception_message", message)
 
 
-class GeospatialSubsetNotAvailableForOriginalProjection(Exception):
+class GeospatialSubsetNotAvailableForNonLatLon(Exception):
     """
     The part you want to subset has a original projection.
 

@@ -16,7 +16,7 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
-    GeospatialSubsetNotAvailableForOriginalProjection,
+    GeospatialSubsetNotAvailableForNonLatLon,
     MinimumLongitudeGreaterThanMaximumLongitude,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
@@ -607,7 +607,7 @@ def check_dataset_subset_bounds(
             or dataset_subset.minimum_longitude is not None
             or dataset_subset.maximum_longitude is not None
         ):
-            raise GeospatialSubsetNotAvailableForOriginalProjection()
+            raise GeospatialSubsetNotAvailableForNonLatLon()
 
     for coordinate_label in COORDINATES_LABEL["latitude"]:
         if coordinate_label in dataset.sizes:

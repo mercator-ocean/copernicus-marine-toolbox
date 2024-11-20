@@ -34,7 +34,7 @@ from copernicusmarine.core_functions.exceptions import (
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
     WrongDatetimeFormat,
-    GeospatialSubsetNotAvailableForOriginalProjection,
+    GeospatialSubsetNotAvailableForNonLatLon,
 )
 from copernicusmarine.core_functions.models import (
     DatasetCoordinatesExtent,
@@ -97,7 +97,7 @@ __all__ = [
     "ServiceNotAvailable",
     "ServiceNotHandled",
     "ServiceNotSupported",
-    "GeospatialSubsetNotAvailableForOriginalProjection",
+    "GeospatialSubsetNotAvailableForNonLatLon",
     "StatusCode",
     "FileStatus",
     "StatusMessage",
