@@ -1,0 +1,65 @@
+Pre-release 2.0.0a4
+====================
+
+Changes starting with **B** might introduce breaking changes.
+
+.. warning::
+    One of the important breaking changes is that there is no prompt to confirm the download. Please use ``--dry-run`` if you do not want to download the files.
+    The ``--force-download`` option has been removed.
+
+General
+''''''''
+
+* Created reponse types, especially :class:`copernicusmarine.ResponseGet` and :class:`copernicusmarine.ResponseSubset`. A status code has been added to the response.
+* Added binaries to be able to widely use the toolbox. See the :ref:`installation page <installation-page>` for more information.
+* ``numpy>=2.0.0`` is supported
+* ``python>=3.13`` is now supported
+* Created a automatic documentation for the library, with help for the installation, descriptions of the functions and their responses, an example Quick Start Guide, a changelog and migration guide.
+* Use the ``h5netcdf`` library to read and write NetCDF files. If you need to save files in NetCDF3 format please just manually install ``netcdf4``.
+* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
+* ``--skip-existing`` allow you to skip the download of files that already exist at the output destination.
+* ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
+* Use ``pendulum`` for date handling. The date format is now more flexible and should be more robust.
+* Improved the libraries regarding multiprocessing, so users can handle it easier by themselves.
+* Improved the output of the command line interface. The output is now more readable and more informative.
+
+Describe
+''''''''''
+
+* Fix a bug where the dataset name was the same for all parts. We put the datasetID in case there are several parts.
+
+Describe command got a lot of new features and changes:
+
+* ``--dataset-id`` and ``--product-id`` are now available making the retrieval of metadata information way faster and optimised.
+* **B** Created a documented type for the output of the describe. See :class:`copernicusmarine.CopernicusMarineCatalogue`. The Python interface will return this object directly.
+* Added options ``--return-fields`` and ``--exclude-fields`` to filter the fields returned by the describe command in the command line interface.
+* **B** "service_type" in the output of the describe command has been removed. The "service_name" is directly displayed in the output.
+* **B** ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
+* **B** "unit" for coordinates has be renamed to "coordinate_unit" see :class:`copernicusmarine.CopernicusMarineCoordinate`.
+* **B** Rename ``--include-versions`` to ``--show-all-versions`` option.
+
+Get
+'''''
+
+* Added ``--response-fields`` to filter the fields returned by the get command in the command line interface.
+* Add timeout to requests and being able to set the number of retries.
+
+
+Subset
+''''''''
+
+* Added ``--response-fields`` to filter the fields returned by the subset command in the command line interface.
+* Now it outputs an estimation of the size of the data throughput (the data that will be downloaded) and not only the size of the file.
+* Included a ResponseSubset object as output of the python function.
+* Rename ``--vertical-dimension-output`` to ``--vertical-axis``.
+* Improve dask chunk size handling. The default chunk size is bigger and should be more optimal. Please refer to the :ref:`paragraph about chunk size limit <chunk-size-limit>` for more information.
+* **B** Removed the cache system. A new way to access the data has been put in place, more robust and with the same performance.
+* **B** Removed the ``--force-download`` option. Please use the ``--dry-run`` option if you do not want to download the files.
+* Removed the ``--netcdf-compression-enabled`` option. The compression doesn't need now to be enabled and can be done with the ``--netcdf-compression-level`` option (as before).
+* ``--motu-api-request`` has been deprecated. Please contact user support if you need to translate legacy motu requests.
+
+Login
+''''''
+
+* Now support the new Copernicus Marine authentication system. The toolbox will try to connect to the new system then fallback to the old one if needed.
+* Rename ``--overwrite``, ``--overwrite-configuration-file`` to ``--force-overwrite``.
