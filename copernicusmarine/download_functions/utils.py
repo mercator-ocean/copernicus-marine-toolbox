@@ -216,7 +216,6 @@ def get_dataset_coordinates_extent(
     #     coordinates_extent.append(depth_or_elevation_extent)  # type: ignore
     # elif "elevation" in dataset.sizes:
     #     coordinates_extent.append(depth_or_elevation_extent)  # type: ignore
-    logger.info(f"Coordinates extent: {coordinates_extent}")
     return coordinates_extent
 
 
