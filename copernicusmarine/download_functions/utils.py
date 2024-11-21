@@ -191,11 +191,9 @@ def get_dataset_coordinates_extent(
     dataset: xarray.Dataset,
 ) -> list[Union[GeographicalExtent, TimeExtent, None]]:
     coordinates_extent = []
-    for coord_label in dataset.sizes:
-        if coord_label == "elevation":
-            coord_label = "depth"
-        coordinates_extent.append(_get_coordinate_extent(dataset, coord_label))  # type: ignore
-    # coordinates_extent.append(_get_coordinate_extent(dataset, "latitude"))  # type: ignore
+    for coord_label in ["longitude", "latitude", "time", "depth"]:
+        coordinates_extent.append(_get_coordinate_extent(dataset, coord_label))
+    # coordinates_extent.append(_get_coordinate_extent(dataset, "latitude"))
     # coordinates_extent.append(_get_coordinate_extent(dataset, "time"))  # type: ignore
     # depth_or_elevation_extent = _get_coordinate_extent(dataset, "depth")
     # if "depth" in dataset.sizes:
@@ -236,7 +234,7 @@ def _get_coordinate_extent(
                 id=coord_label,
             )
     logger.info("passant per aquí")
-    return
+    return None
 
 
 def get_message_formatted_dataset_size_estimation(
