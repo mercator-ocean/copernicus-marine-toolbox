@@ -209,13 +209,6 @@ def get_dataset_coordinates_extent(
         else:
             coordinates_extent.append(None)
 
-    # coordinates_extent.append(_get_coordinate_extent(dataset, "latitude"))
-    # coordinates_extent.append(_get_coordinate_extent(dataset, "time"))  # type: ignore
-    # depth_or_elevation_extent = _get_coordinate_extent(dataset, "depth")
-    # if "depth" in dataset.sizes:
-    #     coordinates_extent.append(depth_or_elevation_extent)  # type: ignore
-    # elif "elevation" in dataset.sizes:
-    #     coordinates_extent.append(depth_or_elevation_extent)  # type: ignore
     return coordinates_extent
 
 
