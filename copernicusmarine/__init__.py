@@ -37,7 +37,6 @@ from copernicusmarine.core_functions.exceptions import (
     GeospatialSubsetNotAvailableForNonLatLon,
 )
 from copernicusmarine.core_functions.models import (
-    DatasetCoordinatesExtent,
     FileGet,
     FileStatus,
     GeographicalExtent,
@@ -79,7 +78,6 @@ __all__ = [
     "CoperniusMarineServiceShortNames",
     "CouldNotConnectToAuthenticationSystem",
     "CredentialsCannotBeNone",
-    "DatasetCoordinatesExtent",
     "DatasetNotFound",
     "DatasetVersionNotFound",
     "DatasetVersionPartNotFound",

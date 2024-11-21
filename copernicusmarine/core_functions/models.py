@@ -1,6 +1,6 @@
 import pathlib
 from enum import Enum
-from typing import Literal, Optional, get_args
+from typing import Literal, Optional, Union, get_args
 
 from pydantic import BaseModel, ConfigDict
 
@@ -156,6 +156,7 @@ class GeographicalExtent(BaseModel):
     minimum: Optional[float]
     maximum: Optional[float]
     unit: Optional[str]
+    id: Optional[str]
 
 
 class TimeExtent(BaseModel):
@@ -164,21 +165,7 @@ class TimeExtent(BaseModel):
     minimum: Optional[str]
     maximum: Optional[str]
     unit: Optional[str]
-
-
-class DatasetCoordinatesExtent(BaseModel):
-    #: Longitude interval of the subsetted data.
-    longitude: Optional[GeographicalExtent]
-    #: Latitude interval of the subsetted data.
-    latitude: Optional[GeographicalExtent]
-    #: Time interval of the subsetted data in iso8601 string.
-    time: Optional[TimeExtent]
-    #: Depth interval of the subsetted data.
-    depth: Optional[GeographicalExtent] = None
-    #: Elevation interval of the subsetted data.
-    #: Is relevant if data are requested for elevation
-    #: instead of depth.
-    elevation: Optional[GeographicalExtent] = None
+    id: Optional[str]
 
 
 class ResponseSubset(BaseModel):
@@ -200,7 +187,7 @@ class ResponseSubset(BaseModel):
     #: Variables of the subsetted dataset.
     variables: list[str]
     #: The bounds of the subsetted dataset.
-    coordinates_extent: DatasetCoordinatesExtent
+    coordinates_extent: list[Optional[Union[GeographicalExtent, TimeExtent]]]
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.

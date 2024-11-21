@@ -52,13 +52,6 @@ Subtypes
     :exclude-members: model_computed_fields, model_config, model_fields
     :member-order: bysource
 
-.. autoclass:: copernicusmarine.DatasetCoordinatesExtent()
-    :members:
-    :undoc-members:
-    :exclude-members: model_computed_fields, model_config, model_fields
-    :member-order: bysource
-
-
 .. autoclass:: copernicusmarine.GeographicalExtent()
     :members:
     :undoc-members:

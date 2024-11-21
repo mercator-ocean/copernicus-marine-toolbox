@@ -13,7 +13,6 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_FILE_EXTENSIONS,
-    DatasetCoordinatesExtent,
     FileFormat,
     GeographicalExtent,
     TimeExtent,
@@ -190,17 +189,18 @@ def _format_datetimes(
 
 def get_dataset_coordinates_extent(
     dataset: xarray.Dataset,
-) -> DatasetCoordinatesExtent:
-    coordinates_extent = DatasetCoordinatesExtent(
-        longitude=_get_coordinate_extent(dataset, "longitude"),  # type: ignore
-        latitude=_get_coordinate_extent(dataset, "latitude"),  # type: ignore
-        time=_get_coordinate_extent(dataset, "time"),  # type: ignore
-    )
+) -> list[Optional[Union[GeographicalExtent, TimeExtent]]]:
+    coordinates_extent = []
+    coordinates_extent = [
+        _get_coordinate_extent(dataset, "longitude"),  # type: ignore
+        _get_coordinate_extent(dataset, "latitude"),  # type: ignore
+        _get_coordinate_extent(dataset, "time"),  # type: ignore
+    ]
     depth_or_elevation_extent = _get_coordinate_extent(dataset, "depth")
     if "depth" in dataset.sizes:
-        coordinates_extent.depth = depth_or_elevation_extent  # type: ignore
+        coordinates_extent.append(depth_or_elevation_extent)  # type: ignore
     elif "elevation" in dataset.sizes:
-        coordinates_extent.elevation = depth_or_elevation_extent  # type: ignore
+        coordinates_extent.append(depth_or_elevation_extent)  # type: ignore
     return coordinates_extent
 
 
@@ -225,11 +225,13 @@ def _get_coordinate_extent(
                     minimum=minimum,
                     maximum=maximum,
                     unit=unit,
+                    id=coord_label,
                 )
             return GeographicalExtent(
                 minimum=minimum,
                 maximum=maximum,
                 unit=unit,
+                id=coord_label,
             )
     return None
 
