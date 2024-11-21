@@ -93,3 +93,4 @@ For all the new features, please refer to the documentation page of the get func
 
 Deletion of ``--force-download`` and new ``--dry-run`` option
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Before, from the CLI you needed to accept a prompt to download the data. Such prompt could be skipped adding the option ``--force-download``at the end of the call.
