@@ -600,7 +600,7 @@ def check_dataset_subset_bounds(
     else:
         raise ServiceNotSupported(service_name)
     if is_original_grid:
-        logger.warning("Dataset part has the original projection.")
+        logger.debug("Dataset part has the non lat lon projection.")
         if (
             dataset_subset.minimum_latitude is not None
             or dataset_subset.maximum_latitude is not None

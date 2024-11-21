@@ -43,7 +43,7 @@ class CoordinatesOutOfDatasetBounds(Exception):
 
 class GeospatialSubsetNotAvailableForNonLatLon(Exception):
     """
-    The part you want to subset has a original projection.
+    The part you want to subset has projection which is not with latitude and longitude.
 
     The geospatial subset of such datasets is not yet available.
     """

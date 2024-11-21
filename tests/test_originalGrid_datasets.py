@@ -9,7 +9,7 @@ from tests.test_utils import execute_in_terminal
 
 
 class TestOriginalGridDatasets:
-    def test_cmt_identifies_originalGrid_datasets(self):
+    def test_toolbox_identifies_originalGrid_datasets(self):
         command = [
             "copernicusmarine",
             "subset",
@@ -20,14 +20,17 @@ class TestOriginalGridDatasets:
             "--dataset-part",
             "originalGrid",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
         self.output = execute_in_terminal(command)
         returned_value = loads(self.output.stdout)
         assert returned_value["status"] == "001"
-        assert b"WARNING" in self.output.stderr
+        assert b"DEBUG" in self.output.stderr
         assert self.output.returncode == 0
         assert (
-            b"Dataset part has the original projection" in self.output.stderr
+            b"Dataset part has the non lat lon projection."
+            in self.output.stderr
         )
 
     def test_originalGrid_error_when_geospatial(self):
@@ -43,14 +46,17 @@ class TestOriginalGridDatasets:
             "-x",
             "0",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert b"WARNING" in self.output.stderr
+        assert b"DEBUG" in self.output.stderr
         assert (
-            b"Dataset part has the original projection" in self.output.stderr
+            b"Dataset part has the non lat lon projection."
+            in self.output.stderr
         )
         assert b"ERROR" in self.output.stderr
         assert (
@@ -60,7 +66,7 @@ class TestOriginalGridDatasets:
             b"developing such feature and will be supported in future versions."
         ) in self.output.stderr
 
-    def test_originalGrid_error_when_timepart(self, tmp_path):
+    def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
         output_filename = "output.nc"
         command = [
             "copernicusmarine",
@@ -83,15 +89,18 @@ class TestOriginalGridDatasets:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
-        assert b"WARNING" in self.output.stderr
+        assert b"DEBUG" in self.output.stderr
         assert (
-            b"Dataset part has the original projection" in self.output.stderr
+            b"Dataset part has the non lat lon projection."
+            in self.output.stderr
         )
         assert pendulum.parse("2022-01-01") == datetime_parser(
             dataset.time.values[0]
