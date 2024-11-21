@@ -43,12 +43,12 @@ Describe command got a lot of new features and changes:
 Get
 '''''
 
-* Added ``--response-fields`` to filter the fields returned by the get command in the command line interface.
+* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
 * Included a ResponseGet object as output of the python function.
+* Added ``--response-fields`` to filter the fields returned by the get command in the command line interface.
 * Add timeout to requests and being able to set the number of retries.
 * New ``--skip-existing`` allows you to skip the download of files that already exist at the output destination.
 * **B** ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
-* **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
 * **B** Deleted ``--show-outputnames``option.
 
 Subset
