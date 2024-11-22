@@ -43,9 +43,12 @@ class CoordinatesOutOfDatasetBounds(Exception):
 
 class GeospatialSubsetNotAvailableForNonLatLon(Exception):
     """
-    The part you want to subset has projection which is not with latitude and longitude.
+    The data you are requesting is using a projection that is not on the
+    normalised latitude and longitude grid. The geospatial subset of such
+    datasets is not yet available.
 
-    The geospatial subset of such datasets is not yet available.
+    Please check other parts of the dataset to subset it. The geospatial subset
+    of the datasets with different gridding will be fully available soon.
     """
 
     def __init__(self):
