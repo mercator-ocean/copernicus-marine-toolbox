@@ -5,6 +5,7 @@ from itertools import chain
 from typing import List, Literal, Optional, Tuple, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
+    PART_DEFAULT,
     CopernicusMarineCatalogue,
     CopernicusMarineDatasetServiceType,
     CopernicusMarineDatasetVersion,
@@ -308,7 +309,6 @@ def get_retrieval_service(
     force_dataset_part_label: Optional[str],
     force_service_type_string: Optional[str],
     command_type: CommandType,
-    index_parts: bool = False,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset] = None,
     dataset_sync: bool = False,
     username: Optional[str] = None,
@@ -345,7 +345,6 @@ def get_retrieval_service(
         force_dataset_part_label=force_dataset_part_label,
         force_service_type=force_service_type,
         command_type=command_type,
-        index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
         username=username,
@@ -360,7 +359,6 @@ def _get_retrieval_service_from_dataset_id(
     force_dataset_part_label: Optional[str],
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
-    index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
     dataset_sync: bool,
     username: Optional[str],
@@ -385,7 +383,6 @@ def _get_retrieval_service_from_dataset_id(
         force_dataset_part_label=force_dataset_part_label,
         force_service_type=force_service_type,
         command_type=command_type,
-        index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
         username=username,
@@ -399,7 +396,6 @@ def _get_retrieval_service_from_dataset(
     force_dataset_part_label: Optional[str],
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
-    index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
     dataset_sync: bool,
     username: Optional[str],
@@ -422,7 +418,6 @@ def _get_retrieval_service_from_dataset(
         suffix_path=suffix_path,
         force_service_type=force_service_type,
         command_type=command_type,
-        index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
         username=username,
@@ -436,25 +431,22 @@ def _get_retrieval_service_from_dataset_version(
     suffix_path: str,
     force_service_type: Optional[CopernicusMarineDatasetServiceType],
     command_type: CommandType,
-    index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndGeographicalSubset],
     dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
-    if len(dataset_version.parts) > 1 and dataset_sync:
-        raise Exception(
-            "Sync is not supported for datasets with multiple parts."
-        )
     if (
-        force_service_type == CopernicusMarineDatasetServiceType.FILES
+        len(dataset_version.parts) > 1
+        and dataset_sync
         and not force_dataset_part_label
-        and not index_parts
-        and len(dataset_version.parts) > 1
+        and not [
+            part for part in dataset_version.parts if part.name == PART_DEFAULT
+        ]
     ):
         raise Exception(
-            "When dataset has multiple parts and using 'files' service"
-            ", please indicate the part you want to download "
-            "with the dataset-part option"
+            "When using --sync option for datasets with multiple parts, "
+            "you might need to specify a dataset part using "
+            "--dataset-part option."
         )
     if force_dataset_part_label:
         logger.info(

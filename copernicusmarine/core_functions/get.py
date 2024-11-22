@@ -177,7 +177,6 @@ def _run_get_request(
         get_request.force_dataset_part,
         get_request.force_service,
         CommandType.GET,
-        get_request.index_parts,
         dataset_sync=get_request.sync,
     )
     get_request.dataset_url = retrieval_service.uri
