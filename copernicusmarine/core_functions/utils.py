@@ -42,7 +42,6 @@ def get_unique_filename(
 
 
 _T = TypeVar("_T")
-_S = TypeVar("_S")
 
 
 def next_or_raise_exception(

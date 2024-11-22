@@ -1,0 +1,32 @@
+name: Dependencies tests
+
+on:
+  schedule:
+    - cron: '0 0 * * 6'
+
+jobs:
+  test-dependencies-combinations:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Copernicus Marine toolbox
+        run: pip install .
+
+      - name: Install nox
+        run: pip install nox
+
+      - name: Run tests with nox
+        run: nox --force-python=${{ matrix.python-version }}
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
