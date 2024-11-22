@@ -91,6 +91,8 @@ class TestOriginalGridDatasets:
             f"{output_filename}",
             "--log-level",
             "DEBUG",
+            "--response-fields",
+            "all",
         ]
 
         self.output = execute_in_terminal(command)
@@ -106,3 +108,14 @@ class TestOriginalGridDatasets:
             dataset.time.values[0]
         )
         assert len(dataset.x.values) > 0
+        assert len(dataset.y.values) > 0
+        returned_value = loads(self.output.stdout)
+        assert returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
+        assert returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
+        assert (
+            returned_value["coordinates_extent"][2]["coordinate_id"] == "time"
+        )
+        assert (
+            returned_value["coordinates_extent"][3]["coordinate_id"] == "depth"
+        )
+        assert len(returned_value["coordinates_extent"]) == 4
