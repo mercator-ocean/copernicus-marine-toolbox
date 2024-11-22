@@ -191,23 +191,8 @@ def get_dataset_coordinates_extent(
     dataset: xarray.Dataset,
 ) -> list[Union[GeographicalExtent, TimeExtent, None]]:
     coordinates_extent = []
-    for coord_label in dataset.sizes:
-        if coord_label in ["longitude", "latitude", "time", "depth"]:
-            coordinates_extent.append(
-                _get_coordinate_extent(dataset, coord_label)
-            )
-        elif coord_label == "elevation":
-            coordinates_extent.append(_get_coordinate_extent(dataset, "depth"))
-        elif coord_label == "x":
-            coordinates_extent.append(
-                _get_coordinate_extent(dataset, "longitude")
-            )
-        elif coord_label == "y":
-            coordinates_extent.append(
-                _get_coordinate_extent(dataset, "latitude")
-            )
-        else:
-            coordinates_extent.append(None)
+    for coord_label in ["longitude", "latitude", "time", "depth"]:
+        coordinates_extent.append(_get_coordinate_extent(dataset, coord_label))
 
     return coordinates_extent
 
@@ -233,15 +218,14 @@ def _get_coordinate_extent(
                     minimum=minimum,
                     maximum=maximum,
                     unit=unit,
-                    id=coord_label,
+                    coordinate_id=coord_label,
                 )
             return GeographicalExtent(
                 minimum=minimum,
                 maximum=maximum,
                 unit=unit,
-                id=coord_label,
+                coordinate_id=coord_label,
             )
-    logger.info("passant per aquí")
     return None
 
 

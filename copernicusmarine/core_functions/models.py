@@ -156,7 +156,7 @@ class GeographicalExtent(BaseModel):
     minimum: Optional[float]
     maximum: Optional[float]
     unit: Optional[str]
-    id: Optional[str]
+    coordinate_id: Optional[str]
 
 
 class TimeExtent(BaseModel):
@@ -165,7 +165,7 @@ class TimeExtent(BaseModel):
     minimum: Optional[str]
     maximum: Optional[str]
     unit: Optional[str]
-    id: Optional[str]
+    coordinate_id: Optional[str]
 
 
 class ResponseSubset(BaseModel):
@@ -187,7 +187,9 @@ class ResponseSubset(BaseModel):
     #: Variables of the subsetted dataset.
     variables: list[str]
     #: The bounds of the subsetted dataset.
-    coordinates_extent: Optional[list[Union[GeographicalExtent, TimeExtent]]]
+    coordinates_extent: Optional[
+        list[Union[GeographicalExtent, TimeExtent, None]]
+    ]
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.
