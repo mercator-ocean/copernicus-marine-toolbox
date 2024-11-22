@@ -93,7 +93,6 @@ def get(
             "download_file_list",
             "create_file_list",
             deleted_for_v2=True,
-            deprecated_for_v2=False,
             only_for_v2=False,
         )
     return get_function(
