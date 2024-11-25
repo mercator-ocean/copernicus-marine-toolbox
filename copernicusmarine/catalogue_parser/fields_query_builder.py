@@ -69,6 +69,8 @@ class QueryBuilder:
                     query[field_name] = {"__all__": {}}
                 if get_origin(get_args(field_type)[0]) is Union:
                     for union_type in get_args(get_args(field_type)[0]):
+                        if field_name not in query:
+                            query[field_name] = {"__all__": {}}
                         result = self.build_query(
                             union_type,
                             query[field_name]["__all__"],
