@@ -153,19 +153,19 @@ class S3FilesDescriptor(BaseModel):
 class GeographicalExtent(BaseModel):
     """Interval for geographical coordinates."""
 
-    minimum: Optional[float]
-    maximum: Optional[float]
-    unit: Optional[str]
-    coordinate_id: Optional[str]
+    minimum: float
+    maximum: float
+    unit: str
+    coordinate_id: str
 
 
 class TimeExtent(BaseModel):
     """Interval for time coordinates."""
 
-    minimum: Optional[str]
-    maximum: Optional[str]
-    unit: Optional[str]
-    coordinate_id: Optional[str]
+    minimum: str
+    maximum: str
+    unit: str
+    coordinate_id: str
 
 
 class ResponseSubset(BaseModel):
@@ -187,9 +187,7 @@ class ResponseSubset(BaseModel):
     #: Variables of the subsetted dataset.
     variables: list[str]
     #: The bounds of the subsetted dataset.
-    coordinates_extent: Optional[
-        list[Union[GeographicalExtent, TimeExtent, None]]
-    ]
+    coordinates_extent: list[Union[GeographicalExtent, TimeExtent, None]]
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.
