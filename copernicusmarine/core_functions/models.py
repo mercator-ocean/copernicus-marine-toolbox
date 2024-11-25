@@ -187,7 +187,7 @@ class ResponseSubset(BaseModel):
     #: Variables of the subsetted dataset.
     variables: list[str]
     #: The bounds of the subsetted dataset.
-    coordinates_extent: list[Union[GeographicalExtent, TimeExtent, None]]
+    coordinates_extent: list[Union[GeographicalExtent, TimeExtent]]
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.

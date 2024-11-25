@@ -1,4 +1,4 @@
-from typing import Optional, Type, get_args, get_origin, get_type_hints
+from typing import Optional, Type, Union, get_args, get_origin, get_type_hints
 
 from pydantic import BaseModel
 
@@ -55,15 +55,33 @@ class QueryBuilder:
         ) in get_type_hints(type_to_check).items():
             if field_name in self.fields_to_include_or_exclude:
                 query[field_name] = True
+            elif get_origin(field_type) is Union:
+                for union_type in get_args(field_type):
+                    if get_origin(union_type) is None:
+                        continue
+                    if field_name not in query:
+                        query[field_name] = {}
+                    result = self.build_query(union_type, query[field_name])
+                    if not result:
+                        del query[field_name]
             elif get_origin(field_type) is list:
                 if field_name not in query:
                     query[field_name] = {"__all__": {}}
-                result = self.build_query(
-                    get_args(field_type)[0],
-                    query[field_name]["__all__"],
-                )
-                if not result:
-                    del query[field_name]
+                if get_origin(get_args(field_type)[0]) is Union:
+                    for union_type in get_args(get_args(field_type)[0]):
+                        result = self.build_query(
+                            union_type,
+                            query[field_name]["__all__"],
+                        )
+                        if not result:
+                            del query[field_name]
+                else:
+                    result = self.build_query(
+                        get_args(field_type)[0],
+                        query[field_name]["__all__"],
+                    )
+                    if not result:
+                        del query[field_name]
             elif get_origin(field_type) is dict:
                 if field_name not in query:
                     query[field_name] = {"__all__": {}}

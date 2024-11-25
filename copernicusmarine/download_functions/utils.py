@@ -189,10 +189,11 @@ def _format_datetimes(
 
 def get_dataset_coordinates_extent(
     dataset: xarray.Dataset,
-) -> list[Union[GeographicalExtent, TimeExtent, None]]:
+) -> list[Union[GeographicalExtent, TimeExtent]]:
     coordinates_extent = []
     for coord_label in ["longitude", "latitude", "time", "depth"]:
-        coordinates_extent.append(_get_coordinate_extent(dataset, coord_label))
+        if coordinate_extent := _get_coordinate_extent(dataset, coord_label):
+            coordinates_extent.append(coordinate_extent)
 
     return coordinates_extent
 
