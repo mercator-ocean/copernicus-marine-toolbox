@@ -17,7 +17,6 @@ def get_deprecated_message(
     old_value,
     preferred_value,
     deleted_for_v2: bool = False,
-    deprecated_for_v2: bool = False,
     only_for_v2: bool = False,
 ):
     message = ""
@@ -34,11 +33,6 @@ def get_deprecated_message(
             + "Please refer to the documentation when the new major "
             + "version is released for more information."
         )
-    if deprecated_for_v2:
-        message += (
-            "This option will be deprecated in copernicusmarine>=2.0.0 i.e. "
-            + "it will not break but it might have an unexpected effect."
-        )
     return message
 
 
@@ -46,7 +40,6 @@ def log_deprecated_message(
     old_value,
     preferred_value,
     deleted_for_v2: bool,
-    deprecated_for_v2: bool,
     only_for_v2: bool,
 ):
     logger.warning(
@@ -54,7 +47,6 @@ def log_deprecated_message(
             old_value,
             preferred_value,
             deleted_for_v2=deleted_for_v2,
-            deprecated_for_v2=deprecated_for_v2,
             only_for_v2=only_for_v2,
         )
     )
@@ -98,6 +90,8 @@ class DeprecatedClickOptionsCommand(click.Command):
                         opt = frame.f_back.f_locals.get("opt")
                     finally:
                         del frame
+                    if opt[0] == "-" and opt[1] != "-":  # type: ignore
+                        opt = opt[1:]  # type: ignore
                     old_alias = opt.replace("--", "").replace("-", "_")  # type: ignore
                     if (
                         opt in deprecated
@@ -114,7 +108,6 @@ class DeprecatedClickOptionsCommand(click.Command):
                                 opt,
                                 preferred,
                                 alias_info.deleted_for_v2,
-                                alias_info.deprecated_for_v2,
                                 alias_info.only_for_v2,
                             )
                     return orig_process(value, state)
@@ -154,7 +147,6 @@ def rename_kwargs(
                 old,
                 new,
                 alias_info.deleted_for_v2,
-                alias_info.deprecated_for_v2,
                 alias_info.only_for_v2,
             )
             if alias_info.replace:

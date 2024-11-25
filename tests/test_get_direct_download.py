@@ -100,7 +100,6 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"WARNING" not in self.output.stderr
         assert b"Skipping" not in self.output.stderr
         assert self.output.returncode == 0
 

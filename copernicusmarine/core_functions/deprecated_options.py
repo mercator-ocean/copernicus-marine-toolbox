@@ -8,7 +8,6 @@ class DeprecatedOption:
         old_name,
         new_name,
         replace=True,
-        deprecated_for_v2=False,
         deleted_for_v2=True,
         only_for_v2=False,
         targeted_functions: Optional[list[str]] = None,
@@ -16,7 +15,6 @@ class DeprecatedOption:
         self.old_name = old_name
         self.new_name = new_name
         self.replace = replace
-        self.deprecated_for_v2 = deprecated_for_v2
         self.deleted_for_v2 = deleted_for_v2
         self.only_for_v2 = only_for_v2
         if not targeted_functions:
@@ -84,14 +82,6 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         ),
         DeprecatedOption(old_name="force_service", new_name="service"),
         DeprecatedOption(
-            old_name="service",
-            new_name="service",
-            replace=False,
-            deleted_for_v2=True,
-            only_for_v2=True,
-            targeted_functions=["get"],
-        ),
-        DeprecatedOption(
             old_name="download_file_list",
             new_name="create_file_list",
             replace=False,
@@ -99,6 +89,14 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         DeprecatedOption(
             old_name="include_all_versions",
             new_name="include_versions",
+        ),
+        DeprecatedOption(
+            old_name="service",
+            new_name="service",
+            replace=False,
+            deleted_for_v2=True,
+            only_for_v2=True,
+            targeted_functions=["get"],
         ),
         DeprecatedOption(
             old_name="skip_if_user_logged_in",
@@ -140,30 +138,63 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
         DeprecatedOption(
             old_name="include_datasets",
             new_name="include_datasets",
-            deprecated_for_v2=True,
-            deleted_for_v2=False,
             only_for_v2=True,
         ),
         DeprecatedOption(
             old_name="include_description",
             new_name="include_description",
-            deprecated_for_v2=True,
-            deleted_for_v2=False,
             only_for_v2=True,
         ),
         DeprecatedOption(
             old_name="include_keywords",
             new_name="include_keywords",
-            deprecated_for_v2=True,
-            deleted_for_v2=False,
             only_for_v2=True,
         ),
         DeprecatedOption(
             old_name="include_all",
             new_name="include_all",
-            deprecated_for_v2=True,
-            deleted_for_v2=False,
             only_for_v2=True,
+        ),
+        DeprecatedOption(
+            old_name="include_versions",
+            new_name="show_all_versions",
+            only_for_v2=True,
+            replace=False,
+        ),
+        DeprecatedOption(
+            old_name="vertical_dimension_as_originally_produced",
+            new_name="vertical_axis",
+            only_for_v2=True,
+            replace=False,
+        ),
+        DeprecatedOption(
+            old_name="overwrite_output_data",
+            new_name="overwrite",
+            only_for_v2=True,
+            replace=False,
+        ),
+        DeprecatedOption(
+            old_name="force_download",
+            new_name="force_download",
+            only_for_v2=True,
+        ),
+        DeprecatedOption(
+            old_name="show_outputnames",
+            new_name="show_outputnames",
+            only_for_v2=True,
+        ),
+        DeprecatedOption(
+            old_name="overwrite_configuration_file",
+            new_name="force_overwrite",
+            only_for_v2=True,
+            replace=False,
+        ),
+        DeprecatedOption(
+            old_name="overwrite",
+            new_name="force_overwrite",
+            only_for_v2=True,
+            replace=False,
+            targeted_functions=["login"],
         ),
     ]
 )
