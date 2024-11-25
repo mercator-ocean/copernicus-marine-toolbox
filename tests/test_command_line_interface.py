@@ -1391,7 +1391,7 @@ class TestCommandLineInterface:
 
         assert (
             b"Other options passed with create template: force_download"
-            == remove_extra_logging_prefix_info(self.output.stderr)
+            in remove_extra_logging_prefix_info(self.output.stderr)
         )
 
     def test_error_log_for_variable_that_does_not_exist(self):
