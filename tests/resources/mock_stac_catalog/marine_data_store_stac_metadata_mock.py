@@ -40,6 +40,10 @@ def mocked_stac_requests_get(*args, **kwargs):
         def json(self) -> Optional[dict]:
             return self.json_data
 
+        def raise_for_status(self):
+            if self.status_code != 200:
+                raise Exception
+
         def __enter__(self):
             return self
 
