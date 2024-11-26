@@ -342,9 +342,11 @@ def _check_credentials_with_old_cas(username: str, password: str) -> bool:
         f"https://cmems-cas.cls.fr/cas/login?service={service}"
     )
     conn_session = get_configured_requests_session()
+    logger.debug(f"GETing {cmems_cas_login_url}...")
     login_session = conn_session.get(
         cmems_cas_login_url, proxies=conn_session.proxies
     )
+    login_session.raise_for_status()
     login_from_html = lxml.html.fromstring(login_session.text)
     hidden_elements_from_html = login_from_html.xpath(
         '//form//input[@type="hidden"]'
@@ -359,6 +361,7 @@ def _check_credentials_with_old_cas(username: str, password: str) -> bool:
     login_response = conn_session.post(
         cmems_cas_login_url, data=playload, proxies=conn_session.proxies
     )
+    login_response.raise_for_status()
     login_success = 'class="success"' in login_response.text
     logger.debug("User credentials checked")
     return login_success

@@ -17,12 +17,9 @@ from copernicusmarine.catalogue_parser.models import (
     get_version_and_part_from_full_dataset_id,
 )
 from copernicusmarine.core_functions.sessions import (
-    get_configured_requests_session,
+    JsonParserConnection as CatalogParserConnection,
 )
-from copernicusmarine.core_functions.utils import (
-    construct_query_params_for_marine_data_store_monitoring,
-    run_concurrently,
-)
+from copernicusmarine.core_functions.utils import run_concurrently
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -44,26 +41,6 @@ MARINE_DATA_STORE_STAC_URL_STAGING = (
 MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
     MARINE_DATA_STORE_STAC_URL_STAGING + "/catalog.stac.json"
 )
-
-
-class CatalogParserConnection:
-    def __init__(self) -> None:
-        self.session = get_configured_requests_session()
-
-    def get_json_file(self, url: str) -> dict[str, Any]:
-        logger.debug(f"Fetching json file at this url: {url}")
-        with self.session.get(
-            url,
-            params=construct_query_params_for_marine_data_store_monitoring(),
-            proxies=self.session.proxies,
-        ) as response:
-            return response.json()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.session.close()
 
 
 def get_dataset_metadata(
