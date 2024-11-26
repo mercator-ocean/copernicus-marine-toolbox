@@ -25,7 +25,7 @@ from copernicusmarine.core_functions.utils import (
 )
 
 logger = logging.getLogger("copernicusmarine")
-
+# some tests
 MARINE_DATA_STORE_ROOT_METADATA_URL = (
     "https://s3.waw3-1.cloudferro.com/mdl-metadata"
 )
