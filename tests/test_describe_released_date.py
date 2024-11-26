@@ -1,12 +1,13 @@
 from unittest import mock
 
 from copernicusmarine import CopernicusMarineCatalogue, describe
+from copernicusmarine.catalogue_parser.fields_query_builder import QueryBuilder
 from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock import (
     mocked_stac_requests_get,
 )
 
-# query_builder = QueryBuilder({"description", "keywords"})
-# exclude_query = query_builder.build_query(CopernicusMarineCatalogue)
+query_builder = QueryBuilder({"description", "keywords"})
+exclude_query = query_builder.build_query(CopernicusMarineCatalogue)
 
 
 class TestDescribeReleaseDate:
@@ -37,11 +38,7 @@ class TestDescribeReleaseDate:
             describe_result.model_dump(
                 exclude_none=True,
                 exclude_unset=True,
-                exclude={
-                    "products": {
-                        "__all__": {"description": True, "keywords": True}
-                    }
-                },
+                exclude=exclude_query,
             )
             == snapshot
         )
@@ -62,11 +59,7 @@ class TestDescribeReleaseDate:
             describe_result.model_dump(
                 exclude_none=True,
                 exclude_unset=True,
-                exclude={
-                    "products": {
-                        "__all__": {"description": True, "keywords": True}
-                    }
-                },
+                exclude=exclude_query,
             )
             == snapshot
         )

@@ -1,4 +1,12 @@
-from typing import Optional, Type, Union, get_args, get_origin, get_type_hints
+from typing import (
+    Literal,
+    Optional,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from pydantic import BaseModel
 
@@ -8,27 +16,6 @@ def check_type_is_base_model(type_to_check: Type) -> bool:
         return issubclass(type_to_check, BaseModel)
     except TypeError:
         return False
-
-
-def get_base_models_in_type(type: Type):
-    list_of_nested_things = [list, dict, Union]
-    if get_origin(type) is list:
-        if get_origin(get_args(type)[0]) in list_of_nested_things:
-            return get_base_models_in_type(get_args(type)[0])
-        elif check_type_is_base_model(get_args(type)[0]):
-            return get_args(type)[0]
-    elif get_origin(type) is dict:
-        if get_origin(get_args(type)[1]) in list_of_nested_things:
-            return get_base_models_in_type(get_args(type)[1])
-        elif check_type_is_base_model(get_args(type)[1]):
-            return get_args(type)[1]
-    elif get_origin(type) is Union:
-        for union_type in get_args(type):
-            if get_origin(union_type) in list_of_nested_things:
-                return get_base_models_in_type(union_type)
-            elif check_type_is_base_model(union_type):
-                return union_type
-    return None
 
 
 class QueryBuilder:
@@ -76,109 +63,50 @@ class QueryBuilder:
         ) in get_type_hints(type_to_check).items():
             if field_name in self.fields_to_include_or_exclude:
                 query[field_name] = True
-            elif check_type_is_base_model(field_type):
-                print("entering here!")
+                continue
+            all_base_models = self._get_base_models_in_type(field_type)
+            for base_model, in_an_iterable in (all_base_models or {}).items():
                 if field_name not in query:
-                    query[field_name] = {}
-                result = self.build_query(field_type, query[field_name])
-                if not result:
-                    del query[field_name]
-            elif get_origin(field_type) in [list, Union, dict]:
-                print(field_name)
-                if next_base_model := get_base_models_in_type(field_type):
-                    if field_name not in query:
-                        query[field_name] = {"__all__": {}}
-                    result = self.build_query(
-                        next_base_model, query[field_name]["__all__"]
+                    query[field_name] = (
+                        {"__all__": {}} if in_an_iterable else {}
                     )
-            elif get_origin(field_type) is Union:
-                for union_type in get_args(field_type):
-                    if get_origin(union_type) is None:
-                        continue
-                    if get_origin(union_type) is list:
-                        if field_name not in query:
-                            query[field_name] = {"__all__": {}}
-                        result = self.build_query(
-                            get_args(union_type)[0],
-                            query[field_name]["__all__"],
-                        )
-                        if not result:
-                            del query[field_name]
-                    else:
-                        if field_name not in query:
-                            query[field_name] = {}
-                        result = self.build_query(
-                            union_type, query[field_name]
-                        )
-                        if not result:
-                            del query[field_name]
-            elif get_origin(field_type) is list:
-                if field_name not in query:
-                    query[field_name] = {"__all__": {}}
-                if get_origin(get_args(field_type)[0]) is Union:
-                    for union_type in get_args(get_args(field_type)[0]):
-                        if field_name not in query:
-                            query[field_name] = {"__all__": {}}
-                        result = self.build_query(
-                            union_type,
-                            query[field_name]["__all__"],
-                        )
-                        if not result:
-                            del query[field_name]
-                else:
-                    result = self.build_query(
-                        get_args(field_type)[0],
-                        query[field_name]["__all__"],
-                    )
-                    if not result:
-                        del query[field_name]
-            elif get_origin(field_type) is dict:
-                if field_name not in query:
-                    query[field_name] = {"__all__": {}}
                 result = self.build_query(
-                    get_args(field_type)[1],
-                    query[field_name]["__all__"],
+                    base_model,
+                    (
+                        query[field_name]["__all__"]
+                        if in_an_iterable
+                        else query[field_name]
+                    ),
                 )
                 if not result:
                     del query[field_name]
-
         return query
 
-
-if __name__ == "__main__":
-    # query = QueryBuilder({"status", "message"}).build_query(
-    #     CopernicusMarineCatalogue
-    # )
-    # print(query)
-
-    class TestSomething(BaseModel):
-        a: str
-        b: int
-        c: float
-        d: dict[str, str]
-        e: list[int]
-        f: Union[str, int]
-        g: dict[str, Union[str, int]]
-        h: list[Union[str, int]]
-        i: dict[str, list[Union[str, int]]]
-        j: list[str]
-        k: Optional[str]
-
-    for file_name, file_type in get_type_hints(TestSomething).items():
-        print("-------------------------")
-        print(file_name, file_type)
-        print(get_origin(file_type))
-        print("get args", get_args(file_type))
-        if get_origin(file_type) is dict:
-            print("diccionari", get_type_hints(get_args(file_type)[0]))
-        elif get_origin(file_type) is list:
-            print("llista")
-            for file in get_args(file_type):
-                print("llista", get_type_hints(file))
-        elif get_origin(file_type) is Union:
-            print("union/optional")
-            for file in get_args(file_type):
-                print("union/optional", get_type_hints(file))
-        else:
-            print(get_type_hints(file_type))
-        print("-------------------------")
+    def _get_base_models_in_type(
+        self,
+        type_to_check: Type,
+        in_an_iterable: bool = False,
+    ) -> Optional[dict[Type, Literal["__all__", None]]]:
+        models = {}
+        if check_type_is_base_model(type_to_check):
+            return {type_to_check: "__all__" if in_an_iterable else None}
+        elif get_origin(type_to_check) is list:
+            result = self._get_base_models_in_type(
+                get_args(type_to_check)[0], in_an_iterable=True
+            )
+            if result:
+                models.update(result)
+        elif get_origin(type_to_check) is dict:
+            result = self._get_base_models_in_type(
+                get_args(type_to_check)[1], in_an_iterable=True
+            )
+            if result:
+                models.update(result)
+        elif get_origin(type_to_check) is Union:
+            for union_type in get_args(type_to_check):
+                result = self._get_base_models_in_type(
+                    union_type, in_an_iterable=in_an_iterable
+                )
+                if result:
+                    models.update(result)
+        return models
