@@ -16,9 +16,7 @@ from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     get_version_and_part_from_full_dataset_id,
 )
-from copernicusmarine.core_functions.sessions import (
-    JsonParserConnection as CatalogParserConnection,
-)
+from copernicusmarine.core_functions.sessions import JsonParserConnection
 from copernicusmarine.core_functions.utils import run_concurrently
 
 logger = logging.getLogger("copernicusmarine")
@@ -46,7 +44,7 @@ MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
 def get_dataset_metadata(
     dataset_id: str, staging: bool
 ) -> Optional[CopernicusMarineDataset]:
-    with CatalogParserConnection() as connection:
+    with JsonParserConnection() as connection:
         stac_url = (
             MARINE_DATA_STORE_STAC_URL
             if not staging
@@ -231,7 +229,7 @@ def _get_stac_product_property(
 
 def fetch_dataset_items(
     root_url: str,
-    connection: CatalogParserConnection,
+    connection: JsonParserConnection,
     collection: pystac.Collection,
     force_dataset_id: Optional[str],
 ) -> list[pystac.Item]:
@@ -252,7 +250,7 @@ def fetch_dataset_items(
 
 def fetch_collection(
     root_url: str,
-    connection: CatalogParserConnection,
+    connection: JsonParserConnection,
     url: str,
     force_dataset_id: Optional[str],
 ) -> Optional[tuple[pystac.Collection, list[pystac.Item]]]:
@@ -268,7 +266,7 @@ def fetch_collection(
 
 def fetch_product_items(
     root_url: str,
-    connection: CatalogParserConnection,
+    connection: JsonParserConnection,
     child_links: list[pystac.Link],
     force_product_id: Optional[str],
     force_dataset_id: Optional[str],
@@ -300,7 +298,7 @@ def fetch_product_items(
 
 
 def fetch_all_products_items(
-    connection: CatalogParserConnection,
+    connection: JsonParserConnection,
     force_product_id: Optional[str],
     force_dataset_id: Optional[str],
     max_concurrent_requests: int,
@@ -344,7 +342,7 @@ def parse_catalogue(
     progress_bar = tqdm(
         total=2, desc="Fetching catalogue", disable=disable_progress_bar
     )
-    with CatalogParserConnection() as connection:
+    with JsonParserConnection() as connection:
         if force_dataset_id:
             root_url = (
                 MARINE_DATA_STORE_ROOT_METADATA_URL
