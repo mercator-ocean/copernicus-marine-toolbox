@@ -59,11 +59,23 @@ class QueryBuilder:
                 for union_type in get_args(field_type):
                     if get_origin(union_type) is None:
                         continue
-                    if field_name not in query:
-                        query[field_name] = {}
-                    result = self.build_query(union_type, query[field_name])
-                    if not result:
-                        del query[field_name]
+                    if get_origin(union_type) is list:
+                        if field_name not in query:
+                            query[field_name] = {"__all__": {}}
+                        result = self.build_query(
+                            get_args(union_type)[0],
+                            query[field_name]["__all__"],
+                        )
+                        if not result:
+                            del query[field_name]
+                    else:
+                        if field_name not in query:
+                            query[field_name] = {}
+                        result = self.build_query(
+                            union_type, query[field_name]
+                        )
+                        if not result:
+                            del query[field_name]
             elif get_origin(field_type) is list:
                 if field_name not in query:
                     query[field_name] = {"__all__": {}}
@@ -99,5 +111,43 @@ class QueryBuilder:
                 result = self.build_query(field_type, query[field_name])
                 if not result:
                     del query[field_name]
-
         return query
+
+
+if __name__ == "__main__":
+    # query = QueryBuilder({"status", "message"}).build_query(
+    #     CopernicusMarineCatalogue
+    # )
+    # print(query)
+
+    class TestSomething(BaseModel):
+        a: str
+        b: int
+        c: float
+        d: dict[str, str]
+        e: list[int]
+        f: Union[str, int]
+        g: dict[str, Union[str, int]]
+        h: list[Union[str, int]]
+        i: dict[str, list[Union[str, int]]]
+        j: list[str]
+        k: Optional[str]
+
+    for file_name, file_type in get_type_hints(TestSomething).items():
+        print("-------------------------")
+        print(file_name, file_type)
+        print(get_origin(file_type))
+        print("get args", get_args(file_type))
+        if get_origin(file_type) is dict:
+            print("diccionari", get_type_hints(get_args(file_type)[0]))
+        elif get_origin(file_type) is list:
+            print("llista")
+            for file in get_args(file_type):
+                print("llista", get_type_hints(file))
+        elif get_origin(file_type) is Union:
+            print("union/optional")
+            for file in get_args(file_type):
+                print("union/optional", get_type_hints(file))
+        else:
+            print(get_type_hints(file_type))
+        print("-------------------------")
