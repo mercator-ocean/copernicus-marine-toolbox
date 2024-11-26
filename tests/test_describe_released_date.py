@@ -36,7 +36,9 @@ class TestDescribeReleaseDate:
         assert 1 == len(describe_result.products)
         assert (
             describe_result.model_dump(
-                exclude_none=True, exclude_unset=True, exclude=exclude_query
+                exclude_none=True,
+                exclude_unset=True,
+                exclude=exclude_query,
             )
             == snapshot
         )
@@ -55,7 +57,9 @@ class TestDescribeReleaseDate:
         assert 2 == len(describe_result.products)
         assert (
             describe_result.model_dump(
-                exclude_none=True, exclude_unset=True, exclude=exclude_query
+                exclude_none=True,
+                exclude_unset=True,
+                exclude=exclude_query,
             )
             == snapshot
         )

@@ -1,4 +1,12 @@
-from typing import Optional, Type, get_args, get_origin, get_type_hints
+from typing import (
+    Literal,
+    Optional,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from pydantic import BaseModel
 
@@ -55,29 +63,50 @@ class QueryBuilder:
         ) in get_type_hints(type_to_check).items():
             if field_name in self.fields_to_include_or_exclude:
                 query[field_name] = True
-            elif get_origin(field_type) is list:
+                continue
+            all_base_models = self._get_base_models_in_type(field_type)
+            for base_model, in_an_iterable in (all_base_models or {}).items():
                 if field_name not in query:
-                    query[field_name] = {"__all__": {}}
+                    query[field_name] = (
+                        {"__all__": {}} if in_an_iterable else {}
+                    )
                 result = self.build_query(
-                    get_args(field_type)[0],
-                    query[field_name]["__all__"],
+                    base_model,
+                    (
+                        query[field_name]["__all__"]
+                        if in_an_iterable
+                        else query[field_name]
+                    ),
                 )
                 if not result:
                     del query[field_name]
-            elif get_origin(field_type) is dict:
-                if field_name not in query:
-                    query[field_name] = {"__all__": {}}
-                result = self.build_query(
-                    get_args(field_type)[1],
-                    query[field_name]["__all__"],
-                )
-                if not result:
-                    del query[field_name]
-            elif check_type_is_base_model(field_type):
-                if field_name not in query:
-                    query[field_name] = {}
-                result = self.build_query(field_type, query[field_name])
-                if not result:
-                    del query[field_name]
-
         return query
+
+    def _get_base_models_in_type(
+        self,
+        type_to_check: Type,
+        in_an_iterable: bool = False,
+    ) -> Optional[dict[Type, Literal["__all__", None]]]:
+        models = {}
+        if check_type_is_base_model(type_to_check):
+            return {type_to_check: "__all__" if in_an_iterable else None}
+        elif get_origin(type_to_check) is list:
+            result = self._get_base_models_in_type(
+                get_args(type_to_check)[0], in_an_iterable=True
+            )
+            if result:
+                models.update(result)
+        elif get_origin(type_to_check) is dict:
+            result = self._get_base_models_in_type(
+                get_args(type_to_check)[1], in_an_iterable=True
+            )
+            if result:
+                models.update(result)
+        elif get_origin(type_to_check) is Union:
+            for union_type in get_args(type_to_check):
+                result = self._get_base_models_in_type(
+                    union_type, in_an_iterable=in_an_iterable
+                )
+                if result:
+                    models.update(result)
+        return models

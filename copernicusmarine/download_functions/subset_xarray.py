@@ -16,6 +16,7 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
+    GeospatialSubsetNotAvailableForNonLatLon,
     MinimumLongitudeGreaterThanMaximumLongitude,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
@@ -584,6 +585,7 @@ def check_dataset_subset_bounds(
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_valid_date: Optional[Union[str, int, float]],
+    is_original_grid: bool,
 ) -> None:
     if service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -597,6 +599,16 @@ def check_dataset_subset_bounds(
         dataset_coordinates = dataset.coords
     else:
         raise ServiceNotSupported(service_name)
+    if is_original_grid:
+        logger.debug("Dataset part has the non lat lon projection.")
+        if (
+            dataset_subset.minimum_latitude is not None
+            or dataset_subset.maximum_latitude is not None
+            or dataset_subset.minimum_longitude is not None
+            or dataset_subset.maximum_longitude is not None
+        ):
+            raise GeospatialSubsetNotAvailableForNonLatLon()
+
     for coordinate_label in COORDINATES_LABEL["latitude"]:
         if coordinate_label in dataset.sizes:
             latitudes = dataset_coordinates[coordinate_label].values
