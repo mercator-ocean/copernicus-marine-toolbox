@@ -10,6 +10,27 @@ def check_type_is_base_model(type_to_check: Type) -> bool:
         return False
 
 
+def get_base_models_in_type(type: Type):
+    list_of_nested_things = [list, dict, Union]
+    if get_origin(type) is list:
+        if get_origin(get_args(type)[0]) in list_of_nested_things:
+            return get_base_models_in_type(get_args(type)[0])
+        elif check_type_is_base_model(get_args(type)[0]):
+            return get_args(type)[0]
+    elif get_origin(type) is dict:
+        if get_origin(get_args(type)[1]) in list_of_nested_things:
+            return get_base_models_in_type(get_args(type)[1])
+        elif check_type_is_base_model(get_args(type)[1]):
+            return get_args(type)[1]
+    elif get_origin(type) is Union:
+        for union_type in get_args(type):
+            if get_origin(union_type) in list_of_nested_things:
+                return get_base_models_in_type(union_type)
+            elif check_type_is_base_model(union_type):
+                return union_type
+    return None
+
+
 class QueryBuilder:
     fields_to_include_or_exclude: set[str]
 
@@ -55,6 +76,21 @@ class QueryBuilder:
         ) in get_type_hints(type_to_check).items():
             if field_name in self.fields_to_include_or_exclude:
                 query[field_name] = True
+            elif check_type_is_base_model(field_type):
+                print("entering here!")
+                if field_name not in query:
+                    query[field_name] = {}
+                result = self.build_query(field_type, query[field_name])
+                if not result:
+                    del query[field_name]
+            elif get_origin(field_type) in [list, Union, dict]:
+                print(field_name)
+                if next_base_model := get_base_models_in_type(field_type):
+                    if field_name not in query:
+                        query[field_name] = {"__all__": {}}
+                    result = self.build_query(
+                        next_base_model, query[field_name]["__all__"]
+                    )
             elif get_origin(field_type) is Union:
                 for union_type in get_args(field_type):
                     if get_origin(union_type) is None:
@@ -105,12 +141,7 @@ class QueryBuilder:
                 )
                 if not result:
                     del query[field_name]
-            elif check_type_is_base_model(field_type):
-                if field_name not in query:
-                    query[field_name] = {}
-                result = self.build_query(field_type, query[field_name])
-                if not result:
-                    del query[field_name]
+
         return query
 
 

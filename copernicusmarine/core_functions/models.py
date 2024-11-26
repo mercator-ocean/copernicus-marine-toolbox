@@ -155,7 +155,7 @@ class GeographicalExtent(BaseModel):
 
     minimum: float
     maximum: float
-    unit: str
+    unit: Optional[str]
     coordinate_id: str
 
 
