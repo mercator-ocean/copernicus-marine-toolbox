@@ -7,6 +7,9 @@ import xarray
 from copernicusmarine.core_functions.utils import datetime_parser
 from tests.test_utils import execute_in_terminal
 
+dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
+variable = "po4"
+
 
 class TestOriginalGridDatasets:
     def test_toolbox_identifies_originalGrid_datasets(self):
@@ -14,14 +17,15 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            "cmems_mod_arc_phy_anfc_6km_detided_P1M-m",
+            dataset_name,
             "-v",
-            "so",
+            variable,
             "--dataset-part",
             "originalGrid",
             "--dry-run",
             "--log-level",
             "DEBUG",
+            "--staging",
         ]
         self.output = execute_in_terminal(command)
         returned_value = loads(self.output.stdout)
@@ -38,9 +42,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            "cmems_mod_arc_phy_anfc_6km_detided_P1M-m",
+            dataset_name,
             "-v",
-            "so",
+            variable,
             "--dataset-part",
             "originalGrid",
             "-x",
@@ -48,6 +52,7 @@ class TestOriginalGridDatasets:
             "--dry-run",
             "--log-level",
             "DEBUG",
+            "--staging",
         ]
 
         self.output = execute_in_terminal(command)
@@ -72,19 +77,17 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            "cmems_mod_arc_phy_anfc_6km_detided_P1M-m",
+            dataset_name,
             "-v",
-            "so",
+            variable,
             "--dataset-part",
             "originalGrid",
             "-t",
-            "2022-01-01",
+            "2020-01-01",
             "-T",
-            "2022-01-01",
+            "2020-01-01",
             "-z",
-            "0",
-            "-Z",
-            "100",
+            "3",
             "-o",
             f"{tmp_path}",
             "-f",
@@ -93,6 +96,7 @@ class TestOriginalGridDatasets:
             "DEBUG",
             "--response-fields",
             "all",
+            "--staging",
         ]
 
         self.output = execute_in_terminal(command)
@@ -104,7 +108,7 @@ class TestOriginalGridDatasets:
             b"Dataset part has the non lat lon projection."
             in self.output.stderr
         )
-        assert pendulum.parse("2022-01-01") == datetime_parser(
+        assert pendulum.parse("2020-01-01") == datetime_parser(
             dataset.time.values[0]
         )
         assert len(dataset.x.values) > 0
