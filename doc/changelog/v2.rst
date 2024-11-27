@@ -39,6 +39,7 @@ Describe command got a lot of new features and changes:
 * **B** ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
 * **B** "unit" for coordinates has be renamed to "coordinate_unit" see :class:`copernicusmarine.CopernicusMarineCoordinate`.
 * **B** Rename ``--include-versions`` to ``--show-all-versions`` option.
+* **B** Deleted the options related to the cache system. So ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
 
 Get
 '''''
@@ -50,6 +51,7 @@ Get
 * New ``--skip-existing`` allows you to skip the download of files that already exist at the output destination.
 * **B** ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
 * **B** Deleted ``--show-outputnames`` option.
+* **B** Deleted the options related to the cache system. So ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
 
 Subset
 ''''''''
@@ -66,10 +68,11 @@ Subset
 * Removed the ``--netcdf-compression-enabled`` option. The compression doesn't need now to be enabled and can be done with the ``--netcdf-compression-level`` option (as before).
 * ``--motu-api-request`` has been deprecated. Please contact user support if you need to translate legacy motu requests.
 * ``--skip-existing`` allow you to skip the download of files that already exist at the output destination.
-* **B**``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
+* **B** ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
 * **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
 * **B** Deleted ``--show-outputnames``option.
 * Fixed some bugs with compressing datasets (with option ``--netcdf-compression-level``).
+* **B** Deleted the options related to the cache system. So ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
 
 Login
 ''''''
