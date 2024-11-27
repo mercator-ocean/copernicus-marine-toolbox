@@ -1,3 +1,4 @@
+import logging
 import ssl
 from typing import Any, List, Literal, Optional, Tuple
 
@@ -17,7 +18,12 @@ from copernicusmarine.core_functions.environment_variables import (
     PROXY_HTTP,
     PROXY_HTTPS,
 )
-from copernicusmarine.core_functions.utils import create_custom_query_function
+from copernicusmarine.core_functions.utils import (
+    construct_query_params_for_marine_data_store_monitoring,
+    create_custom_query_function,
+)
+
+logger = logging.getLogger("copernicusmarine")
 
 TRUST_ENV = COPERNICUSMARINE_TRUST_ENV == "True"
 PROXIES = {}
@@ -105,3 +111,24 @@ class ConfiguredRequestsSession(requests.Session):
 
 def get_configured_requests_session() -> requests.Session:
     return ConfiguredRequestsSession()
+
+
+class JsonParserConnection:
+    def __init__(self) -> None:
+        self.session = get_configured_requests_session()
+
+    def get_json_file(self, url: str) -> dict[str, Any]:
+        logger.debug(f"Fetching json file at this url: {url}")
+        with self.session.get(
+            url,
+            params=construct_query_params_for_marine_data_store_monitoring(),
+            proxies=self.session.proxies,
+        ) as response:
+            response.raise_for_status()
+            return response.json()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.session.close()

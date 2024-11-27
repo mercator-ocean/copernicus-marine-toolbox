@@ -2,12 +2,7 @@ import logging
 
 import semver
 
-from copernicusmarine.core_functions.sessions import (
-    get_configured_requests_session,
-)
-from copernicusmarine.core_functions.utils import (
-    construct_query_params_for_marine_data_store_monitoring,
-)
+from copernicusmarine.core_functions.sessions import JsonParserConnection
 from copernicusmarine.versioner import __version__ as toolbox_version
 
 logger = logging.getLogger("copernicusmarine")
@@ -73,10 +68,8 @@ class VersionVerifier:
             else "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
         )
         logger.debug(f"Getting required versions from {url_mds_versions}")
-        session = get_configured_requests_session()
-        mds_versions: dict[str, str] = session.get(
-            url_mds_versions,
-            params=construct_query_params_for_marine_data_store_monitoring(),
-            proxies=session.proxies,
-        ).json()["clientVersions"]
+        with JsonParserConnection() as connection:
+            mds_versions: dict[str, str] = connection.get_json_file(
+                url_mds_versions,
+            )["clientVersions"]
         return mds_versions
