@@ -4,7 +4,6 @@ from typing import List, Optional
 
 import click
 
-from copernicusmarine.catalogue_parser.fields_query_builder import QueryBuilder
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -20,6 +19,7 @@ from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
     DeprecatedClickOption,
 )
+from copernicusmarine.core_functions.fields_query_builder import QueryBuilder
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_COORDINATES_SELECTION_METHODS,
@@ -378,8 +378,12 @@ def subset(
     elif "none" in fields_to_include:
         included_fields = set()
     else:
-        query_builder = QueryBuilder(set(fields_to_include))
-        included_fields = query_builder.build_query(ResponseSubset)
+        queryable_fields = QueryBuilder().get_queryable_requested_fields(
+            fields_to_include, ResponseSubset, "--response-fields"
+        )
+        included_fields = QueryBuilder().build_query(
+            set(queryable_fields), ResponseSubset
+        )
 
     blank_logger.info(
         response.model_dump_json(

@@ -4,7 +4,6 @@ from typing import Optional
 
 import click
 
-from copernicusmarine.catalogue_parser.fields_query_builder import QueryBuilder
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -19,6 +18,7 @@ from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
+from copernicusmarine.core_functions.fields_query_builder import QueryBuilder
 from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
@@ -271,7 +271,7 @@ def get(
     )
 
     if response_fields:
-        fields_to_include = set(response_fields.split(","))
+        fields_to_include = set(response_fields.replace(" ", "").split(","))
     elif dry_run:
         fields_to_include = {"all"}
     else:
@@ -281,8 +281,12 @@ def get(
     elif "none" in fields_to_include:
         included_fields = set()
     else:
-        query_builder = QueryBuilder(set(fields_to_include))
-        included_fields = query_builder.build_query(ResponseGet)
+        queryable_fields = QueryBuilder().get_queryable_requested_fields(
+            fields_to_include, ResponseGet, "--response-fields"
+        )
+        included_fields = QueryBuilder().build_query(
+            set(queryable_fields), ResponseGet
+        )
 
     blank_logger.info(
         response.model_dump_json(
