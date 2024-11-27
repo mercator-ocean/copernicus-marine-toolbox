@@ -49,7 +49,7 @@ Get
 * Add timeout to requests and being able to set the number of retries.
 * New ``--skip-existing`` allows you to skip the download of files that already exist at the output destination.
 * **B** ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
-* **B** Deleted ``--show-outputnames``option.
+* **B** Deleted ``--show-outputnames`` option.
 
 Subset
 ''''''''
