@@ -140,4 +140,11 @@ Keep in mind that such changes can be also seen in the CLI, where:
 Where the ``output_downloaded.json`` will contain the information of the ResponseGet in a json file, keeping the logs in the terminal.
 
 Option ``--overwrite-output-data`` renamed
-""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""
+We renamed the option ``--overwrite-output-data`` to ``--overwrite``. The option is still the same, but the name is shorter (as the cache has been deleted and it is the only option overwriting).
+
+Substitute the new command and the behaviour will continue to be the same.
+
+Deleted option ``--show-outputnames``
+""""""""""""""""""""""""""""""""""""""""""""
+Before, th
