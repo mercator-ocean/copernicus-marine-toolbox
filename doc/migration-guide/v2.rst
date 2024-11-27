@@ -3,7 +3,7 @@ Migration guide v2
 
 In this page, we are going to explain some of the changes that might be needed to update your code from the old version of the toolbox v1.3.5 to the new one v2.0.0. With the new version also comes new functionalities, not commented here because they did not exist in the past version. Here, then, are just commented the changes that involve migrating from one version to the other.
 
-You can also check the :ref:`changelogs <changelog>` for more information about the changes.
+You can also check the :ref:`Change log <changelog>` for more information about the changes.
 
 .. warning::
     One of the important breaking changes is that there is no prompt to confirm the download. Please use ``--dry-run`` if you do not want to download the files.
@@ -123,19 +123,19 @@ ResponseGet as object of the response
 """"""""""""""""""""""""""""""""""""""""""
 Before, when using a get from the python interface, you would do:
 
-.. code-block::python
+.. code-block:: python
 
-  PathGet = copernicusmarine.get(...)
-  # or even:
-  copernicusmarine.get(...)
+    PathGet = copernicusmarine.get(...)
+    # or even:
+    copernicusmarine.get(...)
 
-Where in ``PathGet`` there would be the list of paths to the data you downloaded. Now, we updated the response type of the python API: it returns a :class:`copernicusmarine.ResponseGet` object. This can be handled by you more easy and will be able to display more information about the data downloaded (or about to be downloaded). The fields of the response object caaan be filtered as you desire and we hope that it will imporve a lot the user expeerience.
+Where in ``PathGet`` there would be the list of paths to the data you downloaded. Now, we updated the response type of the python API: it returns a :class:`copernicusmarine.ResponseGet` object. This can be handled by you more easy and will be able to display more information about the data downloaded (or about to be downloaded). The fields of the response object can be filtered as you desire and we hope that it will improve a lot the user expeerience.
 
 Keep in mind that such changes can be also seen in the CLI, where:
 
-.. code-block::bash
+.. code-block:: bash
 
-  copernicusmarine get --optios > output_downloaded.json
+    copernicusmarine get --optios > output_downloaded.json
 
 Where the ``output_downloaded.json`` will contain the information of the ResponseGet in a json file, keeping the logs in the terminal.
 
@@ -147,4 +147,95 @@ Substitute the new command and the behaviour will continue to be the same.
 
 Deleted option ``--show-outputnames``
 """"""""""""""""""""""""""""""""""""""""""""
-Before, th
+Before, this option would allow you to output the name of the files. We included such names in the :class:`copernicusmarine.ResponseGet` object that results for the call (either dry-run or not). That way, something very similar (and even more structured) can be recovered easily.
+
+For example, doing this call:
+
+.. code-block:: bash
+
+    copernicusmarine get -i cmems_mod_arc_bgc_my_ecosmo_P1D-m --filter "*202105/2021/12*" --dry-run > output.json --response-fields files
+
+We ensure that in the output.json we will have a readable json object. You can check the documentation for all the details included in the response, but the key ``file-path`` contains the same information there was in the ``--show-outputnames`` option.
+
+
+Subset
+------------------
+For all the new features, please refer to the documentation page of the subset function.
+
+Deletion of ``--force-download`` and new ``--dry-run`` option
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Before, from the CLI you needed to accept a prompt to download the data. Such prompt could be skipped adding the option ``--force-download``at the end of the call. So now, if no option is passed, the CLI will download all the data requested.
+
+If you do not want to download the data but rather check what would be download, you can use the option ``--dry-run`` and a ResponseSubset object will be returned with the information of the data that would be donwloaded.
+
+.. warning::
+  Please be aware of this change and don't download too much data!
+
+
+ResponseGet as object of the response
+""""""""""""""""""""""""""""""""""""""""""
+Before, when using a subset from the python interface, you would do:
+
+.. code-block:: python
+
+    PathSubset = copernicusmarine.subset(...)
+    # or even:
+    copernicusmarine.subset(...)
+
+Where in ``PathSubset`` there would be the path to the data you downloaded. Now, we updated the response type of the python API: it returns a :class:`copernicusmarine.ResponseSubset` object. This can be handled by you more easy and will be able to display more information about the data downloaded (or about to be downloaded). The fields of the response object can be filtered as you desire and we hope that it will improve a lot the user expeerience.
+
+Keep in mind that such changes can be also seen in the CLI, where:
+
+.. code-block:: bash
+
+    copernicusmarine subset --optios > output_downloaded.json
+
+Where the ``output_downloaded.json`` will contain the information of the ResponseSubset in a json file, keeping the logs in the terminal.
+
+Option ``--vertical-dimension-output`` renamed
+""""""""""""""""""""""""""""""""""""""""""""""""
+We renamed the option ``--vertical-dimension-output`` to ``--vertical-axis``. The option is still the same, but the name is shorter.
+
+Substitute the new command and the behaviour will continue to be the same.
+
+Option ``--overwrite-output-data`` renamed
+""""""""""""""""""""""""""""""""""""""""""""""""
+We renamed the option ``--overwrite-output-data`` to ``--overwrite``. The option is still the same, but the name is shorter (as the cache has been deleted and it is the only option overwriting).
+
+Substitute the new command and the behaviour will continue to be the same.
+
+Removed the cache system
+""""""""""""""""""""""""""""""""""""""""""""""""
+We changed the way we access the metadataof the datasets. With a new and more reliable system, we will improve the reliability of the data downloaded.
+
+That also means that the options related to the cache system doesn't exist anymore. So ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
+
+Make sure to delete them from your scripts.
+
+Removed ``--netcdf-compression-enabled``
+"""""""""""""""""""""""""""""""""""""""""""""""
+Along with several improvements and bug fixes regarding the compression of the datasets, we also removed the option ``--netcdf-compression-enabled``. The compression doesn't need now to be enabled and can be done with the ``--netcdf-compression-level`` option directly.
+
+With that change we also made the ``--netcdf-compression-level`` a flag, so you could do:
+
+.. code-block:: bash
+
+    copernicusmarine subset --other-options --netcdf-compression-level
+
+And the compression would be enabled, with a default level of **4** (we also changed that value, following Xarray procedures).
+
+Removed ``--motu-api-request`` option
+"""""""""""""""""""""""""""""""""""""""""
+We also removed the option ``--motu-api-request``. If you need to translate legacy motu requests, please contact user support.
+
+Deleted option ``--show-outputnames``
+"""""""""""""""""""""""""""""""""""""""""
+Before, this option would allow you to output the name of the files. We included such names in the :class:`copernicusmarine.ResponseSubset` object that results for the call (either dry-run or not). That way, something very similar (and even more structured) can be recovered easily.
+
+For example, doing this call:
+
+.. code-block:: bash
+
+    copernicusmarine subset --options --dry-run --response-fields files > output.json
+
+We ensure that in the output.json we will have a readable json object. You can check the documentation for all the details included in the response, but the key ``file-path`` contains the same information there was in the ``--show-outputnames`` option.
