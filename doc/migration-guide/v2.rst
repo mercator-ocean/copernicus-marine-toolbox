@@ -1,6 +1,8 @@
 Migration guide v2
 ===================
 
+In this page, we are going to explain some of the changes that might be needed to update your code from the old version of the toolbox v1.3.5 to the new one v2.0.0. With the new version also comes new functionalities, not commented here because they did not exist in the past version. Here, then, are just commented the changes that involve migrating from one version to the other.
+
 You can also check the :ref:`changelogs <changelog>` for more information about the changes.
 
 .. warning::
@@ -21,8 +23,8 @@ When doing a describe in the python API, the response will be a :class:`copernic
     NowACopernicusMarineCatalogue = copernicusmarine.describe()
 
 
-New options ``--return-fields`` and ``--exclude-fields``
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Old options deprectated ``--include-x`` but new functionalities are set
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 To filter the output of a describe, now you can use the ``--return-fields`` and ``--exclude-fields`` options. The old options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
 
@@ -70,7 +72,7 @@ You can also use the 'all' shortcut to return all the fields and then exclude if
     copernicusmarine describe --return-fields all --exclude-fields uri,product_id,dataset_id,service_name,descrpition,keywords
 
 
-Deleted options can also be still included
+How to approximate the old behavior
 """""""""""""""""""""""""""""""""""""""""""""""
 As explained in the changelog, the options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed. However, you can still include them using the new options ``--return-fields`` and ``--exclude-fields``.
 
@@ -84,8 +86,25 @@ The logic of having these functions as separate options was to not crowd too muc
 
     copernicusmarine describe --return-fields all --exclude-fields datasets,description,keywords
 
-The different usage option ``--include-versions`` has been renamed to ``--show-all-versions``.
+Notice that the output of the describe when including ``datasets`` or ``dataset_id`` in the ``--return-fields`` is pretty different, as those are different things!
 
+Why ``--include-versions`` is not in the same case
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+The different usage option ``--include-versions`` has been renamed to ``--show-all-versions``. That is because the inclusion of the versions do not refer to adding more fields of the same object, but adding a whole new version to the output.
+
+Some of the datasets contain several versions, and we just show the default if no specification is done. To see more of such versions, you can still try with the option ``--show-all-versions``.
+
+Logging changes in the describe
+""""""""""""""""""""""""""""""""""""""""""""""
+The logging of the describe has been improved. The output is easily to separate to create a reading-ready json document with:
+
+.. code-block:: bash
+
+    copernicusmarine describe --return-fields all --exclude-fields datasets,description,keywords > output.json
+
+This functionality allows to create easy to read json files, not losing the information of the errors, which will be printed in the terminal itself. For more information about STDERR and STDOUT, please refer to TODO.
+
+For python, TODO.
 
 Get
 ------------------
@@ -93,4 +112,32 @@ For all the new features, please refer to the documentation page of the get func
 
 Deletion of ``--force-download`` and new ``--dry-run`` option
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Before, from the CLI you needed to accept a prompt to download the data. Such prompt could be skipped adding the option ``--force-download``at the end of the call.
+Before, from the CLI you needed to accept a prompt to download the data. Such prompt could be skipped adding the option ``--force-download``at the end of the call. So now, if no option is passed, the CLI will download all the data requested.
+
+If you do not want to download the data but rather check what would be download, you can use the option ``--dry-run`` and a ResponseGet object will be returned with the information of the data that would be donwloaded.
+
+.. warning::
+  Please be aware of this change and don't download too much data!
+
+ResponseGet as object of the response
+""""""""""""""""""""""""""""""""""""""""""
+Before, when using a get from the python interface, you would do:
+
+.. code-block::python
+
+  PathGet = copernicusmarine.get(...)
+  # or even:
+  copernicusmarine.get(...)
+
+Where in ``PathGet`` there would be the list of paths to the data you downloaded. Now, we updated the response type of the python API: it returns a :class:`copernicusmarine.ResponseGet` object. This can be handled by you more easy and will be able to display more information about the data downloaded (or about to be downloaded). The fields of the response object caaan be filtered as you desire and we hope that it will imporve a lot the user expeerience.
+
+Keep in mind that such changes can be also seen in the CLI, where:
+
+.. code-block::bash
+
+  copernicusmarine get --optios > output_downloaded.json
+
+Where the ``output_downloaded.json`` will contain the information of the ResponseGet in a json file, keeping the logs in the terminal.
+
+Option ``--overwrite-output-data`` renamed
+""""""""""""""""""""""""""""""""""""""""""
