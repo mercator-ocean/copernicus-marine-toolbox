@@ -1,6 +1,4 @@
 import copernicusmarine.logger as logger
-from copernicusmarine.versioner import __version__
-
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCatalogue,
     CopernicusMarineCoordinate,
@@ -29,12 +27,15 @@ from copernicusmarine.core_functions.credentials_utils import (
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
     FormatNotSupported,
+    GeospatialSubsetNotAvailableForNonLatLon,
     MinimumLongitudeGreaterThanMaximumLongitude,
     NetCDFCompressionNotAvailable,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
     WrongDatetimeFormat,
-    GeospatialSubsetNotAvailableForNonLatLon,
+)
+from copernicusmarine.core_functions.fields_query_builder import (
+    WrongFieldsError,
 )
 from copernicusmarine.core_functions.models import (
     FileGet,
@@ -61,7 +62,7 @@ from copernicusmarine.python_interface.read_dataframe import (
     read_dataframe,
 )
 from copernicusmarine.python_interface.subset import subset
-
+from copernicusmarine.versioner import __version__
 
 __all__ = [
     "CoordinatesOutOfDatasetBounds",
@@ -102,6 +103,7 @@ __all__ = [
     "TimeExtent",
     "VariableDoesNotExistInTheDataset",
     "WrongDatetimeFormat",
+    "WrongFieldsError",
     "__version__",
     "describe",
     "get",
