@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from typing import Optional
+from typing import Optional, Union
 
 import click
 
@@ -18,7 +18,10 @@ from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
-from copernicusmarine.core_functions.fields_query_builder import QueryBuilder
+from copernicusmarine.core_functions.fields_query_builder import (
+    build_query,
+    get_queryable_requested_fields,
+)
 from copernicusmarine.core_functions.get import (
     create_get_template,
     get_function,
@@ -276,17 +279,16 @@ def get(
         fields_to_include = {"all"}
     else:
         fields_to_include = {"status", "message"}
+    included_fields: Optional[Union[set[str], dict]]
     if "all" in fields_to_include:
         included_fields = None
     elif "none" in fields_to_include:
         included_fields = set()
     else:
-        queryable_fields = QueryBuilder().get_queryable_requested_fields(
+        queryable_fields = get_queryable_requested_fields(
             fields_to_include, ResponseGet, "--response-fields"
         )
-        included_fields = QueryBuilder().build_query(
-            set(queryable_fields), ResponseGet
-        )
+        included_fields = build_query(set(queryable_fields), ResponseGet)
 
     blank_logger.info(
         response.model_dump_json(

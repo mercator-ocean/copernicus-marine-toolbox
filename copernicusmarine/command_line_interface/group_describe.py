@@ -13,7 +13,10 @@ from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
 )
 from copernicusmarine.core_functions.describe import describe_function
-from copernicusmarine.core_functions.fields_query_builder import QueryBuilder
+from copernicusmarine.core_functions.fields_query_builder import (
+    build_query,
+    get_queryable_requested_fields,
+)
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
@@ -161,20 +164,20 @@ def _create_include_and_exclude(
     if return_fields:
         include_in_output = set(return_fields.replace(" ", "").split(","))
         if "all" not in include_in_output:
-            queryable_fields = QueryBuilder().get_queryable_requested_fields(
+            queryable_fields = get_queryable_requested_fields(
                 include_in_output,
                 CopernicusMarineCatalogue,
                 "--return-fields",
             )
-            include_query = QueryBuilder().build_query(
+            include_query = build_query(
                 queryable_fields, CopernicusMarineCatalogue
             )
     if exclude_fields:
         exclude_from_output = set(exclude_fields.replace(" ", "").split(","))
-        queryable_fields = QueryBuilder().get_queryable_requested_fields(
+        queryable_fields = get_queryable_requested_fields(
             exclude_from_output, CopernicusMarineCatalogue, "--exclude-fields"
         )
-        exclude_query = QueryBuilder().build_query(
+        exclude_query = build_query(
             queryable_fields, CopernicusMarineCatalogue
         )
 
