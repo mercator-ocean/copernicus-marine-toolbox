@@ -239,3 +239,32 @@ For example, doing this call:
     copernicusmarine subset --options --dry-run --response-fields files > output.json
 
 We ensure that in the output.json we will have a readable json object. You can check the documentation for all the details included in the response, but the key ``file-path`` contains the same information there was in the ``--show-outputnames`` option.
+
+Login
+------------------
+For all the new features, please refer to the documentation page of the login function.
+
+Renamed ``--overwrite`` and ``--overwrite-configuration-file``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Both ways to call the same option have been renamed to ``--force-overwrite``. The option is still the same, but the name is clearer.
+
+Substitute the new command and the behaviour will continue to be the same.
+
+Deleted ``--skip-if-user-logged-in``
+"""""""""""""""""""""""""""""""""""""""""""
+We deleted the option but introduced a new one to modify a bit the behaviour. We added ``--check-credentials-valid`` and option to check that, effectively, the credentials are correctly set.
+
+Now, we can do the login like this in our notebooks:
+
+.. code-block:: python
+
+    if not copernicusmarine.login(check_credentials_valid=True):
+        copernicusmarine.login()
+
+Also in the CLI, we can check that we are properly connected:
+
+.. code-block:: bash
+
+    copernicusmarine login --check-credentials-valid
+
+And it will not even raise to the login if the credentials are valid.

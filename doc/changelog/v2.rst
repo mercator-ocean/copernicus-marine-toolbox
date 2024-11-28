@@ -70,12 +70,13 @@ Subset
 * ``--skip-existing`` allow you to skip the download of files that already exist at the output destination.
 * **B** ``--overwrite-output-data`` has been removed in favor of ``--overwrite``.
 * **B** ``--force-download`` has been removed. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
-* **B** Deleted ``--show-outputnames``option.
+* **B** Deleted ``--show-outputnames`` option.
 * Fixed some bugs with compressing datasets (with option ``--netcdf-compression-level``).
-* **B** Deleted the options related to the cache system. So ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
+* **B** Deleted the options related to the cache system. So ``--overwrite-metadata-cache`` and ``--no-metadata-cache`` have been removed.
 
 Login
 ''''''
 
 * Now support the new Copernicus Marine authentication system. The toolbox will try to connect to the new system then fallback to the old one if needed.
-* Rename ``--overwrite``, ``--overwrite-configuration-file`` to ``--force-overwrite``.
+* **B** Rename ``--overwrite``, ``--overwrite-configuration-file`` to ``--force-overwrite``.
+* **B** Deleted option ``--skip-if-user-logged-in``. We introduced a new option, ``--check-credentials-valid`` for the function that checks if the credentials are valid (so it can be used to prevent login in again).
