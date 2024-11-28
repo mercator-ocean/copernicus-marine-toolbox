@@ -44,8 +44,8 @@ class WrongFieldsError(Exception):
     def __str__(self) -> str:
         return (
             f"All ``{self.option_name}`` fields are invalid"
-            f": {','.join(self.wrong_fields)}.\n"
-            f"Available fields: {','.join(self.available_fields)}"
+            f": {', '.join(sorted(self.wrong_fields))}.\n"
+            f"Available fields: {', '.join(sorted(self.available_fields))}"
         )
 
 
@@ -176,7 +176,8 @@ class QueryBuilder:
             raise WrongFieldsError(wrong_inputs, available_fields, option_name)
         elif wrong_inputs:
             logger.warning(
-                f"Some {option_name} fields are invalid: {','.join(wrong_inputs)}.\n "
-                f"Available fields: {','.join(queryable_fields)}"
+                f"Some ``{option_name}`` fields are invalid:"
+                f" {', '.join(wrong_inputs)}.\n "
+                f"Available fields: {', '.join(sorted(available_fields))}."
             )
         return queryable_fields

@@ -164,7 +164,7 @@ def _create_include_and_exclude(
             queryable_fields = QueryBuilder().get_queryable_requested_fields(
                 include_in_output,
                 CopernicusMarineCatalogue,
-                "--exclude-fields",
+                "--return-fields",
             )
             include_query = QueryBuilder().build_query(
                 queryable_fields, CopernicusMarineCatalogue

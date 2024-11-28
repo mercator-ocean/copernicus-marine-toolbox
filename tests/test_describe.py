@@ -455,6 +455,66 @@ class TestDescribe:
                     for part in version["parts"]:
                         assert "services" not in set(part.keys())
 
+    def test_describe_fails_or_warns_with_wrong_return_fields(self):
+        # Test with one wrong invalid return fields
+        return_fields = "product_id,datasets, invalid_field"
+        self.when_I_describe_with_invalid_return_fields(
+            include_fields=return_fields
+        )
+        assert self.output.returncode == 0
+        assert (
+            b"Some ``--return-fields`` fields are invalid: invalid_field"
+            in self.output.stderr
+        )
+
+        # Test with multiple all invalid return fields
+        return_fields = "invalid_field1, invalid_field2"
+        self.when_I_describe_with_invalid_return_fields(
+            include_fields=return_fields
+        )
+        assert self.output.returncode == 1
+        assert (
+            b"All ``--return-fields`` fields are invalid: "
+            b"invalid_field1, invalid_field2" in self.output.stderr
+        )
+
+        # Test with one wrong invalid exclude fields
+        exclude_fields = "product_id,wrong_field"
+        self.when_I_describe_with_invalid_return_fields(
+            exclude_fields=exclude_fields
+        )
+        assert self.output.returncode == 0
+        assert (
+            b"Some ``--exclude-fields`` fields are invalid: wrong_field"
+            in self.output.stderr
+        )
+
+        # Test with multiple all invalid exclude fields
+        exclude_fields = "wrong_field1, wrong_field2"
+        self.when_I_describe_with_invalid_return_fields(
+            exclude_fields=exclude_fields
+        )
+        assert self.output.returncode == 1
+        assert (
+            b"All ``--exclude-fields`` fields are invalid: "
+            b"wrong_field1, wrong_field2" in self.output.stderr
+        )
+
+    def when_I_describe_with_invalid_return_fields(
+        self, include_fields: str = "", exclude_fields: str = ""
+    ):
+        command = [
+            "copernicusmarine",
+            "describe",
+            "-i",
+            "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+        ]
+        if include_fields:
+            command.extend(["--return-fields", include_fields])
+        if exclude_fields:
+            command.extend(["--exclude-fields", exclude_fields])
+        self.output = execute_in_terminal(command)
+
     # ######################
     # Python API tests
     # ######################

@@ -423,6 +423,66 @@ class TestCommandLineInterface:
             assert "https_url" in get_file
             assert "https://" in get_file["https_url"]
 
+    def test_get_wrong_input_response_fields_warning_and_error(self):
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        response_fields = "https_url, wrong_field"
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            f"{dataset_id}",
+            "--dry-run",
+            "-r",
+            response_fields,
+        ]
+
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert (
+            b"Some ``--response-fields`` fields are invalid:"
+            b" wrong_field" in self.output.stderr
+        )
+
+        command[-1] = "wrong_field1, wrong_field2"
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
+        assert (
+            b"Wrong fields error: All ``--response-fields`` "
+            b"fields are invalid: wrong_field1, wrong_field2"
+            in self.output.stderr
+        )
+
+    def test_subset_wrong_input_response_fields_warning_and_error(self):
+        dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
+        response_fields = "status, wrong_field"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            f"{dataset_id}",
+            "--variable",
+            "thetao",
+            "--dry-run",
+            "-r",
+            response_fields,
+        ]
+
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert (
+            b"Some ``--response-fields`` fields are invalid:"
+            b" wrong_field" in self.output.stderr
+        )
+
+        command[-1] = "wrong_field1, wrong_field2"
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
+        assert (
+            b"Wrong fields error: All ``--response-fields`` "
+            b"fields are invalid: wrong_field1, wrong_field2"
+            in self.output.stderr
+        )
+
     def test_subset_with_dry_run_option(self, tmp_path):
         command = [
             "copernicusmarine",

@@ -367,7 +367,7 @@ def subset(
         chunk_size_limit=chunk_size_limit,
     )
     if response_fields:
-        fields_to_include = set(response_fields.split(","))
+        fields_to_include = set(response_fields.replace(" ", "").split(","))
     elif dry_run:
         fields_to_include = {"all"}
     else:
