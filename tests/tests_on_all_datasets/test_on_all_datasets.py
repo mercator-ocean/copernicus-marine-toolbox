@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import re
 import time
 from pathlib import Path
 from random import shuffle
@@ -22,10 +23,6 @@ from copernicusmarine import (
 )
 from copernicusmarine.core_functions.utils import run_concurrently
 from tests.test_utils import execute_in_terminal
-
-logging.basicConfig(level=logging.ERROR)
-logging.getLogger("copernicusmarine").setLevel(logging.CRITICAL + 1)
-
 
 # @pytest.fixture
 # def snapshot_json(snapshot):
@@ -142,6 +139,8 @@ logging.getLogger("copernicusmarine").setLevel(logging.CRITICAL + 1)
 
 class SubsetArguments(BaseModel):
     dataset_id: str
+    version: str
+    part: str
     variables: list[str]
     output_filename: str
     start_datetime: Optional[str]
@@ -182,6 +181,8 @@ def test_download_variable_and_ncdump(
                             continue
                         subset_arguments = SubsetArguments(
                             dataset_id=dataset_id,
+                            version=version.label,
+                            part=part.name,
                             variables=[
                                 variable.short_name
                                 for variable in service.variables
@@ -405,6 +406,8 @@ def extract_maximum_value(coordinate: CopernicusMarineCoordinate):
 
 def open_dataset_and_snapshot_ncdump(
     dataset_id: str,
+    version: str,
+    part: str,
     variables: list[str],
     output_filename: str,
     start_datetime: Optional[str],
@@ -456,10 +459,16 @@ def open_dataset_and_snapshot_ncdump(
         cli_command += ["-z", str(minimum_depth)]
     if maximum_depth:
         cli_command += ["-Z", str(maximum_depth)]
+    if part:
+        cli_command += ["--dataset-part", part]
+    if version:
+        cli_command += ["--dataset-version", version]
 
     try:
         response = copernicusmarine.subset(
             dataset_id=dataset_id,
+            dataset_version=version,
+            dataset_part=part,
             variables=variables,
             output_filename=output_filename,
             start_datetime=start_datetime,
@@ -502,10 +511,9 @@ def open_dataset_and_snapshot_ncdump(
     except Exception as e:
         if not keep_going:
             raise e
-        message += (
-            f"*** Error: {e} FROM CF compliance "
-            f"for the call {dataset_id}, {','.join(arguments)}"
-        )
+        message += f"*** Error: {e} FROM CF compliance "
+        command_to_reproduce = f"copernicusmarine {' '.join(cli_command)}"
+        message += f"Command to reproduce: {command_to_reproduce}"
         return message + "\n", 0, 0
     os.remove(tmp_path / output_filename)
     return message + "\n", response.data_transfer_size, response.file_size  # type: ignore # noqa
@@ -514,13 +522,19 @@ def open_dataset_and_snapshot_ncdump(
 def then_it_is_cf_compliant(dataset_id, tmp_path, output_filename) -> dict:
     dataset_id = dataset_id
     dataset = xarray.open_dataset(f"{tmp_path}/{output_filename}")
-    cf_convention = dataset.attrs.get("Conventions")
-    if cf_convention:
-        cf_convention = cf_convention[-3:]
-        if cf_convention < "1.6":
+    conventions = dataset.attrs.get("Conventions")
+    if conventions:
+        pattern = r"CF-(\d+\.\d+)"
+        match = re.search(pattern, conventions)
+        if match:
+            cf_convention = match.group(1)
+        else:
             cf_convention = "1.6"
     else:
         cf_convention = "1.6"
+    if cf_convention < "1.6":
+        cf_convention = "1.6"
+
     command = [
         "compliance-checker",
         f"--test=cf:{cf_convention}",
@@ -549,9 +563,13 @@ def then_it_is_cf_compliant(dataset_id, tmp_path, output_filename) -> dict:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.ERROR)
+    logging.getLogger("copernicusmarine").setLevel(logging.CRITICAL + 1)
+
     # test_download_variable_and_ncdump(
-    #     number_of_datasets=2,
-    #     # dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1M-m",
-    #     product_id="ARCTIC_ANALYSISFORECAST_PHY_002_001",
+    #     number_of_datasets=10,
+    #     dataset_id="cmems_obs-wave_glo_phy-swh_nrt_multi-l4-2deg_P1D",
+    #     # product_id="ARCTIC_ANALYSISFORECAST_PHY_002_001",
+    #     keep_going=True,
     # )
     test_download_variable_and_ncdump()  # number_of_datasets=100, keep_going=False)
