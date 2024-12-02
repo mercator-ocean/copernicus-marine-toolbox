@@ -20,23 +20,73 @@ class TestGetSync:
             tmp_path
         )
 
-    def test_get_sync_not_working_with_datasets_with_parts(self, tmp_path):
+    def test_get_sync_works_for_dataset_with_default_parts(self, tmp_path):
         self.command = self.command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_obs-ins_blk_phybgcwav_mynrt_na_irr",
+            "cmems_mod_arc_phy_anfc_6km_detided_P1D-m",
             "--sync",
             "--dataset-version",
             "202311",
             "-o",
             f"{tmp_path}",
+            "--staging",  # TODO: staging dataset for the moment, update when needed
+            "--filter",
+            "*20230705_dm-metno-MODEL-topaz5*",
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"Sync is not supported for datasets with multiple parts."
-            in self.output.stderr
-        )
+            b"cmems_mod_arc_phy_anfc_6km_detided_P1D-m_202311/"
+            b"2023/07/20230705_dm-metno-MODEL-"
+            b"topaz5-ARC-b20230710-fv02.0.nc"
+        ) in self.output.stderr
+
+    def test_get_sync_works_for_dataset_with_no_default_parts(self, tmp_path):
+        self.command = self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
+            "--sync",
+            "--dataset-version",
+            "202311",
+            "-o",
+            f"{tmp_path}",
+            "--filter",
+            "*20241206*",
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert (
+            b"cmems_mod_arc_phy_anfc_6km_detided_P1D-m_202311/"
+            b"2023/07/20230705_dm-metno-MODEL-"
+            b"topaz5-ARC-b20230710-fv02.0.nc"
+        ) in self.output.stderr
+
+    def test_get_sync_with_dataset_part(self, tmp_path):
+        self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            "--sync",
+            "--dataset-version",
+            "202311",
+            "--dataset-part",
+            "history",
+            "--filter",
+            "*GL_PR_BO_3*",
+            "-o",
+            f"{tmp_path}",
+            "--show-outputnames",
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert self.output.returncode == 0
+        assert (b"history/BO/GL_PR_BO_3YVG.nc") in self.output.stdout
+
+        # now there shouldn't be any files to download
+        self.output = execute_in_terminal(self.command)
+        assert b"No data to download" in self.output.stderr
 
     def test_get_sync_needs_version(self):
         self.command = [

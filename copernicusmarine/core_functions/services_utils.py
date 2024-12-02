@@ -272,7 +272,6 @@ def get_retrieval_service(
     force_dataset_part_label: Optional[str],
     force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
-    index_parts: bool = False,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
     dataset_sync: bool = False,
     username: Optional[str] = None,
@@ -300,7 +299,6 @@ def get_retrieval_service(
         force_dataset_part_label=force_dataset_part_label,
         force_service_name=force_service_name,
         command_type=command_type,
-        index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
         username=username,
@@ -313,7 +311,6 @@ def _get_retrieval_service_from_dataset(
     force_dataset_part_label: Optional[str],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
-    index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     dataset_sync: bool,
     username: Optional[str],
@@ -335,7 +332,6 @@ def _get_retrieval_service_from_dataset(
         force_dataset_part_label=force_dataset_part_label,
         force_service_name=force_service_name,
         command_type=command_type,
-        index_parts=index_parts,
         dataset_subset=dataset_subset,
         dataset_sync=dataset_sync,
         username=username,
@@ -348,15 +344,10 @@ def _get_retrieval_service_from_dataset_version(
     force_dataset_part_label: Optional[str],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
-    index_parts: bool,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
-    if len(dataset_version.parts) > 1 and dataset_sync:
-        raise Exception(
-            "Sync is not supported for datasets with multiple parts."
-        )
     if force_dataset_part_label:
         logger.info(
             f"You forced selection of dataset part "
