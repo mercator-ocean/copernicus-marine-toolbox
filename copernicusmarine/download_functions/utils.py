@@ -279,11 +279,14 @@ def get_approximation_size_data_downloaded(
             if coordinate_name == "elevation":
                 coordinate_name = "depth"
                 temp_dataset["elevation"] = temp_dataset.elevation * (-1)
-            possible_coordinate_id = [
+            possible_coordinate_ids = [
                 coordinate_names
                 for coordinate_names in COORDINATES_LABEL.values()
                 if coordinate_name in coordinate_names
-            ][0]
+            ]
+            if not possible_coordinate_ids:
+                continue
+            possible_coordinate_id = possible_coordinate_ids[0]
             coordinates = [
                 coord
                 for coord in variable.coordinates

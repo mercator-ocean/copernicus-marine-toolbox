@@ -87,6 +87,8 @@ def get_dataset_metadata(
                     dataset_json
                 )
             )
+            and get_version_and_part_from_full_dataset_id(dataset_item.id)[0]
+            == dataset_id
         ]
         return _parse_and_sort_dataset_items(dataset_items)
 
