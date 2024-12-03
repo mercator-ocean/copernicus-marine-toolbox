@@ -1,87 +1,92 @@
+from typing import Literal
+
 from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
 from copernicusmarine.core_functions.fields_query_builder import (
+    _return_available_fields,
     build_query,
     get_queryable_requested_fields,
 )
 from copernicusmarine.core_functions.models import ResponseGet, ResponseSubset
 
-CATALOGUE_SET = {
-    "products",  # list of product attr
-    "title",
-    "bbox",
-    "chunk_geometric_factor",
-    "chunk_reference_coordinate",
-    "chunk_type",
-    "chunking_length",
-    "coordinate_id",
-    "coordinate_unit",
-    "coordinates",
-    "dataset_id",
-    "dataset_name",
-    "datasets",
-    "description",
-    "digital_object_identifier",
-    "keywords",
-    "label",
-    "maximum_value",
-    "minimum_value",
-    "name",
-    "parts",
-    "processing_level",
-    "product_id",
-    "production_center",
-    "released_date",
-    "retired_date",
-    "service_format",
-    "service_name",
-    "service_short_name",
-    "services",
-    "short_name",
-    "sources",
-    "standard_name",
-    "step",
-    "thumbnail_url",
-    "units",
-    "uri",
-    "values",
-    "variables",
-    "versions",
-}
-GET_SET = {
-    "files",  # following the fields of files:
-    "s3_url",
-    "https_url",
-    "file_size",
-    "last_modified_datetime",
-    "etag",
-    "file_format",
-    "output_directory",
-    "filename",
-    "file_path",
-    "file_status",
-    # We follow RepsonseGet attrs
-    "files_deleted",
-    "files_not_found",
-    "total_size",
-    "status",
-    "message",
-}
-SUBSET_SET = {
-    "file_path",
-    "output_directory",
-    "filename",
-    "file_size",
-    "data_transfer_size",
-    "variables",
-    "coordinates_extent",  # fields in coordinates extent
-    "minimum",
-    "maximum",
-    "unit",
-    "coordinate_id",
-    # lastly the last part of the RepsonseSubset
-    "status",
-    "message",
-    "file_status",
+ALL_FIELDS = {
+    "COPERNICUS_MARINE_CATALOGUE": {
+        "products",  # list of product attr
+        "title",
+        "bbox",
+        "chunk_geometric_factor",
+        "chunk_reference_coordinate",
+        "chunk_type",
+        "chunking_length",
+        "coordinate_id",
+        "coordinate_unit",
+        "coordinates",
+        "dataset_id",
+        "dataset_name",
+        "datasets",
+        "description",
+        "digital_object_identifier",
+        "keywords",
+        "label",
+        "maximum_value",
+        "minimum_value",
+        "name",
+        "parts",
+        "processing_level",
+        "product_id",
+        "production_center",
+        "released_date",
+        "retired_date",
+        "service_format",
+        "service_name",
+        "service_short_name",
+        "services",
+        "short_name",
+        "sources",
+        "standard_name",
+        "step",
+        "thumbnail_url",
+        "units",
+        "uri",
+        "values",
+        "variables",
+        "versions",
+    },
+    "RESPONSE_GET": {
+        "files",  # following the fields of files:
+        "s3_url",
+        "https_url",
+        "file_size",
+        "last_modified_datetime",
+        "etag",
+        "file_format",
+        "output_directory",
+        "filename",
+        "file_path",
+        "file_status",
+        # We follow RepsonseGet attrs
+        "files_deleted",
+        "files_not_found",
+        "total_size",
+        "status",
+        "message",
+    },
+    "RESPONSE_SUBSET": {
+        "file_path",
+        "output_directory",
+        "filename",
+        "file_size",
+        "data_transfer_size",
+        "variables",
+        "coordinates_extent",  # fields in coordinates extent
+        "minimum",
+        "maximum",
+        "unit",
+        "coordinate_id",
+        # lastly the last part of the RepsonseSubset
+        "status",
+        "message",
+        "file_status",
+    },
 }
 
 
@@ -178,26 +183,33 @@ class TestQueryBuilder:
             "file_status": True,
         }
 
-    def test_return_available_fields(self):
-        self.when_I_run_with_model(CATALOGUE_SET)
-        self.when_I_run_with_model(GET_SET)
-        self.when_I_run_with_model(SUBSET_SET)
+    def test_return_available_fields(self, snapshot):
+        self.when_I_run_with_model("describe", snapshot)
+        self.when_I_run_with_model("get", snapshot)
+        self.when_I_run_with_model("subset", snapshot)
 
-    def when_I_run_with_model(self, function):
-        if function == CATALOGUE_SET:
+    def when_I_run_with_model(
+        self, command: Literal["get", "describe", "subset"], snapshot
+    ):
+        if command == "describe":
             fields = "--return-fields"
             included = {"minimum_value", "one-wrong"}
             model = CopernicusMarineCatalogue
+            name = "COPERNICUS_MARINE_CATALOGUE"
         else:
             fields = "--response-fields"
             included = {"file_path", "output_directory", "one-wrong"}
-            if function == GET_SET:
+            if command == "get":
                 model = ResponseGet
+                name = "RESPONSE_GET"
             else:
                 model = ResponseSubset
+                name = "RESPONSE_SUBSET"
         queryable_fields = get_queryable_requested_fields(
             included, model, fields
         )
+        available_fields = _return_available_fields(model)
 
-        check_intersection = queryable_fields.intersection(function)
+        check_intersection = queryable_fields.intersection(ALL_FIELDS[name])
         assert check_intersection == queryable_fields
+        assert sorted(list(available_fields)) == snapshot
