@@ -152,7 +152,6 @@ def _run_get_request(
         get_request.force_dataset_part,
         None,
         CommandType.GET,
-        get_request.index_parts,
         dataset_sync=get_request.sync,
         staging=staging,
     )

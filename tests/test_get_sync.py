@@ -20,23 +20,101 @@ class TestGetSync:
             tmp_path
         )
 
-    def test_get_sync_not_working_with_datasets_with_parts(self, tmp_path):
+    def test_get_sync_works_for_dataset_with_default_parts(self, tmp_path):
         self.command = self.command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_obs-ins_blk_phybgcwav_mynrt_na_irr",
+            "cmems_mod_arc_phy_anfc_6km_detided_P1D-m",
             "--sync",
             "--dataset-version",
             "202311",
             "-o",
             f"{tmp_path}",
+            "--staging",  # TODO: staging dataset for the moment, update when needed
+            "--filter",
+            "*20230705_dm-metno-MODEL-topaz5*",
+            "--response-fields",
+            "all",
         ]
         self.output = execute_in_terminal(self.command)
-        assert (
-            b"Sync is not supported for datasets with multiple parts."
-            in self.output.stderr
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "cmems_mod_arc_phy_anfc_6km_detided_P1D-m_202311/"
+            "2023/07/20230705_dm-metno-MODEL-topaz5-ARC-b20230710-fv02.0.nc"
         )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
+        assert self.output.returncode == 0
+
+    def test_get_sync_works_for_dataset_with_no_default_parts(self, tmp_path):
+        self.command = self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
+            "--sync",
+            "--dataset-version",
+            "202311",
+            "-o",
+            f"{tmp_path}",
+            "--filter",
+            "*20241203/NO_TS_TG_ZwartsluisTG_20241203*",
+            "--response-fields",
+            "all",
+        ]
+        self.output = execute_in_terminal(self.command)
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            "latest/20241203/NO_TS_TG_ZwartsluisTG_20241203.nc"
+        )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
+        assert self.output.returncode == 0
+
+    def test_get_sync_with_dataset_part(self, tmp_path):
+        self.command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            "--sync",
+            "--dataset-version",
+            "202311",
+            "--dataset-part",
+            "history",
+            "--filter",
+            "*GL_PR_BO_3*",
+            "--response-fields",
+            "all",
+            "-o",
+            f"{tmp_path}",
+        ]
+        self.output = execute_in_terminal(self.command)
+        assert self.output.returncode == 0
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031/"
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_202311"
+            "/history/BO/GL_PR_BO_3YVG.nc"
+        )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
+
+        # now there shouldn't be any files to download
+        self.output = execute_in_terminal(self.command)
+        assert b"No data to download" in self.output.stderr
 
     def test_get_sync_needs_version(self):
         self.command = [
