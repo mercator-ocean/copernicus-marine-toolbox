@@ -34,13 +34,21 @@ class TestGetSync:
             "--staging",  # TODO: staging dataset for the moment, update when needed
             "--filter",
             "*20230705_dm-metno-MODEL-topaz5*",
+            "--response-fields",
+            "all",
         ]
         self.output = execute_in_terminal(self.command)
-        assert (
-            b"cmems_mod_arc_phy_anfc_6km_detided_P1D-m_202311/"
-            b"2023/07/20230705_dm-metno-MODEL-"
-            b"topaz5-ARC-b20230710-fv02.0.nc"
-        ) in self.output.stderr
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "cmems_mod_arc_phy_anfc_6km_detided_P1D-m_202311/"
+            "2023/07/20230705_dm-metno-MODEL-topaz5-ARC-b20230710-fv02.0.nc"
+        )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
+        assert self.output.returncode == 0
 
     def test_get_sync_works_for_dataset_with_no_default_parts(self, tmp_path):
         self.command = self.command = [
@@ -54,14 +62,23 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
             "--filter",
-            "*20241206*",
+            "*20241203/NO_TS_TG_ZwartsluisTG_20241203*",
+            "--response-fields",
+            "all",
         ]
         self.output = execute_in_terminal(self.command)
-        assert (
-            b"cmems_mod_arc_phy_anfc_6km_detided_P1D-m_202311/"
-            b"2023/07/20230705_dm-metno-MODEL-"
-            b"topaz5-ARC-b20230710-fv02.0.nc"
-        ) in self.output.stderr
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            "latest/20241203/NO_TS_TG_ZwartsluisTG_20241203.nc"
+        )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
+        assert self.output.returncode == 0
 
     def test_get_sync_with_dataset_part(self, tmp_path):
         self.command = [
@@ -76,13 +93,24 @@ class TestGetSync:
             "history",
             "--filter",
             "*GL_PR_BO_3*",
+            "--response-fields",
+            "all",
             "-o",
             f"{tmp_path}",
-            "--show-outputnames",
         ]
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
-        assert (b"history/BO/GL_PR_BO_3YVG.nc") in self.output.stdout
+        response_get = json.loads(self.output.stdout)
+        file_to_check = (
+            "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031/"
+            "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_202311"
+            "/history/BO/GL_PR_BO_3YVG.nc"
+        )
+        assert [
+            "found"
+            for file_get in response_get["files"]
+            if file_to_check in file_get["file_path"]
+        ]
 
         # now there shouldn't be any files to download
         self.output = execute_in_terminal(self.command)
