@@ -1,4 +1,74 @@
 # serializer version: 1
+# name: TestQueryBuilder.test_basic_query_builder_responsesubset
+  dict({
+    'file_path': True,
+    'output_directory': True,
+  })
+# ---
+# name: TestQueryBuilder.test_query_builder_catalogue
+  dict({
+    'products': dict({
+      '__all__': dict({
+        'datasets': dict({
+          '__all__': dict({
+            'dataset_id': True,
+          }),
+        }),
+        'product_id': True,
+      }),
+    }),
+  })
+# ---
+# name: TestQueryBuilder.test_query_builder_catalogue_deep_inside
+  dict({
+    'products': dict({
+      '__all__': dict({
+        'datasets': dict({
+          '__all__': dict({
+            'versions': dict({
+              '__all__': dict({
+                'parts': dict({
+                  '__all__': dict({
+                    'services': dict({
+                      '__all__': dict({
+                        'service_name': True,
+                        'variables': dict({
+                          '__all__': dict({
+                            'coordinates': dict({
+                              '__all__': dict({
+                                'coordinate_unit': True,
+                                'maximum_value': True,
+                              }),
+                            }),
+                          }),
+                        }),
+                      }),
+                    }),
+                  }),
+                }),
+              }),
+            }),
+          }),
+        }),
+      }),
+    }),
+  })
+# ---
+# name: TestQueryBuilder.test_query_builder_responseget
+  dict({
+    'files': True,
+    'files_deleted': True,
+  })
+# ---
+# name: TestQueryBuilder.test_query_builder_responseget_inside_basemodel
+  dict({
+    'files': dict({
+      '__all__': dict({
+        'file_status': True,
+      }),
+    }),
+  })
+# ---
 # name: TestQueryBuilder.test_return_available_fields
   list([
     'bbox',
@@ -80,4 +150,35 @@
     'unit',
     'variables',
   ])
+# ---
+# name: TestQueryBuilder.test_subset_optional_coordinate_id
+  dict({
+    'coordinates_extent': dict({
+      '__all__': dict({
+        'coordinate_id': True,
+      }),
+    }),
+  })
+# ---
+# name: TestQueryBuilder.test_subset_optional_coordinate_id_and_file
+  dict({
+    'coordinates_extent': dict({
+      '__all__': dict({
+        'coordinate_id': True,
+      }),
+    }),
+    'file_status': True,
+  })
+# ---
+# name: TestQueryBuilder.test_subset_optional_float
+  dict({
+    'data_transfer_size': True,
+    'file_size': True,
+  })
+# ---
+# name: TestQueryBuilder.test_subset_optional_status
+  dict({
+    'file_status': True,
+    'status': True,
+  })
 # ---
