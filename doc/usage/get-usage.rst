@@ -75,7 +75,6 @@ The ``--sync`` option downloads original files only if they do not exist or are 
 
 - ``--sync`` is not compatible with ``--no-directories``.
 - ``--sync`` only works with ``--dataset-version``. (see :ref:`dataset-version <dataset version>` option )
-- ``--sync`` functionality is not available for datasets with several parts (e.g., INSITU or static datasets).
 
 About filtering options
 ------------------------
