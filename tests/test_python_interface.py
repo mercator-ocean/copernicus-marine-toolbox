@@ -19,6 +19,12 @@ from copernicusmarine.download_functions.utils import (
 )
 
 
+def get_file_size(filepath):
+    file_path = Path(filepath)
+    file_stats = file_path.stat()
+    return file_stats.st_size
+
+
 class TestPythonInterface:
     def test_get_function(self, tmp_path):
         get_result = get(
@@ -283,3 +289,35 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.depth.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
+
+    def test_compressed_and_uncompressed_no_diff(self, tmp_path):
+        data_query = {
+            "dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+            "start_datetime": "2019-01-31",
+            "end_datetime": "2019-01-31",
+            "minimum_depth": 0,
+            "maximum_depth": 1,
+            "variables": ["sea_water_potential_temperature"],
+            "output_directory": tmp_path,
+        }
+        subset(**data_query, output_filename="uncompressed_data.nc")
+        subset(
+            **data_query,
+            netcdf_compression_level=1,
+            output_filename="compressed_data.nc",
+        )
+        ds1 = xarray.open_dataset(f"{tmp_path}" + "/uncompressed_data.nc")
+        ds2 = xarray.open_dataset(f"{tmp_path}" + "/compressed_data.nc")
+        size_uncompressed = get_file_size(
+            f"{tmp_path}" + "/uncompressed_data.nc"
+        )
+        size_compressed = get_file_size(f"{tmp_path}" + "/compressed_data.nc")
+        assert size_uncompressed > 1.01 * size_compressed
+        diff = ds1 - ds2
+        diff.attrs = ds1.attrs
+        for var in diff.data_vars:
+            diff[var].attrs = ds1[var].attrs
+
+        diff.to_netcdf(f"{tmp_path}" + "/diff.nc")
+        diff = xarray.open_dataset(f"{tmp_path}" + "/diff.nc")
+        assert diff.thetao.mean().values == 0.0

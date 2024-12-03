@@ -539,22 +539,8 @@ def _download_dataset_as_netcdf(
             shuffle=True,
         )
         keys_to_keep = {
-            "_FillValue",
-            "blosc_shuffle",
-            "chunksizes",
-            "complevel",
-            "compression",
-            "compression_opts",
-            "contiguous",
-            "dtype",
-            "endian",
-            "fletcher32",
-            "quantize_mode",
-            "shuffle",
-            "significant_digits",
-            "szip_coding",
-            "szip_pixels_per_block",
-            "zlib",
+            "scale_factor",
+            "add_offset",
         }
         encoding = {
             name: {
