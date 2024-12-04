@@ -307,7 +307,7 @@ class TestPythonInterface:
             output_filename="compressed_data.nc",
         )
         dataset_uncompressed = xarray.open_dataset(f"{tmp_path}" + "/uncompressed_data.nc")
-        ds2 = xarray.open_dataset(f"{tmp_path}" + "/compressed_data.nc")
+        dataset_compressed = xarray.open_dataset(f"{tmp_path}" + "/compressed_data.nc")
         size_uncompressed = get_file_size(
             f"{tmp_path}" + "/uncompressed_data.nc"
         )
