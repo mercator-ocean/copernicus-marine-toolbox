@@ -7,6 +7,8 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
 from copernicusmarine.catalogue_parser.models import (
+    PART_DEFAULT,
+    VERSION_DEFAULT,
     CopernicusMarineDataset,
     CopernicusMarinePart,
     CopernicusMarineService,
@@ -273,7 +275,6 @@ def get_retrieval_service(
     force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
-    dataset_sync: bool = False,
     username: Optional[str] = None,
     staging: bool = False,
 ) -> RetrievalService:
@@ -300,7 +301,6 @@ def get_retrieval_service(
         force_service_name=force_service_name,
         command_type=command_type,
         dataset_subset=dataset_subset,
-        dataset_sync=dataset_sync,
         username=username,
     )
 
@@ -312,20 +312,10 @@ def _get_retrieval_service_from_dataset(
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
-    dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
-    if force_dataset_version_label:
-        logger.info(
-            "You forced selection of dataset version "
-            + f'"{force_dataset_version_label}"'
-        )
     dataset_version = dataset.get_version(force_dataset_version_label)
-    if not force_dataset_version_label:
-        logger.info(
-            "Dataset version was not specified, the latest "
-            f'one was selected: "{dataset_version.label}"'
-        )
+    logger.info(f'Selected dataset version: "{dataset_version.label}"')
     return _get_retrieval_service_from_dataset_version(
         dataset_id=dataset.dataset_id,
         dataset_version=dataset_version,
@@ -333,7 +323,6 @@ def _get_retrieval_service_from_dataset(
         force_service_name=force_service_name,
         command_type=command_type,
         dataset_subset=dataset_subset,
-        dataset_sync=dataset_sync,
         username=username,
     )
 
@@ -345,20 +334,13 @@ def _get_retrieval_service_from_dataset_version(
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
-    dataset_sync: bool,
     username: Optional[str],
 ) -> RetrievalService:
-    if force_dataset_part_label:
-        logger.info(
-            f"You forced selection of dataset part "
-            f'"{force_dataset_part_label}"'
-        )
     dataset_part = dataset_version.get_part(force_dataset_part_label)
-    if not force_dataset_part_label:
-        logger.info(
-            "Dataset part was not specified, the first "
-            f'one was selected: "{dataset_part.name}"'
-        )
+    logger.info(f'Selected dataset part: "{dataset_part.name}"')
+    _warning_dataset_will_be_deprecated(
+        dataset_id, dataset_version, dataset_part
+    )
     if dataset_part.retired_date:
         _warning_dataset_will_be_deprecated(
             dataset_id, dataset_version, dataset_part
@@ -371,9 +353,6 @@ def _get_retrieval_service_from_dataset_version(
         )
 
     if force_service_name:
-        logger.info(
-            f"You forced selection of service: " f"{force_service_name.value}"
-        )
         service = _select_forced_service(
             dataset_version_part=dataset_part,
             force_service_name=force_service_name,
@@ -388,10 +367,8 @@ def _get_retrieval_service_from_dataset_version(
             dataset_subset=dataset_subset,
             username=username,
         )
-        logger.info(
-            "Service was not specified, the default one was "
-            f'selected: "{service.service_name}"'
-        )
+    if command_type == CommandType.SUBSET:
+        logger.debug(f'Selected service: "{service.service_name}"')
     dataset_start_date = _get_dataset_start_date_from_service(service)
     return RetrievalService(
         dataset_id=dataset_id,
@@ -432,16 +409,22 @@ def _warning_dataset_will_be_deprecated(
     dataset_version: CopernicusMarineVersion,
     dataset_part: CopernicusMarinePart,
 ):
-    logger.warning(
-        f"""The dataset {dataset_id}"""
-        f"""{f", version '{dataset_version.label}'"
-             if dataset_version.label != 'default' else ''}"""
-        f"""{(f"and part '{dataset_part.name}'"
-              if dataset_part.name != 'default' else '')}"""
-        f"""{"," if dataset_version.label != 'default' else ""}"""
-        f""" will be retired on the {dataset_part.retired_date}."""
-        """ After this date, it will no longer be available on the toolbox."""
+    message = f"You are using the dataset {dataset_id}"
+    if dataset_version.label != VERSION_DEFAULT:
+        message += f", version '{dataset_version.label}'"
+    if dataset_part.name != PART_DEFAULT:
+        message += f", part '{dataset_part.name}'"
+    message += "."
+    message += (
+        f"This exact part and version of the dataset "
+        f"will be retired on the {dataset_part.retired_date}."
     )
+    # TODO: maybe we can refer directly to the page of the dataset
+    message += (
+        "For more information you can check: "
+        "https://marine.copernicus.eu/user-corner/product-roadmap/transition-information"  # noqa: E501
+    )
+    logger.warning(message)
 
 
 def _warning_dataset_not_yet_released(
@@ -449,17 +432,16 @@ def _warning_dataset_not_yet_released(
     dataset_version: CopernicusMarineVersion,
     dataset_part: CopernicusMarinePart,
 ):
-    logger.warning(
-        f"""The dataset {dataset_id}"""
-        f"""{f", version '{dataset_version.label}'"
-             if dataset_version.label != 'default' else ''}"""
-        f"""{(f"and part '{dataset_part.name}'"
-              if dataset_part.name != 'default' else '')}"""
-        f"""{"," if dataset_version.label != 'default' else ""}"""
-        f""" is not yet released officially."""
-        f""" It will be available by default  on the toolbox on the"""
-        f""" {dataset_part.released_date}."""
+    message = f"Please note that the dataset {dataset_id}"
+    if dataset_version.label != VERSION_DEFAULT:
+        message += f", version '{dataset_version.label}'"
+    if dataset_part.name != PART_DEFAULT:
+        message += f", part '{dataset_part.name}'"
+    message += (
+        f" is not yet released officially. It will be available by default"
+        f" on the toolbox on the {dataset_part.released_date}."
     )
+    logger.warning(message)
 
 
 def _service_not_available_error(

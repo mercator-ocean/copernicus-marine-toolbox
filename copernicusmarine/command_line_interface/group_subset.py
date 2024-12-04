@@ -44,6 +44,13 @@ from copernicusmarine.core_functions.utils import datetime_parser
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
+DEFAULT_FIELDS_TO_INCLUDE = {
+    "status",
+    "message",
+    "file_size",
+    "data_transfer_size",
+}
+
 
 @click.group()
 def cli_subset() -> None:
@@ -374,7 +381,7 @@ def subset(
     elif dry_run:
         fields_to_include = {"all"}
     else:
-        fields_to_include = {"status", "message"}
+        fields_to_include = DEFAULT_FIELDS_TO_INCLUDE
 
     included_fields: Optional[Union[dict, set]]
     if "all" in fields_to_include:

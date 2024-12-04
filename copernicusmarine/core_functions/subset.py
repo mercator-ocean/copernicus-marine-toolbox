@@ -172,9 +172,6 @@ def subset_function(
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
         is_original_grid=retrieval_service.is_original_grid,
     )
-    logger.info(
-        "Downloading using service " f"{retrieval_service.service_name}..."
-    )
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
         CopernicusMarineServiceNames.TIMESERIES,

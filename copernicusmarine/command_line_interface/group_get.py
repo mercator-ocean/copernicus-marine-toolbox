@@ -31,6 +31,13 @@ from copernicusmarine.core_functions.models import ResponseGet
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
 
+DEFAULT_FIELDS_TO_INCLUDE = {
+    "status",
+    "message",
+    "total_size",
+    "number_of_files_to_download",
+}
+
 
 @click.group()
 def cli_get() -> None:
@@ -278,7 +285,7 @@ def get(
     elif dry_run:
         fields_to_include = {"all"}
     else:
-        fields_to_include = {"status", "message"}
+        fields_to_include = DEFAULT_FIELDS_TO_INCLUDE
     included_fields: Optional[Union[set[str], dict]]
     if "all" in fields_to_include:
         included_fields = None
