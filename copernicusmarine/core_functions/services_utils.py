@@ -338,9 +338,6 @@ def _get_retrieval_service_from_dataset_version(
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
-    _warning_dataset_will_be_deprecated(
-        dataset_id, dataset_version, dataset_part
-    )
     if dataset_part.retired_date:
         _warning_dataset_will_be_deprecated(
             dataset_id, dataset_version, dataset_part

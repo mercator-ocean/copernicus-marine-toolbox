@@ -13,14 +13,14 @@ class TestArcoServiceSelection:
             "--variable",
             "thetao",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-geo-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_only_geographical_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -41,14 +41,14 @@ class TestArcoServiceSelection:
             "--maximum-latitude",
             "34.2",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-time-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_with_only_temporal_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -65,14 +65,14 @@ class TestArcoServiceSelection:
             "--end-datetime",
             "2005-01-01 00:00:00",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-geo-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_geo_point(
         self,
@@ -99,14 +99,14 @@ class TestArcoServiceSelection:
             "--end-datetime",
             "2005-01-01 00:00:00",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-time-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_temporal_point(
         self,
@@ -133,14 +133,14 @@ class TestArcoServiceSelection:
             "--end-datetime",
             "2001-01-01 00:00:00",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-geo-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -165,14 +165,14 @@ class TestArcoServiceSelection:
             "--end-datetime",
             "2005-01-01 00:00:00",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-time-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_dataset_has_interdependant_coordinates(self):
         dataset_id = (
@@ -199,11 +199,11 @@ class TestArcoServiceSelection:
             "--end-datetime",
             "2023-11-28T23:59:59",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
-        assert (
-            b"Downloading using service arco-geo-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-geo-series"' in self.output.stderr
