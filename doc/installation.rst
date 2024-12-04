@@ -139,6 +139,25 @@ And from a Windows os (cmd):
 
 Dependencies
 **************
+The Copernicus Marine toolbox has the following dependencies:
+
+- `Python <https://www.python.org/>`__ (3.9 or later)
+- `click <https://click.palletsprojects.com/>`__ (8.0.4 or later)
+- `requests <https://docs.python-requests.org/en/latest/>`__ (2.27.1 or later)
+- `setuptools <https://setuptools.pypa.io/en/latest/>`__ (68.2.2 or later)
+- `xarray <https://xarray.pydata.org/>`__ (2023.4.0 or later)
+- `tqdm <https://tqdm.github.io/>`__ (4.65.0 or later)
+- `zarr <https://zarr.readthedocs.io/en/stable/>`__ (2.13.3 or later)
+- `dask <https://www.dask.org/>`__ (2022 or later)
+- `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__ (1.26 or later)
+- `semver <https://python-semver.readthedocs.io/en/latest/>`__ (0.2 or later)
+- `pystac <https://pystac.readthedocs.io/en/stable/>`__ (1.8.3 or later)
+- `lxml <https://lxml.de/>`__ (4.9.0 or later)
+- `numpy <https://www.numpy.org/>`__ (1.23 or later)
+- `pendulum <https://pendulum.eustace.io/>`__ (3.0.0 or later)
+- `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
+- `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
+
 
 The Copernicus Marine toolbox uses the xarray library to handle the data when using the ``subset`` command.
 There are some compatibility issues with the latest versions of xarray and numpy:
