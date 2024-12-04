@@ -179,7 +179,8 @@ class ResponseSubset(BaseModel):
     output_directory: pathlib.Path
     #: File name.
     filename: str
-    #: Estimation of the size of the final result file in MB.
+    #: Estimation of the size of the final result file in MB
+    #: (not taking into account compression).
     file_size: Optional[float]
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.
