@@ -360,6 +360,8 @@ def get_number_of_chunks_for_coordinate(
             values.append(values[-1] + step_value)  # type: ignore
     elif not values:
         return None
+    elif type(values[0]) is str:
+        return None
 
     values.sort()
     if requested_minimum is None or requested_minimum < values[0]:  # type: ignore
@@ -387,9 +389,7 @@ def get_number_of_chunks_for_coordinate(
         index_right_maximum == len(values) - 1
         or index_right_maximum == len(values)
         or abs(values[index_right_maximum] - requested_maximum)  # type: ignore
-        <= abs(
-            values[index_right_maximum + 1] - requested_maximum  # type: ignore
-        )
+        <= abs(values[index_right_maximum + 1] - requested_maximum)  # type: ignore
     ):
         chunk_of_requested_maximum = math.floor(
             (index_right_maximum) / chunking_length
