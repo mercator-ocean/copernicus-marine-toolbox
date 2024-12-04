@@ -19,10 +19,8 @@ from copernicusmarine.download_functions.utils import (
 )
 
 
-def get_file_size(filepath):
-    file_path = Path(filepath)
-    file_stats = file_path.stat()
-    return file_stats.st_size
+def get_file_size(file_path: Path):
+    return file_path.stat().st_size
 
 
 class TestPythonInterface:
