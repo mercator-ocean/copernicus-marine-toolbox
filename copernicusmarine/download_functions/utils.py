@@ -375,7 +375,9 @@ def get_number_of_chunks_for_coordinate(
     ) <= abs(
         values[index_left_minimum + 1] - requested_minimum  # type: ignore
     ):
-        chunk_of_requested_minimum = math.floor((index_left_minimum) / chunking_length)
+        chunk_of_requested_minimum = math.floor(
+            (index_left_minimum) / chunking_length
+        )
     else:
         chunk_of_requested_minimum = math.floor(
             (index_left_minimum + 1) / chunking_length
@@ -389,7 +391,9 @@ def get_number_of_chunks_for_coordinate(
         or abs(values[index_right_maximum] - requested_maximum)  # type: ignore
         <= abs(values[index_right_maximum + 1] - requested_maximum)  # type: ignore
     ):
-        chunk_of_requested_maximum = math.floor((index_right_maximum) / chunking_length)
+        chunk_of_requested_maximum = math.floor(
+            (index_right_maximum) / chunking_length
+        )
     else:
         chunk_of_requested_maximum = math.floor(
             (index_right_maximum + 1) / chunking_length
