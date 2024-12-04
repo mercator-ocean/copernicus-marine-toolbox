@@ -312,7 +312,7 @@ class TestPythonInterface:
             f"{tmp_path}" + "/uncompressed_data.nc"
         )
         size_compressed = get_file_size(f"{tmp_path}" + "/compressed_data.nc")
-        assert size_uncompressed > 1.01 * size_compressed
+        assert size_uncompressed > 1.5 * size_compressed
         diff = ds1 - ds2
         diff.attrs = ds1.attrs
         for var in diff.data_vars:
