@@ -1337,7 +1337,7 @@ class TestCommandLineInterface:
         assert dataset_without_option.uo.encoding["complevel"] == 0
 
         assert dataset_with_option.uo.encoding["zlib"] is True
-        assert dataset_with_option.uo.encoding["complevel"] == 4
+        assert dataset_with_option.uo.encoding["complevel"] == 1
         assert dataset_with_option.uo.encoding["contiguous"] is False
         assert dataset_with_option.uo.encoding["shuffle"] is True
 
@@ -1387,7 +1387,7 @@ class TestCommandLineInterface:
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)
         logger.info(f"{size_without_option=}, {size_with_option=}")
-        assert 4 * size_with_option < size_without_option
+        assert 1.4 * size_with_option < size_without_option
 
     def test_omi_arco_service(self, tmp_path):
         base_command = [

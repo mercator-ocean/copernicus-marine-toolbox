@@ -58,11 +58,11 @@ About ``--netcdf-compression-level`` options
 
 If writing data to a NetCDF file (the default format), the ``--netcdf-compression-level`` option can be set to compress the downloaded file. This reduces file size but increases writing time. Without this option, the file is written faster but with a larger size. For Zarr format ('.zarr' extension), the default compression of the Copernicus Marine Data Store is applied, making the download fast and compressed without using ``--netcdf-compression-level``.
 
-Default NetCDF compression settings for xarray:
+Default NetCDF compression settings for the toolbox are:
 
 .. code-block:: text
 
-    {'zlib': True, 'complevel': 4, 'contiguous': False, 'shuffle': True}
+    {'zlib': True, 'complevel': 1, 'contiguous': False, 'shuffle': True}
 
 Set the ``--netcdf-compression-level`` to a custom compression level between 0 (no compression, by default) and 9 (maximum compression).
 
