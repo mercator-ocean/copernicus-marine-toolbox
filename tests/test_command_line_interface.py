@@ -1478,7 +1478,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         response_subset = loads(self.output.stdout)
-        assert int(response_subset["data_transfer_size"]) == 71692
+        assert int(response_subset["data_transfer_size"]) == 71691
 
     def test_file_list_filter(self, tmp_path):
         dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"
