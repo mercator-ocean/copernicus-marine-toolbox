@@ -7,8 +7,6 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
 from copernicusmarine.catalogue_parser.models import (
-    PART_DEFAULT,
-    VERSION_DEFAULT,
     CopernicusMarineDataset,
     CopernicusMarinePart,
     CopernicusMarineService,
@@ -406,18 +404,13 @@ def _warning_dataset_will_be_deprecated(
     dataset_version: CopernicusMarineVersion,
     dataset_part: CopernicusMarinePart,
 ):
-    message = f"You are using the dataset {dataset_id}"
-    if dataset_version.label != VERSION_DEFAULT:
-        message += f", version '{dataset_version.label}'"
-    if dataset_part.name != PART_DEFAULT:
-        message += f", part '{dataset_part.name}'"
-    message += "."
-    message += (
-        f"This exact part and version of the dataset "
-        f"will be retired on the {dataset_part.retired_date}."
-    )
     # TODO: maybe we can refer directly to the page of the dataset
-    message += (
+    message = (
+        f"You are using the dataset {dataset_id}"
+        f", version '{dataset_version.label}'"
+        f", part '{dataset_part.name}'. "
+        f"This exact version and part of the dataset "
+        f"will be retired on the {dataset_part.retired_date}. "
         "For more information you can check: "
         "https://marine.copernicus.eu/user-corner/product-roadmap/transition-information"  # noqa: E501
     )
@@ -429,14 +422,12 @@ def _warning_dataset_not_yet_released(
     dataset_version: CopernicusMarineVersion,
     dataset_part: CopernicusMarinePart,
 ):
-    message = f"Please note that the dataset {dataset_id}"
-    if dataset_version.label != VERSION_DEFAULT:
-        message += f", version '{dataset_version.label}'"
-    if dataset_part.name != PART_DEFAULT:
-        message += f", part '{dataset_part.name}'"
-    message += (
-        f" is not yet released officially. It will be available by default"
-        f" on the toolbox on the {dataset_part.released_date}."
+    message = (
+        f"Please note that the dataset {dataset_id}"
+        f", version '{dataset_version.label}'"
+        f", part '{dataset_part.name}' "
+        f"is not yet released officially. It will be available by default "
+        f"on the toolbox on the {dataset_part.released_date}."
     )
     logger.warning(message)
 

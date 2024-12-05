@@ -139,7 +139,7 @@ def download_dataset(
         output_path = get_unique_filename(
             filepath=output_path,
         )
-
+    logger.debug(f"Xarray Dataset: {dataset}")
     response = ResponseSubset(
         file_path=output_path,
         output_directory=output_directory,
