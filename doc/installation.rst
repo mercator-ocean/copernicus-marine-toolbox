@@ -187,4 +187,3 @@ To be able to debug, we provide the domains that the toolbox uses when running:
 - ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.
 - ``https://s3.waw3-1.cloudferro.com``: for the data.
-- ``https://s3.waw2-1.cloudferro.com``: for the data.
