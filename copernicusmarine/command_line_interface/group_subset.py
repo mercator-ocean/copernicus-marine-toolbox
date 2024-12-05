@@ -10,6 +10,7 @@ from copernicusmarine.command_line_interface.exception_handler import (
 from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
+    credentials_file_option,
     force_dataset_part_option,
     force_dataset_version_option,
     tqdm_disable_option,
@@ -179,11 +180,7 @@ def cli_subset() -> None:
     type=click.Path(path_type=pathlib.Path),
     help=documentation_utils.SUBSET["OUTPUT_DIRECTORY_HELP"],
 )
-@click.option(
-    "--credentials-file",
-    type=click.Path(path_type=pathlib.Path),
-    help=documentation_utils.SUBSET["CREDENTIALS_FILE_HELP"],
-)
+@credentials_file_option
 @click.option(
     "--output-filename",
     "-f",

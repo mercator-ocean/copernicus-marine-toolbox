@@ -7,6 +7,7 @@ import botocore
 import botocore.config
 import certifi
 import requests
+import requests.auth
 from requests.adapters import HTTPAdapter, Retry
 
 from copernicusmarine.core_functions.environment_variables import (
@@ -111,6 +112,23 @@ class ConfiguredRequestsSession(requests.Session):
 
 def get_configured_requests_session() -> requests.Session:
     return ConfiguredRequestsSession()
+
+
+# from https://stackoverflow.com/questions/29931671/making-an-api-call-in-python-with-an-api-that-requires-a-bearer-token # noqa
+class BearerAuth(requests.auth.AuthBase):
+    """
+    Allow to pass the bearer as "auth" argument to the requests.get method and not as a header.
+
+    Hence the headers are not overwritten by the netrc file as stated here:
+    https://requests.readthedocs.io/en/latest/user/authentication/#netrc-authentication
+    """  # noqa
+
+    def __init__(self, token):
+        self.token = token
+
+    def __call__(self, r):
+        r.headers["authorization"] = "Bearer " + self.token
+        return r
 
 
 class JsonParserConnection:

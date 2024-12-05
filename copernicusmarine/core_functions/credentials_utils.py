@@ -16,6 +16,7 @@ from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_SERVICE_USERNAME,
 )
 from copernicusmarine.core_functions.sessions import (
+    BearerAuth,
     get_configured_requests_session,
 )
 
@@ -39,7 +40,10 @@ RECOVER_YOUR_CREDENTIALS_MESSAGE = (
     "4444552-i-forgot-my-username-or-my-password-what-should-i-do"
 )
 
-COPERNICUS_MARINE_AUTH_SYSTEM_URL = "https://auth.marine.copernicus.eu/"
+COPERNICUS_MARINE_AUTH_SYSTEM_DOMAIN = "auth.marine.copernicus.eu"
+COPERNICUS_MARINE_AUTH_SYSTEM_URL = (
+    f"https://{COPERNICUS_MARINE_AUTH_SYSTEM_DOMAIN}/"
+)
 COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT = (
     COPERNICUS_MARINE_AUTH_SYSTEM_URL
     + "realms/MIS/protocol/openid-connect/token"
@@ -48,6 +52,22 @@ COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT = (
     COPERNICUS_MARINE_AUTH_SYSTEM_URL
     + "realms/MIS/protocol/openid-connect/userinfo"
 )
+
+COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_DOMAIN = "cmems-cas.cls.fr"
+
+COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_URL = (
+    f"https://{COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_DOMAIN}/cas/login"
+)
+ACCEPTED_HOSTS_NETRC_FILE = [
+    "nrt.cmems-du.eu",
+    "my.cmems-du.eu",
+    COPERNICUS_MARINE_AUTH_SYSTEM_DOMAIN,
+    "default_host",
+]
+DEPRECATED_HOSTS = [
+    "nrt.cmems-du.eu",
+    "my.cmems-du.eu",
+]
 
 
 class CredentialsCannotBeNone(Exception):
@@ -90,6 +110,23 @@ class CouldNotConnectToAuthenticationSystem(Exception):
     pass
 
 
+def _warning_netrc_deprecated_hosts():
+    logger.warning(
+        "The following hosts are deprecated and will be removed in future versions: "
+        f"{DEPRECATED_HOSTS}. "
+        "Please update your netrc file to use the new authentication system domain: "
+        f"{COPERNICUS_MARINE_AUTH_SYSTEM_DOMAIN}."
+    )
+
+
+def _warning_motuclient_deprecated():
+    logger.warning(
+        "The motuclient configuration file is deprecated "
+        "and will be removed in future versions. Please use "
+        "the login command and or function to create a new configuration file."
+    )
+
+
 def _load_credential_from_copernicus_marine_configuration_file(
     credential_type: Literal["username", "password"],
     configuration_filename: pathlib.Path,
@@ -109,9 +146,18 @@ def _load_credential_from_copernicus_marine_configuration_file(
 def _load_credential_from_netrc_configuration_file(
     credential_type: Literal["username", "password"],
     configuration_filename: pathlib.Path,
-    host: str,
 ) -> Optional[str]:
-    authenticator = netrc(configuration_filename).authenticators(host=host)
+    authenticator = None
+    for host in ACCEPTED_HOSTS_NETRC_FILE:
+        authenticator = netrc(configuration_filename).authenticators(host=host)
+        if (
+            authenticator
+            and host in DEPRECATED_HOSTS
+            and credential_type == "username"
+        ):
+            _warning_netrc_deprecated_hosts()
+        if authenticator:
+            break
     if authenticator:
         username, _, password = authenticator
         logger.debug(f"{credential_type} loaded from {configuration_filename}")
@@ -162,25 +208,28 @@ def _retrieve_credential_from_environment_variable(
 def _retrieve_credential_from_custom_configuration_files(
     credential_type: Literal["username", "password"],
     credentials_file: pathlib.Path,
-    host: str = "default_host",
 ) -> Optional[str]:
-    credential = _load_credential_from_copernicus_marine_configuration_file(
-        credential_type, credentials_file
-    )
-    if not credential:
+    if "netrc" in str(credentials_file):
+        credential = _load_credential_from_netrc_configuration_file(
+            credential_type, credentials_file
+        )
+    elif "motuclient" in str(credentials_file):
+        if credential_type == "username":
+            _warning_motuclient_deprecated()
         credential = _load_credential_from_motu_configuration_file(
             credential_type, credentials_file
         )
-        if not credential:
-            credential = _load_credential_from_netrc_configuration_file(
-                credential_type, credentials_file, host=host
+    else:
+        credential = (
+            _load_credential_from_copernicus_marine_configuration_file(
+                credential_type, credentials_file
             )
+        )
     return credential
 
 
 def _retrieve_credential_from_default_configuration_files(
     credential_type: Literal["username", "password"],
-    host: str = "default_host",
 ) -> Optional[str]:
     copernicus_marine_configuration_file = pathlib.Path(
         DEFAULT_CLIENT_CREDENTIALS_FILEPATH
@@ -199,12 +248,14 @@ def _retrieve_credential_from_default_configuration_files(
             )
         )
     elif motu_configuration_file.exists():
+        if credential_type == "username":
+            _warning_motuclient_deprecated()
         credential = _load_credential_from_motu_configuration_file(
             credential_type, motu_configuration_file
         )
     elif netrc_configuration_file.exists():
         credential = _load_credential_from_netrc_configuration_file(
-            credential_type, netrc_configuration_file, host=host
+            credential_type, netrc_configuration_file
         )
     else:
         credential = None
@@ -214,15 +265,14 @@ def _retrieve_credential_from_default_configuration_files(
 def _retrieve_credential_from_configuration_files(
     credential_type: Literal["username", "password"],
     credentials_file: Optional[pathlib.Path],
-    host: str = "default_host",
 ) -> Optional[str]:
     if credentials_file and credentials_file.exists():
         credential = _retrieve_credential_from_custom_configuration_files(
-            credential_type, credentials_file, host
+            credential_type, credentials_file
         )
     else:
         credential = _retrieve_credential_from_default_configuration_files(
-            credential_type, host
+            credential_type
         )
     return credential
 
@@ -237,7 +287,7 @@ def copernicusmarine_configuration_file_exists(
 
 
 def copernicusmarine_credentials_are_valid(
-    configuration_file_directory: pathlib.Path,
+    configuration_file: Optional[pathlib.Path],
     username: Optional[str],
     password: Optional[str],
 ):
@@ -272,17 +322,31 @@ def copernicusmarine_credentials_are_valid(
             )
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
             return False
-    elif copernicusmarine_configuration_file_exists(
-        configuration_file_directory
+    elif (
+        username := _retrieve_credential_from_configuration_files(
+            "username", configuration_file
+        )
+    ) and (
+        password := _retrieve_credential_from_configuration_files(
+            "password", configuration_file
+        )
     ):
-        if copernicusmarine_configuration_file_is_valid(
-            configuration_file_directory
-        ):
+        if _are_copernicus_marine_credentials_valid(username, password):
             logger.info("Valid credentials from configuration file.")
             return True
         else:
             logger.info("Invalid credentials from configuration file.")
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+    elif configuration_file:
+        logger.info(
+            f"No credentials found in configuration file {configuration_file}."
+        )
+        logger.info(
+            "Please be sure the configuration file is correct: "
+            "it exists and the format is correct (especially in "
+            "the case of netrc or motuclient file)."
+        )
+        return False
     else:
         logger.info("No credentials found.")
         logger.info(
@@ -290,25 +354,6 @@ def copernicusmarine_credentials_are_valid(
             "variables, or use the 'login' command to create a credentials file."
         )
     return False
-
-
-def copernicusmarine_configuration_file_is_valid(
-    configuration_file_directory: pathlib.Path,
-) -> bool:
-    configuration_filename = pathlib.Path(
-        configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
-    )
-    username = _retrieve_credential_from_configuration_files(
-        "username", configuration_filename
-    )
-    password = _retrieve_credential_from_configuration_files(
-        "password", configuration_filename
-    )
-    return (
-        username is not None
-        and password is not None
-        and _are_copernicus_marine_credentials_valid(username, password)
-    )
 
 
 def create_copernicusmarine_configuration_file(
@@ -344,7 +389,7 @@ def _check_credentials_with_old_cas(username: str, password: str) -> bool:
     logger.debug("Checking user credentials...")
     service = "copernicus-marine-client"
     cmems_cas_login_url = (
-        f"https://cmems-cas.cls.fr/cas/login?service={service}"
+        f"{COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_URL}?service={service}"
     )
     conn_session = get_configured_requests_session()
     logger.debug(f"GETing {cmems_cas_login_url}...")
@@ -385,14 +430,20 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
         "scope": scope,
     }
     conn_session = get_configured_requests_session()
-    response = conn_session.post(keycloak_url, data=data)
+    logger.debug(f"POSTing credentials to {keycloak_url}...")
+    response = conn_session.post(
+        keycloak_url, data=data, proxies=conn_session.proxies
+    )
     response.raise_for_status()
     if response.status_code == 200:
         token_response = response.json()
         access_token = token_response["access_token"]
+        bearer_auth = BearerAuth(access_token)
         userinfo_url = COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT
-        headers = {"Authorization": f"Bearer {access_token}"}
-        response = conn_session.get(userinfo_url, headers=headers)
+        logger.debug(f"GETing {userinfo_url}...")
+        response = conn_session.get(
+            userinfo_url, auth=bearer_auth, proxies=conn_session.proxies
+        )
         response.raise_for_status()
         if response.status_code == 200:
             return True
@@ -473,20 +524,13 @@ def get_credential(
             credential = _retrieve_credential_from_configuration_files(
                 credential_type=credential_type,
                 credentials_file=credentials_file,
-                host="nrt.cmems-du.eu",
             )
             if not credential:
-                credential = _retrieve_credential_from_configuration_files(
-                    credential_type=credential_type,
-                    credentials_file=credentials_file,
-                    host="my.cmems-du.eu",
+                credential = _retrieve_credential_from_prompt(
+                    credential_type, hide_input=hide_input
                 )
                 if not credential:
-                    credential = _retrieve_credential_from_prompt(
-                        credential_type, hide_input=hide_input
-                    )
-                    if not credential:
-                        raise ValueError(f"{credential} cannot be None")
+                    raise ValueError(f"{credential} cannot be None")
     else:
         logger.debug("Credentials loaded from function arguments")
     return credential
