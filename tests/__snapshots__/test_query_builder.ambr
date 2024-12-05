@@ -127,6 +127,7 @@
     'https_url',
     'last_modified_datetime',
     'message',
+    'number_of_files_to_download',
     'output_directory',
     's3_url',
     'status',

@@ -272,24 +272,29 @@ def copernicusmarine_credentials_are_valid(
             )
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
             return False
-    elif copernicusmarine_configuration_file_is_valid(
+    elif copernicusmarine_configuration_file_exists(
         configuration_file_directory
     ):
-        logger.info("Valid credentials from configuration file.")
-        return True
+        if copernicusmarine_configuration_file_is_valid(
+            configuration_file_directory
+        ):
+            logger.info("Valid credentials from configuration file.")
+            return True
+        else:
+            logger.info("Invalid credentials from configuration file.")
+            logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
     else:
-        logger.info("Invalid credentials from configuration file.")
-        logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+        logger.info("No credentials found.")
+        logger.info(
+            "Please provide credentials as arguments or environment "
+            "variables, or use the 'login' command to create a credentials file."
+        )
     return False
 
 
 def copernicusmarine_configuration_file_is_valid(
     configuration_file_directory: pathlib.Path,
 ) -> bool:
-    if not copernicusmarine_configuration_file_exists(
-        configuration_file_directory
-    ):
-        return False
     configuration_filename = pathlib.Path(
         configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
     )

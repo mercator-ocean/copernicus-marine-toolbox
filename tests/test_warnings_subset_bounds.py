@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from json import loads
 
 from copernicusmarine import CoordinatesOutOfDatasetBounds, subset
 from tests.test_utils import execute_in_terminal
@@ -100,17 +101,13 @@ class TestWarningsSubsetBounds:
         )
         self.output1 = execute_in_terminal(command1)
         self.output2 = execute_in_terminal(command2)
-        assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
-        ) in self.output1.stderr
+        assert (b"ERROR") in self.output1.stderr
         assert (
             b"Some of your subset selection [-180.0, 180.0] for the longitude "
             b"dimension exceed the dataset coordinates "
             b"[-179.9791717529297, 179.9791717529297]"
         ) in self.output1.stderr
-        assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
-        ) not in self.output2.stderr
+        assert (b"ERROR") not in self.output2.stderr
         assert (
             b"Some of your subset selection [-179.9, 179.9] for the longitude "
             b"dimension exceed the dataset coordinates "
@@ -124,9 +121,7 @@ class TestWarningsSubsetBounds:
             dataset_id, "thetao", -150, 180, "strict-inside"
         )
         self.output = execute_in_terminal(command)
-        assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
-        ) not in self.output.stderr
+        assert (b"ERROR") not in self.output.stderr
         assert (
             b"Some or all of your subset selection"
         ) not in self.output.stderr
@@ -210,15 +205,20 @@ class TestWarningsSubsetBounds:
             ]
         )
         output = execute_in_terminal(command)
+        response_subset = loads(output.stdout)
 
         assert (
             b"Some of your subset selection [0.4, 50.0] for the depth "
             b"dimension exceed the dataset coordinates "
             b"[0.49402499198913574, 5727.9169921875]"
         ) in output.stderr
-        assert (
-            b"* elevation  (elevation) float32 72B -47.37 -40.34"
-        ) in output.stderr
+        elevation_coordinates_extent = [
+            extent
+            for extent in response_subset["coordinates_extent"]
+            if extent["coordinate_id"] == "elevation"
+        ][0]
+        assert int(elevation_coordinates_extent["minimum"]) == -47
+        assert int(elevation_coordinates_extent["maximum"]) == 0
 
     def test_error_Coord_out_of_dataset_bounds(self):
         try:

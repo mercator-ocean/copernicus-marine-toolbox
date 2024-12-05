@@ -246,10 +246,7 @@ class TestLogin:
             command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
-        assert (
-            b"Invalid credentials from configuration file"
-            in self.output.stderr
-        )
+        assert b"No credentials found." in self.output.stderr
 
     def check_credentials_file_is_valid(self, tmp_path):
         non_existing_directory = Path(tmp_path, "lolololo")

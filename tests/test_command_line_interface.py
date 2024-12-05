@@ -262,49 +262,6 @@ class TestCommandLineInterface:
         for filename in downloaded_files:
             assert re.match(regex, filename) is not None
 
-    def test_files_to_download_are_displayed_with_dry_run(self, tmp_path):
-        regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--regex",
-            f"{regex}",
-            "--output-directory",
-            f"{tmp_path}",
-            "--dry-run",
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert (
-            b"You requested the download of the following files"
-            in self.output.stderr
-        )
-
-    def test_downloaded_files_are_not_displayed_by_default_option(
-        self, tmp_path
-    ):
-        regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--regex",
-            f"{regex}",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert (
-            b"You requested the download of the following files"
-            not in self.output.stderr
-        )
-
     def test_get_something_and_skip_existing(self, tmp_path):
         self.when_get_by_default_returns_status_message(tmp_path)
         self.and_I_do_skip_existing(tmp_path)
@@ -823,30 +780,7 @@ class TestCommandLineInterface:
             tmp_path, output_directory="test"
         )
 
-    def test_default_service_for_get_command(self, tmp_path):
-        self.when_I_run_copernicus_marine_get_with_default_service()
-        self.then_I_can_see_the_original_files_service_is_choosen()
-
-    def when_I_run_copernicus_marine_get_with_default_service(
-        self,
-    ):
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
-            "--dry-run",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-    def then_I_can_see_the_original_files_service_is_choosen(self):
-        assert (
-            b"Downloading using service original-files..."
-            in self.output.stderr
-        )
-
-    def test_default_service_for_subset_command(self, tmp_path):
+    def test_default_service_for_subset_command(self):
         self.when_I_run_copernicus_marine_subset_with_default_service()
         self.then_I_can_see_the_arco_geo_series_service_is_choosen()
 
@@ -861,15 +795,14 @@ class TestCommandLineInterface:
             "--variable",
             "thetao",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(command)
 
     def then_I_can_see_the_arco_geo_series_service_is_choosen(self):
-        assert (
-            b"Downloading using service arco-geo-series..."
-            in self.output.stderr
-        )
+        assert b'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_get_2023_08_original_files(self):
         command = [
@@ -1214,14 +1147,18 @@ class TestCommandLineInterface:
         assert self.output.returncode == 0
         assert expected_filepath.is_dir()
 
-    def then_I_can_read_dataset_size(self):
-        assert b"Estimated size of the dataset file is" in self.output.stderr
+    def then_I_can_read_dataset_size_in_the_response(self):
+        response_subset = loads(self.output.stdout)
+        assert "file_size" in response_subset
+        assert "data_transfer_size" in response_subset
+        assert response_subset["file_size"] > 0
+        assert int(response_subset["data_transfer_size"]) == 50
 
     def test_dataset_size_is_displayed_when_downloading_with_arco_service(
         self, tmp_path
     ):
         self.when_I_request_subset_dataset_with_zarr_service(tmp_path)
-        self.then_I_can_read_dataset_size()
+        self.then_I_can_read_dataset_size_in_the_response()
 
     def test_dataset_has_always_every_dimensions(self, tmp_path):
         output_filename = "data.nc"
@@ -1400,15 +1337,17 @@ class TestCommandLineInterface:
             "-o",
             f"{tmp_path}",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(base_command)
         assert self.output.returncode == 0
-        assert b"Downloading using service omi-arco..." in self.output.stderr
+        assert b'Selected service: "omi-arco"' in self.output.stderr
 
         self.output = execute_in_terminal(base_command + ["-s", "omi-arco"])
         assert self.output.returncode == 0
-        assert b"Downloading using service omi-arco..." in self.output.stderr
+        assert b'Selected service: "omi-arco"' in self.output.stderr
 
     def test_static_arco_service(self, tmp_path):
         base_command = [
@@ -1423,19 +1362,17 @@ class TestCommandLineInterface:
             "-o",
             f"{tmp_path}",
             "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
 
         self.output = execute_in_terminal(base_command)
         assert self.output.returncode == 0
-        assert (
-            b"Downloading using service static-arco..." in self.output.stderr
-        )
+        assert b'Selected service: "static-arco"' in self.output.stderr
 
         self.output = execute_in_terminal(base_command + ["-s", "static-arco"])
         assert self.output.returncode == 0
-        assert (
-            b"Downloading using service static-arco..." in self.output.stderr
-        )
+        assert b'Selected service: "static-arco"' in self.output.stderr
 
     def test_subset_dataset_part_option(self, tmp_path):
         base_command = [
@@ -1502,37 +1439,6 @@ class TestCommandLineInterface:
         assert dataset.uo.encoding["contiguous"] is False
         assert dataset.uo.encoding["shuffle"] is True
 
-    def test_subset_approximation_of_data_that_needs_to_be_downloaded(
-        self,
-    ):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-            "-v",
-            "thetao",
-            "-x",
-            "-100.0",
-            "-X",
-            "-70.0",
-            "-y",
-            "-80.0",
-            "-Y",
-            "-65.0",
-            "-t",
-            "2023-03-20",
-            "-T",
-            "2023-03-20",
-            "--dry-run",
-        ]
-        self.output = execute_in_terminal(command)
-        assert (
-            b"Estimated size of the data that needs"
-            b" to be downloaded to obtain the result: 200 MB"
-            in self.output.stderr
-        )
-
     def test_subset_approximation_of_big_data_that_needs_to_be_downloaded(
         self,
     ):
@@ -1570,11 +1476,9 @@ class TestCommandLineInterface:
             "--dry-run",
         ]
         self.output = execute_in_terminal(command)
-        assert (
-            b"Estimated size of the data that needs"
-            b" to be downloaded to obtain the result: 71692 MB"
-            in self.output.stderr
-        )
+        assert self.output.returncode == 0
+        response_subset = loads(self.output.stdout)
+        assert int(response_subset["data_transfer_size"]) == 71691
 
     def test_file_list_filter(self, tmp_path):
         dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"

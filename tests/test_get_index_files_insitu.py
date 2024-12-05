@@ -1,3 +1,5 @@
+from json import loads
+
 from copernicusmarine import get
 from tests.test_utils import execute_in_terminal
 
@@ -13,26 +15,31 @@ class TestGetIndexInsituFiles:
             "--dry-run",
         ]
         self.output = execute_in_terminal(self.command)
-
+        assert self.output.returncode == 0
+        response_get = loads(self.output.stdout)
+        s3_addresses_results = {
+            result["s3_url"] for result in response_get["files"]
+        }
+        assert len(s3_addresses_results) == 4
         assert (
-            b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
-            b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_history.txt"
-            in self.output.stderr
+            "s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
+            "/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_history.txt"
+            in s3_addresses_results
         )
         assert (
-            b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
-            b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_latest.txt"
-            in self.output.stderr
+            "s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
+            "/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_latest.txt"
+            in s3_addresses_results
         )
         assert (
-            b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
-            b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_monthly.txt"
-            in self.output.stderr
+            "s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
+            "/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_monthly.txt"
+            in s3_addresses_results
         )
         assert (
-            b"s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
-            b"/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_platform.txt"
-            in self.output.stderr
+            "s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
+            "/cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/index_platform.txt"
+            in s3_addresses_results
         )
 
     def test_get_index_insitu_files_not_an_insitu(self):

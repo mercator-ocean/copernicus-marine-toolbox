@@ -230,22 +230,6 @@ def _get_coordinate_extent(
     return None
 
 
-def get_message_formatted_dataset_size_estimation(
-    estimation_size_final_result: Optional[float],
-    estimation_data_downloaded: Optional[float],
-) -> str:
-    return (
-        f"Estimated size of the dataset file is "
-        f"{estimation_size_final_result:.3f} MB"
-        f"\nEstimated size of the data that needs "
-        f"to be downloaded to obtain the result:"
-        f" {estimation_data_downloaded:.0f} MB"
-        "\nThis is a very rough estimate that is"
-        " generally higher than the actual size of the"
-        " data that needs to be downloaded."
-    )
-
-
 def get_approximation_size_final_result(
     dataset: xarray.Dataset,
 ) -> Optional[float]:

@@ -17,7 +17,7 @@ DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_WITH_ONE_WRONG = (
     "tests/resources/file_list_examples/"
     "direct_download_file_list_with_one_wrong.txt"
 )
-DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIIFERENT_PATH_TYPES = (
+DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIFERENT_PATH_TYPES = (
     "tests/resources/file_list_examples/"
     "direct_download_file_list_different_path_types.txt"
 )
@@ -170,7 +170,7 @@ class TestGetDirectDownload:
             "--dataset-id",
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr",
             "--file-list",
-            DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIIFERENT_PATH_TYPES,
+            DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIFERENT_PATH_TYPES,
             "-o",
             str(tmp_path),
         ]

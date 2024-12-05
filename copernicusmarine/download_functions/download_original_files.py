@@ -102,6 +102,7 @@ def download_original_files(
                 files=[],
                 files_deleted=None,
                 files_not_found=None,
+                number_of_files_to_download=0,
                 status=StatusCode.FILE_LIST_CREATED,
                 message=StatusMessage.FILE_LIST_CREATED,
                 total_size=None,
@@ -115,18 +116,11 @@ def download_original_files(
                 files_headers_listing.files_not_found
             )
 
-    message = _create_information_message_before_download(files_headers)
-
     files_headers = _create_filenames_out(
         files_information=files_headers,
         output_directory=pathlib.Path(get_request.output_directory),
         no_directories=get_request.no_directories,
     )
-
-    if get_request.dry_run and files_headers.total_size:
-        logger.info(message)
-    else:
-        logger.debug(message)
 
     if get_request.sync_delete:
         files_headers = _get_files_to_delete_with_sync(
@@ -207,6 +201,13 @@ def create_response_get_from_files_headers(
             files_headers.files_not_found
             if files_headers.files_not_found
             else None
+        ),
+        number_of_files_to_download=len(
+            [
+                file_to_download
+                for file_to_download in files_headers.s3_files
+                if not file_to_download.ignore
+            ]
         ),
         status=(
             StatusCode.NO_DATA_TO_DOWNLOAD
@@ -530,32 +531,6 @@ def _check_should_be_overwritten(
     )
 
 
-def _create_information_message_before_download(
-    files_information: S3FilesDescriptor,
-) -> str:
-    message = "You requested the download of the following files:\n"
-    files_printed = 0
-    for s3_file in files_information.s3_files:
-        if not s3_file.ignore:
-            files_printed += 1
-            message += str(s3_file.filename_in)
-            message += (
-                f" - {format_file_size(float(s3_file.size))}"
-                f" - {s3_file.last_modified}\n"
-            )
-        if files_printed == 20:
-            break
-    if len(files_information.s3_files) > 20:
-        message += (
-            f"Printed 20 out of {len(files_information.s3_files)} files\n"
-        )
-    message += (
-        f"\nTotal size of the download: "
-        f"{format_file_size(files_information.total_size)}\n\n"
-    )
-    return message
-
-
 def _local_path_from_s3_url(
     s3_url: str, local_directory: pathlib.Path
 ) -> pathlib.Path:
@@ -700,35 +675,6 @@ def _create_filename_out(
         # filename_in: s3://mdl-native-xx/native/<product-id>..
         filename_out = _local_path_from_s3_url(file_path, output_directory)
     return filename_out
-
-
-def format_file_size(
-    size: float, decimals: int = 2, binary_system: bool = False
-) -> str:
-    if binary_system:
-        units: list[str] = [
-            "B",
-            "KiB",
-            "MiB",
-            "GiB",
-            "TiB",
-            "PiB",
-            "EiB",
-            "ZiB",
-        ]
-        largest_unit: str = "YiB"
-        step: int = 1024
-    else:
-        units = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB"]
-        largest_unit = "YB"
-        step = 1000
-
-    for unit in units:
-        if size < step:
-            return ("%." + str(decimals) + "f %s") % (size, unit)
-        size /= step
-
-    return ("%." + str(decimals) + "f %s") % (size, largest_unit)
 
 
 def size_to_MB(size: float) -> float:
