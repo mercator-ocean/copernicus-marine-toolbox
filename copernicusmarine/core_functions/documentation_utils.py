@@ -75,6 +75,12 @@ LOGIN: dict[str, str] = {
         "3. Check if the credentials are valid in the configuration file. "
         "When any is found (valid or not valid), will return immediately."
     ),
+    "CREDENTIALS_FILE_HELP": (
+        "Path to a credentials file if not in its default directory"
+        " (``$HOME/.copernicusmarine``). Accepts "
+        ".copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini "
+        "files. Will only be taken into account when checking the credentials validity."
+    ),
 }
 
 DESCRIBE: dict[str, str] = {
@@ -256,5 +262,5 @@ GET: dict[str, str] = {
 
 SUBSET.update(SHARED)
 GET.update(SHARED)
-LOGIN.update(SHARED)
+LOGIN.update({k: v for k, v in SHARED.items() if k not in LOGIN})
 DESCRIBE.update({k: v for k, v in SHARED.items() if k not in DESCRIBE})

@@ -84,6 +84,11 @@ def cli_login() -> None:
     help=documentation_utils.LOGIN["CHECK_CREDENTIALS_VALID_HELP"],
 )
 @click.option(
+    "--credentials-file",
+    type=click.Path(path_type=pathlib.Path),
+    help=documentation_utils.LOGIN["CREDENTIALS_FILE_HELP"],
+)
+@click.option(
     "--log-level",
     type=click.Choice(["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL", "QUIET"]),
     default="INFO",
@@ -96,6 +101,7 @@ def login(
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
     check_credentials_valid: bool,
+    credentials_file: Optional[pathlib.Path],
     log_level: str = "INFO",
 ) -> None:
     if log_level == "QUIET":
@@ -109,5 +115,6 @@ def login(
         configuration_file_directory=configuration_file_directory,
         force_overwrite=force_overwrite,
         check_credentials_valid=check_credentials_valid,
+        configuration_file=credentials_file,
     ):
         exit(1)
