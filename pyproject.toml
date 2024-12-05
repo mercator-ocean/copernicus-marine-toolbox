@@ -26,6 +26,7 @@ numpy = ">=1.23.0"
 pendulum = "^3.0.0"
 pydantic = "^2.9.1"
 h5netcdf = "^1.4.0"
+types-toml = "^0.10.8.20240310"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"
