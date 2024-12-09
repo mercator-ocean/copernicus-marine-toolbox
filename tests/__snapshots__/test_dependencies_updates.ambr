@@ -1,0 +1,21 @@
+# serializer version: 1
+# name: TestDependeciesUpdates.test_update_dependencies
+  dict({
+    'boto3': '>=1.26',
+    'click': '>=8.0.4',
+    'dask': '>=2022',
+    'h5netcdf': '^1.4.0',
+    'lxml': '>=4.9.0',
+    'numpy': '>=1.23.0',
+    'pendulum': '^3.0.0',
+    'pydantic': '^2.9.1',
+    'pystac': '>=1.8.3',
+    'python': '>=3.9',
+    'requests': '>=2.27.1',
+    'semver': '>=3.0.2',
+    'setuptools': '>=68.2.2',
+    'tqdm': '>=4.65.0',
+    'xarray': '>=2023.4.0',
+    'zarr': '>=2.13.3',
+  })
+# ---

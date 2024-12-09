@@ -35,6 +35,9 @@ ipython="^8.14.0"
 [tool.poetry.scripts]
 copernicusmarine = 'copernicusmarine.command_line_interface.copernicus_marine:command_line_interface'
 
+[tool.poetry.group.dev.dependencies]
+types-toml = "^0.10.8.20240310"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
