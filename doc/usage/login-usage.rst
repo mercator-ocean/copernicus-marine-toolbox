@@ -38,7 +38,7 @@ If your configuration files are stored in a different directory, you can point d
 
 .. warning::
     The use of motuclient file is deprecated and will be removed in the future.
-    Also, the hosts ``nrt.cmems-du.eu`` and ``my.cmems-du.eu`` are deprecated and will be removed in the future.
+    Also, the hosts ``nrt.cmems-du.eu`` and ``my.cmems-du.eu`` are deprecated for 'netrc' files and will be removed in the future.
     Please use the new login system and the new host: ``auth.marine.copernicus.eu``.
 
 
