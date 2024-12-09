@@ -66,8 +66,8 @@ The content of ``selected_files_for_2021.csv`` would be:
     s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc,12295906,2023-11-12 23:47:05.466000+00:00,"e8a7e564f676a08bf601bcdeaebdc563"
     [...]
 
-About sync option
----------------------
+About ``--sync`` option
+------------------------
 
 The ``--sync`` option downloads original files only if they do not exist or are not up to date. The Toolbox checks the destination folder against the source folder and can be combined with filters. If set with ``--overwrite``, the latter will be ignored. The ``--sync-delete`` option works like ``--sync`` but also deletes any local files not found on the remote server.
 
@@ -95,8 +95,8 @@ Option ``--regex`` allows specifying a regular expression for more advanced file
 
     copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --regex ".*01yav_20(00|01|02).*.nc"
 
-About the file list option
----------------------------
+About ``--file-list`` option
+-----------------------------
 
 The ``--file-list`` option allows specifying a list of files for advanced selection. The file can contain complete absolute paths or only a partial path defined by the user.
 
