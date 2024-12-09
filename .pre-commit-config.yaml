@@ -59,4 +59,3 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-requests==2.27.11, types-pyyaml==6.0.5]
-        exclude: ^tests/test_dependencies_updates.py
