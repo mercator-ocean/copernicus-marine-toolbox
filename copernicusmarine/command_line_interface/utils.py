@@ -1,3 +1,5 @@
+import pathlib
+
 import click
 from click import Context, Option, UsageError
 from click.core import ParameterSource
@@ -64,19 +66,25 @@ tqdm_disable_option = click.option(
     "--disable-progress-bar",
     is_flag=True,
     default=False,
-    help=documentation_utils.SUBSET["DISABLE_PROGRESS_BAR_HELP"],
+    help=documentation_utils.SHARED["DISABLE_PROGRESS_BAR_HELP"],
 )
 
 force_dataset_version_option = click.option(
     "--dataset-version",
     type=str,
     default=None,
-    help=documentation_utils.SUBSET["DATASET_VERSION_HELP"],
+    help=documentation_utils.SHARED["DATASET_VERSION_HELP"],
 )
 
 force_dataset_part_option = click.option(
     "--dataset-part",
     type=str,
     default=None,
-    help=documentation_utils.SUBSET["DATASET_PART_HELP"],
+    help=documentation_utils.SHARED["DATASET_PART_HELP"],
+)
+
+credentials_file_option = click.option(
+    "--credentials-file",
+    type=click.Path(path_type=pathlib.Path),
+    help=documentation_utils.SHARED["CREDENTIALS_FILE_HELP"],
 )
