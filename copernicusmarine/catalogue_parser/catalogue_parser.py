@@ -58,20 +58,26 @@ def get_dataset_metadata(
         dataset_product_mapping_url = (
             f"{root_url}/dataset_product_id_mapping.json"
         )
-        product_id = connection.get_json_file(dataset_product_mapping_url).get(
-            dataset_id
-        )
-        if not product_id:
+        product_ids = connection.get_json_file(
+            dataset_product_mapping_url
+        ).get(dataset_id)
+        if not product_ids:
             raise DatasetNotFound(dataset_id)
-        url = f"{stac_url}/{product_id}/product.stac.json"
-        product_json = connection.get_json_file(url)
-        product_collection = pystac.Collection.from_dict(product_json)
-        product_datasets_metadata_links = product_collection.get_item_links()
-        datasets_metadata_links = [
-            dataset_metadata_link
-            for dataset_metadata_link in product_datasets_metadata_links
-            if dataset_id in dataset_metadata_link.href
-        ]
+        datasets_metadata_links = []
+        for product_id in product_ids.split(","):
+            url = f"{stac_url}/{product_id}/product.stac.json"
+            product_json = connection.get_json_file(url)
+            product_collection = pystac.Collection.from_dict(product_json)
+            product_datasets_metadata_links = (
+                product_collection.get_item_links()
+            )
+            datasets_metadata_links.extend(
+                [
+                    dataset_metadata_link
+                    for dataset_metadata_link in product_datasets_metadata_links
+                    if dataset_id in dataset_metadata_link.href
+                ]
+            )
         if not datasets_metadata_links:
             return None
         dataset_jsons: list[dict] = [
