@@ -182,7 +182,7 @@ If you want to use it please make sure to install the ``netcdf4`` library:
 
 Domains required by the Copernicus Marine toolbox
 ********************************************************
-To be able to debug, we provide the domains that the toolbox uses when running:
+To be able to use the Copernicus Marine services, you need to be able to access those domains: 
 
 - ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.
