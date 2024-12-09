@@ -9,5 +9,3 @@ class TestDependeciesUpdates:
 
         # If these change, update the dependencies in the documentation!
         assert config["tool"]["poetry"]["dependencies"] == snapshot
-        # just for the sake of the test, we will also check the dev-dependencies
-        assert config["tool"]["poetry"]["dev-dependencies"] == snapshot

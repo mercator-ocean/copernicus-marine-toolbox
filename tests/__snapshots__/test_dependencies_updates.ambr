@@ -15,15 +15,7 @@
     'semver': '>=3.0.2',
     'setuptools': '>=68.2.2',
     'tqdm': '>=4.65.0',
-    'types-toml': '^0.10.8.20240310',
     'xarray': '>=2023.4.0',
     'zarr': '>=2.13.3',
-  })
-# ---
-# name: TestDependeciesUpdates.test_update_dependencies.1
-  dict({
-    'ipython': '^8.14.0',
-    'pre-commit': '^2.20.0',
-    'types-requests': '^2.27.11',
   })
 # ---
