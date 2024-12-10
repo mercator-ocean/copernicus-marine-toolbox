@@ -511,9 +511,9 @@ def _update_dataset_coordinate_attributes(
                     coordinate_attributes.remove("units")
                 elif coordinate_label in ["depth", "elevation"]:
                     coordinate_attributes.append("positive")
-                if (
-                    coord.attrs == {}
-                ):  # specific dataset case without lon and lat attrs
+                # TODO: delete this when fixed on ARCO processor side
+                # example dataset: esa_obs-si_arc_phy-sit_nrt_l4-multi_P1D-m
+                if attrs == {}:
                     if coordinate_alias == "longitude":
                         attrs = {
                             "standard_name": "longitude",
