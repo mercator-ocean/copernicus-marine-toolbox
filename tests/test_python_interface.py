@@ -317,3 +317,36 @@ class TestPythonInterface:
         diff.to_netcdf(tmp_path / "diff.nc")
         diff = xarray.open_dataset(tmp_path / "diff.nc")
         assert diff.thetao.mean().values == 0.0
+
+    def test_lonlat_attributes_when_not_in_arco(self, tmp_path):
+        dataset_response = subset(
+            dataset_id="esa_obs-si_arc_phy-sit_nrt_l4-multi_P1D-m",
+            variables=["density_of_ocean", "quality_flag"],
+            minimum_longitude=-28.10,
+            maximum_longitude=-27.94,
+            minimum_latitude=40.20,
+            maximum_latitude=40.44,
+            start_datetime="2024-11-21T00:00:00",
+            end_datetime="2024-11-21T00:00:00",
+            minimum_depth=5,
+            maximum_depth=10,
+            output_directory=tmp_path,
+            output_filename="without_lonlat_attrs_dataset.nc",
+        )
+        dataset = xarray.open_dataset(
+            tmp_path / "without_lonlat_attrs_dataset.nc"
+        )
+
+        assert dataset_response.status == "000"
+        assert dataset.longitude.attrs == {
+            "axis": "X",
+            "long_name": "Longitude",
+            "standard_name": "longitude",
+            "units": "degrees_east",
+        }
+        assert dataset.latitude.attrs == {
+            "axis": "Y",
+            "long_name": "Latitude",
+            "standard_name": "latitude",
+            "units": "degrees_north",
+        }
