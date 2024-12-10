@@ -1,9 +1,9 @@
-.. Copernicus Marine toolbox documentation master file, created by
+.. Copernicus Marine Toolbox documentation master file, created by
    sphinx-quickstart on Wed Aug 21 14:04:51 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Copernicus Marine toolbox documentation
+Copernicus Marine Toolbox documentation
 =======================================
 
 The ``copernicusmarine`` Python library offers capabilities through both **command line interface (CLI)** and **Python API**:

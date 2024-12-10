@@ -4,7 +4,7 @@ Pre-release 2.0.0a4
 Changes starting with **B** might introduce breaking changes.
 
 .. warning::
-    This is a pre-release version of the Copernicus Marine toolbox.
+    This is a pre-release version of the Copernicus Marine Toolbox.
     It is not recommended for production use.
 
 General
@@ -53,5 +53,5 @@ Subset
 Login
 ''''''
 
-* Now support the new Copernicus Marine authentication system. The toolbox will try to connect to the new system then fallback to the old one if needed.
+* Now support the new Copernicus Marine authentication system. The Toolbox will try to connect to the new system then fallback to the old one if needed.
 * Rename ``--overwrite``, ``--overwrite-configuration-file`` to ``--force-overwrite``.
