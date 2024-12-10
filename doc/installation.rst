@@ -1,7 +1,7 @@
 .. _installation-page:
 
 ===================================================
-Installing Copernicus Marine toolbox
+Installing Copernicus Marine Toolbox
 ===================================================
 
 There are several ways to install or use the Copernicus Marine toolbox:
