@@ -46,7 +46,6 @@ from copernicusmarine.download_functions.utils import (
     get_approximation_size_final_result,
     get_dataset_coordinates_extent,
     get_filename,
-    get_message_formatted_dataset_size_estimation,
     get_number_of_chunks_for_coordinate,
     timestamp_or_datestring_to_datetime,
 )
@@ -109,6 +108,7 @@ def download_dataset(
         )
     else:
         optimum_dask_chunking = None
+    logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     dataset = _rechunk(
         open_dataset_from_arco_series(
             username=username,
@@ -131,24 +131,15 @@ def download_dataset(
     data_needed_approximation = get_approximation_size_data_downloaded(
         dataset, service
     )
-    message_formatted_dataset_size_estimation = (
-        get_message_formatted_dataset_size_estimation(
-            final_result_size_estimation, data_needed_approximation
-        )
-    )
+
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
-    if dry_run:
-        logger.info(dataset)
-    else:
-        logger.debug(dataset)
-    logger.info(message_formatted_dataset_size_estimation)
 
     if not overwrite and not skip_existing:
         output_path = get_unique_filename(
             filepath=output_path,
         )
-
+    logger.debug(f"Xarray Dataset: {dataset}")
     response = ResponseSubset(
         file_path=output_path,
         output_directory=output_directory,
@@ -170,7 +161,7 @@ def download_dataset(
         response.file_status = FileStatus.IGNORED
         return response
 
-    logger.info("Writing to local storage. Please wait...")
+    logger.info("Starting download. Please wait...")
     if disable_progress_bar:
         _save_dataset_locally(
             dataset,
@@ -539,22 +530,8 @@ def _download_dataset_as_netcdf(
             shuffle=True,
         )
         keys_to_keep = {
-            "_FillValue",
-            "blosc_shuffle",
-            "chunksizes",
-            "complevel",
-            "compression",
-            "compression_opts",
-            "contiguous",
-            "dtype",
-            "endian",
-            "fletcher32",
-            "quantize_mode",
-            "shuffle",
-            "significant_digits",
-            "szip_coding",
-            "szip_pixels_per_block",
-            "zlib",
+            "scale_factor",
+            "add_offset",
         }
         encoding = {
             name: {

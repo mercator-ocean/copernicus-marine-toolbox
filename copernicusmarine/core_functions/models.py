@@ -109,6 +109,8 @@ class ResponseGet(BaseModel):
     files_deleted: Optional[list[str]]
     #: List of not found files from the file list input.
     files_not_found: Optional[list[str]]
+    #: Number of files to be downloaded.
+    number_of_files_to_download: int
     #: Total size of the files that would be downloaded.
     total_size: Optional[float]
     #: Status of the request.
@@ -180,6 +182,8 @@ class ResponseSubset(BaseModel):
     #: File name.
     filename: str
     #: Estimation of the size of the final result file in MB.
+    #: This estimation may not be accurate if you save the result as
+    #: a compressed NetCDF file.
     file_size: Optional[float]
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.

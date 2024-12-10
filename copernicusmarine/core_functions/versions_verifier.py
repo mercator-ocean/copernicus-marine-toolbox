@@ -29,6 +29,15 @@ class VersionVerifier:
 
     @staticmethod
     def _check_version(function_name: str, staging: bool):
+        def create_error_message(required_version: str) -> str:
+            return (
+                f"Installed copernicusmarine version {toolbox_version} might "
+                f"lead to unexpected results with the current backend services. "
+                f"Minimum supported version is {required_version}. Please update. "
+                f"You can find instructions to install the latest version here: "
+                f"https://toolbox-docs.marine.copernicus.eu/"
+            )
+
         marine_data_store_versions = (
             VersionVerifier._get_client_required_versions(staging)
         )
@@ -46,11 +55,8 @@ class VersionVerifier:
                         f"Client version {toolbox_version} is not compatible with "
                         f"{service}. Service needs version {required_version}."
                     )
-                    logger.error(
-                        f"Client version {toolbox_version} is not "
-                        f"compatible with current backend service. "
-                        f"Please update to the latest client version."
-                    )
+                    logger.error(create_error_message(required_version))
+                    return
             except ValueError:
                 logger.warning(
                     f"Using a pre-release or a non-official version "

@@ -10,6 +10,7 @@ from copernicusmarine.command_line_interface.exception_handler import (
 from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
+    credentials_file_option,
     force_dataset_part_option,
     force_dataset_version_option,
     tqdm_disable_option,
@@ -30,6 +31,13 @@ from copernicusmarine.core_functions.models import ResponseGet
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
+
+DEFAULT_FIELDS_TO_INCLUDE = {
+    "status",
+    "message",
+    "total_size",
+    "number_of_files_to_download",
+}
 
 
 @click.group()
@@ -88,11 +96,7 @@ def cli_get() -> None:
     type=click.Path(path_type=pathlib.Path),
     help=documentation_utils.GET["OUTPUT_DIRECTORY_HELP"],
 )
-@click.option(
-    "--credentials-file",
-    type=click.Path(path_type=pathlib.Path),
-    help=documentation_utils.GET["CREDENTIALS_FILE_HELP"],
-)
+@credentials_file_option
 @click.option(
     "--overwrite",
     is_flag=True,
@@ -278,7 +282,7 @@ def get(
     elif dry_run:
         fields_to_include = {"all"}
     else:
-        fields_to_include = {"status", "message"}
+        fields_to_include = DEFAULT_FIELDS_TO_INCLUDE
     included_fields: Optional[Union[set[str], dict]]
     if "all" in fields_to_include:
         included_fields = None

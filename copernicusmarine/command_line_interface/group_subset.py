@@ -10,6 +10,7 @@ from copernicusmarine.command_line_interface.exception_handler import (
 from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
+    credentials_file_option,
     force_dataset_part_option,
     force_dataset_version_option,
     tqdm_disable_option,
@@ -43,6 +44,13 @@ from copernicusmarine.core_functions.utils import datetime_parser
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
+
+DEFAULT_FIELDS_TO_INCLUDE = {
+    "status",
+    "message",
+    "file_size",
+    "data_transfer_size",
+}
 
 
 @click.group()
@@ -172,11 +180,7 @@ def cli_subset() -> None:
     type=click.Path(path_type=pathlib.Path),
     help=documentation_utils.SUBSET["OUTPUT_DIRECTORY_HELP"],
 )
-@click.option(
-    "--credentials-file",
-    type=click.Path(path_type=pathlib.Path),
-    help=documentation_utils.SUBSET["CREDENTIALS_FILE_HELP"],
-)
+@credentials_file_option
 @click.option(
     "--output-filename",
     "-f",
@@ -249,10 +253,10 @@ def cli_subset() -> None:
     "--netcdf-compression-level",
     type=click.IntRange(0, 9),
     is_flag=False,
-    flag_value=4,
+    flag_value=1,
     default=0,
     help=documentation_utils.SUBSET["NETCDF_COMPRESSION_LEVEL_HELP"]
-    + " If used as a flag, the assigned value will be 4.",
+    + " If used as a flag, the assigned value will be 1.",
 )
 @click.option(
     "--netcdf3-compatible",
@@ -374,7 +378,7 @@ def subset(
     elif dry_run:
         fields_to_include = {"all"}
     else:
-        fields_to_include = {"status", "message"}
+        fields_to_include = DEFAULT_FIELDS_TO_INCLUDE
 
     included_fields: Optional[Union[dict, set]]
     if "all" in fields_to_include:

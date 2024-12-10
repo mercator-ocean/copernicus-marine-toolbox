@@ -283,3 +283,37 @@ class TestPythonInterface:
         assert "_FillValue" not in subsetdata.depth.attrs
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
+
+    def test_compressed_and_uncompressed_no_diff(self, tmp_path):
+        data_query = {
+            "dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+            "start_datetime": "2019-01-31",
+            "end_datetime": "2019-01-31",
+            "minimum_depth": 0,
+            "maximum_depth": 1,
+            "variables": ["sea_water_potential_temperature"],
+            "output_directory": tmp_path,
+        }
+        subset(**data_query, output_filename="uncompressed_data.nc")
+        subset(
+            **data_query,
+            netcdf_compression_level=1,
+            output_filename="compressed_data.nc",
+        )
+        dataset_uncompressed = xarray.open_dataset(
+            tmp_path / "uncompressed_data.nc"
+        )
+        dataset_compressed = xarray.open_dataset(
+            tmp_path / "compressed_data.nc"
+        )
+        size_uncompressed = (tmp_path / "uncompressed_data.nc").stat().st_size
+        size_compressed = (tmp_path / "compressed_data.nc").stat().st_size
+        assert size_uncompressed > 1.5 * size_compressed
+        diff = dataset_uncompressed - dataset_compressed
+        diff.attrs = dataset_uncompressed.attrs
+        for var in diff.data_vars:
+            diff[var].attrs = dataset_uncompressed[var].attrs
+
+        diff.to_netcdf(tmp_path / "diff.nc")
+        diff = xarray.open_dataset(tmp_path / "diff.nc")
+        assert diff.thetao.mean().values == 0.0

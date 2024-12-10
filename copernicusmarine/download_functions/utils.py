@@ -230,22 +230,6 @@ def _get_coordinate_extent(
     return None
 
 
-def get_message_formatted_dataset_size_estimation(
-    estimation_size_final_result: Optional[float],
-    estimation_data_downloaded: Optional[float],
-) -> str:
-    return (
-        f"Estimated size of the dataset file is "
-        f"{estimation_size_final_result:.3f} MB"
-        f"\nEstimated size of the data that needs "
-        f"to be downloaded to obtain the result:"
-        f" {estimation_data_downloaded:.0f} MB"
-        "\nThis is a very rough estimate that is"
-        " generally higher than the actual size of the"
-        " data that needs to be downloaded."
-    )
-
-
 def get_approximation_size_final_result(
     dataset: xarray.Dataset,
 ) -> Optional[float]:
@@ -360,6 +344,8 @@ def get_number_of_chunks_for_coordinate(
             values.append(values[-1] + step_value)  # type: ignore
     elif not values:
         return None
+    elif type(values[0]) is str:
+        return None
 
     values.sort()
     if requested_minimum is None or requested_minimum < values[0]:  # type: ignore
@@ -387,9 +373,7 @@ def get_number_of_chunks_for_coordinate(
         index_right_maximum == len(values) - 1
         or index_right_maximum == len(values)
         or abs(values[index_right_maximum] - requested_maximum)  # type: ignore
-        <= abs(
-            values[index_right_maximum + 1] - requested_maximum  # type: ignore
-        )
+        <= abs(values[index_right_maximum + 1] - requested_maximum)  # type: ignore
     ):
         chunk_of_requested_maximum = math.floor(
             (index_right_maximum) / chunking_length

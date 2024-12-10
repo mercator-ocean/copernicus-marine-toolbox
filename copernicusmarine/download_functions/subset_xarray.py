@@ -724,10 +724,25 @@ def _check_coordinate_overlap(
             dataset_maximum_coordinate_value = 180
         if dataset_maximum_coordinate_value == 180:
             dataset_minimum_coordinate_value = -180
-    if (
-        user_maximum_coordinate_value < dataset_minimum_coordinate_value
-        or user_minimum_coordinate_value > dataset_maximum_coordinate_value
-    ):
+    if user_maximum_coordinate_value < dataset_minimum_coordinate_value:
+        if user_minimum_coordinate_value == dataset_minimum_coordinate_value:
+            message = (
+                f"Some of your subset selection "
+                f"({dimension} < {user_maximum_coordinate_value}) "
+                f"for the {dimension} dimension exceed the dataset coordinates "
+                f"[{dataset_minimum_coordinate_value}, "
+                f"{dataset_maximum_coordinate_value}]"
+            )
+        raise CoordinatesOutOfDatasetBounds(message)
+    elif user_minimum_coordinate_value > dataset_maximum_coordinate_value:
+        if user_maximum_coordinate_value == dataset_maximum_coordinate_value:
+            message = (
+                f"Some of your subset selection "
+                f"({dimension} > {user_minimum_coordinate_value}) "
+                f"for the {dimension} dimension exceed the dataset coordinates "
+                f"[{dataset_minimum_coordinate_value}, "
+                f"{dataset_maximum_coordinate_value}]"
+            )
         raise CoordinatesOutOfDatasetBounds(message)
     elif (
         (

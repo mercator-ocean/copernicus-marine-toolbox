@@ -34,14 +34,7 @@ class TestRequestFiles:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (
-            b'You forced selection of dataset version "default"'
-            in self.output.stderr
-        )
-        assert (
-            b"Dataset version was not specified, the latest one was selected:"
-            not in self.output.stderr
-        )
+        assert b'Selected dataset version: "default"' in self.output.stderr
 
     def test_subset_request_without_subset(self):
         filepath = get_path_to_request_file(
@@ -81,10 +74,6 @@ class TestRequestFiles:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        assert (
-            b"You forced selection of service: arco-time-series\n"
-            in self.output.stderr
-        )
         assert (
             b"Service not available: Available services for dataset: []"
         ) in self.output.stderr
