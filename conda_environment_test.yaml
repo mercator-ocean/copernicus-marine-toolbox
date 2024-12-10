@@ -10,3 +10,4 @@ dependencies:
   - pip:
     - pytest-order==1.2.1
     - freezegun==1.5.1
+    - toml==0.10.2
