@@ -4,7 +4,7 @@
 Response types
 =================
 
-The Copernicus Marine toolbox commands return some information when downloading.
+The Copernicus Marine Toolbox commands return some information when downloading.
 It can contain useful metadata for the user.
 
 For the :ref:`command line interface <command-line-interface>`, all the returned data will

@@ -4,7 +4,7 @@
 Installing Copernicus Marine Toolbox
 ===================================================
 
-There are several ways to install or use the Copernicus Marine toolbox:
+There are several ways to install or use the Copernicus Marine Toolbox:
 
 * via pip (see `PyPI repository <https://pypi.org/project/copernicusmarine/>`_)
 * via mamba | conda (see `conda-forge channel <https://anaconda.org/conda-forge/copernicusmarine>`_)
@@ -85,7 +85,7 @@ To be able to download Copernicus Marine data, you need to have an account on th
 
 
 
-Use the Copernicus Marine toolbox binaries
+Use the Copernicus Marine Toolbox binaries
 ***********************************************
 
 In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases.
@@ -99,7 +99,7 @@ To download directly the latest stable releases:
 - Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine.exe>`_
 
 
-Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
+Once downloaded for the specific platform, you can use the Toolbox by running the binary as follows:
 
 In mac-os or linux:
 
@@ -158,13 +158,13 @@ The Copernicus Marine toolbox has the following dependencies:
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
 
 
-The Copernicus Marine toolbox uses the xarray library to handle the data when using the ``subset`` command.
+The Copernicus Marine Toolbox uses the xarray library to handle the data when using the ``subset`` command.
 There are some compatibility issues with the latest versions of xarray and numpy:
 
 - ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
 - ``xarray<2024.10.0`` with ``numpy>=2.0.0`` leads to some time overhead. See this issue: `xarray issue 2 <https://github.com/pydata/xarray/issues/9545>`_.
 
-Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
+Also to convert subsetted data to NetCDF format the Toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
 and ``h5netcdf`` library as the backend.
 
 The ``h5netcdf`` library is not compatible with the NetCDF3 format.
