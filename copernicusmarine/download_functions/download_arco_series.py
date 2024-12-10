@@ -519,6 +519,7 @@ def _download_dataset_as_netcdf(
     logger.debug("Writing dataset to NetCDF")
     for coord in dataset.coords:
         dataset[coord].encoding["_FillValue"] = None
+        logger.info(f"Coordinate {coord}: {dataset[coord].encoding}")
     if netcdf_compression_level > 0:
         logger.info(
             f"NetCDF compression enabled with level {netcdf_compression_level}"
@@ -529,10 +530,7 @@ def _download_dataset_as_netcdf(
             contiguous=False,
             shuffle=True,
         )
-        keys_to_keep = {
-            "scale_factor",
-            "add_offset",
-        }
+        keys_to_keep = {"scale_factor", "add_offset", "dtype", "_FillValue"}
         encoding = {
             name: {
                 **{
@@ -546,6 +544,10 @@ def _download_dataset_as_netcdf(
         }
     else:
         encoding = None
+
+    logger.info(dataset)
+    logger.info(dataset.longitude.attrs)
+    logger.info(encoding)
 
     xarray_download_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
     engine = "h5netcdf" if not netcdf3_compatible else "netcdf4"
