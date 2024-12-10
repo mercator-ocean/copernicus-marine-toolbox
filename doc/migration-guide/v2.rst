@@ -11,25 +11,25 @@ The new features will not be detailed here, but you can check the documentation 
 General
 ------------------
 
-Deletion of ``--force-download`` and new ``--dry-run`` option
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Option ``--force-download`` deleted
+""""""""""""""""""""""""""""""""""""""""
 
-Before, from the command line interface you needed to accept a prompt to download the data.
+Before, it was necessary to accept a prompt to download the data.
 Such prompt could be skipped adding the option ``--force-download`` at the end of the call.
-So now, if no option is passed, the command line interface will download all the data requested.
+In v2, the toolbox will download all the data requested without a prompt.
 
-If you do not want to download the data but rather check what would be download and if your query is correct,
+If you do not want to download the data but rather check what would be downloaded and if the query is correct,
 you can use the option ``--dry-run`` and a response object will be returned with
 the information of the data that would be downloaded.
 
 .. code-block:: bash
 
-    # v1
+    # In v1
     > copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
     ...
     Do you want to download the data? [y/N]:
 
-    # v2
+    # In v2
     > copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
     ...
     {
@@ -43,15 +43,16 @@ the information of the data that would be downloaded.
 .. warning::
   Without the ``--dry-run`` option, the data will be downloaded even if the query is very consequent.
 
-Options ``--no-metadata-cache`` and ``--overwrite-metadata-cache`` removed
+Options ``--no-metadata-cache`` and ``--overwrite-metadata-cache`` deleted
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 In v1, we used to cache the result of the describe using ``cachier`` library.
+
 In v2, no cache is used and the metadata are fetched every time. However, the metadata fetching has been optimised
-and fetching the metadata doing a ``get`` or a ``subset`` will fast as we only fetch the necessary metadata.
+and fetching the metadata doing a ``get`` or a ``subset`` is fast as we only fetch the necessary metadata.
 
 That also means that the options related to the cache system doesn't exist anymore.
-Hence, ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
+Hence, ``--overwrite-metadata-cache`` and ``--no-metadata-cache`` have been removed.
 
 .. note::
 
@@ -62,10 +63,10 @@ Describe
 
 For more information, please see :ref:`the documentation page of the describe function <describe-page>`.
 
-:class:`copernicusmarine.CopernicusMarineCatalogue` as response in Python API
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+:class:`copernicusmarine.CopernicusMarineCatalogue` as response
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-When doing a describe in the Python API, the response will be a :class:`copernicusmarine.CopernicusMarineCatalogue`.
+When doing a describe in the Python interface, the response will be a :class:`copernicusmarine.CopernicusMarineCatalogue`.
 
 .. code-block:: python
 
@@ -85,12 +86,78 @@ When doing a describe in the Python API, the response will be a :class:`copernic
 
     from copernicusmarine import (
         CopernicusMarineCatalogue,
-    )  # Can be imported like this for typing
+    )  # Can be imported like this for typings
 
 
     def my_function(catalogue: CopernicusMarineCatalogue):
         pass
 
+In the command line interface, this object is serialized to a json object.
+
+Output modified
+""""""""""""""""""
+
+The content of the output of the ``describe`` has been modified:
+
+* Now field ``services`` has been simplified and contains directly the service name, ``service_type`` has been removed.
+
+.. code-block:: bash
+
+    # In v1
+    {
+      "product_id": "ANTARCTIC_OMI_SI_extent",
+      "datasets": [
+        {
+          "dataset_id": "antarctic_omi_si_extent",
+          "versions": [
+            {
+              "parts": [
+                {
+                  "services": [
+                    {
+                      "service_type": {
+                        "service_name": "original-files",
+                        "service_short_name": "files"
+                        }
+                      "uri": "https://s3.waw3-1
+                      ...
+                    },
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      }
+
+    # In v2
+    {
+      "product_id": "ANTARCTIC_OMI_SI_extent",
+      "datasets": [
+        {
+          "dataset_id": "antarctic_omi_si_extent",
+          "versions": [
+            {
+              "parts": [
+                {
+                  "services": [
+                    {
+                      "service_name": "original-files",
+                      "service_short_name": "files"
+                      "uri": "https://s3.waw3-1
+                      ...
+                    },
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      }
+
+* The field ``units`` for coordinates has been renamed to ``coordinate_unit``.
 
 Options ``--include-x`` deprectated for ``--return-fields`` and ``--exclude-fields``
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -154,7 +221,7 @@ Option ``--include-versions`` renamed to ``--show-all-versions``
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 The option ``--include-versions`` has been renamed to ``--show-all-versions``.
-The behaviour is the same, but the name is clearer.
+The behaviour is the same.
 
 Get
 ------------------
