@@ -308,7 +308,7 @@ class TestPythonInterface:
         )
         size_uncompressed = (tmp_path / "uncompressed_data.nc").stat().st_size
         size_compressed = (tmp_path / "compressed_data.nc").stat().st_size
-        assert size_uncompressed > 1.5 * size_compressed
+        assert size_uncompressed > 2 * size_compressed
         diff = dataset_uncompressed - dataset_compressed
         diff.attrs = dataset_uncompressed.attrs
         for var in diff.data_vars:
