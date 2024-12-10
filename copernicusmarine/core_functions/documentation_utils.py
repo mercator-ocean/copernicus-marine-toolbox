@@ -60,7 +60,7 @@ LOGIN: dict[str, str] = {
         "completed, 1 otherwise."
     ),
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
-        "Path to the directory where the configuration file is stored."
+        "Path to the directory where the configuration file will be stored."
     ),
     "FORCE_OVERWRITE_HELP": (
         "Flag to skip confirmation before overwriting configuration file."

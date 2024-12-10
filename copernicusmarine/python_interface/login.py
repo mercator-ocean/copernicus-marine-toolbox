@@ -25,7 +25,7 @@ def login(
     password : str, optional
         The password for authentication.
     configuration_file_directory : Union[pathlib.Path, str]
-        Path to the directory where the configuration file is stored.
+        Path to the directory where the configuration file will be stored.
     force_overwrite : bool
         Flag to skip confirmation before overwriting configuration file.
     check_credentials_valid : bool
