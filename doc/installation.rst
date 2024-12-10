@@ -168,7 +168,7 @@ Also to convert subsetted data to NetCDF format the Toolbox uses the `xarray.Dat
 and ``h5netcdf`` library as the backend.
 
 The ``h5netcdf`` library is not compatible with the NetCDF3 format.
-If you want to use it please make sure to install the ``netcdf4`` library:
+If you need to save files in NetCDF3 format please just manually install ``netcdf4`` library:
 
 .. code-block:: bash
 
