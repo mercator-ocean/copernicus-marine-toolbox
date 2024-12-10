@@ -63,7 +63,7 @@ def get_dataset_metadata(
         ).get(dataset_id)
         if not product_ids:
             raise DatasetNotFound(dataset_id)
-        datasets_metadata_links = []
+        dataset_jsons: list[dict] = []
         for product_id in product_ids.split(","):
             url = f"{stac_url}/{product_id}/product.stac.json"
             product_json = connection.get_json_file(url)
@@ -71,19 +71,21 @@ def get_dataset_metadata(
             product_datasets_metadata_links = (
                 product_collection.get_item_links()
             )
-            datasets_metadata_links.extend(
+            datasets_metadata_links = [
+                dataset_metadata_link
+                for dataset_metadata_link in product_datasets_metadata_links
+                if dataset_id in dataset_metadata_link.href
+            ]
+            if not datasets_metadata_links:
+                continue
+            dataset_jsons.extend(
                 [
-                    dataset_metadata_link
-                    for dataset_metadata_link in product_datasets_metadata_links
-                    if dataset_id in dataset_metadata_link.href
+                    connection.get_json_file(
+                        f"{stac_url}/{product_id}/{link.href}"
+                    )
+                    for link in datasets_metadata_links
                 ]
             )
-        if not datasets_metadata_links:
-            return None
-        dataset_jsons: list[dict] = [
-            connection.get_json_file(f"{stac_url}/{product_id}/{link.href}")
-            for link in datasets_metadata_links
-        ]
 
         dataset_items = [
             dataset_item
