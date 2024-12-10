@@ -200,7 +200,7 @@
     '  --password TEXT                 The password for authentication.',
     '  --configuration-file-directory PATH',
     '                                  Path to the directory where the',
-    '                                  configuration file is stored.',
+    '                                  configuration file will be stored.',
     '  --force-overwrite               Flag to skip confirmation before overwriting',
     '                                  configuration file.',
     '  --check-credentials-valid       Flag to check if the credentials are valid.',
