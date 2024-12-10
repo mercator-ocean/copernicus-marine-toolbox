@@ -1,32 +1,105 @@
-Migration guide v2
-===================
+v2
+=====
 
-In this page, we are going to explain some of the changes that might be needed to update your code from the old version of the toolbox v1.3.5 to the new one v2.0.0. With the new version also comes new functionalities, not commented here because they did not exist in the past version. Here, then, are just commented the changes that involve migrating from one version to the other.
-
-You can also check the :ref:`Change log <changelog>` for more information about the changes.
+This page aims at helping users migrating from ``copernicusmarine~=1.0.0`` to ``copernicusmarine>=2.0.0``. Mostly breaking changes will be detailed here.
+The new features will not be detailed here, but you can check the documentation especially the :ref:`Change log <changelog>` for more information about the changes.
 
 .. warning::
     One of the important breaking changes is that there is no prompt to confirm the download. Please use ``--dry-run`` if you do not want to download the files.
     The ``--force-download`` option has been removed.
 
+General
+------------------
+
+Deletion of ``--force-download`` and new ``--dry-run`` option
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Before, from the command line interface you needed to accept a prompt to download the data.
+Such prompt could be skipped adding the option ``--force-download`` at the end of the call.
+So now, if no option is passed, the command line interface will download all the data requested.
+
+If you do not want to download the data but rather check what would be download and if your query is correct,
+you can use the option ``--dry-run`` and a response object will be returned with
+the information of the data that would be downloaded.
+
+.. code-block:: bash
+
+    # v1
+    > copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    ...
+    Do you want to download the data? [y/N]:
+
+    # v2
+    > copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    ...
+    {
+      "number_of_files_to_download": 29,
+      "total_size": 241.22591304779053,
+      "status": "000",
+      "message": "The request was successful."
+    }
+
+
+.. warning::
+  Without the ``--dry-run`` option, the data will be downloaded even if the query is very consequent.
+
+Options ``--no-metadata-cache`` and ``--overwrite-metadata-cache`` removed
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+In v1, we used to cache the result of the describe using ``cachier`` library.
+In v2, no cache is used and the metadata are fetched every time. However, the metadata fetching has been optimised
+and fetching the metadata doing a ``get`` or a ``subset`` will fast as we only fetch the necessary metadata.
+
+That also means that the options related to the cache system doesn't exist anymore.
+Hence, ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
+
+.. note::
+
+    The dependecy to ``cachier`` has been completely removed from the toolbox.
+
 Describe
 ------------------
-For all the new features, please refer to the documentation page of the describe function.
 
-CopernicusMarineCatalogue as response in python API
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+For more information, please see :ref:`the documentation page of the describe function <describe-page>`.
 
-When doing a describe in the python API, the response will be a :class:`copernicusmarine.CopernicusMarineCatalogue`. That changes from the old dictionary response.
+:class:`copernicusmarine.CopernicusMarineCatalogue` as response in Python API
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. code-block:: Python
+When doing a describe in the Python API, the response will be a :class:`copernicusmarine.CopernicusMarineCatalogue`.
 
-    NowACopernicusMarineCatalogue = copernicusmarine.describe()
+.. code-block:: python
+
+    import json
+    import copernicusmarine
+
+    # In v1
+    a_json_str = copernicusmarine.describe()
+    print(type(a_json_str))  # <class 'str'>
+    a_dict = json.loads(a_json_str)
+
+    # In v2
+    now_a_copernicus_marine_catalogue = copernicusmarine.describe()
+    print(
+        type(now_a_copernicus_marine_catalogue)
+    )  # <class 'copernicusmarine.CopernicusMarineCatalogue'>
+
+    from copernicusmarine import (
+        CopernicusMarineCatalogue,
+    )  # Can be imported like this for typing
 
 
-Old options deprectated ``--include-x`` but new functionalities are set
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    def my_function(catalogue: CopernicusMarineCatalogue):
+        pass
 
-To filter the output of a describe, now you can use the ``--return-fields`` and ``--exclude-fields`` options. The old options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more flexible ``--return-fields`` and ``--exclude-fields``.
+
+Options ``--include-x`` deprectated for ``--return-fields`` and ``--exclude-fields``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+To filter the output of a describe, now you can use the ``--return-fields`` and ``--exclude-fields`` options.
+The old options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed in favor of the more
+flexible ``--return-fields`` and ``--exclude-fields``.
+
+As you can expect, this only concerns the command line interface. The Python API will return the full object.
 
 Such options allow to select respectively the fields you want to include or exclude from the output. You just need to add them as a comma-separated list.
 
@@ -69,202 +142,206 @@ You can also use the 'all' shortcut to return all the fields and then exclude if
 
 .. code-block:: bash
 
-    copernicusmarine describe --return-fields all --exclude-fields uri,product_id,dataset_id,service_name,descrpition,keywords
+    copernicusmarine describe -r all --exclude-fields uri,product_id,dataset_id,service_name,descrpition,keywords
+
+.. note::
+
+    By default all fields are now shown in the output. In v1, "keywords", "description" and "datasets" were not shown by default.
+    To have a similar output as before, you can exclude them with the option ``--exclude-fields datasets,description,keywords``.
 
 
-How to approximate the old behavior
-"""""""""""""""""""""""""""""""""""""""""""""""
-As explained in the changelog, the options ``--include-dataset``, ``--include-keywords``, ``--include-description`` and ``--include-all`` have been removed. However, you can still include them using the new options ``--return-fields`` and ``--exclude-fields``.
-
-.. code-block:: bash
-
-    copernicusmarine describe --return-fields dataset_id,keywords,description
-
-The logic of having these functions as separate options was to not crowd too much the output of the describe. If you didn't use them you can still exclude them with the option ``--exclude-fields`` to have a similar output as before:
-
-.. code-block:: bash
-
-    copernicusmarine describe --return-fields all --exclude-fields datasets,description,keywords
-
-Notice that the output of the describe when including ``datasets`` or ``dataset_id`` in the ``--return-fields`` is pretty different, as those are different things!
-
-Why ``--include-versions`` is not in the same case
+Option ``--include-versions`` renamed to ``--show-all-versions``
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-The different usage option ``--include-versions`` has been renamed to ``--show-all-versions``. That is because the inclusion of the versions do not refer to adding more fields of the same object, but adding a whole new version to the output.
 
-Some of the datasets contain several versions, and we just show the default if no specification is done. To see more of such versions, you can still try with the option ``--show-all-versions``.
-
-Logging changes in the describe
-""""""""""""""""""""""""""""""""""""""""""""""
-The logging of the describe has been improved. The output is easily to separate to create a reading-ready json document with:
-
-.. code-block:: bash
-
-    copernicusmarine describe --return-fields all --exclude-fields datasets,description,keywords > output.json
-
-This functionality allows to create easy to read json files, not losing the information of the errors, which will be printed in the terminal itself. For more information about STDERR and STDOUT, please refer to TODO.
-
-For python, TODO.
+The option ``--include-versions`` has been renamed to ``--show-all-versions``.
+The behaviour is the same, but the name is clearer.
 
 Get
 ------------------
-For all the new features, please refer to the documentation page of the get function.
 
-Deletion of ``--force-download`` and new ``--dry-run`` option
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Before, from the CLI you needed to accept a prompt to download the data. Such prompt could be skipped adding the option ``--force-download``at the end of the call. So now, if no option is passed, the CLI will download all the data requested.
+For more information, please see :ref:`the documentation page of the get function <get-page>`.
 
-If you do not want to download the data but rather check what would be download, you can use the option ``--dry-run`` and a ResponseGet object will be returned with the information of the data that would be donwloaded.
+:class:`copernicusmarine.ResponseGet` as object of the response
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. warning::
-  Please be aware of this change and don't download too much data!
-
-ResponseGet as object of the response
-""""""""""""""""""""""""""""""""""""""""""
-Before, when using a get from the python interface, you would do:
+Output of the get function has been changed. It is now a :class:`copernicusmarine.ResponseGet` object in the Python interface or as a
+json object in the command line interface. It used to be a list of paths to the downloaded files.
 
 .. code-block:: python
 
-    PathGet = copernicusmarine.get(...)
-    # or even:
-    copernicusmarine.get(...)
+    # In v1
+    get_file_paths = copernicusmarine.get(...)
+    print(type(get_file_paths))  # <class 'list'>
 
-Where in ``PathGet`` there would be the list of paths to the data you downloaded. Now, we updated the response type of the python API: it returns a :class:`copernicusmarine.ResponseGet` object. This can be handled by you more easy and will be able to display more information about the data downloaded (or about to be downloaded). The fields of the response object can be filtered as you desire and we hope that it will improve a lot the user expeerience.
+    # In v2
+    response_get = copernicusmarine.get(...)
+    print(type(response_get))  # <class 'copernicusmarine.ResponseGet'>
 
-Keep in mind that such changes can be also seen in the CLI, where:
+    from copernicusmarine import ResponseGet  # Can be imported like this for typing
 
-.. code-block:: bash
 
-    copernicusmarine get --optios > output_downloaded.json
+    def my_function(response: ResponseGet):
+        pass
 
-Where the ``output_downloaded.json`` will contain the information of the ResponseGet in a json file, keeping the logs in the terminal.
-
-Option ``--overwrite-output-data`` renamed
-""""""""""""""""""""""""""""""""""""""""""""""""
-We renamed the option ``--overwrite-output-data`` to ``--overwrite``. The option is still the same, but the name is shorter (as the cache has been deleted and it is the only option overwriting).
-
-Substitute the new command and the behaviour will continue to be the same.
-
-Deleted option ``--show-outputnames``
-""""""""""""""""""""""""""""""""""""""""""""
-Before, this option would allow you to output the name of the files. We included such names in the :class:`copernicusmarine.ResponseGet` object that results for the call (either dry-run or not). That way, something very similar (and even more structured) can be recovered easily.
-
-For example, doing this call:
+In the command line interface, it is possible to filter the result using the ``--response-fields`` option.
+The input of the option is a comma-separated list of the fields to be included in the output.
+The available fields are the name of the fields of the :class:`copernicusmarine.ResponseGet` object.
 
 .. code-block:: bash
 
-    copernicusmarine get -i cmems_mod_arc_bgc_my_ecosmo_P1D-m --filter "*202105/2021/12*" --dry-run > output.json --response-fields files
+    copernicusmarine get ... -r file_path,s3_url > request-metadata.json
 
-We ensure that in the output.json we will have a readable json object. You can check the documentation for all the details included in the response, but the key ``file-path`` contains the same information there was in the ``--show-outputnames`` option.
+Option ``--overwrite-output-data`` renamed to ``--overwrite``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+The option ``--overwrite-output-data`` has been deleted, use directly ``--overwrite`` instead.
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine get --overwrite-output-data
+
+    # In v2
+    copernicusmarine get --overwrite
+
+Option ``--show-outputnames`` deleted
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Before, this option would allow to output the name of the files.
+We included such names in the :class:`copernicusmarine.ResponseGet` object that results for the call (either dry-run or not).
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine get -i cmems_mod_arc_bgc_my_ecosmo_P1D-m --filter "*202105/2021/12*" --show-outputnames > output.json
+
+    # In v2
+    copernicusmarine get -i cmems_mod_arc_bgc_my_ecosmo_P1D-m --filter "*202105/2021/12*" -r file_path > output.json
+
+In the Python interface, the ``file_path`` key of the response object contains the same information that was in the ``--show-outputnames`` option.
+
+.. code-block:: python
+
+    # In v2
+    response_get = copernicusmarine.get(...)
+    files_local_paths = [file_get.file_path for file_get in response_get.files]
 
 
 Subset
 ------------------
-For all the new features, please refer to the documentation page of the subset function.
 
-Deletion of ``--force-download`` and new ``--dry-run`` option
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Before, from the CLI you needed to accept a prompt to download the data. Such prompt could be skipped adding the option ``--force-download``at the end of the call. So now, if no option is passed, the CLI will download all the data requested.
-
-If you do not want to download the data but rather check what would be download, you can use the option ``--dry-run`` and a ResponseSubset object will be returned with the information of the data that would be donwloaded.
-
-.. warning::
-  Please be aware of this change and don't download too much data!
+For more information, please see :ref:`the documentation page of the subset function <subset-page>`.
 
 
-ResponseGet as object of the response
-""""""""""""""""""""""""""""""""""""""""""
-Before, when using a subset from the python interface, you would do:
+:class:`copernicusmarine.ResponseSubset` as object of the response
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Output of the get function has been changed. It is now a :class:`copernicusmarine.ResponseSubset` object in the Python interface or as a
+json object in the command line interface. It used to be a list of paths to the downloaded files.
 
 .. code-block:: python
 
-    PathSubset = copernicusmarine.subset(...)
-    # or even:
-    copernicusmarine.subset(...)
+    # In v1
+    subset_file_paths = copernicusmarine.get(...)
+    print(type(subset_file_paths))  # <class 'list'>
 
-Where in ``PathSubset`` there would be the path to the data you downloaded. Now, we updated the response type of the python API: it returns a :class:`copernicusmarine.ResponseSubset` object. This can be handled by you more easy and will be able to display more information about the data downloaded (or about to be downloaded). The fields of the response object can be filtered as you desire and we hope that it will improve a lot the user expeerience.
+    # In v2
+    response_get = copernicusmarine.get(...)
+    print(type(response_get))  # <class 'copernicusmarine.ResponseSubset'>
 
-Keep in mind that such changes can be also seen in the CLI, where:
+    from copernicusmarine import ResponseSubset  # Can be imported like this for typing
+
+
+    def my_function(response: ResponseSubset):
+        pass
+
+In the command line interface, it is possible to filter the result using the ``--response-fields`` option.
+The input of the option is a comma-separated list of the fields to be included in the output.
+The available fields are the name of the fields of the :class:`copernicusmarine.ResponseSubset` object.
 
 .. code-block:: bash
 
-    copernicusmarine subset --optios > output_downloaded.json
-
-Where the ``output_downloaded.json`` will contain the information of the ResponseSubset in a json file, keeping the logs in the terminal.
+    copernicusmarine get ... -r minimum,data_transfer_size > request-metadata.json
 
 Option ``--vertical-dimension-output`` renamed
 """"""""""""""""""""""""""""""""""""""""""""""""
-We renamed the option ``--vertical-dimension-output`` to ``--vertical-axis``. The option is still the same, but the name is shorter.
 
-Substitute the new command and the behaviour will continue to be the same.
-
-Option ``--overwrite-output-data`` renamed
-""""""""""""""""""""""""""""""""""""""""""""""""
-We renamed the option ``--overwrite-output-data`` to ``--overwrite``. The option is still the same, but the name is shorter (as the cache has been deleted and it is the only option overwriting).
-
-Substitute the new command and the behaviour will continue to be the same.
-
-Removed the cache system
-""""""""""""""""""""""""""""""""""""""""""""""""
-We changed the way we access the metadataof the datasets. With a new and more reliable system, we will improve the reliability of the data downloaded.
-
-That also means that the options related to the cache system doesn't exist anymore. So ``--overwrite-metadata-cache``and ``--no-metadata-cache`` have been removed.
-
-Make sure to delete them from your scripts.
-
-Removed ``--netcdf-compression-enabled``
-"""""""""""""""""""""""""""""""""""""""""""""""
-Along with several improvements and bug fixes regarding the compression of the datasets, we also removed the option ``--netcdf-compression-enabled``. The compression doesn't need now to be enabled and can be done with the ``--netcdf-compression-level`` option directly.
-
-With that change we also made the ``--netcdf-compression-level`` a flag, so you could do:
+The option ``--vertical-dimension-output`` has been renamed to ``--vertical-axis``.
+It now takes a string as input, either ``depth`` or ``elevation``.
 
 .. code-block:: bash
 
-    copernicusmarine subset --other-options --netcdf-compression-level
+    # To get elevation instead of depth (default is depth)
+    # In v1
+    copernicusmarine subset --vertical-dimension-output True
 
-And the compression would be enabled, with a default level of **4** (we also changed that value, following Xarray procedures).
+    # In v2
+    copernicusmarine subset --vertical-axis elevation
 
-Removed ``--motu-api-request`` option
-"""""""""""""""""""""""""""""""""""""""""
-We also removed the option ``--motu-api-request``. If you need to translate legacy motu requests, please contact user support.
+Option ``--overwrite-output-data`` renamed to ``--overwrite``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Deleted option ``--show-outputnames``
-"""""""""""""""""""""""""""""""""""""""""
-Before, this option would allow you to output the name of the files. We included such names in the :class:`copernicusmarine.ResponseSubset` object that results for the call (either dry-run or not). That way, something very similar (and even more structured) can be recovered easily.
-
-For example, doing this call:
+The option ``--overwrite-output-data`` has been deleted, use directly ``--overwrite`` instead.
 
 .. code-block:: bash
 
-    copernicusmarine subset --options --dry-run --response-fields files > output.json
+    # In v1
+    copernicusmarine get --overwrite-output-data
 
-We ensure that in the output.json we will have a readable json object. You can check the documentation for all the details included in the response, but the key ``file-path`` contains the same information there was in the ``--show-outputnames`` option.
+    # In v2
+    copernicusmarine get --overwrite
+
+Option ``--netcdf-compression-enabled`` deleted
+"""""""""""""""""""""""""""""""""""""""""""""""""
+
+The option ``--netcdf-compression-enabled`` has been removed. The exact same result can be obtain with the ``--netcdf-compression-level`` option directly.
+
+With that change the option ``--netcdf-compression-level`` is now a flag, so you could do:
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine subset --netcdf-compression-enabled
+
+    # In v2
+    copernicusmarine subset --netcdf-compression-level
+
+    # and can choose the level of compression (default is 1 when flag is set)
+    copernicusmarine subset --netcdf-compression-level 5
+
 
 Login
 ------------------
-For all the new features, please refer to the documentation page of the login function.
 
-Renamed ``--overwrite`` and ``--overwrite-configuration-file``
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Both ways to call the same option have been renamed to ``--force-overwrite``. The option is still the same, but the name is clearer.
+For more information, please see :ref:`the documentation page of the login function <login-page>`.
 
-Substitute the new command and the behaviour will continue to be the same.
+Options ``--overwrite`` and ``--overwrite-configuration-file`` renamed to ``--force-overwrite``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Deleted ``--skip-if-user-logged-in``
-"""""""""""""""""""""""""""""""""""""""""""
-We deleted the option but introduced a new one to modify a bit the behaviour. We added ``--check-credentials-valid`` and option to check that, effectively, the credentials are correctly set.
+The options ``--overwrite`` and ``--overwrite-configuration-file`` have been renamed to ``--force-overwrite``. The option is still the same.
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine login --overwrite
+    # or
+    copernicusmarine login --overwrite-configuration-file
+
+    # In v2
+    copernicusmarine login --force-overwrite
+
+Option ``--skip-if-user-logged-in`` deleted
+"""""""""""""""""""""""""""""""""""""""""""""
+
+The option ``--skip-if-user-logged-in`` has been deleted.
+The option ``--check-credentials-valid`` can be used to check that the credentials are correctly set.
 
 Now, we can do the login like this in our notebooks:
 
 .. code-block:: python
 
+    # In v1
+    copernicusmarine.login(skip_if_user_logged_in=True)
+
+    # In v2
     if not copernicusmarine.login(check_credentials_valid=True):
         copernicusmarine.login()
-
-Also in the CLI, we can check that we are properly connected:
-
-.. code-block:: bash
-
-    copernicusmarine login --check-credentials-valid
-
-And it will not even raise to the login if the credentials are valid.
