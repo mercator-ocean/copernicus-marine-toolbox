@@ -126,55 +126,42 @@ If you want, for example, the ``cmems_obs-ins_glo_phy-temp-sal_my_cora_irr`` dat
 
 .. code-block:: bash
 
-    copernicusmarine describe --include-datasets --contains cmems_obs-ins_glo_phy-temp-sal_my_cora_irr
+    copernicusmarine describe --return-fields datasets --contains cmems_obs-ins_glo_phy-temp-sal_my_cora_irr
 
 The output will be something like this:
 
 .. code-block:: json
 
     {
-    "products": [
-        {
-        "title": "Global Ocean- CORA- In-situ Observations Yearly Delivery in Delayed Mode",
-        "product_id": "INSITU_GLO_PHY_TS_DISCRETE_MY_013_001",
-        "thumbnail_url": "https://mdl-metadata.s3.waw3-1.cloudferro.com/metadata/thumbnails/INSITU_GLO_PHY_TS_DISCRETE_MY_013_001.jpg",
-        "digital_object_identifier": "10.17882/46219",
-        "sources": [
-            "In-situ observations"
-        ],
-        "processing_level": "Level 2",
-        "production_center": "OceanScope (France)",
-        "datasets": [
+        "products": [
             {
-            "dataset_id": "cmems_obs-ins_glo_phy-temp-sal_my_cora_irr",
-            "dataset_name": "cmems_obs-ins_glo_phy-temp-sal_my_cora_irr_202311",
-            "versions": [
+            "datasets": [
                 {
-                "label": "202311",
-                "parts": [
+                "dataset_id": "cmems_obs-ins_glo_phy-temp-sal_my_cora_irr",
+                "dataset_name": "cmems_obs-ins_glo_phy-temp-sal_my_cora_irr_202311",
+                "versions": [
                     {
-                    "name": "default",
-                    "services": [
+                    "label": "202411",
+                    "parts": [
                         {
-                        "service_type": {
+                        "name": "default",
+                        "services": [
+                            {
                             "service_name": "original-files",
-                            "short_name": "files"
-                        },
-                        "service_format": null,
-                        "uri": "https://s3.waw3-1.cloudferro.com/mdl-native-03/native/INSITU_GLO_PHY_TS_DISCRETE_MY_013_001/cmems_obs-ins_glo_phy-temp-sal_my_cora_irr_202311",
-                        "variables": []
+                            "service_short_name": "files",
+                            "uri": "https://s3.waw3-1.cloudferro.com/mdl-native-03/native/INSITU_GLO_PHY_TS_DISCRETE_MY_013_001/cmems_obs-ins_glo_phy-temp-sal_my_cora_irr_202411",
+                            "variables": []
+                            }
+                        ],
+                        "released_date": "2024-11-26T13:00:00.000Z"
                         }
-                    ],
-                    "retired_date": null,
-                    "released_date": "2023-11-30T11:00:00.000Z"
+                    ]
                     }
                 ]
                 }
             ]
             }
         ]
-        }
-    ]
     }
 
 
@@ -187,7 +174,7 @@ You can either use the ``--dataset_id`` option, the ``--product_id`` option or b
 
 **Example:**
 
-Let's filter to returned values for simplicity.
+Let's filter to exclude services and return only datasets and product_id for simplicity.
 
 .. code-block:: bash
 
