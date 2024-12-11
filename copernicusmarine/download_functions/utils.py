@@ -178,11 +178,11 @@ def _format_datetimes(
         return ""
     else:
         if minimum_datetime == maximum_datetime:
-            formatted_datetime = f"{minimum_datetime.strftime('YYYY-MM-DD')}"
+            formatted_datetime = f"{minimum_datetime.strftime('%Y-%m-%d')}"
         else:
             formatted_datetime = (
-                f"{minimum_datetime.strftime('YYYY-MM-DD')}-"
-                f"{maximum_datetime.strftime('YYYY-MM-DD')}"
+                f"{minimum_datetime.strftime('%Y-%m-%d')}-"
+                f"{maximum_datetime.strftime('%Y-%m-%d')}"
             )
         return formatted_datetime
 
