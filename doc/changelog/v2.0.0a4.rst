@@ -1,7 +1,7 @@
 Pre-release 2.0.0a4
 ====================
 
-Changes starting with **B** might introduce breaking changes.
+Changes starting with **B** introduce breaking changes.
 
 .. warning::
     This is a pre-release version of the Copernicus Marine Toolbox.

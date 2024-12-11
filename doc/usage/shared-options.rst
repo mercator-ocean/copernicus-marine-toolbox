@@ -1,7 +1,7 @@
 Shared options
 =========================
 
-Both ``subset`` and ``get`` (and also some concern other options) commands provide these options:
+Both ``subset`` and ``get`` commands provide these options. Some options are available in other functions as well, in the latter it will be indicated:
 
 Option ``--overwrite`` and ``--skip-existing``
 ************************************************
@@ -256,6 +256,8 @@ Option ``--log-level``
 *********************************
 
 Set the level of detail printed to the console by the command, based on the standard logging library. Available values are: ``[DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]``.
+
+Also available for the ``login`` and the ``describe`` function.
 
 All logs of the library are by default logged in stderr. The outputs of the commands which details can be found in :ref:`the response types documentation <response-types>`, are sent to stdout.
 
