@@ -1,12 +1,12 @@
 
 <h1 align="center">Copernicus Marine Service Toolbox (CLI & Python)</h1>
 <div align="center">
-  <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/v/copernicusmarine.svg?style=flat-square" alt="PyPI" /></a>
-  <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg?style=flat-square" alt="PyPI Supported Versions" /></a>
-  <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey?style=flat-square" alt="Supported Platforms" /></a>
-  <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue?style=flat-square" alt="Licence" /></a>
-  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/badge/documentation-lightgreen?style=flat-square" alt="Documentation" /></a>
-  <a href="https://github.com/python/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style" /></a>
+  <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/v/copernicusmarine.svg" alt="PyPI" /></a>
+  <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg" alt="PyPI Supported Versions" /></a>
+  <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey" alt="Supported Platforms" /></a>
+  <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue" alt="Licence" /></a>
+  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/badge/documentation-lightgreen" alt="Documentation" /></a>
+  <a href="https://github.com/python/black"><img src="https://img.shields.io/badge/code%20style-black-000000" alt="Code Style" /></a>
 </div>
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
