@@ -615,7 +615,7 @@ class DatasetVersionPartNotFound(Exception):
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset version and datasetID.
     If yes, please contact the User Support, (widget chat on
-    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>_`).
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
     def __init__(self, version: CopernicusMarineVersion):
@@ -631,7 +631,7 @@ class DatasetVersionNotFound(Exception):
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset.
     If yes, please contact the User Support, (widget chat on
-    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>_`).
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
     def __init__(self, dataset: CopernicusMarineDataset):
@@ -651,7 +651,7 @@ class DatasetNotFound(Exception):
     Please verifiy that the datasetID is can be found in
     the result of the :func:`~copernicusmarine.describe` command.
     If yes, please contact the User Support, (widget chat on
-    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>_`).
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
     def __init__(self, dataset_id: str):
