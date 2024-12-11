@@ -252,7 +252,7 @@
   list([
     'CompletedProcess(args=[\'copernicusmarine\', \'subset\', \'--help\'], returncode=0, stdout=b"Usage: copernicusmarine subset [OPTIONS]',
     '',
-    '  Extracts a subset of data from a specified dataset using given parameters.',
+    '  Extract a subset of data from a specified dataset using given parameters.',
     '',
     '  The datasetID is required and can be found via the ``describe`` command. See',
     '  :ref:`describe <cli-describe>`.',

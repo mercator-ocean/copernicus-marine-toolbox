@@ -56,8 +56,7 @@ LOGIN: dict[str, str] = {
         " under the ``$HOME/.copernicusmarine`` directory."
     ),
     "LOGIN_RESPONSE_HELP": (
-        "Exit code\n 0 exit code if the login was successfully "
-        "completed, 1 otherwise."
+        "Exit code\n 0 if the login was successfully completed, 1 otherwise."
     ),
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
         "Path to the directory where the configuration file will be stored."
@@ -123,7 +122,7 @@ DESCRIBE: dict[str, str] = {
 
 SUBSET: dict[str, str] = {
     "SUBSET_DESCRIPTION_HELP": (
-        "Extracts a subset of data from a specified dataset using given parameters."
+        "Extract a subset of data from a specified dataset using given parameters."
         "\n\nThe datasetID is required and can be found via the ``describe`` "
         "command. "  # has some hardcoding in CLI and python API
     ),

@@ -63,7 +63,7 @@ def subset(
     chunk_size_limit: int = 100,
 ) -> ResponseSubset:
     """
-    Extracts a subset of data from a specified dataset using given parameters.
+    Extract a subset of data from a specified dataset using given parameters.
 
     The datasetID is required and can be found via the ``describe`` command.
 
