@@ -5,7 +5,11 @@
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg?style=flat-square" alt="PyPI Supported Versions" /></a>
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey?style=flat-square" alt="Supported Platforms" /></a>
   <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue?style=flat-square" alt="Licence" /></a>
+  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/badge/documentation-lightgrey?style=flat-square" alt="Supported Platforms" /></a>
 </div>
+
+[![Docs](https://toolbox-docs.marine.copernicus.eu/en/)](https://toolbox-docs.marine.copernicus.eu/en/)
+[![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
 
