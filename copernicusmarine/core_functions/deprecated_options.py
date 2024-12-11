@@ -40,6 +40,12 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
             new_name="motu_api_request",
             replace=False,
         ),
+        DeprecatedOption(
+            old_name="force_download",
+            new_name="force_download",
+            replace=False,
+            do_not_pass=True,
+        ),
     ]
 )
 

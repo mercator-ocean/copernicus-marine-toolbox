@@ -13,6 +13,7 @@ from copernicusmarine.command_line_interface.utils import (
     credentials_file_option,
     force_dataset_part_option,
     force_dataset_version_option,
+    force_download_option,
     tqdm_disable_option,
 )
 from copernicusmarine.core_functions import documentation_utils
@@ -208,6 +209,7 @@ def cli_get() -> None:
     is_flag=True,
     hidden=True,
 )
+@force_download_option
 @log_exception_and_exit
 def get(
     dataset_id: Optional[str],
@@ -235,6 +237,7 @@ def get(
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
+    force_download: bool,
 ):
     if log_level == "QUIET":
         logger.disabled = True

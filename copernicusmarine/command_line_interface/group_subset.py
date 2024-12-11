@@ -13,6 +13,7 @@ from copernicusmarine.command_line_interface.utils import (
     credentials_file_option,
     force_dataset_part_option,
     force_dataset_version_option,
+    force_download_option,
     tqdm_disable_option,
 )
 from copernicusmarine.core_functions import documentation_utils
@@ -285,6 +286,7 @@ def cli_subset() -> None:
     default="INFO",
     help=documentation_utils.SUBSET["LOG_LEVEL_HELP"],
 )
+@force_download_option
 @log_exception_and_exit
 def subset(
     dataset_id: str,
@@ -321,6 +323,7 @@ def subset(
     log_level: str,
     chunk_size_limit: int,
     staging: bool,
+    force_download: bool,
 ):
     if log_level == "QUIET":
         logger.disabled = True
