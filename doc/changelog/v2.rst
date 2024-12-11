@@ -12,18 +12,17 @@ Check the migration guide for information about the breaking changes and the doc
 General
 ''''''''
 
-* Created reponse types, especially :class:`copernicusmarine.ResponseGet` and :class:`copernicusmarine.ResponseSubset`. A status code has been added to the response.
+* Created response types, especially :class:`copernicusmarine.ResponseGet` and :class:`copernicusmarine.ResponseSubset`. A status code has been added to the response.
 * Added binaries to be able to use the toolbox. See the :ref:`installation page <installation-page>` for more information.
 * ``numpy>=2.0.0`` is supported
 * ``python>=3.13`` is now supported
 * Created an automatic documentation for the library, with help for the installation, descriptions of the functions and their responses, an example Quick Start Guide, a changelog and migration guide.
 * Use the ``h5netcdf`` library to read and write NetCDF files. If you need to save files in NetCDF3 format please just manually install ``netcdf4``.
-* Use ``pendulum`` for date handling. The date format is now more flexible and should be more robust.
 * Improved the libraries regarding multiprocessing, so users can handle it easier by themselves.
 * Improved the output of the command line interface. The output is now more readable and more informative.
 * Perfomed some refactoring to improve the conventions of netcdf files.
 * Deleted the deprecated options.
-* Fixed the some of the major bugs, creating a more robust and stable version.
+* Fixed some of the major bugs, creating a more robust and stable version.
 
 Describe
 ''''''''''

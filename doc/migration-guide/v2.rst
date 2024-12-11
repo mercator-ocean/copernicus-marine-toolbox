@@ -25,23 +25,23 @@ the information of the data that would be downloaded.
 .. code-block:: bash
 
     # In v1
-    > copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    > copernicusmarine susbet --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
     ...
     Do you want to download the data? [y/N]:
 
     # In v2
-    > copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    > copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
     ...
     {
-      "number_of_files_to_download": 29,
-      "total_size": 241.22591304779053,
+      "file_size": 100959.3893129771,
+      "data_transfer_size": 144079.14503816795,
       "status": "000",
       "message": "The request was successful."
     }
 
 
 .. warning::
-  Without the ``--dry-run`` option, the data will be downloaded even if the query is very consequent.
+  Without the ``--dry-run`` option, the data will be downloaded even if the query is very large.
 
 Options ``--no-metadata-cache`` and ``--overwrite-metadata-cache`` deleted
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -57,6 +57,90 @@ Hence, ``--overwrite-metadata-cache`` and ``--no-metadata-cache`` have been remo
 .. note::
 
     The dependecy to ``cachier`` has been completely removed from the toolbox.
+
+
+Subset
+------------------
+
+For more information, please see :ref:`the documentation page of the subset function <subset-page>`.
+
+
+:class:`copernicusmarine.ResponseSubset` as object of the response
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Output of the subset function has been changed. It is now a :class:`copernicusmarine.ResponseSubset` object in the Python interface or as a
+json object in the command line interface. It used to be the path of the downloaded file.
+
+.. code-block:: python
+
+    # In v1
+    subset_file_paths = copernicusmarine.subset(...)
+    print(type(subset_file_paths))  # <class 'pathlib.Path'>
+
+    # In v2
+    response_subset = copernicusmarine.subset(...)
+    print(type(response_subset))  # <class 'copernicusmarine.ResponseSubset'>
+
+    from copernicusmarine import ResponseSubset  # Can be imported like this for typing
+
+
+    def my_function(response: ResponseSubset):
+        pass
+
+In the command line interface, it is possible to filter the result using the ``--response-fields`` option.
+The input of the option is a comma-separated list of the fields to be included in the output.
+The available fields are the name of the fields of the :class:`copernicusmarine.ResponseSubset` object.
+
+.. code-block:: bash
+
+    copernicusmarine subset ... -r minimum,data_transfer_size > request-metadata.json
+
+Option ``--vertical-dimension-output`` renamed
+""""""""""""""""""""""""""""""""""""""""""""""""
+
+The option ``--vertical-dimension-output`` has been renamed to ``--vertical-axis``.
+It now takes a string as input, either ``depth`` or ``elevation``.
+
+.. code-block:: bash
+
+    # To get elevation instead of depth (default is depth)
+    # In v1
+    copernicusmarine subset --vertical-dimension-output True
+
+    # In v2
+    copernicusmarine subset --vertical-axis elevation
+
+Option ``--overwrite-output-data`` renamed to ``--overwrite``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+The option ``--overwrite-output-data`` has been deleted, use directly ``--overwrite`` instead.
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine subset --overwrite-output-data
+
+    # In v2
+    copernicusmarine subset --overwrite
+
+Option ``--netcdf-compression-enabled`` deleted
+"""""""""""""""""""""""""""""""""""""""""""""""""
+
+The option ``--netcdf-compression-enabled`` has been removed. The exact same result can be obtain with the ``--netcdf-compression-level`` option directly.
+
+With that change the option ``--netcdf-compression-level`` is now a flag, so you could do:
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine subset --netcdf-compression-enabled
+
+    # In v2
+    copernicusmarine subset --netcdf-compression-level
+
+    # and can choose the level of compression (default is 1 when flag is set)
+    copernicusmarine subset --netcdf-compression-level 5
+
 
 Describe
 ------------------
@@ -291,90 +375,6 @@ In the Python interface, the ``file_path`` key of the response object contains t
     # In v2
     response_get = copernicusmarine.get(...)
     files_local_paths = [file_get.file_path for file_get in response_get.files]
-
-
-Subset
-------------------
-
-For more information, please see :ref:`the documentation page of the subset function <subset-page>`.
-
-
-:class:`copernicusmarine.ResponseSubset` as object of the response
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-Output of the get function has been changed. It is now a :class:`copernicusmarine.ResponseSubset` object in the Python interface or as a
-json object in the command line interface. It used to be a list of paths to the downloaded files.
-
-.. code-block:: python
-
-    # In v1
-    subset_file_paths = copernicusmarine.get(...)
-    print(type(subset_file_paths))  # <class 'list'>
-
-    # In v2
-    response_get = copernicusmarine.get(...)
-    print(type(response_get))  # <class 'copernicusmarine.ResponseSubset'>
-
-    from copernicusmarine import ResponseSubset  # Can be imported like this for typing
-
-
-    def my_function(response: ResponseSubset):
-        pass
-
-In the command line interface, it is possible to filter the result using the ``--response-fields`` option.
-The input of the option is a comma-separated list of the fields to be included in the output.
-The available fields are the name of the fields of the :class:`copernicusmarine.ResponseSubset` object.
-
-.. code-block:: bash
-
-    copernicusmarine get ... -r minimum,data_transfer_size > request-metadata.json
-
-Option ``--vertical-dimension-output`` renamed
-""""""""""""""""""""""""""""""""""""""""""""""""
-
-The option ``--vertical-dimension-output`` has been renamed to ``--vertical-axis``.
-It now takes a string as input, either ``depth`` or ``elevation``.
-
-.. code-block:: bash
-
-    # To get elevation instead of depth (default is depth)
-    # In v1
-    copernicusmarine subset --vertical-dimension-output True
-
-    # In v2
-    copernicusmarine subset --vertical-axis elevation
-
-Option ``--overwrite-output-data`` renamed to ``--overwrite``
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-The option ``--overwrite-output-data`` has been deleted, use directly ``--overwrite`` instead.
-
-.. code-block:: bash
-
-    # In v1
-    copernicusmarine get --overwrite-output-data
-
-    # In v2
-    copernicusmarine get --overwrite
-
-Option ``--netcdf-compression-enabled`` deleted
-"""""""""""""""""""""""""""""""""""""""""""""""""
-
-The option ``--netcdf-compression-enabled`` has been removed. The exact same result can be obtain with the ``--netcdf-compression-level`` option directly.
-
-With that change the option ``--netcdf-compression-level`` is now a flag, so you could do:
-
-.. code-block:: bash
-
-    # In v1
-    copernicusmarine subset --netcdf-compression-enabled
-
-    # In v2
-    copernicusmarine subset --netcdf-compression-level
-
-    # and can choose the level of compression (default is 1 when flag is set)
-    copernicusmarine subset --netcdf-compression-level 5
-
 
 Login
 ------------------
