@@ -17,11 +17,12 @@ def login_function(
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
     check_credentials_valid: bool,
+    configuration_file: Optional[pathlib.Path],
 ) -> bool:
     if check_credentials_valid:
         logger.info("Checking if credentials are valid.")
         if copernicusmarine_credentials_are_valid(
-            configuration_file_directory, username, password
+            configuration_file, username, password
         ):
             return True
         else:

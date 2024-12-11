@@ -60,7 +60,7 @@ LOGIN: dict[str, str] = {
         "completed, 1 otherwise."
     ),
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
-        "Path to the directory where the configuration file is stored."
+        "Path to the directory where the configuration file will be stored."
     ),
     "FORCE_OVERWRITE_HELP": (
         "Flag to skip confirmation before overwriting configuration file."
@@ -74,6 +74,12 @@ LOGIN: dict[str, str] = {
         "2. Check if the credentials are valid in the environment variables. "
         "3. Check if the credentials are valid in the configuration file. "
         "When any is found (valid or not valid), will return immediately."
+    ),
+    "CREDENTIALS_FILE_HELP": (
+        "Path to a credentials file if not in its default directory"
+        " (``$HOME/.copernicusmarine``). Accepts "
+        ".copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini "
+        "files. Will only be taken into account when checking the credentials validity."
     ),
 }
 
@@ -256,5 +262,5 @@ GET: dict[str, str] = {
 
 SUBSET.update(SHARED)
 GET.update(SHARED)
-LOGIN.update(SHARED)
+LOGIN.update({k: v for k, v in SHARED.items() if k not in LOGIN})
 DESCRIBE.update({k: v for k, v in SHARED.items() if k not in DESCRIBE})

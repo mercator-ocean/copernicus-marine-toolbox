@@ -2,6 +2,11 @@ import os
 from pathlib import Path
 
 from copernicusmarine import login
+from copernicusmarine.core_functions.credentials_utils import (
+    ACCEPTED_HOSTS_NETRC_FILE,
+    DEFAULT_CLIENT_CREDENTIALS_FILENAME,
+    DEPRECATED_HOSTS,
+)
 from tests.test_utils import execute_in_terminal
 
 
@@ -124,7 +129,7 @@ class TestLogin:
         self.output = execute_in_terminal(
             command,
             env=environment_without_crendentials,
-            input=bytes(password, "utf-8"),
+            user_input=bytes(password, "utf-8"),
         )
         assert self.output.returncode == 0, self.output.stderr
 
@@ -272,8 +277,8 @@ class TestLogin:
             "copernicusmarine",
             "login",
             "--check-credentials-valid",
-            "--configuration-file-directory",
-            f"{non_existing_directory}",
+            "--credentials-file",
+            f"{non_existing_directory}/{DEFAULT_CLIENT_CREDENTIALS_FILENAME}",
         ]
 
         self.output = execute_in_terminal(
@@ -338,3 +343,124 @@ class TestLogin:
             username="toto",
             password="tutu",
         )
+
+    def test_login_with_netrc_file(self, tmp_path):
+        for host in ACCEPTED_HOSTS_NETRC_FILE:
+            self.create_netrc_file(tmp_path, host)
+            self.check_validity_of_credentials_in_netrc_file(tmp_path)
+            if host in DEPRECATED_HOSTS:
+                assert (
+                    b"The following hosts are deprecated and will be removed"
+                    b" in future versions: ['nrt.cmems-du.eu', 'my.cmems-du.eu']"
+                    in self.output.stderr
+                )
+            (tmp_path / ".netrc").unlink()
+
+    def check_validity_of_credentials_in_netrc_file(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "login",
+            "--check-credentials-valid",
+            "--credentials-file",
+            f"{tmp_path}/.netrc",
+        ]
+        environment_without_crendentials = (
+            get_environment_without_crendentials()
+        )
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
+        )
+        assert self.output.returncode == 0
+        assert (
+            b"Valid credentials from configuration file" in self.output.stderr
+        )
+
+    def create_netrc_file(self, tmp_path, host: str) -> None:
+        netrc_file = Path(tmp_path, ".netrc")
+        netrc_file.write_text(
+            f"machine {host}\n"
+            f"   login {os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}\n"
+            f"   password {os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}\n"
+        )
+
+    def test_can_get_data_with_netrc_file(self, tmp_path):
+        for host in ACCEPTED_HOSTS_NETRC_FILE:
+            self.create_netrc_file(tmp_path, host)
+            credentials_file = tmp_path / ".netrc"
+            self.simple_get_command(credentials_file)
+            assert b"netrc" in self.output.stderr
+            if host in DEPRECATED_HOSTS:
+                assert (
+                    b"The following hosts are deprecated and will be removed"
+                    b" in future versions: ['nrt.cmems-du.eu', 'my.cmems-du.eu']"
+                    in self.output.stderr
+                )
+            (credentials_file).unlink()
+
+    def simple_get_command(self, credentials_file):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--dataset-id",
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+            "--filter",
+            "*glo12_rg_1d-m_20230831-20230831_2D_hcst_R20230913*",
+            "--dry-run",
+            "--log-level",
+            "DEBUG",
+            "--credentials-file",
+            credentials_file,
+        ]
+        environment_without_crendentials = (
+            get_environment_without_crendentials()
+        )
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
+        )
+        assert self.output.returncode == 0
+
+    def test_motuclient_file(self, tmp_path):
+        self.create_motuclient_file(tmp_path)
+        command = [
+            "copernicusmarine",
+            "login",
+            "--check-credentials-valid",
+            "--credentials-file",
+            f"{tmp_path}/motuclient/motuclient-python.ini",
+        ]
+        environment_without_crendentials = (
+            get_environment_without_crendentials()
+        )
+        self.output = execute_in_terminal(
+            command, env=environment_without_crendentials
+        )
+        assert self.output.returncode == 0
+        assert (
+            b"Valid credentials from configuration file" in self.output.stderr
+        )
+        assert (
+            b"The motuclient configuration file is deprecated"
+            b" and will be removed in future versions" in self.output.stderr
+        )
+        ((tmp_path / "motuclient") / "motuclient-python.ini").unlink()
+
+    def create_motuclient_file(self, tmp_path):
+        file_directory = tmp_path / "motuclient"
+        file_directory.mkdir(exist_ok=True)
+        motuclient_file = file_directory / "motuclient-python.ini"
+        motuclient_file.write_text(
+            f"[Main]\n\n"
+            f"user = {os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}\n"
+            f"pwd = {os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}\n"
+        )
+
+    def test_get_data_with_motuclient_file(self, tmp_path):
+        self.create_motuclient_file(tmp_path)
+        credentials_file = tmp_path / "motuclient/motuclient-python.ini"
+        self.simple_get_command(credentials_file)
+        assert b"motuclient-python.ini" in self.output.stderr
+        assert (
+            b"The motuclient configuration file is deprecated"
+            b" and will be removed in future versions" in self.output.stderr
+        )
+        (credentials_file).unlink()
