@@ -1,7 +1,6 @@
 import pathlib
 from json import loads
 
-import pendulum
 import xarray
 
 from copernicusmarine.core_functions.utils import datetime_parser
@@ -100,6 +99,7 @@ class TestOriginalGridDatasets:
         ]
 
         self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
@@ -108,7 +108,7 @@ class TestOriginalGridDatasets:
             b"Dataset part has the non lat lon projection."
             in self.output.stderr
         )
-        assert pendulum.parse("2020-01-01") == datetime_parser(
+        assert datetime_parser("2020-01-01") == datetime_parser(
             dataset.time.values[0]
         )
         assert len(dataset.x.values) > 0

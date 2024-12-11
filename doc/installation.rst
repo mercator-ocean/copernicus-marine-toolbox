@@ -154,7 +154,6 @@ The Copernicus Marine toolbox has the following dependencies:
 - `pystac <https://pystac.readthedocs.io/en/stable/>`__ (1.8.3 or later)
 - `lxml <https://lxml.de/>`__ (4.9.0 or later)
 - `numpy <https://www.numpy.org/>`__ (1.23 or later)
-- `pendulum <https://pendulum.eustace.io/>`__ (3.0.0 or later)
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
 

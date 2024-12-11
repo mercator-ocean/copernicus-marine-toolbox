@@ -1,8 +1,6 @@
 import datetime
 import random
 
-import pendulum
-
 import copernicusmarine as cm
 from copernicusmarine.download_functions.subset_xarray import (
     _dataset_custom_sel,
@@ -64,8 +62,8 @@ class TestSubfunctions:
         assert dataset_1.depth.values.min() >= min_value
         assert dataset_1.depth.values.max() <= max_value
         coord_selection = slice(
-            pendulum.datetime(2023, 1, 1).naive(),
-            pendulum.datetime(2023, 1, 3).naive(),
+            datetime.datetime(2023, 1, 1),
+            datetime.datetime(2023, 1, 3),
         )
         dataset_1 = _dataset_custom_sel(
             dataset_1, "time", coord_selection, "strict-inside"
@@ -96,8 +94,8 @@ class TestSubfunctions:
         assert dataset_1.depth.values.min() <= min_value
         assert dataset_1.depth.values.max() >= max_value
         coord_selection = slice(
-            pendulum.datetime(2023, 1, 2).naive(),
-            pendulum.datetime(2023, 1, 2).naive(),
+            datetime.datetime(2023, 1, 2),
+            datetime.datetime(2023, 1, 2),
         )
         dataset_1 = _dataset_custom_sel(
             dataset_1, "time", coord_selection, "outside"

@@ -403,12 +403,14 @@ def _extract_requested_min_max(
 ) -> tuple[Optional[float], Optional[float]]:
     # TODO: should work the same as the custom_sel we do
     if coordinate_id in COORDINATES_LABEL["time"]:
-        min_time = temporal_parameters.start_datetime
-        if min_time:
-            min_time = min_time.timestamp() * 1e3
-        max_time = temporal_parameters.end_datetime
-        if max_time:
-            max_time = max_time.timestamp() * 1e3
+        min_time_datetime = temporal_parameters.start_datetime
+        min_time = None
+        if min_time_datetime:
+            min_time = min_time_datetime.timestamp() * 1e3
+        max_time_datetime = temporal_parameters.end_datetime
+        max_time = None
+        if max_time_datetime:
+            max_time = max_time_datetime.timestamp() * 1e3
         return min_time, max_time
     if coordinate_id in COORDINATES_LABEL["latitude"]:
         return (

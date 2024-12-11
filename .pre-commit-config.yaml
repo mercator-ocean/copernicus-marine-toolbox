@@ -58,4 +58,4 @@ repos:
     rev: v0.991
     hooks:
       - id: mypy
-        additional_dependencies: [types-requests==2.27.11, types-pyyaml==6.0.5, types-toml==0.10.8.20240310]
+        additional_dependencies: [types-requests==2.27.11, types-pyyaml==6.0.5, types-toml==0.10.8.20240310, types-python-dateutil==2.9.0.20241206]

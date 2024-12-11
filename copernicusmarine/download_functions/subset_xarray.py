@@ -1,11 +1,12 @@
 import logging
 import typing
+from datetime import datetime
 from decimal import Decimal
 from typing import List, Literal, Optional, Union
 
 import numpy
 import xarray
-from pendulum import DateTime
+from dateutil.tz import UTC
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceNames,
@@ -75,26 +76,26 @@ NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
 def _choose_extreme_point(
     dataset: xarray.Dataset,
     coord_label: str,
-    actual_extreme: Union[float, DateTime],
+    actual_extreme: Union[float, datetime],
     method: Literal["pad", "backfill", "nearest"],
-) -> Union[float, DateTime]:
+) -> Union[float, datetime]:
     if (
         coord_label == "time"
         and actual_extreme
         >= timestamp_or_datestring_to_datetime(
             dataset[coord_label].values.min()
-        ).naive()
+        ).replace(tzinfo=None)
         and actual_extreme
         <= timestamp_or_datestring_to_datetime(
             dataset[coord_label].values.max()
-        ).naive()
+        ).replace(tzinfo=None)
     ):
         external_point = dataset.sel(
             {coord_label: actual_extreme}, method=method
         )[coord_label].values
         external_point = timestamp_or_datestring_to_datetime(
             external_point
-        ).naive()
+        ).replace(tzinfo=None)
     elif (
         coord_label != "time"
         and actual_extreme > dataset[coord_label].min()
@@ -143,7 +144,7 @@ def _nearest_selection(
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
     coord_type: Literal["latitude", "longitude", "depth", "time"],
-    coord_selection: Union[float, slice, DateTime, None],
+    coord_selection: Union[float, slice, datetime, None],
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     for coord_label in COORDINATES_LABEL[coord_type]:
@@ -198,8 +199,8 @@ def _dataset_custom_sel(
 def get_size_of_coordinate_subset(
     dataset: xarray.Dataset,
     coordinate: str,
-    minimum: Optional[Union[float, DateTime]],
-    maximum: Optional[Union[float, DateTime]],
+    minimum: Optional[Union[float, datetime]],
+    maximum: Optional[Union[float, datetime]],
 ) -> int:
     for coordinate_label in COORDINATES_LABEL[coordinate]:
         if coordinate_label in dataset.sizes:
@@ -337,12 +338,12 @@ def _temporal_subset(
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     start_datetime = (
-        temporal_parameters.start_datetime.in_tz("UTC").naive()
+        temporal_parameters.start_datetime.astimezone(UTC).replace(tzinfo=None)
         if temporal_parameters.start_datetime
         else temporal_parameters.start_datetime
     )
     end_datetime = (
-        temporal_parameters.end_datetime.in_tz("UTC").naive()
+        temporal_parameters.end_datetime.astimezone(UTC).replace(tzinfo=None)
         if temporal_parameters.end_datetime
         else temporal_parameters.end_datetime
     )
@@ -725,10 +726,10 @@ def check_dataset_subset_bounds(
 @typing.no_type_check
 def _check_coordinate_overlap(
     dimension: str,
-    user_minimum_coordinate_value: Union[float, DateTime],
-    user_maximum_coordinate_value: Union[float, DateTime],
-    dataset_minimum_coordinate_value: Union[float, DateTime],
-    dataset_maximum_coordinate_value: Union[float, DateTime],
+    user_minimum_coordinate_value: Union[float, datetime],
+    user_maximum_coordinate_value: Union[float, datetime],
+    dataset_minimum_coordinate_value: Union[float, datetime],
+    dataset_maximum_coordinate_value: Union[float, datetime],
     is_strict: bool,
 ) -> None:
     message = (

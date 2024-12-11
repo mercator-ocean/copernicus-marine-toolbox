@@ -2,6 +2,7 @@ import concurrent.futures
 import logging
 import pathlib
 import re
+from datetime import datetime, timezone
 from typing import (
     Any,
     Callable,
@@ -14,10 +15,9 @@ from typing import (
 )
 
 import numpy
-import pendulum
-import pendulum.exceptions
 import xarray
-from pendulum import DateTime
+from dateutil import parser
+from dateutil.parser._parser import ParserError
 from requests import PreparedRequest
 from tqdm import tqdm
 
@@ -71,37 +71,41 @@ def construct_query_params_for_marine_data_store_monitoring(
     return query_params
 
 
-def datetime_parser(date: Union[str, numpy.datetime64]) -> DateTime:
+def datetime_parser(date: Union[str, numpy.datetime64]) -> datetime:
     if date == "now":
-        return pendulum.now(tz="UTC")
+        return datetime.now(tz=timezone.utc)
     try:
         if isinstance(date, numpy.datetime64):
             date = str(date)
-        parsed_datetime = pendulum.parse(date)
-        # ignoring types because one needs to pass
-        # `exact=True` to `parse` method to get
-        # something else than `pendulum.DateTime`
-        return parsed_datetime  # type: ignore
-    except pendulum.exceptions.ParserError:
+        parsed_datetime = parser.parse(
+            date, default=datetime(1978, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
+        )
+        # # add timezone info if not present
+        # if parsed_datetime.tzinfo is None:
+        #     parsed_datetime = parsed_datetime.replace(tzinfo=timezone.utc)
+        return parsed_datetime
+    except ParserError:
         pass
     raise WrongDatetimeFormat(date)
 
 
 def timestamp_parser(
     timestamp: Union[int, float], unit: Literal["s", "ms"] = "ms"
-) -> DateTime:
+) -> datetime:
     """
-    Convert a timestamp in milliseconds to a pendulum DateTime object
-    by default. The unit can be changed to seconds by passing "s" as
-    the unit.
+    Convert a timestamp in milliseconds to a datetime object.
+    The unit can be changed to seconds by passing "s".
     """
     conversion_factor = 1 if unit == "s" else 1e3
-    return pendulum.from_timestamp(timestamp / conversion_factor, tz="UTC")
+
+    return datetime.fromtimestamp(
+        timestamp / conversion_factor, tz=timezone.utc
+    )
 
 
 def timestamp_or_datestring_to_datetime(
     date: Union[str, int, float, numpy.datetime64]
-) -> DateTime:
+) -> datetime:
     if isinstance(date, int) or isinstance(date, float):
         return timestamp_parser(date)
     else:

@@ -3,10 +3,9 @@ import logging
 import pathlib
 import re
 from dataclasses import dataclass, field
+from datetime import datetime
 from json import load
 from typing import Any, Dict, List, Optional
-
-from pendulum import DateTime
 
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -44,8 +43,8 @@ class DatasetTimeAndSpaceSubset:
     maximum_latitude: Optional[float] = None
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
-    start_datetime: Optional[DateTime] = None
-    end_datetime: Optional[DateTime] = None
+    start_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None
 
 
 @dataclass
@@ -62,8 +61,8 @@ class SubsetRequest:
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
-    start_datetime: Optional[DateTime] = None
-    end_datetime: Optional[DateTime] = None
+    start_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     )

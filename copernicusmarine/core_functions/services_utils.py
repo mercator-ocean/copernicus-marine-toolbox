@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Literal, Optional, Union
 
+from dateutil.tz import UTC
+
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
@@ -170,12 +172,14 @@ def _get_best_arco_service_type(
         dataset,
         "time",
         (
-            dataset_subset.start_datetime.in_tz("UTC").naive()
+            dataset_subset.start_datetime.astimezone(tz=UTC).replace(
+                tzinfo=None
+            )
             if dataset_subset.start_datetime
             else dataset_subset.start_datetime
         ),
         (
-            dataset_subset.end_datetime.in_tz("UTC").naive()
+            dataset_subset.end_datetime.astimezone(tz=UTC).replace(tzinfo=None)
             if dataset_subset.end_datetime
             else dataset_subset.end_datetime
         ),

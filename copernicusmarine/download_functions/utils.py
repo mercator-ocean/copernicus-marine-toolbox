@@ -1,11 +1,11 @@
 import bisect
 import logging
 import math
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Union
 
 import xarray
-from pendulum import DateTime
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCoordinate,
@@ -172,17 +172,17 @@ def _format_depths(
 
 
 def _format_datetimes(
-    minimum_datetime: Optional[DateTime], maximum_datetime: Optional[DateTime]
+    minimum_datetime: Optional[datetime], maximum_datetime: Optional[datetime]
 ) -> str:
     if minimum_datetime is None or maximum_datetime is None:
         return ""
     else:
         if minimum_datetime == maximum_datetime:
-            formatted_datetime = f"{minimum_datetime.format('YYYY-MM-DD')}"
+            formatted_datetime = f"{minimum_datetime.strftime('YYYY-MM-DD')}"
         else:
             formatted_datetime = (
-                f"{minimum_datetime.format('YYYY-MM-DD')}-"
-                f"{maximum_datetime.format('YYYY-MM-DD')}"
+                f"{minimum_datetime.strftime('YYYY-MM-DD')}-"
+                f"{maximum_datetime.strftime('YYYY-MM-DD')}"
             )
         return formatted_datetime
 
@@ -210,10 +210,10 @@ def _get_coordinate_extent(
             if coordinate == "time":
                 minimum = timestamp_or_datestring_to_datetime(
                     minimum
-                ).to_iso8601_string()
+                ).isoformat()
                 maximum = timestamp_or_datestring_to_datetime(
                     maximum
-                ).to_iso8601_string()
+                ).isoformat()
                 unit = "iso8601"
                 return TimeExtent(
                     minimum=minimum,
