@@ -48,7 +48,7 @@ You can install it using ``mamba`` (or conda) through the ``conda-forge`` channe
 
     mamba install conda-forge::copernicusmarine --yes
 
-To upgrade the Toolbox with mamba (or conda):
+To upgrade the toolbox with mamba (or conda):
 
 .. code-block:: bash
 
@@ -164,7 +164,7 @@ There are some compatibility issues with the latest versions of xarray and numpy
 - ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
 - ``xarray<2024.10.0`` with ``numpy>=2.0.0`` leads to some time overhead. See this issue: `xarray issue 2 <https://github.com/pydata/xarray/issues/9545>`_.
 
-Also to convert subsetted data to NetCDF format the Toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
+Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
 and ``h5netcdf`` library as the backend.
 
 The ``h5netcdf`` library is not compatible with the NetCDF3 format.
@@ -179,9 +179,9 @@ If you need to save files in NetCDF3 format please just manually install ``netcd
     The image of the toolbox should already have the ``netcdf4`` library installed.
 
 
-Domains required by the Copernicus Marine toolbox
+Domains required by the Copernicus Marine Toolbox
 ********************************************************
-To be able to use the Copernicus Marine services, you need to be able to access those domains:
+To be able to use the Copernicus Marine Services, you need to be able to access those domains:
 
 - ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.

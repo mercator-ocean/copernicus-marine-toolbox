@@ -19,7 +19,7 @@ PART_DEFAULT = "default"
 
 class CopernicusMarineServiceNames(str, Enum):
     """
-    Services parsed by the Copernicus Marine toolbox.
+    Services parsed by the Copernicus Marine Toolbox.
     """
 
     GEOSERIES = "arco-geo-series"
@@ -32,7 +32,7 @@ class CopernicusMarineServiceNames(str, Enum):
 
 class CoperniusMarineServiceShortNames(str, Enum):
     """
-    Short names or the services parsed by the Copernicus Marine toolbox.
+    Short names or the services parsed by the Copernicus Marine Toolbox.
     Also accepted when a service is requested.
     """
 

@@ -206,7 +206,7 @@ Option ``--dry-run``
 
 This option allows you to simulate the command without actually executing it.
 It is useful for checking the command's behavior before running it and to be able to access some metadata about the request.
-When used, the Toolbox will by default, send the full return response of the command.
+When used, the toolbox will by default, send the full return response of the command.
 
 **Example:**
 

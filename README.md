@@ -11,7 +11,7 @@
 
 ## Features
 
-The Copernicus Marine toolbox offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
+The Copernicus Marine Toolbox offers capabilities through both **Command Line Interface (CLI)** and **Python API**:
 
 - **Metadata Information**: List and retrieve metadata information on all products, datasets, variables.
 - **Subset Datasets**: Subset datasets to extract only the parts of interest, in preferred format, such as Analysis-Ready Cloud-Optimized (ARCO) Zarr or NetCDF file format.
