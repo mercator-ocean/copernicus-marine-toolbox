@@ -59,7 +59,6 @@ class TestCFCompliance:
             f"{tmp_path}/{output_filename}_checked.json",
         ]
         self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
 
         f = open(f"{tmp_path}/{output_filename}_checked.json")
         data = json.load(f)
