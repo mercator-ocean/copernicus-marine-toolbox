@@ -511,6 +511,25 @@ def _update_dataset_coordinate_attributes(
                     coordinate_attributes.remove("units")
                 elif coordinate_label in ["depth", "elevation"]:
                     coordinate_attributes.append("positive")
+                # TODO: delete this when fixed on ARCO processor side
+                # example dataset: esa_obs-si_arc_phy-sit_nrt_l4-multi_P1D-m
+                if attrs == {}:
+                    if coordinate_alias == "longitude":
+                        attrs = {
+                            "standard_name": "longitude",
+                            "long_name": "Longitude",
+                            "units": "degrees_east",
+                            "units_long": "Degrees East",
+                            "axis": "X",
+                        }
+                    elif coordinate_alias == "latitude":
+                        attrs = {
+                            "standard_name": "latitude",
+                            "long_name": "Latitude",
+                            "units": "degrees_north",
+                            "units_long": "Degrees North",
+                            "axis": "Y",
+                        }
                 coord.attrs = _filter_attributes(attrs, coordinate_attributes)
 
     dataset.attrs = _filter_attributes(
