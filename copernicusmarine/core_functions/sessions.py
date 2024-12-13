@@ -1,6 +1,6 @@
 import logging
 import ssl
-from typing import Any, List, Literal, Optional, Tuple
+from typing import Any, Literal, Optional
 
 import boto3
 import botocore
@@ -50,10 +50,10 @@ def get_ssl_context() -> Optional[ssl.SSLContext]:
 
 def get_configured_boto3_session(
     endpoint_url: str,
-    operation_type: List[Literal["ListObjects", "HeadObject", "GetObject"]],
+    operation_type: list[Literal["ListObjects", "HeadObject", "GetObject"]],
     username: Optional[str] = None,
     return_ressources: bool = False,
-) -> Tuple[Any, Any]:
+) -> tuple[Any, Any]:
     config_boto3 = botocore.config.Config(
         s3={"addressing_style": "virtual"},
         signature_version=botocore.UNSIGNED,
