@@ -2,13 +2,13 @@ import logging
 import os
 import pathlib
 import re
+from datetime import datetime
 from itertools import chain
 from pathlib import Path
 from typing import Literal, Optional
 
-import pendulum
 from botocore.client import ClientError
-from pendulum import DateTime
+from dateutil.tz import UTC
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.request_structure import (
@@ -321,14 +321,13 @@ def _download_header(
         not only_list_root_path,
         disable_progress_bar,
     )
+
     for filename, size, last_modified_datetime, etag in raw_filenames:
         if not regex or re.search(regex, filename):
             file_to_append = S3FileInfo(
                 filename_in=filename,
                 size=float(size),
-                last_modified=last_modified_datetime.in_tz(
-                    "UTC"
-                ).to_iso8601_string(),
+                last_modified=last_modified_datetime.isoformat(),
                 etag=etag,
                 ignore=_check_should_be_ignored(
                     filename,
@@ -420,7 +419,7 @@ def _download_header_for_direct_download(
             file_to_append = S3FileInfo(
                 filename_in=full_path,
                 size=size,
-                last_modified=last_modified.in_tz("UTC").to_iso8601_string(),
+                last_modified=last_modified.isoformat(),
                 etag=etag,
                 ignore=_check_should_be_ignored(
                     full_path,
@@ -470,7 +469,7 @@ def _check_already_exists(
 def _check_needs_to_be_synced(
     filename: str,
     size: int,
-    last_modified_datetime: DateTime,
+    last_modified_datetime: datetime,
     directory_out: pathlib.Path,
 ) -> bool:
     filename_out = _local_path_from_s3_url(filename, directory_out)
@@ -486,14 +485,16 @@ def _check_needs_to_be_synced(
             )
             # boto3.s3_resource.Object.last_modified is without microsecond
             # boto3.paginate s3_object["LastModified"] is with microsecond
-            last_modified_datetime = last_modified_datetime.set(microsecond=0)
+            last_modified_datetime = last_modified_datetime.replace(
+                microsecond=0
+            )
             return last_modified_datetime > last_created_datetime_out
 
 
 def _check_should_be_ignored(
     filename: str,
     size: int,
-    last_modified_datetime: DateTime,
+    last_modified_datetime: datetime,
     directory_out: pathlib.Path,
     skip_existing: bool,
     sync: bool,
@@ -513,7 +514,7 @@ def _check_should_be_ignored(
 def _check_should_be_overwritten(
     filename: str,
     size: int,
-    last_modified_datetime: DateTime,
+    last_modified_datetime: datetime,
     directory_out: pathlib.Path,
     sync: bool,
     overwrite: bool,
@@ -544,7 +545,7 @@ def _list_files_on_marine_data_lake_s3(
     prefix: str,
     recursive: bool,
     disable_progress_bar: bool,
-) -> list[tuple[str, int, DateTime, str]]:
+) -> list[tuple[str, int, datetime, str]]:
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["ListObjects"], username
     )
@@ -562,13 +563,13 @@ def _list_files_on_marine_data_lake_s3(
             tqdm(page_iterator, disable=disable_progress_bar),
         )
     )
-    files_already_found: list[tuple[str, int, DateTime, str]] = []
+    files_already_found: list[tuple[str, int, datetime, str]] = []
     for s3_object in s3_objects:
         files_already_found.append(
             (
                 f"s3://{bucket}/" + s3_object["Key"],
                 s3_object["Size"],
-                pendulum.instance(s3_object["LastModified"]),
+                s3_object["LastModified"].astimezone(tz=UTC),
                 s3_object["ETag"],
             )
         )
@@ -577,7 +578,7 @@ def _list_files_on_marine_data_lake_s3(
 
 def _get_file_size_last_modified_and_etag(
     endpoint_url: str, bucket: str, file_in: str, username: str
-) -> Optional[tuple[int, DateTime, str]]:
+) -> Optional[tuple[int, datetime, str]]:
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["HeadObject"], username
     )
@@ -589,7 +590,7 @@ def _get_file_size_last_modified_and_etag(
         )
         return (
             s3_object["ContentLength"],
-            pendulum.instance(s3_object["LastModified"]),
+            s3_object["LastModified"].astimezone(tz=UTC),
             s3_object["ETag"],
         )
     except ClientError as e:

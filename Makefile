@@ -93,7 +93,7 @@ build-and-prepare-for-binary:
 # Build with macos windows and linux
 run-using-pyinstaller-windows-latest:
 	pip install -e .
-	python -m PyInstaller --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine.exe --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile --copy-metadata zarr
+	python -m PyInstaller --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine.exe --collect-data dask --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile --copy-metadata zarr
 
 run-using-pyinstaller-macos:
 	pip install -e .

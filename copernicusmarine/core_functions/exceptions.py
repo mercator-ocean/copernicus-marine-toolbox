@@ -77,10 +77,10 @@ class WrongDatetimeFormat(Exception):
     Supported formats are:
 
     * the string "now"
-    * all formats supported by pendulum python library
+    * all formats supported by dateutil python library
 
-    see `pendulum parsing page <https://pendulum.eustace.io/docs/#parsing>`_.
-    """
+    see `dateutil documentation page <https://dateutil.readthedocs.io/en/stable/parser.html>`_.
+    """  # noqa
 
     pass
 

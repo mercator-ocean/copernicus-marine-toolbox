@@ -96,9 +96,9 @@ def subset(
     vertical_axis : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
     start_datetime : Union[datetime, str], optional
-        The start datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
+        The start datetime of the temporal subset. Supports common format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html).
     end_datetime : Union[datetime, str], optional
-        The end datetime of the temporal subset. Supports common format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing).
+        The end datetime of the temporal subset. Supports common format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html).
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     output_directory : Union[pathlib.Path, str], optional

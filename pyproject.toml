@@ -23,7 +23,6 @@ semver = ">=3.0.2"
 pystac = ">=1.8.3"
 lxml = ">=4.9.0"
 numpy = ">=1.23.0"
-pendulum = "^3.0.0"
 pydantic = "^2.9.1"
 h5netcdf = "^1.4.0"
 
@@ -35,6 +34,7 @@ types-toml = "^0.10.8.20240310"
 pre-commit = "^4.0.1"
 types-requests = "^2.27.11"
 ipython = "^8.14.0"
+types-python-dateutil = "^2.9.0.20241206"
 
 [build-system]
 requires = ["poetry-core"]

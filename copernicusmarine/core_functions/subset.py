@@ -2,9 +2,8 @@ import importlib.util
 import json
 import logging
 import pathlib
+from datetime import datetime
 from typing import List, Optional
-
-from pendulum import DateTime
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
@@ -55,8 +54,8 @@ def subset_function(
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
     vertical_axis: VerticalAxis,
-    start_datetime: Optional[DateTime],
-    end_datetime: Optional[DateTime],
+    start_datetime: Optional[datetime],
+    end_datetime: Optional[datetime],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,

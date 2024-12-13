@@ -165,12 +165,12 @@ SUBSET: dict[str, str] = {
     ),
     "START_DATETIME_HELP": (
         "The start datetime of the temporal subset. Supports common "
-        "format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing)."
+        "format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html)."  # noqa
     ),  # hardocded in cli: Caution: encapsulate date with “ “ to ensure valid
     # expression for format “%Y-%m-%d %H:%M:%S”.
     "END_DATETIME_HELP": (
         "The end datetime of the temporal subset. Supports common "
-        "format parsed by pendulum (https://pendulum.eustace.io/docs/#parsing)."
+        "format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html)."  # noqa
     ),  # hardocded in cli: Caution: encapsulate date with “ “
     # to ensure valid expression for format “%Y-%m-%d %H:%M:%S”.
     "COORDINATES_SELECTION_METHOD_HELP": (
