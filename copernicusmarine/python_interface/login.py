@@ -21,9 +21,9 @@ def login(
     Parameters
     ----------
     username : str, optional
-        The username for authentication.
+        If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, else ask for user input.
     password : str, optional
-        The password for authentication.
+        If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, else ask for user input.
     configuration_file_directory : Union[pathlib.Path, str]
         Path to the directory where the configuration file will be stored.
     force_overwrite : bool

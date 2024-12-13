@@ -76,9 +76,9 @@ def subset(
     dataset_part : str, optional
         Force the selection of a specific dataset part.
     username : str, optional
-        The username for authentication. See also :func:`~copernicusmarine.login`
+        If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, then search for a credentials file, else ask for user input. See also :func:`~copernicusmarine.login`
     password : str, optional
-        The password for authentication. See also :func:`~copernicusmarine.login`
+        If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, then search for a credentials file, else ask for user input. See also :func:`~copernicusmarine.login`
     variables : List[str], optional
         List of variable names to extract.
     minimum_longitude : float, optional

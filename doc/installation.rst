@@ -139,7 +139,7 @@ And from a Windows os (cmd):
 
 Dependencies
 **************
-The Copernicus Marine toolbox has the following dependencies:
+The Copernicus Marine Toolbox has the following dependencies:
 
 - `Python <https://www.python.org/>`__ (3.9 or later)
 - `click <https://click.palletsprojects.com/>`__ (8.0.4 or later)
@@ -186,3 +186,33 @@ To be able to use the Copernicus Marine Services, you need to be able to access 
 - ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.
 - ``https://s3.waw3-1.cloudferro.com``: for the data.
+
+To check if you are able to access ``https://s3.waw3-1.cloudferro.com`` the way the toolbox is doing it you can do the following steps.
+
+First, open a Python console in the same environment as you would run your script:
+
+.. code-block:: bash
+
+    python
+
+Then, run a requests and check that the result is as expected:
+
+.. code-block:: python
+
+    import requests
+
+    # you can pass here proxies and ssl configuration if needed
+    response = requests.get(
+        "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
+    )
+    response.raise_for_status()
+
+    print(response.json())
+
+    # you should get something like:
+    # {'systemVersions': {'mds': '1.0.0', [..] 'mds/serverlessArco/meta': '>=1.2.2'}}
+
+
+For the authentication, check that you can run the login command.
+If you have an error related to HTTP calls or internet connection,
+please check with your IT support.

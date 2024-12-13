@@ -43,8 +43,12 @@ except ValueError:
 
 
 def get_ssl_context() -> Optional[ssl.SSLContext]:
-    if COPERNICUSMARINE_DISABLE_SSL_CONTEXT is not None:
+    if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
         return None
+    if COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH:
+        return ssl.create_default_context(
+            capath=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH
+        )
     return ssl.create_default_context(cafile=certifi.where())
 
 
@@ -89,9 +93,12 @@ class ConfiguredRequestsSession(requests.Session):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.trust_env = TRUST_ENV
-        self.verify = (
-            COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
-        )
+        if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
+            self.verify = False
+        else:
+            self.verify = (
+                COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
+            )
         self.proxies = PROXIES
         if HTTPS_RETRIES:
             self.mount(
