@@ -5,6 +5,9 @@ from click import Context, Option, UsageError
 from click.core import ParameterSource
 
 from copernicusmarine.core_functions import documentation_utils
+from copernicusmarine.core_functions.click_custom_class import (
+    DeprecatedClickOption,
+)
 
 
 class MutuallyExclusiveOption(Option):
@@ -87,4 +90,13 @@ credentials_file_option = click.option(
     "--credentials-file",
     type=click.Path(path_type=pathlib.Path),
     help=documentation_utils.SHARED["CREDENTIALS_FILE_HELP"],
+)
+
+force_download_option = click.option(
+    "--force-download",
+    is_flag=True,
+    default=False,
+    hidden=True,
+    cls=DeprecatedClickOption,
+    deprecated=["--force-download"],
 )
