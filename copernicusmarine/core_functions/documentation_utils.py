@@ -3,10 +3,10 @@ from copernicusmarine.core_functions.services_utils import CommandType
 SHARED: dict[str, str] = {
     "OVERWRITE_HELP": "If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').",  # noqa: E501
     "USERNAME_HELP": (
-        "The username for authentication."
+        "If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, then search for a credentials file, else ask for user input."  # noqa
     ),  # a little hardcoding in Python API
     "PASSWORD_HELP": (
-        "The password for authentication."
+        "If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, then search for a credentials file, else ask for user input."  # noqa
     ),  # a little hardcoding in Python API
     "LOG_LEVEL_HELP": (
         "Set the details printed to console by the command "
@@ -56,8 +56,13 @@ LOGIN: dict[str, str] = {
         " under the ``$HOME/.copernicusmarine`` directory."
     ),
     "LOGIN_RESPONSE_HELP": (
-        "Exit code\n 0 exit code if the login was successfully "
-        "completed, 1 otherwise."
+        "Exit code\n 0 if the login was successfully completed, 1 otherwise."
+    ),
+    "USERNAME_HELP": (
+        "If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, else ask for user input."  # noqa
+    ),
+    "PASSWORD_HELP": (
+        "If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, else ask for user input."  # noqa
     ),
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
         "Path to the directory where the configuration file will be stored."
@@ -123,7 +128,7 @@ DESCRIBE: dict[str, str] = {
 
 SUBSET: dict[str, str] = {
     "SUBSET_DESCRIPTION_HELP": (
-        "Extracts a subset of data from a specified dataset using given parameters."
+        "Extract a subset of data from a specified dataset using given parameters."
         "\n\nThe datasetID is required and can be found via the ``describe`` "
         "command. "  # has some hardcoding in CLI and python API
     ),

@@ -1,10 +1,10 @@
 .. _installation-page:
 
 ===================================================
-Installing Copernicus Marine toolbox
+Installing Copernicus Marine Toolbox
 ===================================================
 
-There are several ways to install or use the Copernicus Marine toolbox:
+There are several ways to install or use the Copernicus Marine Toolbox:
 
 * via pip (see `PyPI repository <https://pypi.org/project/copernicusmarine/>`_)
 * via mamba | conda (see `conda-forge channel <https://anaconda.org/conda-forge/copernicusmarine>`_)
@@ -48,7 +48,7 @@ You can install it using ``mamba`` (or conda) through the ``conda-forge`` channe
 
     mamba install conda-forge::copernicusmarine --yes
 
-To upgrade the Toolbox with mamba (or conda):
+To upgrade the toolbox with mamba (or conda):
 
 .. code-block:: bash
 
@@ -85,7 +85,7 @@ To be able to download Copernicus Marine data, you need to have an account on th
 
 
 
-Use the Copernicus Marine toolbox binaries
+Use the Copernicus Marine Toolbox binaries
 ***********************************************
 
 In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases>`_ you can access the binaries of the latest releases.
@@ -99,7 +99,7 @@ To download directly the latest stable releases:
 - Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine.exe>`_
 
 
-Once downloaded for the specific platform, you can use the toolbox by running the binary as follows:
+Once downloaded for the specific platform, you can use the Toolbox by running the binary as follows:
 
 In mac-os or linux:
 
@@ -139,7 +139,7 @@ And from a Windows os (cmd):
 
 Dependencies
 **************
-The Copernicus Marine toolbox has the following dependencies:
+The Copernicus Marine Toolbox has the following dependencies:
 
 - `Python <https://www.python.org/>`__ (3.9 or later)
 - `click <https://click.palletsprojects.com/>`__ (8.0.4 or later)
@@ -158,7 +158,7 @@ The Copernicus Marine toolbox has the following dependencies:
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
 
 
-The Copernicus Marine toolbox uses the xarray library to handle the data when using the ``subset`` command.
+The Copernicus Marine Toolbox uses the xarray library to handle the data when using the ``subset`` command.
 There are some compatibility issues with the latest versions of xarray and numpy:
 
 - ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
@@ -168,7 +168,7 @@ Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dat
 and ``h5netcdf`` library as the backend.
 
 The ``h5netcdf`` library is not compatible with the NetCDF3 format.
-If you want to use it please make sure to install the ``netcdf4`` library:
+If you need to save files in NetCDF3 format please just manually install ``netcdf4`` library:
 
 .. code-block:: bash
 
@@ -179,10 +179,40 @@ If you want to use it please make sure to install the ``netcdf4`` library:
     The image of the toolbox should already have the ``netcdf4`` library installed.
 
 
-Domains required by the Copernicus Marine toolbox
+Domains required by the Copernicus Marine Toolbox
 ********************************************************
-To be able to use the Copernicus Marine services, you need to be able to access those domains:
+To be able to use the Copernicus Marine Services, you need to be able to access those domains:
 
 - ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.
 - ``https://s3.waw3-1.cloudferro.com``: for the data.
+
+To check if you are able to access ``https://s3.waw3-1.cloudferro.com`` the way the toolbox is doing it you can do the following steps.
+
+First, open a Python console in the same environment as you would run your script:
+
+.. code-block:: bash
+
+    python
+
+Then, run a requests and check that the result is as expected:
+
+.. code-block:: python
+
+    import requests
+
+    # you can pass here proxies and ssl configuration if needed
+    response = requests.get(
+        "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
+    )
+    response.raise_for_status()
+
+    print(response.json())
+
+    # you should get something like:
+    # {'systemVersions': {'mds': '1.0.0', [..] 'mds/serverlessArco/meta': '>=1.2.2'}}
+
+
+For the authentication, check that you can run the login command.
+If you have an error related to HTTP calls or internet connection,
+please check with your IT support.

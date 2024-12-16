@@ -19,7 +19,7 @@ PART_DEFAULT = "default"
 
 class CopernicusMarineServiceNames(str, Enum):
     """
-    Services parsed by the Copernicus Marine toolbox.
+    Services parsed by the Copernicus Marine Toolbox.
     """
 
     GEOSERIES = "arco-geo-series"
@@ -32,7 +32,7 @@ class CopernicusMarineServiceNames(str, Enum):
 
 class CoperniusMarineServiceShortNames(str, Enum):
     """
-    Short names or the services parsed by the Copernicus Marine toolbox.
+    Short names or the services parsed by the Copernicus Marine Toolbox.
     Also accepted when a service is requested.
     """
 
@@ -613,8 +613,9 @@ class DatasetVersionPartNotFound(Exception):
 
     Please verifiy that the requested part can be found in
     the result of the :func:`~copernicusmarine.describe` command
-    for this specific dataset version and dataset id.
-    If yes, please contact user support.
+    for this specific dataset version and datasetID.
+    If yes, please contact the User Support, (widget chat on
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
     def __init__(self, version: CopernicusMarineVersion):
@@ -629,7 +630,8 @@ class DatasetVersionNotFound(Exception):
     Please verifiy that the requested version can be found in
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset.
-    If yes, please contact user support.
+    If yes, please contact the User Support, (widget chat on
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
     def __init__(self, dataset: CopernicusMarineDataset):
@@ -643,12 +645,13 @@ class DatasetNotFound(Exception):
 
     Possible reasons:
 
-    - The dataset id is incorrect and not present in the catalog.
+    - The datasetID is incorrect and not present in the catalogue.
     - The dataset has been retired.
 
-    Please verifiy that the dataset id is can be found in
+    Please verifiy that the datasetID is can be found in
     the result of the :func:`~copernicusmarine.describe` command.
-    If yes, please contact user support.
+    If yes, please contact the User Support, (widget chat on
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
     def __init__(self, dataset_id: str):
@@ -696,5 +699,5 @@ def get_version_and_part_from_full_dataset_id(
         dataset_name = match.group(1)
         version = match.group(2) or VERSION_DEFAULT
     else:
-        raise Exception(f"Could not parse dataset id: {full_dataset_id}")
+        raise Exception(f"Could not parse datasetID: {full_dataset_id}")
     return dataset_name, version, part

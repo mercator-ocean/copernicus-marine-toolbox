@@ -77,8 +77,8 @@ class CredentialsCannotBeNone(Exception):
     To use the Copernicus Marine Service, you need to provide a username and
     a password. You can set them as environment variables or pass them as
     arguments to the function or use the :func:`~copernicusmarine.login` command.
-    To register and create your valid credentials, please visit:
-    `copernicusmarine registration page <https://data.marine.copernicus.eu/register>`_
+    To register and create your valid credentials, please visit the
+    Copernicus Marine `registration page <https://data.marine.copernicus.eu/register>`_
     """
 
     pass
@@ -89,7 +89,7 @@ class InvalidUsernameOrPassword(Exception):
     Exception raised when the username or password are invalid.
 
     To register and create your valid credentials, please visit:
-    `copernicusmarine registration page <https://data.marine.copernicus.eu/register>`_
+    Copernicus Marine `registration page <https://data.marine.copernicus.eu/register>`_
     """
 
     pass
@@ -102,7 +102,7 @@ class CouldNotConnectToAuthenticationSystem(Exception):
     Please check the following common problems:
 
     - Check your internet connection
-    - make sure to authorize ``cmems-cas.cls.fr`` and/or ``auth.marine.copernicus.eu`` domains
+    - Make sure to authorize ``cmems-cas.cls.fr`` and/or ``auth.marine.copernicus.eu`` domains
 
     If none of this worked, maybe the authentication system is down, please try again later.
     """  # noqa

@@ -285,7 +285,7 @@ def get_retrieval_service(
     if not dataset_metadata:
         raise KeyError(
             f"The requested dataset '{dataset_id}' was not found in the catalogue,"
-            " you can use 'copernicusmarine describe --include-datasets "
+            " you can use 'copernicusmarine describe -r datasets "
             "--contains <search_token>' to find datasets"
         )
     force_service_name: Optional[CopernicusMarineServiceNames] = (

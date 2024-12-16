@@ -20,7 +20,7 @@ If the ``.copernicusmarine-credentials`` file already exists, the system will as
 New Copernius Marine authentication system
 -------------------------------------------
 
-A new Copernius Marine authentication system will be released in the following months after the release of the Copernicus Marine toolbox version 2.0.0.
+A new Copernius Marine authentication system will be released in the following months after the release of the Copernicus Marine Toolbox version 2.0.0.
 From 2.0.0, the toolbox should be able to handle both the old and the new authentication systems.
 
 If you are blocking some domains, you will need to authorize the domain ``auth.marine.copernicus.eu`` to be able to connect when the old system is decomissioned.

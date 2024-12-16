@@ -30,7 +30,7 @@ def cli_describe() -> None:
 @cli_describe.command(
     "describe",
     cls=CustomClickOptionsCommand,
-    short_help="Print Copernicus Marine catalogue as JSON.",
+    short_help="Print products metadata of Copernicus Marine catalogue as JSON.",
     help=documentation_utils.DESCRIBE["DESCRIBE_DESCRIPTION_HELP"]
     + " \n\nReturns\n "
     + documentation_utils.DESCRIBE["DESCRIBE_RESPONSE_HELP"],  # noqa

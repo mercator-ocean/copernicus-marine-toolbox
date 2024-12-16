@@ -1,5 +1,9 @@
+.. _network-configuration:
+
 Network configuration
 ======================
+
+.. _disable-ssl:
 
 Disable SSL
 -----------
@@ -9,19 +13,25 @@ For some reason, it can lead to unexpected behavior depending on your network co
 You can set the ``COPERNICUSMARINE_DISABLE_SSL_CONTEXT`` environment variable to any value
 to globally disable the usage of SSL in the toolbox:
 
+Please see `requests documentation page <https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification>`_ for more information.
+
 - on **UNIX** platforms: ``export COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True``
 - on **Windows** platforms: ``set COPERNICUSMARINE_DISABLE_SSL_CONTEXT=True``
+
+.. _trust-env:
 
 ``trust_env`` for Python libraries
 ------------------------------------
 
-To do HTTP calls, the Copernicus Marine toolbox uses the ``requests`` library.
+To do HTTP calls, the Copernicus Marine Toolbox uses the ``requests`` library.
 By default, this library will have ``trust_env`` values set to ``True``.
 
 If you want to deactivate this, you can set ``COPERNICUSMARINE_TRUST_ENV=False`` (default ``True``).
 This can be useful, for example, if you don't want those libraries to read your ``.netrc`` file as it has been
 reported that having a ``.netrc`` with a line: "default login anonymous password user@site" is incompatible
-with S3 connection required by the toolbox.
+with S3 connection required by the Toolbox.
+
+.. _ssl-certificate-path:
 
 Using a custom certificate path
 -------------------------------
@@ -30,6 +40,10 @@ Some users reported issues with SSL certificates. You can precise a custom path 
 ``COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH`` environment variable to the path of your custom certificate.
 
 It might be useful if you want to use the global certificate instead of the one created by your conda environment for example.
+
+Please see `requests documentation page <https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification>`_ for more information.
+
+.. _http-proxy:
 
 Proxy
 -----
@@ -58,6 +72,8 @@ The default value is ``15`` and minimum value is ``1``.
 .. note::
     For the ``get`` command, you can set the environment variable to ``0`` if you don't want to use the ``concurrent.futures.ThreadPoolExecutor`` at all;
     the download will be used only through ``boto3``.
+
+.. _http-connection-timeout-retries:
 
 Connection timeout and retries
 -------------------------------

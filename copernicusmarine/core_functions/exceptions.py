@@ -64,7 +64,7 @@ class NetCDFCompressionNotAvailable(Exception):
     Exception raised when the NetCDF compression is not available.
 
     Please make sure the NetCDF compression is available
-    with the current python libraries.
+    with the current Python libraries.
     """
 
     pass
@@ -77,7 +77,7 @@ class WrongDatetimeFormat(Exception):
     Supported formats are:
 
     * the string "now"
-    * all formats supported by dateutil python library
+    * all formats supported by dateutil Python library
 
     see `dateutil documentation page <https://dateutil.readthedocs.io/en/stable/parser.html>`_.
     """  # noqa

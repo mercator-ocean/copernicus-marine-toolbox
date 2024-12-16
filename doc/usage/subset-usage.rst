@@ -58,7 +58,7 @@ About ``--netcdf-compression-level`` options
 
 If writing data to a NetCDF file (the default format), the ``--netcdf-compression-level`` option can be set to compress the downloaded file. This reduces file size but increases writing time. Without this option, the file is written faster but with a larger size. For Zarr format ('.zarr' extension), the default compression of the Copernicus Marine Data Store is applied, making the download fast and compressed without using ``--netcdf-compression-level``.
 
-Default NetCDF compression settings for the toolbox are:
+Default NetCDF compression settings for the Toolbox are:
 
 .. code-block:: text
 
@@ -117,7 +117,7 @@ About ``--chunk-size-limit`` option
 .. warning::
   This option might help for some very specific cases but it is still experimental and might not work as expected in all cases.
 
-The Copernicus Marine toolbox uses ``xarray`` to open and subset datasets.
+The Copernicus Marine Toolbox uses ``xarray`` to open and subset datasets.
 In the backend, it uses ``dask`` to handle large datasets.
 Those are powerful tools for handling large datasets and will work directly in most cases.
 You can read more about it on the `xarray documentation page <https://docs.xarray.dev/en/stable/user-guide/dask.html>`_.
@@ -127,7 +127,7 @@ the Copernicus Marine ARCO datasets are organised in chunks of around 1MB.
 This might create a lot of overhead if you are working with a lot of small chunks and ``dask``.
 Please see the `dask documentation <https://docs.dask.org/en/stable/best-practices.html#avoid-very-large-graphs>`_ for the details.
 
-Hence, by default the Copernicus Marine toolbox will try to optimise the chunk size and
+Hence, by default the Copernicus Marine Toolbox will try to optimise the chunk size and
 will use a chunk size of 100 times the original chunk size. So approximately 100MB.
 If the subset is small enough it won't even use ``dask`` at all.
 

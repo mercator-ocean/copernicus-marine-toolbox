@@ -17,7 +17,7 @@ After any implementation:
 
 ## Release Process
 
-The Copernicus Marine toolbox might maintain several versions at the same time. To this end, we create a branch that will be used for bug fixes and maintenance of the older versions: `release/*`. This branch is created when the development of the new major version starts.
+The Copernicus Marine Toolbox might maintain several versions at the same time. To this end, we create a branch that will be used for bug fixes and maintenance of the older versions: `release/*`. This branch is created when the development of the new major version starts.
 
 Please be aware when you do a fork and create a pull request which of the branch is relevant: `main` or any of `release/*`.
 

@@ -8,7 +8,7 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Copernicus Marine toolbox"
+project = "Copernicus Marine Toolbox"
 copyright = "2024, Mercator Ocean International"
 author = "Mercator Ocean International"
 

@@ -55,9 +55,9 @@ def get(
     dataset_part : str, optional
         Force the selection of a specific dataset part.
     username : str, optional
-        The username for authentication.
+        If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, then search for a credentials file, else ask for user input. See also :func:`~copernicusmarine.login`
     password : str, optional
-        The password for authentication.
+        If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, then search for a credentials file, else ask for user input. See also :func:`~copernicusmarine.login`
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
     output_directory : Union[pathlib.Path, str], optional
