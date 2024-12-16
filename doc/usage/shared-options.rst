@@ -6,12 +6,13 @@ Both ``subset`` and ``get`` commands provide these options. Some options are ava
 Option ``--overwrite`` and ``--skip-existing``
 ************************************************
 
-By default, if the files already exist at the destination, new files will be created with a unique index (eg 'filename_(1).nc') if the file already exists.
+By default, if the files already exist at the destination, new files will be created with a unique index (eg 'filename_(1).nc').
 
 When ``--overwrite`` is specified, existing files will be overwritten.
 
 When ``--skip-existing`` is specified, the download of files that already exist at the output destination will be skipped.
 
+The ``status`` and ``message`` in the response can indicate if the toolbox has overwritten or skipped a file.
 See in :ref:`Response types documentation <response-types>` the ``status`` and ``message`` fields for more information about request statuses.
 
 .. note::
@@ -20,7 +21,8 @@ See in :ref:`Response types documentation <response-types>` the ``status`` and `
 Option ``--create-template``
 *********************************
 
-This option creates a file in your current directory containing the request parameters. If specified, no other action will be performed. The file created will depend on the command used:
+This option creates a file in your current directory containing the request parameters.
+If specified, no other action will be performed. The file created will depend on the command used:
 
 - ``subset``
 
@@ -119,6 +121,8 @@ Option ``--credentials-file``
 *********************************
 
 You can use the ``--credentials-file`` option to specify a credentials file. The file can be either ``.copernicusmarine-credentials``, ``motuclient-python.ini``, ``.netrc``, or ``_netrc``.
+
+When using the option ``--check-credentials-valid`` with the ``login`` command, the ``--credentials-file`` option can be used the same way as with the ``subset`` and ``get`` commands.
 
 .. _dataset version:
 
