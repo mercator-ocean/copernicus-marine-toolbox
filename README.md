@@ -1,12 +1,16 @@
-
 <h1 align="center">Copernicus Marine Service Toolbox (CLI & Python)</h1>
 <div align="center">
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/v/copernicusmarine.svg" alt="PyPI" /></a>
+  <a href="https://anaconda.org/conda-forge/copernicusmarine"><img src="https://img.shields.io/conda/vn/conda-forge/copernicusmarine?logo=anaconda" alt="conda-forge" /></a>
+  </div>
+  <div align="center">
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg" alt="PyPI Supported Versions" /></a>
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey" alt="Supported Platforms" /></a>
-  <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue" alt="Licence" /></a>
-  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/badge/documentation-green" alt="Documentation" /></a>
+  <a href="https://hub.docker.com/r/copernicusmarine/copernicusmarine"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white" alt="Docker" /></a>
+  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/readthedocs/copernicusmarine/pre-releases-2.0.0a4?logo=readthedocs" alt="Documentation" /></a>
   <a href="https://github.com/python/black"><img src="https://img.shields.io/badge/code%20style-black-000000?style==flat" alt="Code Style" /></a>
+  <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue" alt="Licence" /></a>
+  <a href="https://pypistats.org/packages/copernicusmarine"><img src="https://img.shields.io/pypi/dm/copernicusmarine.svg" alt="Downloads" /></a>
 </div>
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
