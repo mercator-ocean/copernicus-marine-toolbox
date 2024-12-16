@@ -4,7 +4,7 @@ import logging
 import pathlib
 from netrc import netrc
 from platform import system
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional
 
 import click
 import lxml.html
@@ -296,7 +296,7 @@ def copernicusmarine_credentials_are_valid(
             logger.info("Valid credentials from input username and password.")
             return True
         else:
-            logger.info(
+            logger.error(
                 "Invalid credentials from input username and password."
             )
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
@@ -315,7 +315,7 @@ def copernicusmarine_credentials_are_valid(
             )
             return True
         else:
-            logger.info(
+            logger.error(
                 "Invalid credentials from environment variables: "
                 "COPERNICUSMARINE_SERVICE_USERNAME and "
                 "COPERNICUSMARINE_SERVICE_PASSWORD."
@@ -335,7 +335,7 @@ def copernicusmarine_credentials_are_valid(
             logger.info("Valid credentials from configuration file.")
             return True
         else:
-            logger.info("Invalid credentials from configuration file.")
+            logger.error("Invalid credentials from configuration file.")
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
     elif configuration_file:
         logger.info(
@@ -361,7 +361,7 @@ def create_copernicusmarine_configuration_file(
     password: str,
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
-) -> pathlib.Path:
+) -> tuple[Optional[pathlib.Path], bool]:
     configuration_lines = [
         "[credentials]\n",
         f"username={username}\n",
@@ -371,10 +371,13 @@ def create_copernicusmarine_configuration_file(
         configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
     )
     if configuration_filename.exists() and not force_overwrite:
-        click.confirm(
-            f"File {configuration_filename} already exists, overwrite it ?",
-            abort=True,
+        confirmed = click.confirm(
+            f"File {configuration_filename} already exists, overwrite it ?"
         )
+        if not confirmed:
+            logger.error("Abort")
+            return None, True
+
     configuration_file_directory.mkdir(parents=True, exist_ok=True)
     configuration_file = open(configuration_filename, "w")
     configuration_string = base64.b64encode(
@@ -382,7 +385,7 @@ def create_copernicusmarine_configuration_file(
     ).decode("utf8")
     configuration_file.write(configuration_string)
     configuration_file.close()
-    return configuration_filename
+    return configuration_filename, False
 
 
 def _check_credentials_with_old_cas(username: str, password: str) -> bool:
@@ -540,7 +543,7 @@ def get_and_check_username_password(
     username: Optional[str],
     password: Optional[str],
     credentials_file: Optional[pathlib.Path],
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
     )
@@ -563,7 +566,7 @@ def get_username_password(
     username: Optional[str],
     password: Optional[str],
     credentials_file: Optional[pathlib.Path],
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     username = get_credential(
         username,
         "username",
@@ -602,7 +605,14 @@ def credentials_file_builder(
     password: Optional[str],
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
-) -> Optional[pathlib.Path]:
+) -> tuple[Optional[pathlib.Path], bool]:
+    """
+    Returns:
+        a path to the configuration file: if none, the credentials are not valid
+
+        a boolean that indicates
+        if the user aborted the creation of the configuration file
+    """
     username = _get_credential_from_environment_variable_or_prompt(
         username, "username", False
     )
@@ -613,11 +623,17 @@ def credentials_file_builder(
         _are_copernicus_marine_credentials_valid(username, password)
     )
     if copernicus_marine_credentials_are_valid:
-        configuration_file = create_copernicusmarine_configuration_file(
+        (
+            configuration_file,
+            has_been_aborted,
+        ) = create_copernicusmarine_configuration_file(
             username=username,
             password=password,
             configuration_file_directory=configuration_file_directory,
             force_overwrite=force_overwrite,
         )
-        return configuration_file
-    return None
+        if has_been_aborted:
+            return configuration_file, has_been_aborted
+        if configuration_file:
+            return configuration_file, False
+    return None, False

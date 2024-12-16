@@ -27,18 +27,20 @@ def login_function(
             return True
         else:
             return False
-    credentials_file = credentials_file_builder(
+    credentials_file, has_been_aborted = credentials_file_builder(
         username=username,
         password=password,
         configuration_file_directory=configuration_file_directory,
         force_overwrite=force_overwrite,
     )
+    if has_been_aborted:
+        logger.info("No configuration file have been modified.")
+        return False
     if credentials_file is not None:
         logger.info(f"Credentials file stored in {credentials_file}.")
         return True
     else:
-        logger.info(
-            "Invalid credentials. No configuration file have been modified."
-        )
+        logger.error("Invalid credentials.")
+        logger.info("No configuration file have been modified.")
         logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
     return False
