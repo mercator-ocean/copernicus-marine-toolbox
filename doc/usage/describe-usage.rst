@@ -60,6 +60,8 @@ To save the JSON output to a file, you can use the following command:
     In the case of the Python interface, the describe will return directly the :class:`copernicusmarine.CopernicusMarineCatalogue` object.
     The catalogue will be complete except if you use the ``dataset_id``, ``product_id`` or ``contains`` arguments.
 
+.. _return-fields:
+
 ``--return-fields`` and ``--exclude-fields`` options
 ----------------------------------------------------------------
 

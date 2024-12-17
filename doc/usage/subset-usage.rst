@@ -53,7 +53,7 @@ The ``--minimum-longitude`` and ``--maximum-longitude`` options work as follows:
 
 Note that any longitudes can be requested. The system applies a modulus operation to bring the result between -180° and 360°. For example, a request for [530, 560] will return data for longitudes [170, 200].
 
-About ``--netcdf-compression-level`` options
+Option ``--netcdf-compression-level``
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 If writing data to a NetCDF file (the default format), the ``--netcdf-compression-level`` option can be set to compress the downloaded file. This reduces file size but increases writing time. Without this option, the file is written faster but with a larger size. For Zarr format ('.zarr' extension), the default compression of the Copernicus Marine Data Store is applied, making the download fast and compressed without using ``--netcdf-compression-level``.
@@ -66,13 +66,15 @@ Default NetCDF compression settings for the Toolbox are:
 
 Set the ``--netcdf-compression-level`` to a custom compression level between 0 (no compression, by default) and 9 (maximum compression).
 
-About ``--netcdf3-compatible`` option
+Option ``--netcdf3-compatible``
 """"""""""""""""""""""""""""""""""""""""
 
 The ``--netcdf3-compatible`` option enables compatibility with the netCDF3 format.
 This uses the ``format="NETCDF3_CLASSIC"`` setting in the xarray `to_netcdf` method. (cf. `xarray documentation <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_.)
 
-About ``--coordinates-selection-method`` option
+.. _coordinates-selection-method:
+
+Option ``--coordinates-selection-method``
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
 The ``--coordinates-selection-method`` option lets you specify how the requested interval selects data points:
@@ -111,7 +113,7 @@ If you request a single point, the nearest point in that dimension will be retur
 
 .. _chunk-size-limit:
 
-About ``--chunk-size-limit`` option
+Option ``--chunk-size-limit``
 """"""""""""""""""""""""""""""""""""""""""
 
 .. warning::
