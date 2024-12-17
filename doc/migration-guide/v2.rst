@@ -1,3 +1,5 @@
+.. _migration-v2:
+
 v2
 =====
 
@@ -43,13 +45,37 @@ the information of the data that would be downloaded.
 .. warning::
   Without the ``--dry-run`` option, the data will be downloaded even if the query is very large.
 
-Options ``--no-metadata-cache`` and ``--overwrite-metadata-cache`` deleted
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.. _cache-system:
+
+Options ``--no-metadata-cache`` and ``--overwrite-metadata-cache`` deleted (removal of the cache system)
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 In v1, we used to cache the result of the describe using ``cachier`` library.
+The toolbox would have to fetch the whole metadata catalogue from the Copernicus Marine server every time we wanted to do a subset or a get.
+With the cache system, this full fetch of the catalogue was necessary once a day (forced update every day to keep data up to date).
 
 In v2, no cache is used and the metadata are fetched every time. However, the metadata fetching has been optimised
 and fetching the metadata doing a ``get`` or a ``subset`` is fast as we only fetch the necessary metadata.
+The toolbox will only fetch the metadata for the datasetID and the productID that are requested.
+
+Advantages of the new system:
+
+* No problems with cache location. Some users where on read-only systems and could not use the cache system.
+* No cross-version problems with ``cachier`` library. The cache would not work if Python version was changed.
+* Up to date data. The cache was updated every day, but if the user wanted to have the latest data, they would have to force the update.
+* Still fast: only fetching the necessary metadata, the toolbox is still fast.
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
+    # would take a long time the first time, but would be fast the next times
+
+    # In v2
+    # always fast
+    copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
+    # Also allowed to have --dataset-id in the describe command
+    copernicusmarine describe --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m
 
 That also means that the options related to the cache system doesn't exist anymore.
 Hence, ``--overwrite-metadata-cache`` and ``--no-metadata-cache`` have been removed.
@@ -64,6 +90,52 @@ Subset
 
 For more information, please see :ref:`the documentation page of the subset function <subset-page>`.
 
+.. _netcdf4-migration:
+
+Removed dependency to ``netCDF4``
+"""""""""""""""""""""""""""""""""""
+
+In v1, the toolbox was using the ``netCDF4`` library to write the netCDF files.
+
+In v2, the toolbox is using the ``h5netcdf`` library to write the netCDF files.
+This changed was made to have a more operational toolbox. Indeed, when Python 3.13 was release the ``netCDF4`` library was not compatible with it
+for some time whereas the ``h5netcdf`` library was from the beginning.
+
+It should be transparent to the user as the output files are still netCDF files. However,
+the ``h5netcdf`` library does not support netCDF3 files. However, if ``netCDF4`` is installed the toolbox will use it to write netCDF3 files.
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022 --netcdf3-compatible
+
+    # In v2
+    # maybe need to install netCDF4 to have netCDF3 files
+    pip install netCDF4
+    # or depending on the environment
+    conda -c conda-forge install netCDF4
+    # then it should work
+    copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022 --netcdf3-compatible
+
+Option ``--coordinates-selection-method`` replaces ``--subset-method``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+See the :ref:`documentation about coordinates selection method <coordinates-selection-method>` for more details.
+
+The option ``--subset-method`` has been removed and replaced by the ``--coordinates-selection-method`` option.
+Setting ``subset-method`` allowed the user to indicate if they wanted the toolbox to raise when they were outside the dataset bounds or not.
+
+In a sense, the new option ``--coordinates-selection-method`` is different and is used to select the method to select the coordinates.
+
+However, the ``--coordinates-selection-method strict-inside`` method is equivalent to the old ``--subset-method inside`` method.
+
+.. code-block:: bash
+
+    # In v1
+    copernicusmarine subset --subset-method inside
+
+    # In v2
+    copernicusmarine subset --coordinates-selection-method strict-inside
 
 :class:`copernicusmarine.ResponseSubset` as object of the response
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -122,6 +194,8 @@ The option ``--overwrite-output-data`` has been deleted, use directly ``--overwr
 
     # In v2
     copernicusmarine subset --overwrite
+
+.. _netcdf-compression-level-migration:
 
 Option ``--netcdf-compression-enabled`` deleted
 """""""""""""""""""""""""""""""""""""""""""""""""
