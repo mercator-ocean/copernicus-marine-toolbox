@@ -235,6 +235,8 @@ def _get_files_to_delete_with_sync(
     files_information: S3FilesDescriptor,
     output_directory: pathlib.Path,
 ) -> S3FilesDescriptor:
+    if not files_information.s3_files:
+        return files_information
     product_structure = str(
         _local_path_from_s3_url(
             files_information.s3_files[0].filename_in, Path("")
