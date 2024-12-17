@@ -5,7 +5,7 @@ import re
 import time
 from pathlib import Path
 from random import shuffle
-from typing import Optional
+from typing import Literal, Optional
 
 import pendulum
 import xarray
@@ -42,6 +42,9 @@ def test_download_variable_and_test_compliance(
     number_of_datasets: Optional[int] = None,
     dataset_id: Optional[str] = None,
     product_id: Optional[str] = None,
+    service_to_test: Literal[
+        "arco-time-series", "arco-geo-series"
+    ] = "arco-time-series",
     keep_going: bool = True,
     concurrent_requests: int = 8,
     log_file: str = "data_to_delete/some_file.txt",
@@ -76,7 +79,7 @@ def test_download_variable_and_test_compliance(
                 for part in version.parts:
                     for service in part.services:
                         # TODO: test on more services
-                        if service.service_name != "arco-geo-series" or (
+                        if service.service_name != service_to_test or (
                             service.service_format
                             and "sql" in service.service_format
                         ):
@@ -338,14 +341,28 @@ def then_it_is_cf_compliant(dataset_id, tmp_path, output_filename) -> dict:
     return dict_result
 
 
+def check_compliance_checker():
+    command = ["compliance-checker", "--help"]
+    output = execute_in_terminal(command)
+    try:
+        assert output.returncode == 0
+    except AssertionError as e:
+        print("Compliance checker is not installed")
+        raise e
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
     logging.getLogger("copernicusmarine").setLevel(logging.CRITICAL + 1)
 
+    # TODO: check why, if the compliance checker is not installed,
+    # the script does not stop and keep downloading
+    # in the meantime checking if installed
+    check_compliance_checker()
     # test_download_variable_and_ncdump(
     #     number_of_datasets=10,
     #     dataset_id="cmems_obs-wave_glo_phy-swh_nrt_multi-l4-2deg_P1D",
     #     # product_id="ARCTIC_ANALYSISFORECAST_PHY_002_001",
     #     keep_going=False,
     # )
-    test_download_variable_and_test_compliance()
+    test_download_variable_and_test_compliance(keep_going=True)
