@@ -214,6 +214,6 @@ The output will be something like this:
 ``--show-all-versions`` option
 -------------------------------
 
-The describe command will show you only one version of a dataset, prioritising the most recent version and the ones that are not planned to be retired.
+The ``describe`` command will show you only one version of a dataset, prioritising the most recent version and the ones that are not planned to be retired.
 If you want to see all versions, you can use the ``--show-all-versions`` option.
 It allows in some cases to access the metadata of datasets that are to be released or datasets that will be retired soon.

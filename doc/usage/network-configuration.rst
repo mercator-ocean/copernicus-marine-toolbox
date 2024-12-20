@@ -62,7 +62,7 @@ Number of concurrent requests
 -----------------------------
 
 The toolbox makes many requests to STAC to be able to parse the full marine data store STAC catalog.
-For that, it uses concurrent calls on one thread. It also uses this when downloading files for the get command.
+For that, it uses concurrent calls on one thread. It also uses this when downloading files for the ``get`` command.
 It can be problematic to do too many requests at the same time. Or you might want to boost the download.
 
 To limit the number of requests at the same time you can use: ``max_concurrent_requests`` argument.

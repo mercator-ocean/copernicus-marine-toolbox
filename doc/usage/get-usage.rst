@@ -100,7 +100,7 @@ About ``--file-list`` option
 
 The ``--file-list`` option allows specifying a list of files for advanced selection. The file can contain complete absolute paths or only a partial path defined by the user.
 
-By default, the get functionality lists all files on the remote server to select requested ones. The file list option will directly download files and avoid listings if all listed files are found.
+By default, the ``get`` functionality lists all files on the remote server to select requested ones. The file list option will directly download files and avoid listings if all listed files are found.
 
 **Example** of ``file_list.txt`` with paths that would be directly downloaded:
 

@@ -55,7 +55,7 @@ If specified, no other action will be performed. The file created will depend on
 Option ``--request-file``
 *********************************
 
-This option allows you to specify request parameters in a provided ``.json`` file, which is useful for batch processing. You can use the following templates or create new ones with the ``--create-template`` option.
+This option allows you to specify request parameters in a provided JSON file, which is useful for batch processing. You can use the following templates or create new ones with the ``--create-template`` option.
 
 - Template for ``subset`` data request:
 
