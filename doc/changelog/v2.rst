@@ -13,9 +13,9 @@ The main improvements are:
 - A documentation with more examples and a quick start guide.
 - Support for Python 3.13 and ``numpy`` 2.0.0.
 - Binaries for Linux distributions, Windows and MacOS.
-- Stopped using the cache system for the metadata and optimised the fetching process.
+- Removed the cache system for the metadata and optimised the fetching process.
 
-Some dependencies, such as aiohttp and nest-asyncio, have been removed as they appeared to cause bugs for some users.
+Some dependencies, such as ``aiohttp`` and ``nest-asyncio``, have been removed as they appeared to cause bugs for some users.
 For instance, the toolbox previously displayed warning messages, which should no longer occur.
 
 .. warning::

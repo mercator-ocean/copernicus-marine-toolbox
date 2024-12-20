@@ -242,7 +242,30 @@ The available fields are the name of the fields of the :class:`copernicusmarine.
 
 .. code-block:: bash
 
-    copernicusmarine subset -i cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022 -r minimum,data_transfer_size > request-metadata.json
+    copernicusmarine subset -i cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022 -r minimum,data_transfer_size,coordinate_id --dry-run
+
+    # Returns
+    {
+      "data_transfer_size": 144079.14503816795,
+      "coordinates_extent": [
+        {
+          "minimum": -180.0,
+          "coordinate_id": "longitude"
+        },
+        {
+          "minimum": -80.0,
+          "coordinate_id": "latitude"
+        },
+        {
+          "minimum": "2022-06-01T00:00:00+00:00",
+          "coordinate_id": "time"
+        },
+        {
+          "minimum": 0.49402499198913574,
+          "coordinate_id": "depth"
+        }
+      ]
+    }
 
 Option ``--vertical-dimension-output`` renamed
 """"""""""""""""""""""""""""""""""""""""""""""""
