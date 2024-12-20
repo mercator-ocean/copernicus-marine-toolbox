@@ -213,6 +213,6 @@ Then, run a requests and check that the result is as expected:
     # {'systemVersions': {'mds': '1.0.0', [..] 'mds/serverlessArco/meta': '>=1.2.2'}}
 
 
-For the authentication, check that you can run the login command.
+For the authentication, check that you can run the ``login`` command.
 If you have an error related to HTTP calls or internet connection,
 please check with your IT support.

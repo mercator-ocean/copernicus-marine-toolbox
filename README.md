@@ -1,9 +1,10 @@
 <h1 align="center">Copernicus Marine Service Toolbox (CLI & Python)</h1>
+
 <div align="center">
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/v/copernicusmarine.svg" alt="PyPI" /></a>
   <a href="https://anaconda.org/conda-forge/copernicusmarine"><img src="https://img.shields.io/conda/vn/conda-forge/copernicusmarine?logo=anaconda" alt="conda-forge" /></a>
-  </div>
-  <div align="center">
+</div>
+<div align="center">
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg" alt="PyPI Supported Versions" /></a>
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey" alt="Supported Platforms" /></a>
   <a href="https://hub.docker.com/r/copernicusmarine/copernicusmarine"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white" alt="Docker" /></a>
@@ -26,13 +27,13 @@ The Copernicus Marine Toolbox offers capabilities through both **Command Line In
 
 ## Documentation
 
-The full documentation of the toolbox is available here: [Copernicusmarine Documentation](https://toolbox-docs.marine.copernicus.eu/). Please refer to it for the more exhaustive and up to date documentation.
+For detailed and up-to-date information, please refer to the [Copernicus Marine Toolbox Documentation](https://toolbox-docs.marine.copernicus.eu/). It includes exhaustive guides, API specifications, and tutorials, automatically versioned.
 
-You might also find more comprehensive details on how to use the `copernicusmarine` Toolbox, please refer to our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox). It ensures a smooth migration for existing users of legacy services such as MOTU, OPeNDAP or FTP.
+For additional documentation and smooth transition for users of legacy services such as MOTU, OPeNDAP, or FTP, visit our [Help Center](https://help.marine.copernicus.eu/en/collections/9080063-copernicus-marine-toolbox).
 
 ## Installation
 
-For installation, multiple options are available depending on your setup:
+The Copernicus Marine Toolbox can be installed and utilized in various ways to suit different user preferences and system configurations. For detailed guidance, refer to the installation page of the [toolbox documentation](https://toolbox-docs.marine.copernicus.eu/).
 
 ### Mamba | Conda
 
@@ -46,16 +47,20 @@ or conda:
 conda install -c conda-forge copernicusmarine
 ```
 
-### Docker
-
-```bash
-docker pull copernicusmarine/copernicusmarine:latest
-```
-
 ### Pip
 
 ```bash
 python -m pip install copernicusmarine
+```
+
+### Binaries (no-installation)
+
+These binaries require no installation and run independently on the user system. Simply download ([from release page](https://github.com/mercator-ocean/copernicus-marine-toolbox/releases) or check the installation page of the [toolbox documentation](https://toolbox-docs.marine.copernicus.eu/)) and run the binary for instant access to the toolbox Command Line Interface functionalities.
+
+### Docker
+
+```bash
+docker pull copernicusmarine/copernicusmarine:latest
 ```
 
 ### Dependencies

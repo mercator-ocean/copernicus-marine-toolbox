@@ -8,7 +8,7 @@ The Copernicus Marine Toolbox commands return some information when downloading.
 It can contain useful metadata for the user.
 
 For the :ref:`command line interface <command-line-interface>`, all the returned data will
-be in a form of a json sent to stdout (whereas the logs are sent to stderr).
+be in a form of a JSON sent to stdout (whereas the logs are sent to stderr).
 You can easily save it locally by doing, for example:
 
 .. code-block:: bash
