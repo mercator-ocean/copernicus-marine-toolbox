@@ -62,7 +62,7 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
             "--filter",
-            "*20241203/NO_TS_TG_ZwartsluisTG_20241203*",
+            "*/NO_TS_TG_ZwartsluisTG*",
             "--response-fields",
             "all",
         ]
@@ -71,7 +71,7 @@ class TestGetSync:
         file_to_check = (
             "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
-            "latest/20241203/NO_TS_TG_ZwartsluisTG_20241203.nc"
+            "latest/"
         )
         assert [
             "found"

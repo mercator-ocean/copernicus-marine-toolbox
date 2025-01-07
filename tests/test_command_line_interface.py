@@ -237,7 +237,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
-        assert len(downloaded_files) == 29
+        assert len(downloaded_files) == 31
 
     def test_get_download_s3_with_regex(self, tmp_path):
         regex = ".*_(2001|2002|2003).*.nc"
