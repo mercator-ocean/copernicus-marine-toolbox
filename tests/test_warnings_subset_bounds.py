@@ -122,7 +122,7 @@ class TestWarningsSubsetBounds:
         )
         min_latitude = 30
         max_latitude = 32
-        min_depth = 0.4
+        min_depth = 0.5
         max_depth = 50.0
         start_datetime = "2023-11-03"
         end_datetime = "2023-11-03"
