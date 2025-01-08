@@ -65,6 +65,7 @@ class TestGetSync:
             "*/NO_TS_TG_ZwartsluisTG*",
             "--response-fields",
             "all",
+            "--dry-run",
         ]
         self.output = execute_in_terminal(self.command)
         response_get = json.loads(self.output.stdout)

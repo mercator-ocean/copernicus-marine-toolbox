@@ -114,11 +114,35 @@ class TestWarningsSubsetBounds:
             b"[-179.9791717529297, 179.9791717529297]"
         ) not in self.output2.stderr
 
-    def test_subset_handle_180_point_correctly(self):
+    def test_subset_handle_180_point_correctly(self, tmp_path):
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
         command = self._build_custom_command(
             dataset_id, "thetao", -150, 180, "strict-inside"
+        )
+        min_latitude = 30
+        max_latitude = 32
+        min_depth = 0.4
+        max_depth = 50.0
+        start_datetime = "2023-11-03"
+        end_datetime = "2023-11-03"
+        command.extend(
+            [
+                "--minimum-latitude",
+                f"{min_latitude}",
+                "--maximum-latitude",
+                f"{max_latitude}",
+                "--start-datetime",
+                f"{start_datetime}",
+                "--end-datetime",
+                f"{end_datetime}",
+                "--minimum-depth",
+                f"{min_depth}",
+                "--maximum-depth",
+                f"{max_depth}",
+                "-o",
+                f"{tmp_path}",
+            ]
         )
         self.output = execute_in_terminal(command)
         assert (b"ERROR") not in self.output.stderr
