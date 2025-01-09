@@ -3,7 +3,6 @@ name: Create Binaries MacOS and Linux
 on:
   workflow_call:
 
-
 jobs:
   build:
     strategy:
@@ -19,25 +18,25 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: mamba-org/setup-micromamba@v1
-      with:
-        micromamba-version: '1.5.6-0'
-        micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-        environment-file: conda_environment_binary.yaml
-        environment-name: copernicusmarine-binary
-        condarc-file: .condarc
-        cache-environment: true
-        post-cleanup: 'all'
+    # - uses: mamba-org/setup-micromamba@v1
+    #   with:
+    #     micromamba-version: '1.5.6-0'
+    #     micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+    #     environment-file: conda_environment_binary.yaml
+    #     environment-name: copernicusmarine-binary
+    #     condarc-file: .condarc
+    #     cache-environment: true
+    #     post-cleanup: 'all'
 
     # - name: Build with PyInstaller
     #   shell: micromamba-shell {0}
     #   run: |
     #     make run-using-pyinstaller-${{ matrix.os }}
 
-    - name: Set VERSION environment variable
-      id: set-version
-      shell: micromamba-shell {0}
-      run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+    # - name: Set VERSION environment variable
+    #   id: set-version
+    #   shell: micromamba-shell {0}
+    #   run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
     # - name: Upload binaries to macos or ubuntu
     #   shell: micromamba-shell {0}

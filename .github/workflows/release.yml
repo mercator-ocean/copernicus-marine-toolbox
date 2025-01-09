@@ -8,7 +8,7 @@ on:
 
 jobs:
   release-pypi-docker:
-    # if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
     runs-on: self-hosted
     timeout-minutes: 20
 
@@ -19,67 +19,68 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      # - uses: mamba-org/setup-micromamba@v1
-      #   with:
-      #     micromamba-version: '1.5.6-0'
-      #     micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-      #     environment-file: conda_environment.yaml
-      #     environment-name: copernicusmarine
-      #     condarc-file: .condarc
-      #     cache-environment: true
-      #     post-cleanup: 'all'
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment.yaml
+          environment-name: copernicusmarine
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
 
-      # - name: Build and publish Pypi package
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      #   run: |
-      #     poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
+      - name: Build and publish Pypi package
+        shell: micromamba-shell {0}
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry publish --build --username __token__ --password "${PYPI_TOKEN}"
 
-      # - name: Set VERSION environment variable
-      #   id: set-version
-      #   shell: micromamba-shell {0}
-      #   run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
+      - name: Set VERSION environment variable
+        id: set-version
+        shell: micromamba-shell {0}
+        run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
-      # - name: Create tag
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     git tag v${{ steps.set-version.outputs.VERSION }}
-      #     git push origin --tags
+      - name: Create tag
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag v${{ steps.set-version.outputs.VERSION }}
+          git push origin --tags
 
-      # - name: Create Github release
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: gh release create v${{ steps.set-version.outputs.VERSION }} --generate-notes
+      - name: Create Github release
+        shell: micromamba-shell {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create v${{ steps.set-version.outputs.VERSION }} --generate-notes
 
-      # - name: Wait for Pypi version to be available
-      #   uses: cygnetdigital/wait_for_response@v2.0.0
-      #   with:
-      #     url: 'https://pypi.org/project/copernicusmarine/${{ steps.set-version.outputs.VERSION }}/'
-      #     responseCode: '200'
-      #     timeout: 600000
-      #     interval: 5000
+      - name: Wait for Pypi version to be available
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'https://pypi.org/project/copernicusmarine/${{ steps.set-version.outputs.VERSION }}/'
+          responseCode: '200'
+          timeout: 600000
+          interval: 5000
 
-      # - name: Wait 30sec for the version to be in pip
-      #   run: sleep 30s
-      #   shell: bash
+      - name: Wait 30sec for the version to be in pip
+        run: sleep 30s
+        shell: bash
 
-      # - name: Call windows binary workflow
-      #   uses: .github/workflows/binary-windows.yml@main
-
-      # - name: Call binaries workflow
-      #   uses: .github/workflows/binaries.yml@main
-
-      # - name: Build and publish Docker image
-      #   shell: micromamba-shell {0}
-      #   env:
-      #     VERSION: ${{ steps.set-version.outputs.VERSION }}
-      #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
-      #   run: make build-and-publish-dockerhub-image
+      - name: Build and publish Docker image
+        shell: micromamba-shell {0}
+        env:
+          VERSION: ${{ steps.set-version.outputs.VERSION }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
+        run: make build-and-publish-dockerhub-image
 
   create-binaries:
+    if: ${{ always() }}
+    needs: [release-pypi-docker]
     uses: ./.github/workflows/binaries.yml
+
+  create-windows-binary:
+    if: ${{ always() }}
+    needs: [release-pypi-docker]
+    uses: ./.github/workflows/binary-windows.yml
