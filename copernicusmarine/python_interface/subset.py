@@ -45,6 +45,10 @@ def subset(
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
     start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
     end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    minimum_x: Optional[float] = None,
+    maximum_x: Optional[float] = None,
+    minimum_y: Optional[float] = None,
+    maximum_y: Optional[float] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
@@ -141,12 +145,8 @@ def subset(
             raise MutuallyExclusiveArguments("overwrite", "skip_existing")
 
     request_file = pathlib.Path(request_file) if request_file else None
-    output_directory = (
-        pathlib.Path(output_directory) if output_directory else None
-    )
-    credentials_file = (
-        pathlib.Path(credentials_file) if credentials_file else None
-    )
+    output_directory = pathlib.Path(output_directory) if output_directory else None
+    credentials_file = pathlib.Path(credentials_file) if credentials_file else None
 
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
@@ -167,6 +167,10 @@ def subset(
         vertical_axis,
         start_datetime,
         end_datetime,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
         coordinates_selection_method,
         output_filename,
         file_format,

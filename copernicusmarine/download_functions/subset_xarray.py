@@ -28,10 +28,13 @@ from copernicusmarine.core_functions.utils import (
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
+    GeographicalOriginalParameters,
     GeographicalParameters,
     LatitudeParameters,
     LongitudeParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -285,6 +288,46 @@ def _latitude_subset(
             latitude_selection,
             coordinates_selection_method,
         )
+
+    return dataset
+
+
+def _y_subset(
+    dataset: xarray.Dataset,
+    y_parameters: YParameters,
+    coordinates_selection_method: CoordinatesSelectionMethod,  # TODO
+) -> xarray.Dataset:
+    minimum_y = y_parameters.minimum_y
+    maximum_y = y_parameters.maximum_y
+    if minimum_y is not None or maximum_y is not None:
+        y_selection = (
+            minimum_y
+            if minimum_y == maximum_y
+            else slice(minimum_y, maximum_y)
+        )
+        dataset = dataset.sel(
+            {"y": y_selection}
+        )  # TODO: add the custom selection
+
+    return dataset
+
+
+def _x_subset(
+    dataset: xarray.Dataset,
+    x_parameters: XParameters,
+    coordinates_selection_method: CoordinatesSelectionMethod,  # TODO
+) -> xarray.Dataset:
+    minimum_x = x_parameters.minimum_x
+    maximum_x = x_parameters.maximum_x
+    if minimum_x is not None or maximum_x is not None:
+        x_selection = (
+            minimum_x
+            if minimum_x == maximum_x
+            else slice(minimum_x, maximum_x)
+        )
+        dataset = dataset.sel(
+            {"x": x_selection}
+        )  # TODO: add the custom selection
 
     return dataset
 
@@ -558,24 +601,37 @@ def _update_dataset_coordinate_attributes(
 def subset(
     dataset: xarray.Dataset,
     variables: Optional[List[str]],
-    geographical_parameters: GeographicalParameters,
+    geographical_parameters: Union[
+        GeographicalParameters, GeographicalOriginalParameters
+    ],
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
-
-    dataset = _latitude_subset(
-        dataset,
-        geographical_parameters.latitude_parameters,
-        coordinates_selection_method,
-    )
-    dataset = _longitude_subset(
-        dataset,
-        geographical_parameters.longitude_parameters,
-        coordinates_selection_method,
-    )
+    if isinstance(geographical_parameters, GeographicalParameters):
+        dataset = _latitude_subset(
+            dataset,
+            geographical_parameters.latitude_parameters,
+            coordinates_selection_method,
+        )
+        dataset = _longitude_subset(
+            dataset,
+            geographical_parameters.longitude_parameters,
+            coordinates_selection_method,
+        )
+    else:
+        dataset = _x_subset(
+            dataset,
+            geographical_parameters.x_parameters,
+            coordinates_selection_method,
+        )
+        dataset = _y_subset(
+            dataset,
+            geographical_parameters.y_parameters,
+            coordinates_selection_method,
+        )
 
     dataset = _temporal_subset(
         dataset, temporal_parameters, coordinates_selection_method
