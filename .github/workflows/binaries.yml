@@ -1,7 +1,10 @@
 name: Create Binaries MacOS and Linux
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Check format"]
+    types:
+      - completed
     branches:
        - "main"
        - "release/**"
@@ -11,7 +14,7 @@ on:
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release') || startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release')
+    if: github.event.workflow_run.conclusion == 'failure'
     strategy:
       fail-fast: false
       matrix:
@@ -35,28 +38,28 @@ jobs:
         cache-environment: true
         post-cleanup: 'all'
 
-    - name: Build with PyInstaller
-      shell: micromamba-shell {0}
-      run: |
-        make run-using-pyinstaller-${{ matrix.os }}
+    # - name: Build with PyInstaller
+    #   shell: micromamba-shell {0}
+    #   run: |
+    #     make run-using-pyinstaller-${{ matrix.os }}
 
     - name: Set VERSION environment variable
       id: set-version
       shell: micromamba-shell {0}
       run: echo "VERSION=$(poetry version --short)" >> $GITHUB_OUTPUT
 
-    - name: Upload binaries to macos or ubuntu
-      shell: micromamba-shell {0}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          ARCH="macos-arm64"
-        elif [ "${{ matrix.os }}" == "macos-13" ]; then
-          ARCH="macos-x86_64"
-        elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
-          ARCH="linux-glibc-2.35"
-        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
-          ARCH="linux-glibc-2.31"
-        fi
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
+    # - name: Upload binaries to macos or ubuntu
+    #   shell: micromamba-shell {0}
+    #   env:
+    #     GH_TOKEN: ${{ github.token }}
+    #   run: |
+    #     if [ "${{ matrix.os }}" == "macos-latest" ]; then
+    #       ARCH="macos-arm64"
+    #     elif [ "${{ matrix.os }}" == "macos-13" ]; then
+    #       ARCH="macos-x86_64"
+    #     elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
+    #       ARCH="linux-glibc-2.35"
+    #     elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
+    #       ARCH="linux-glibc-2.31"
+    #     fi
+    #       gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
