@@ -7,7 +7,7 @@ on:
     #   - "release/**"
 
 jobs:
-  release:
+  release-pypi-docker:
     # if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
     runs-on: self-hosted
     timeout-minutes: 20
@@ -18,9 +18,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-
-      - name: Call binaries worflow
-        uses: mercator-ocean/copernicus-marine-toolbox/.github/workflows/binaries.yml@main
 
       # - uses: mamba-org/setup-micromamba@v1
       #   with:
@@ -83,3 +80,6 @@ jobs:
       #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       #     DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
       #   run: make build-and-publish-dockerhub-image
+
+  create-binaries:
+    uses: ./.github/workflows/binaries.yml@main
