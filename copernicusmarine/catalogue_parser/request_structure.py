@@ -45,6 +45,10 @@ class DatasetTimeAndSpaceSubset:
     maximum_depth: Optional[float] = None
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
+    minimum_x: Optional[float] = None
+    maximum_x: Optional[float] = None
+    minimum_y: Optional[float] = None
+    maximum_y: Optional[float] = None
 
 
 @dataclass
@@ -63,6 +67,10 @@ class SubsetRequest:
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
+    minimum_x: Optional[float] = None
+    maximum_x: Optional[float] = None
+    minimum_y: Optional[float] = None
+    maximum_y: Optional[float] = None
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     )
@@ -98,6 +106,10 @@ class SubsetRequest:
                 "maximum_latitude",
                 "minimum_depth",
                 "maximum_depth",
+                "minimum_x",
+                "maximum_x",
+                "minimum_y",
+                "maximum_y",
             ]:
                 new_value = float(value) if value is not None else None
             elif key in [
@@ -126,6 +138,10 @@ class SubsetRequest:
             maximum_depth=self.maximum_depth,
             start_datetime=self.start_datetime,
             end_datetime=self.end_datetime,
+            minimum_x=self.minimum_x,
+            maximum_x=self.maximum_x,
+            minimum_y=self.minimum_y,
+            maximum_y=self.maximum_y,
         )
 
     def from_file(self, filepath: pathlib.Path):
