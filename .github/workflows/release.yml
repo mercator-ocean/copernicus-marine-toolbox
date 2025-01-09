@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Call binaries worflow
-        uses: mercator-ocean/copernicus-marine-toolbox/.github/workflows/binaries.yml@trigger-binaries-after-the-release
+        uses: mercator-ocean/copernicus-marine-toolbox/.github/workflows/binaries.yml@main
 
       # - uses: mamba-org/setup-micromamba@v1
       #   with:
