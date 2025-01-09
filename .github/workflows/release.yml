@@ -82,4 +82,4 @@ jobs:
       #   run: make build-and-publish-dockerhub-image
 
   create-binaries:
-    uses: ./.github/workflows/binaries.yml@main
+    uses: ./.github/workflows/binaries.yml
