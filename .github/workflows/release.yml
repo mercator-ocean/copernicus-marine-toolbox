@@ -76,11 +76,11 @@ jobs:
         run: make build-and-publish-dockerhub-image
 
   create-binaries:
-    if: ${{ always() }}
+    if: ${{ success() || failure() }}
     needs: [release-pypi-docker]
     uses: ./.github/workflows/binaries.yml
 
   create-windows-binary:
-    if: ${{ always() }}
+    if: ${{ success() || failure() }}
     needs: [release-pypi-docker]
     uses: ./.github/workflows/binary-windows.yml
