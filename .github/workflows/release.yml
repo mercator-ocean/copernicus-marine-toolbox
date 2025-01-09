@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Call binaries worflow
-        uses: ./.github/workflows/binaries.yml@main
+        uses: ./.github/workflows/binaries.yml
 
       # - uses: mamba-org/setup-micromamba@v1
       #   with:
@@ -70,10 +70,10 @@ jobs:
       #   run: sleep 30s
       #   shell: bash
 
-      # - name: Call windows binary worflow
+      # - name: Call windows binary workflow
       #   uses: .github/workflows/binary-windows.yml@main
 
-      # - name: Call binaries worflow
+      # - name: Call binaries workflow
       #   uses: .github/workflows/binaries.yml@main
 
       # - name: Build and publish Docker image
