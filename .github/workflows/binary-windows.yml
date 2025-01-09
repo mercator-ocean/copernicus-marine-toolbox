@@ -1,15 +1,7 @@
 name: Create Binaries Windows
 
 on:
-  workflow_run:
-    workflows: ["Release"]
-    types:
-      - completed
-    branches:
-       - "main"
-       - "release/**"
-       - "pre-releases/**"
-       - "!release/v1"
+  workflow_call:
 
 jobs:
   build:
