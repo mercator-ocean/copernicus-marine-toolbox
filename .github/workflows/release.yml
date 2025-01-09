@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Call binaries worflow
-        uses: .github/workflows/binaries.yml@main
+        uses: ./.github/workflows/binaries.yml@main
 
       # - uses: mamba-org/setup-micromamba@v1
       #   with:
