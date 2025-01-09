@@ -1,16 +1,18 @@
 name: Create Binaries Windows
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
     branches:
-       - main
+       - "main"
        - "release/**"
        - "pre-releases/**"
        - "!release/v1"
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release') || startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release')
     runs-on: windows-latest
     timeout-minutes: 20
 

@@ -2,9 +2,9 @@ name: Release
 
 on:
   push:
-    branches:
-      - "main"
-      - "release/**"
+    # branches:
+    #   - "main"
+    #   - "release/**"
 
 jobs:
   release:
