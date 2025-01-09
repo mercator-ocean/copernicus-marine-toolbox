@@ -10,8 +10,11 @@ on:
 
 jobs:
   tests:
-    runs-on: self-hosted
-    timeout-minutes: 30
+    strategy:
+       fail-fast: false
+       matrix:
+         os: [macos-latest, ubuntu-latest, macos-13]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check out code
