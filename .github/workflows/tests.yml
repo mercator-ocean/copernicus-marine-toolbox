@@ -13,30 +13,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-       os: [macos-latest, ubuntu-latest, macos-13, self-hosted]
+        os: [macos-latest, ubuntu-latest, macos-13, self-hosted]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        # with:
-        #   ref: ${{ github.event.pull_request.head.sha }}
-        #   fetch-depth: 0
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
 
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          micromamba-version: '1.5.6-0'
-          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-          environment-file: conda_environment_test.yaml
-          environment-name: copernicusmarine_test
-          condarc-file: .condarc
-          cache-environment: true
-          post-cleanup: 'all'
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: '1.5.6-0'
+        micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+        environment-file: conda_environment_test.yaml
+        environment-name: copernicusmarine_test
+        condarc-file: .condarc
+        cache-environment: true
+        post-cleanup: 'all'
 
-      - name: Run tests
-        env:
-          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        run: make run-tests
-        shell: micromamba-shell {0}
+    - name: Run tests
+      shell: micromamba-shell {0}
+      env:
+        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+      run:  |
+        if [ "${{ matrix.os }}" == "self-hosted" ]; then
+          ARCH="-w-coverage"
+        elif [ "${{ matrix.os }}" == "macos-13" ]; then
+          ARCH=""
+        fi
+          make run-tests$ARCH
