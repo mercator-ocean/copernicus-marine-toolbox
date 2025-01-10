@@ -30,7 +30,7 @@ Breaking changes
 
 * Removed ``--force-download``. Please use the ``--dry-run`` option if you do not want to download the files. See the :ref:`documentation about dry-run option <dry-run>` for more information.
 * Removed ``--overwrite-metadata-cache`` and ``--no-metadata-cache`` options.
-* Removed deprecated ``--force-dataset-version``, ``--force-dataset-part`` and ``--force-dataset-part`` options.
+* Removed deprecated ``--force-dataset-version``, ``--force-dataset-part`` and ``--force-service`` options.
 
 
 New features
