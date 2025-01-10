@@ -11,9 +11,9 @@ on:
 jobs:
   tests:
     strategy:
-       fail-fast: false
-       matrix:
-         os: [macos-latest, ubuntu-latest, macos-13]
+      fail-fast: false
+      matrix:
+       os: [macos-latest, ubuntu-latest, macos-13, self-hosted]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - uses: mamba-org/setup-micromamba@v1
         with:
