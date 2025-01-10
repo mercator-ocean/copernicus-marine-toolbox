@@ -1,17 +1,10 @@
 name: Create Binaries MacOS and Linux
 
 on:
-  push:
-    branches:
-       - "main"
-       - "release/**"
-       - "pre-releases/**"
-       - "!release/v1"
-
+  workflow_call:
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release') || startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release')
     strategy:
       fail-fast: false
       matrix:

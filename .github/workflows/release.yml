@@ -7,7 +7,7 @@ on:
       - "release/**"
 
 jobs:
-  release:
+  release-pypi-docker:
     if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
     runs-on: self-hosted
     timeout-minutes: 20
@@ -74,3 +74,13 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
         run: make build-and-publish-dockerhub-image
+
+  create-binaries:
+    if: ${{ success() || failure() }}
+    needs: [release-pypi-docker]
+    uses: ./.github/workflows/binaries.yml
+
+  create-windows-binary:
+    if: ${{ success() || failure() }}
+    needs: [release-pypi-docker]
+    uses: ./.github/workflows/binary-windows.yml
