@@ -149,6 +149,8 @@ SUBSET: dict[str, str] = {
         "Maximum longitude for the subset. The value will be transposed"
         " to the interval [-180; 360[."
     ),
+    "MAXIMUM_X_HELP": ("Maximum x-axis value for the subset."),
+    "MINIMUM_X_HELP": ("Minimum x-axis value for the subset."),
     "MINIMUM_LATITUDE_HELP": (
         "Minimum latitude for the subset. Requires a float from -90 "
         "degrees to +90."
@@ -157,6 +159,8 @@ SUBSET: dict[str, str] = {
         "Maximum latitude for the subset. Requires a float from -90 degrees "
         "to +90."
     ),
+    "MAXIMUM_Y_HELP": ("Maximum y-axis value for the subset."),
+    "MINIMUM_Y_HELP": ("Minimum y-axis value for the subset."),
     "MINIMUM_DEPTH_HELP": (
         "Minimum depth for the subset. Requires a positive float (or 0)."
     ),
