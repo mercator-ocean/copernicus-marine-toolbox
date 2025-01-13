@@ -124,13 +124,11 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-x",
-    "-x",
     type=float,
     help=documentation_utils.SUBSET["MINIMUM_X_HELP"],
 )
 @click.option(
     "--maximum-x",
-    "-X",
     type=float,
     help=documentation_utils.SUBSET["MAXIMUM_X_HELP"],
 )
@@ -148,13 +146,11 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-y",
-    "-y",
     type=float,
     help=documentation_utils.SUBSET["MINIMUM_Y_HELP"],
 )
 @click.option(
     "--maximum-y",
-    "-Y",
     type=float,
     help=documentation_utils.SUBSET["MAXIMUM_Y_HELP"],
 )
