@@ -23,7 +23,7 @@ In v2, the toolbox will download all the data requested without a prompt.
 .. code-block:: bash
 
     # In v1
-    > copernicusmarine susbet --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
+    > copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
     ...
     Do you want to download the data? [y/N]:
 
@@ -45,7 +45,7 @@ information about the data that would be downloaded.
 .. code-block:: bash
 
     # In v1
-    > copernicusmarine susbet --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
+    > copernicusmarine subset --dataset-id cmems_mod_glo_phy-cur_anfc_0.083deg_P1M-m -t 2022
     ...
     Do you want to download the data? [y/N]: n
     ERROR: Abort
