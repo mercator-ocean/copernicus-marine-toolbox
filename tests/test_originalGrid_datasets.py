@@ -8,6 +8,29 @@ from tests.test_utils import execute_in_terminal
 
 dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
 variable = "po4"
+datasets_w_originalGrid = [
+    "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+    "cmems_mod_arc_bgc_anfc_ecosmo_P1M-m",
+    "cmems_mod_arc_phy_anfc_6km_detided_PT1H-i",
+    "cmems_mod_arc_phy_anfc_6km_detided_PT6H-m",
+    "cmems_mod_arc_phy_anfc_6km_detided_P1D-m",
+    "cmems_mod_arc_phy_anfc_6km_detided_P1M-m",
+    # "cmems_mod_arc_phy_anfc_nextsim_P1M-m", # not yet available
+    # "cmems_mod_arc_phy_anfc_nextsim_hm", # not yet available
+    # "dataset-topaz6-arc-15min-3km-be", # not yet available
+    "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
+    "cmems_mod_arc_bgc_my_ecosmo_P1M",
+    "cmems_mod_arc_bgc_my_ecosmo_P1Y",
+    "cmems_mod_arc_phy_my_topaz4_P1D-m",
+    "cmems_mod_arc_phy_my_topaz4_P1M",
+    "cmems_mod_arc_phy_my_topaz4_P1Y",
+    "cmems_mod_arc_phy_my_hflux_P1D-m",
+    "cmems_mod_arc_phy_my_hflux_P1M-m",
+    "cmems_mod_arc_phy_my_mflux_P1D-m",
+    "cmems_mod_arc_phy_my_mflux_P1M-m",
+    "cmems_mod_arc_phy_my_nextsim_P1M-m",
+    "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
+]
 
 
 class TestOriginalGridDatasets:
@@ -123,3 +146,40 @@ class TestOriginalGridDatasets:
             returned_value["coordinates_extent"][3]["coordinate_id"] == "depth"
         )
         assert len(returned_value["coordinates_extent"]) == 4
+
+    def test_originalGrid_works_when_subsetting(self):
+        for dataset_name in datasets_w_originalGrid:
+            command = [
+                "copernicusmarine",
+                "subset",
+                "-i",
+                dataset_name,
+                "--dataset-part",
+                "originalGrid",
+                "--maximum-x",
+                "8",
+                "--minimum-x",
+                "6",
+                "--maximum-y",
+                "10",
+                "--minimum-y",
+                "5",
+                "-t",
+                "2020-01-01",
+                "-T",
+                "2020-01-01",
+                "--dry-run",
+            ]
+            self.output = execute_in_terminal(command)
+            assert self.output.returncode == 0
+            returned_value = loads(self.output.stdout)
+            assert (
+                returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
+            )
+            assert returned_value["coordinates_extent"][0]["maximum"] == 10
+            assert returned_value["coordinates_extent"][0]["minimum"] == 5
+            assert (
+                returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
+            )
+            assert returned_value["coordinates_extent"][1]["maximum"] == 8
+            assert returned_value["coordinates_extent"][1]["minimum"] == 6
