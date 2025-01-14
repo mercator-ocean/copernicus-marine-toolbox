@@ -24,15 +24,11 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
 
-    - uses: mamba-org/setup-micromamba@v1
+    - name: Setup poetry
+      uses: 5yutan5/setup-poetry-env@v1.1.0
       with:
-        micromamba-version: '1.5.6-0'
-        micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-        environment-file: conda_environment_test.yaml
-        environment-name: copernicusmarine_test
-        condarc-file: .condarc
-        cache-environment: true
-        post-cleanup: 'all'
+        python-version: '3.x'
+        poetry-install--only: 'docs'
 
     - name: Run tests
       shell: micromamba-shell {0}
