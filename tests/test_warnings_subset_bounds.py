@@ -120,9 +120,11 @@ class TestWarningsSubsetBounds:
             dataset_id, "thetao", -150, 180, "strict"
         )
         self.output = execute_in_terminal(command3, input=b"n\n")
+        assert self.output.returncode == 1
         assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
+            b"""one was selected: "arco-time-series"\nERROR"""
         ) not in self.output.stderr
         assert (
             b"Some or all of your subset selection"
         ) not in self.output.stderr
+        assert b"-150.0 -149.9 -149.8 ... 179.9 180.0" in self.output.stderr
