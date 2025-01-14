@@ -31,7 +31,6 @@ jobs:
         poetry-install--only: 'docs'
 
     - name: Run tests
-      shell: micromamba-shell {0}
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
