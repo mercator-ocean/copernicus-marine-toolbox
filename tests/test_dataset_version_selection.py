@@ -48,7 +48,8 @@ class TestDatasetVersionSelection:
         assert self.output.returncode == 1
         assert (
             b"Dataset version not found: No version found "
-            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i" in self.output.stderr
+            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
+            in self.output.stderr
         )
 
     def test_subset_when_dataset_has_only_a_default_version(self):
@@ -99,7 +100,8 @@ class TestDatasetVersionSelection:
         assert self.output.returncode == 1
         assert (
             b"Dataset version not found: No version found "
-            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i" in self.output.stderr
+            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
+            in self.output.stderr
         )
 
     def test_dataset_version_is_specifiable_in_python_with_get(self, caplog):
@@ -111,7 +113,9 @@ class TestDatasetVersionSelection:
         )
         assert 'Selected dataset version: "default"' in caplog.text
 
-    def test_dataset_version_is_specifiable_in_python_with_subset(self, caplog):
+    def test_dataset_version_is_specifiable_in_python_with_subset(
+        self, caplog
+    ):
         copernicusmarine.subset(
             dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
             variables=["analysed_sst"],
