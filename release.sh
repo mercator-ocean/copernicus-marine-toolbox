@@ -2,15 +2,15 @@
 
 set -eufo pipefail
 
-git switch main
-git pull
+# git switch main
+# git pull
 
 RELEASE_BRANCH_NAME="New-copernicusmarine-package-release"
 if [ -n "$(git branch --list $RELEASE_BRANCH_NAME)" ]; then
   git branch -D $RELEASE_BRANCH_NAME
 fi
 
-if [ -z `git status --porcelain` ] && [ ! -z "${BUMP_TYPE}" ] ; then
+if [ ! -z "${BUMP_TYPE}" ] ; then
   git checkout -b $RELEASE_BRANCH_NAME
   poetry version ${BUMP_TYPE}
   VERSION=$(poetry version --short)
