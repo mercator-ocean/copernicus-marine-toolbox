@@ -9,27 +9,27 @@ from tests.test_utils import execute_in_terminal
 dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
 variable = "po4"
 datasets_w_originalGrid = [
-    "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
-    "cmems_mod_arc_bgc_anfc_ecosmo_P1M-m",
-    "cmems_mod_arc_phy_anfc_6km_detided_PT1H-i",
-    "cmems_mod_arc_phy_anfc_6km_detided_PT6H-m",
-    "cmems_mod_arc_phy_anfc_6km_detided_P1D-m",
-    "cmems_mod_arc_phy_anfc_6km_detided_P1M-m",
-    # "cmems_mod_arc_phy_anfc_nextsim_P1M-m", # not yet available
+    ["cmems_mod_arc_bgc_anfc_ecosmo_P1D-m", "2020"],
+    ["cmems_mod_arc_bgc_anfc_ecosmo_P1M-m", "2020"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_PT1H-i", "2022"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_PT6H-m", "2020"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_P1D-m", "2020"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_P1M-m", "2020"],
+    # "cmems_mod_arc_phy_anfc_nextsim_P1M-m", "2020", # not yet available
     # "cmems_mod_arc_phy_anfc_nextsim_hm", # not yet available
     # "dataset-topaz6-arc-15min-3km-be", # not yet available
-    "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
-    "cmems_mod_arc_bgc_my_ecosmo_P1M",
-    "cmems_mod_arc_bgc_my_ecosmo_P1Y",
-    "cmems_mod_arc_phy_my_topaz4_P1D-m",
-    "cmems_mod_arc_phy_my_topaz4_P1M",
-    "cmems_mod_arc_phy_my_topaz4_P1Y",
-    "cmems_mod_arc_phy_my_hflux_P1D-m",
-    "cmems_mod_arc_phy_my_hflux_P1M-m",
-    "cmems_mod_arc_phy_my_mflux_P1D-m",
-    "cmems_mod_arc_phy_my_mflux_P1M-m",
-    "cmems_mod_arc_phy_my_nextsim_P1M-m",
-    "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
+    ["cmems_mod_arc_bgc_my_ecosmo_P1D-m", "2020"],
+    ["cmems_mod_arc_bgc_my_ecosmo_P1M", "2020"],
+    ["cmems_mod_arc_bgc_my_ecosmo_P1Y", "2020"],
+    ["cmems_mod_arc_phy_my_topaz4_P1D-m", "2020"],
+    ["cmems_mod_arc_phy_my_topaz4_P1M", "2020"],
+    ["cmems_mod_arc_phy_my_topaz4_P1Y", "2020"],
+    ["cmems_mod_arc_phy_my_hflux_P1D-m", "2020"],
+    ["cmems_mod_arc_phy_my_hflux_P1M-m", "2020"],
+    ["cmems_mod_arc_phy_my_mflux_P1D-m", "2020"],
+    ["cmems_mod_arc_phy_my_mflux_P1M-m", "2020"],
+    ["cmems_mod_arc_phy_my_nextsim_P1M-m", "2020"],
+    ["DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS", "2020"],
 ]
 
 
@@ -148,7 +148,9 @@ class TestOriginalGridDatasets:
         assert len(returned_value["coordinates_extent"]) == 4
 
     def test_originalGrid_works_when_subsetting(self):
-        for dataset_name in datasets_w_originalGrid:
+        for dataset_info in datasets_w_originalGrid:
+            dataset_name = dataset_info[0]
+            dataset_year = dataset_info[1]
             command = [
                 "copernicusmarine",
                 "subset",
@@ -165,9 +167,9 @@ class TestOriginalGridDatasets:
                 "--minimum-y",
                 "5",
                 "-t",
-                "2020-01-01",
+                dataset_year,
                 "-T",
-                "2020-01-01",
+                dataset_year,
                 "--dry-run",
             ]
             self.output = execute_in_terminal(command)
