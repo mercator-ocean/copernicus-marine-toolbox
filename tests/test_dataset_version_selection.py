@@ -11,7 +11,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--dry-run",
         ]
 
@@ -24,7 +24,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--dataset-version",
             "default",
             "--dry-run",
@@ -48,8 +48,7 @@ class TestDatasetVersionSelection:
         assert self.output.returncode == 1
         assert (
             b"Dataset version not found: No version found "
-            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
-            in self.output.stderr
+            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i" in self.output.stderr
         )
 
     def test_subset_when_dataset_has_only_a_default_version(self):
@@ -57,7 +56,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--variable",
             "ice_concentration",
             "--dry-run",
@@ -72,7 +71,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--variable",
             "ice_concentration",
             "--dataset-version",
@@ -100,22 +99,19 @@ class TestDatasetVersionSelection:
         assert self.output.returncode == 1
         assert (
             b"Dataset version not found: No version found "
-            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
-            in self.output.stderr
+            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i" in self.output.stderr
         )
 
     def test_dataset_version_is_specifiable_in_python_with_get(self, caplog):
 
         copernicusmarine.get(
-            dataset_id="METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            dataset_id="DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             dataset_version="default",
             dry_run=True,
         )
         assert 'Selected dataset version: "default"' in caplog.text
 
-    def test_dataset_version_is_specifiable_in_python_with_subset(
-        self, caplog
-    ):
+    def test_dataset_version_is_specifiable_in_python_with_subset(self, caplog):
         copernicusmarine.subset(
             dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
             variables=["analysed_sst"],
