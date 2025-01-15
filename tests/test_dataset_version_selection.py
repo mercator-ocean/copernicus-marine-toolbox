@@ -30,7 +30,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
         ]
 
         self.output = execute_in_terminal(command)
@@ -45,7 +45,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--dataset-version",
             "default",
         ]
@@ -127,7 +127,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--variable",
             "ice_concentration",
         ]
@@ -144,7 +144,7 @@ class TestDatasetVersionSelection:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+            "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
             "--variable",
             "ice_concentration",
             "--dataset-version",
@@ -209,7 +209,7 @@ class TestDatasetVersionSelection:
     def test_dataset_version_is_specifiable_in_python_with_get(self, caplog):
         try:
             copernicusmarine.get(
-                dataset_id="METNO-ARC-SEAICE_CONC-L4-NRT-OBS",
+                dataset_id="DMI-ARC-SEAICE_TEMP-L4-NRT-OBS",
                 dataset_version="default",
             )
         except OSError:

@@ -46,10 +46,10 @@ class TestWarningsSubsetBounds:
         # The first call should return a warning, the second one should not
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
-        command = self._build_custom_command(
+        command4 = self._build_custom_command(
             dataset_id, "thetao", -179.9, 179.9, "nearest"
         )
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command4, input=b"n\n")
 
         assert (
             b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
@@ -116,13 +116,15 @@ class TestWarningsSubsetBounds:
     def test_subset_handle_180_point_correctly(self):
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
-        command = self._build_custom_command(
+        command3 = self._build_custom_command(
             dataset_id, "thetao", -150, 180, "strict"
         )
-        self.output = execute_in_terminal(command, input=b"n")
+        self.output = execute_in_terminal(command3, input=b"n\n")
+        assert self.output.returncode == 1
         assert (
-            b"""one was selected: "arco-geo-series"\nERROR"""
+            b"""one was selected: "arco-time-series"\nERROR"""
         ) not in self.output.stderr
         assert (
             b"Some or all of your subset selection"
         ) not in self.output.stderr
+        assert b"-150.0 -149.9 -149.8 ... 179.9 180.0" in self.output.stderr
