@@ -99,7 +99,7 @@ def _choose_extreme_point(
     elif (
         coord_label != "time"
         and actual_extreme > dataset[coord_label].min()
-        and actual_extreme < dataset[coord_label].max()
+        # and actual_extreme < dataset[coord_label].max()
     ):
         external_point = dataset.sel(
             {coord_label: actual_extreme}, method=method
@@ -229,6 +229,13 @@ def _shift_longitude_dimension(
             minimum_longitude_modulus,
             "pad",
         )  # type: ignore
+    if coordinates_selection_method == "nearest":
+        minimum_longitude_modulus = _choose_extreme_point(
+            dataset,
+            "longitude",
+            minimum_longitude_modulus,
+            "nearest",
+        )
     window = (
         minimum_longitude_modulus + 180
     )  # compute the degrees needed to move the dataset
