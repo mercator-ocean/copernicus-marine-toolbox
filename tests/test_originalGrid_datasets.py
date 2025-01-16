@@ -12,9 +12,9 @@ datasets_w_originalGrid = [
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1D-m", "2020"],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1M-m", "2020"],
     ["cmems_mod_arc_phy_anfc_6km_detided_PT1H-i", "2022"],
-    ["cmems_mod_arc_phy_anfc_6km_detided_PT6H-m", "2020"],
-    ["cmems_mod_arc_phy_anfc_6km_detided_P1D-m", "2020"],
-    ["cmems_mod_arc_phy_anfc_6km_detided_P1M-m", "2020"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_PT6H-m", "2024"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_P1D-m", "2024"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_P1M-m", "2024"],
     # "cmems_mod_arc_phy_anfc_nextsim_P1M-m", "2020", # not yet available
     # "cmems_mod_arc_phy_anfc_nextsim_hm", # not yet available
     # "dataset-topaz6-arc-15min-3km-be", # not yet available
@@ -149,39 +149,38 @@ class TestOriginalGridDatasets:
 
     def test_originalGrid_works_when_subsetting(self):
         for dataset_info in datasets_w_originalGrid:
-            dataset_name = dataset_info[0]
-            dataset_year = dataset_info[1]
-            command = [
-                "copernicusmarine",
-                "subset",
-                "-i",
-                dataset_name,
-                "--dataset-part",
-                "originalGrid",
-                "--maximum-x",
-                "8",
-                "--minimum-x",
-                "6",
-                "--maximum-y",
-                "10",
-                "--minimum-y",
-                "5",
-                "-t",
-                dataset_year,
-                "-T",
-                dataset_year,
-                "--dry-run",
-            ]
-            self.output = execute_in_terminal(command)
-            assert self.output.returncode == 0
-            returned_value = loads(self.output.stdout)
-            assert (
-                returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
-            )
-            assert returned_value["coordinates_extent"][0]["maximum"] == 10
-            assert returned_value["coordinates_extent"][0]["minimum"] == 5
-            assert (
-                returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
-            )
-            assert returned_value["coordinates_extent"][1]["maximum"] == 8
-            assert returned_value["coordinates_extent"][1]["minimum"] == 6
+            self.run_one_dataset(dataset_info)
+
+    def run_one_dataset(self, dataset_info):
+        dataset_name = dataset_info[0]
+        dataset_year = dataset_info[1]
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            dataset_name,
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            "8",
+            "--minimum-x",
+            "6",
+            "--maximum-y",
+            "10",
+            "--minimum-y",
+            "5",
+            "-t",
+            dataset_year,
+            "-T",
+            dataset_year,
+            "--dry-run",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout)
+        assert returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
+        assert returned_value["coordinates_extent"][0]["maximum"] == 10
+        assert returned_value["coordinates_extent"][0]["minimum"] == 5
+        assert returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
+        assert returned_value["coordinates_extent"][1]["maximum"] == 8
+        assert returned_value["coordinates_extent"][1]["minimum"] == 6

@@ -44,6 +44,8 @@ COORDINATES_LABEL = {
     "longitude": ["longitude", "nav_lon", "y", "lon"],
     "time": ["time_counter", "time"],
     "depth": ["depth", "deptht", "elevation"],
+    "x": ["x"],
+    "y": ["y"],
 }
 
 NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
@@ -154,7 +156,7 @@ def _nearest_selection(
 
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
-    coord_type: Literal["latitude", "longitude", "depth", "time"],
+    coord_type: Literal["latitude", "longitude", "depth", "time", "x", "y"],
     coord_selection: Union[float, slice, datetime, None],
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
@@ -305,9 +307,12 @@ def _y_subset(
             if minimum_y == maximum_y
             else slice(minimum_y, maximum_y)
         )
-        dataset = dataset.sel(
-            {"y": y_selection}
-        )  # TODO: add the custom selection
+        return _dataset_custom_sel(
+            dataset,
+            "y",
+            y_selection,
+            coordinates_selection_method,
+        )
 
     return dataset
 
@@ -325,10 +330,12 @@ def _x_subset(
             if minimum_x == maximum_x
             else slice(minimum_x, maximum_x)
         )
-        dataset = dataset.sel(
-            {"x": x_selection}
-        )  # TODO: add the custom selection
-
+        return _dataset_custom_sel(
+            dataset,
+            "x",
+            x_selection,
+            coordinates_selection_method,
+        )
     return dataset
 
 
