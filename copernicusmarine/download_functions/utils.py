@@ -354,6 +354,11 @@ def get_number_of_chunks_for_coordinate(
         requested_maximum = values[-1]  # type: ignore
 
     index_left_minimum = bisect.bisect_left(values, requested_minimum)  # type: ignore
+
+    if index_left_minimum >= len(
+        values
+    ):  # we have moved the longitude window and we are at the edge of it
+        index_left_minimum = 0
     if index_left_minimum == len(values) - 1 or abs(
         values[index_left_minimum] - requested_minimum  # type: ignore
     ) <= abs(
