@@ -24,12 +24,54 @@ datasets_w_originalGrid = [
     ["cmems_mod_arc_phy_my_topaz4_P1D-m", "2020"],
     ["cmems_mod_arc_phy_my_topaz4_P1M", "2020"],
     ["cmems_mod_arc_phy_my_topaz4_P1Y", "2020"],
-    ["cmems_mod_arc_phy_my_hflux_P1D-m", "2020"],
-    ["cmems_mod_arc_phy_my_hflux_P1M-m", "2020"],
-    ["cmems_mod_arc_phy_my_mflux_P1D-m", "2020"],
-    ["cmems_mod_arc_phy_my_mflux_P1M-m", "2020"],
-    ["cmems_mod_arc_phy_my_nextsim_P1M-m", "2020"],
-    ["DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS", "2020"],
+    [
+        "cmems_mod_arc_phy_my_hflux_P1D-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_hflux_P1M-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_mflux_P1D-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_mflux_P1M-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_nextsim_P1M-m",
+        "2020",
+        "-99000",
+        "-3000",
+        "-100000",
+        "-1000",
+    ],
+    [
+        "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
+        "2020",
+        "220000",
+        "2150000",
+        "215000",
+        "215000",
+    ],
 ]
 
 
@@ -154,6 +196,10 @@ class TestOriginalGridDatasets:
     def run_one_dataset(self, dataset_info):
         dataset_name = dataset_info[0]
         dataset_year = dataset_info[1]
+        max_x = dataset_info[3] if len(dataset_info) > 2 else "8"
+        min_x = dataset_info[2] if len(dataset_info) > 3 else "6"
+        max_y = dataset_info[5] if len(dataset_info) > 4 else "10"
+        min_y = dataset_info[4] if len(dataset_info) > 5 else "5"
         command = [
             "copernicusmarine",
             "subset",
@@ -162,13 +208,13 @@ class TestOriginalGridDatasets:
             "--dataset-part",
             "originalGrid",
             "--maximum-x",
-            "8",
+            max_x,
             "--minimum-x",
-            "6",
+            min_x,
             "--maximum-y",
-            "10",
+            max_y,
             "--minimum-y",
-            "5",
+            min_y,
             "-t",
             dataset_year,
             "-T",
@@ -179,8 +225,16 @@ class TestOriginalGridDatasets:
         assert self.output.returncode == 0
         returned_value = loads(self.output.stdout)
         assert returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
-        assert returned_value["coordinates_extent"][0]["maximum"] == 10
-        assert returned_value["coordinates_extent"][0]["minimum"] == 5
+        assert returned_value["coordinates_extent"][0]["maximum"] == float(
+            max_y
+        )
+        assert returned_value["coordinates_extent"][0]["minimum"] == float(
+            min_y
+        )
         assert returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
-        assert returned_value["coordinates_extent"][1]["maximum"] == 8
-        assert returned_value["coordinates_extent"][1]["minimum"] == 6
+        assert returned_value["coordinates_extent"][1]["maximum"] == float(
+            max_x
+        )
+        assert returned_value["coordinates_extent"][1]["minimum"] == float(
+            min_x
+        )
