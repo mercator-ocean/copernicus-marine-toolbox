@@ -12,6 +12,7 @@ on:
       - "main"
     paths:
       - 'pyproject.toml'
+      - 'conda_environment_binary.yaml'
 
 
 
