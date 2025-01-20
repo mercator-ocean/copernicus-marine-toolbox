@@ -100,7 +100,6 @@ def _choose_extreme_point(
         coord_label != "time"
         and actual_extreme > dataset[coord_label].min()
         and method == "nearest"
-        # and actual_extreme < dataset[coord_label].max()
     ):
         external_point = dataset.sel(
             {coord_label: actual_extreme}, method=method

@@ -1979,3 +1979,55 @@ class TestCommandLineInterface:
         assert response["coordinates_extent"][1]["maximum"] <= max_latitude
         assert response["coordinates_extent"][3]["minimum"] >= min_depth
         assert response["coordinates_extent"][3]["maximum"] <= max_depth
+
+    def test_nearest_works_correctly_when_moving_windows(self, tmp_path):
+        output_filename = "output.nc"
+        min_longitude = 179.92
+        max_longitude = 181.999
+        min_latitude = 34.001
+        max_latitude = 37.001
+        min_depth = 30.554
+        max_depth = 50.023
+        start_datetime = "2023-12-01T01:00:23"
+        end_datetime = "2023-12-01T01:10:03"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            "--variable",
+            "thetao",
+            "--minimum-longitude",
+            f"{min_longitude}",
+            "--maximum-longitude",
+            f"{max_longitude}",
+            "--minimum-latitude",
+            f"{min_latitude}",
+            "--maximum-latitude",
+            f"{max_latitude}",
+            "--start-datetime",
+            f"{start_datetime}",
+            "--end-datetime",
+            f"{end_datetime}",
+            "--minimum-depth",
+            f"{min_depth}",
+            "--maximum-depth",
+            f"{max_depth}",
+            "--coordinates-selection-method",
+            "nearest",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--dry-run",
+        ]
+        output = execute_in_terminal(command)
+        assert output.returncode == 0
+
+        response = loads(output.stdout)
+        assert response["coordinates_extent"][0]["minimum"] <= min_longitude
+        assert response["coordinates_extent"][0]["maximum"] >= max_longitude
+        assert response["coordinates_extent"][1]["minimum"] <= min_latitude
+        assert response["coordinates_extent"][1]["maximum"] <= max_latitude
+        assert response["coordinates_extent"][3]["minimum"] <= min_depth
+        assert response["coordinates_extent"][3]["maximum"] <= max_depth
