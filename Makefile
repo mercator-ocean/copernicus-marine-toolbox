@@ -110,7 +110,6 @@ run-using-pyinstaller-linux:
 	ldd --version
 	which openssl
 	openssl version -a
-	pip install deprecated
 	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/lib
 	echo $$LD_LIBRARY_PATH
 	python3 -m PyInstaller --hiddenimport deprecated --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr

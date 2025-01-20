@@ -15,4 +15,3 @@ dependencies:
     - pydantic
     - pystac
     - tqdm
-    - deprecated
