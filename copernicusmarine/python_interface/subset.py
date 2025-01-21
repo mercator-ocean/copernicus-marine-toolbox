@@ -43,6 +43,10 @@ def subset(
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
     start_datetime: Optional[Union[datetime, str]] = None,
     end_datetime: Optional[Union[datetime, str]] = None,
+    minimum_x: Optional[float] = None,
+    maximum_x: Optional[float] = None,
+    minimum_y: Optional[float] = None,
+    maximum_y: Optional[float] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
@@ -165,6 +169,10 @@ def subset(
         vertical_axis,
         start_datetime,
         end_datetime,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
         coordinates_selection_method,
         output_filename,
         file_format,

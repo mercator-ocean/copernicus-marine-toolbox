@@ -123,6 +123,16 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["MAXIMUM_LONGITUDE_HELP"],
 )
 @click.option(
+    "--minimum-x",
+    type=float,
+    help=documentation_utils.SUBSET["MINIMUM_X_HELP"],
+)
+@click.option(
+    "--maximum-x",
+    type=float,
+    help=documentation_utils.SUBSET["MAXIMUM_X_HELP"],
+)
+@click.option(
     "--minimum-latitude",
     "-y",
     type=click.FloatRange(min=-90, max=90),
@@ -133,6 +143,16 @@ def cli_subset() -> None:
     "-Y",
     type=click.FloatRange(min=-90, max=90),
     help=documentation_utils.SUBSET["MAXIMUM_LATITUDE_HELP"],
+)
+@click.option(
+    "--minimum-y",
+    type=float,
+    help=documentation_utils.SUBSET["MINIMUM_Y_HELP"],
+)
+@click.option(
+    "--maximum-y",
+    type=float,
+    help=documentation_utils.SUBSET["MAXIMUM_Y_HELP"],
 )
 @click.option(
     "--minimum-depth",
@@ -304,6 +324,10 @@ def subset(
     vertical_axis: VerticalAxis,
     start_datetime: Optional[str],
     end_datetime: Optional[str],
+    minimum_x: Optional[float],
+    maximum_x: Optional[float],
+    minimum_y: Optional[float],
+    maximum_y: Optional[float],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -359,6 +383,10 @@ def subset(
             datetime_parser(start_datetime) if start_datetime else None
         ),
         end_datetime=datetime_parser(end_datetime) if end_datetime else None,
+        minimum_x=minimum_x,
+        maximum_x=maximum_x,
+        minimum_y=minimum_y,
+        maximum_y=maximum_y,
         coordinates_selection_method=coordinates_selection_method,
         output_filename=output_filename,
         file_format=file_format,

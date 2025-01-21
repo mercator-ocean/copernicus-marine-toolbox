@@ -30,10 +30,13 @@ from copernicusmarine.core_functions.utils import (
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
+    GeographicalOriginalParameters,
     GeographicalParameters,
     LatitudeParameters,
     LongitudeParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 from copernicusmarine.download_functions.subset_xarray import (
     COORDINATES_LABEL,
@@ -79,7 +82,9 @@ def download_dataset(
     username: str,
     password: str,
     dataset_id: str,
-    geographical_parameters: GeographicalParameters,
+    geographical_parameters: Union[
+        GeographicalParameters, GeographicalOriginalParameters
+    ],
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
@@ -97,7 +102,9 @@ def download_dataset(
     chunk_size_limit: Optional[int],
     skip_existing: bool,
 ) -> ResponseSubset:
-    if chunk_size_limit:
+    if chunk_size_limit and isinstance(
+        geographical_parameters, GeographicalParameters
+    ):
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,
@@ -194,18 +201,32 @@ def download_zarr(
     disable_progress_bar: bool,
     dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
+    is_original_grid: bool,
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
-    geographical_parameters = GeographicalParameters(
-        latitude_parameters=LatitudeParameters(
-            minimum_latitude=subset_request.minimum_latitude,
-            maximum_latitude=subset_request.maximum_latitude,
-        ),
-        longitude_parameters=LongitudeParameters(
-            minimum_longitude=subset_request.minimum_longitude,
-            maximum_longitude=subset_request.maximum_longitude,
-        ),
-    )
+    if not is_original_grid:
+        geographical_parameters = GeographicalParameters(
+            latitude_parameters=LatitudeParameters(
+                minimum_latitude=subset_request.minimum_latitude,
+                maximum_latitude=subset_request.maximum_latitude,
+            ),
+            longitude_parameters=LongitudeParameters(
+                minimum_longitude=subset_request.minimum_longitude,
+                maximum_longitude=subset_request.maximum_longitude,
+            ),
+        )
+    else:
+        logger.info("It is indeed, original grid!")  # TODO: remove this
+        geographical_original_parameters = GeographicalOriginalParameters(
+            y_parameters=YParameters(
+                minimum_y=subset_request.minimum_y,
+                maximum_y=subset_request.maximum_y,
+            ),
+            x_parameters=XParameters(
+                minimum_x=subset_request.minimum_x,
+                maximum_x=subset_request.maximum_x,
+            ),
+        )
     start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
         minimum_start_date = timestamp_or_datestring_to_datetime(
@@ -238,7 +259,11 @@ def download_zarr(
         username=username,
         password=password,
         dataset_id=dataset_id,
-        geographical_parameters=geographical_parameters,
+        geographical_parameters=(
+            geographical_parameters
+            if not is_original_grid
+            else geographical_original_parameters
+        ),
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=subset_request.coordinates_selection_method,
@@ -264,7 +289,9 @@ def open_dataset_from_arco_series(
     password: str,
     dataset_url: str,
     variables: Optional[list[str]],
-    geographical_parameters: GeographicalParameters,
+    geographical_parameters: Union[
+        GeographicalParameters, GeographicalOriginalParameters
+    ],
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
