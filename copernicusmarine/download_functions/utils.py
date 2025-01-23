@@ -230,21 +230,6 @@ def _get_coordinate_extent(
     return None
 
 
-def get_approximation_size_final_result(
-    dataset: xarray.Dataset,
-) -> Optional[float]:
-    coordinates_size = 1
-    for coordinate_name in dataset.sizes:
-        coordinates_size *= dataset[coordinate_name].size
-    estimate_size = (
-        coordinates_size
-        * len(list(dataset.data_vars))
-        * dataset[list(dataset.data_vars)[0]].dtype.itemsize
-        / 1048e3
-    )
-    return estimate_size
-
-
 def get_approximation_size_data_downloaded(
     dataset: xarray.Dataset, service: CopernicusMarineService
 ) -> Optional[float]:
