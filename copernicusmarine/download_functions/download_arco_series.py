@@ -43,7 +43,6 @@ from copernicusmarine.download_functions.subset_xarray import (
 from copernicusmarine.download_functions.utils import (
     FileFormat,
     get_approximation_size_data_downloaded,
-    get_approximation_size_final_result,
     get_dataset_coordinates_extent,
     get_filename,
     get_number_of_chunks_for_coordinate,
@@ -127,7 +126,7 @@ def download_dataset(
 
     filename = get_filename(output_filename, dataset, dataset_id, file_format)
     output_path = pathlib.Path(output_directory, filename)
-    final_result_size_estimation = get_approximation_size_final_result(dataset)
+    final_result_size_estimation = dataset.nbytes / 1048e3
     data_needed_approximation = get_approximation_size_data_downloaded(
         dataset, service
     )
