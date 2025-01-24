@@ -2,8 +2,8 @@ import pathlib
 from datetime import datetime
 from typing import List, Optional, Union
 
+import pandas as pd
 import xarray
-from pandas import Timestamp
 
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.deprecated_options import (
@@ -51,8 +51,8 @@ def open_dataset(
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
-    start_datetime: Optional[Union[datetime, Timestamp, str]] = None,
-    end_datetime: Optional[Union[datetime, Timestamp, str]] = None,
+    start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),

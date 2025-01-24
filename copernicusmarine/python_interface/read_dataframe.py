@@ -2,7 +2,7 @@ import pathlib
 from datetime import datetime
 from typing import List, Optional, Union
 
-import pandas
+import pandas as pd
 
 from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.deprecated_options import (
@@ -50,14 +50,14 @@ def read_dataframe(
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
-    start_datetime: Optional[Union[datetime, pandas.Timestamp, str]] = None,
-    end_datetime: Optional[Union[datetime, pandas.Timestamp, str]] = None,
+    start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-) -> pandas.DataFrame:
+) -> pd.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
 

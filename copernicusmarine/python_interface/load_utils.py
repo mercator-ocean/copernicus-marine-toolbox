@@ -1,6 +1,6 @@
 from typing import Callable, Union
 
-import pandas
+import pandas as pd
 import xarray
 
 from copernicusmarine.catalogue_parser.models import (
@@ -29,7 +29,7 @@ def load_data_object_from_load_request(
     load_request: LoadRequest,
     arco_series_load_function: Callable,
     chunks_factor_size_limit: int,
-) -> Union[xarray.Dataset, pandas.DataFrame]:
+) -> Union[xarray.Dataset, pd.DataFrame]:
     retrieval_service: RetrievalService = get_retrieval_service(
         dataset_id=load_request.dataset_id,
         force_dataset_version_label=load_request.force_dataset_version,

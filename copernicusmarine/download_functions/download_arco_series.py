@@ -3,7 +3,7 @@ import os
 import pathlib
 from typing import Hashable, Iterable, Literal, Optional, Union
 
-import pandas
+import pandas as pd
 import xarray
 import zarr
 from tqdm.dask import TqdmCallback
@@ -296,7 +296,7 @@ def read_dataframe_from_arco_series(
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
     chunks: Optional[Literal["auto"]],
-) -> pandas.DataFrame:
+) -> pd.DataFrame:
     dataset = open_dataset_from_arco_series(
         username=username,
         password=password,
