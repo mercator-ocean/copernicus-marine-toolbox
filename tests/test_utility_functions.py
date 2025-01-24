@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
+import pandas as pd
 from freezegun import freeze_time
-from pandas import Timestamp
 
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
@@ -56,6 +56,6 @@ class TestUtilityFunctions:
         )
 
     def test_homogenize_datetime_timestamp(self):
-        ts = Timestamp("2012-01-14T03")
+        ts = pd.Timestamp("2012-01-14T03")
         dt = datetime(2012, 1, 14, 3)
         assert homogenize_datetime(ts) == homogenize_datetime(dt)
