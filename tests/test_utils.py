@@ -1,8 +1,12 @@
 import logging
+import os
+import pathlib
 import subprocess
 import time
 from subprocess import CompletedProcess
-from typing import Optional
+from typing import Optional, Union
+
+from copernicusmarine.core_functions.models import ResponseGet, ResponseSubset
 
 logger = logging.getLogger()
 
@@ -41,3 +45,14 @@ def execute_in_terminal(
     duration_second = t2 - t1
     logger.info(f"Command executed in {duration_second} s: {command_to_print}")
     return output
+
+
+def main_checks_when_file_is_downloaded(
+    file_path: pathlib.Path,
+    response: Union[ResponseGet, ResponseSubset],
+):
+    size_variance = 0.1
+    file_size = os.path.getsize(file_path)
+    assert file_size / 1048e3 <= response["file_size"] * (1 + size_variance)
+    assert file_size / 1048e3 >= response["file_size"] * (1 - size_variance)
+    return
