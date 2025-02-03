@@ -50,14 +50,15 @@ def main_checks_when_file_is_downloaded(
     response: dict,
 ):
     size_variance = 0.2
+    offset_size = 0.05  # small datasets are hard to predict
     file_size = os.path.getsize(file_path)
     assert (
         file_size / 1048e3
-        <= response["file_size"] * (1 + size_variance) + 0.05
+        <= response["file_size"] * (1 + size_variance) + offset_size
     )
     assert (
         file_size / 1048e3
-        >= response["file_size"] * (1 - size_variance) - 0.05
+        >= response["file_size"] * (1 - size_variance) - offset_size
     )
     assert response["file_size"] <= response["data_transfer_size"]
     return
