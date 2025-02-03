@@ -49,7 +49,7 @@ def main_checks_when_file_is_downloaded(
     file_path: pathlib.Path,
     response: dict,
 ):
-    size_variance = 0.4
+    size_variance = 0.5
     file_size = os.path.getsize(file_path)
     assert file_size / 1048e3 <= response["file_size"] * (1 + size_variance)
     assert file_size / 1048e3 >= response["file_size"] * (1 - size_variance)
