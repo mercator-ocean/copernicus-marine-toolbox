@@ -4,9 +4,7 @@ import pathlib
 import subprocess
 import time
 from subprocess import CompletedProcess
-from typing import Optional, Union
-
-from copernicusmarine.core_functions.models import ResponseGet, ResponseSubset
+from typing import Optional
 
 logger = logging.getLogger()
 
@@ -49,7 +47,7 @@ def execute_in_terminal(
 
 def main_checks_when_file_is_downloaded(
     file_path: pathlib.Path,
-    response: Union[ResponseGet, ResponseSubset],
+    response: dict,
 ):
     size_variance = 0.1
     file_size = os.path.getsize(file_path)

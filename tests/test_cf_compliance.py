@@ -42,10 +42,10 @@ class TestCFCompliance:
             start_datetime="2022-01-01T00:00:00",
             end_datetime="2022-01-05T00:00:00",
         )
-        main_checks_when_file_is_downloaded(
-            tmp_path / output_filename, response
-        )
         assert (tmp_path / output_filename).exists()
+        main_checks_when_file_is_downloaded(
+            tmp_path / output_filename, dict(response)
+        )
 
     def then_it_is_cf_compliant(
         self, dataset_id, tmp_path, snapshot, output_filename
