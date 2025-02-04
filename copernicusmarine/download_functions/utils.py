@@ -243,8 +243,9 @@ def get_approximation_size_final_result(
     # if not compressed:
     #     return dataset.nbytes / 1048e3
     for coordinate_name in dataset.sizes:
-        if coordinate_name in COORDINATES_LABEL:
-            coordinates_size *= dataset[coordinate_name].size
+        for coord_label in COORDINATES_LABEL:
+            if coordinate_name in COORDINATES_LABEL[coord_label]:
+                coordinates_size *= dataset[coordinate_name].size
     estimate_size = baseline_size + coordinates_size * variables_size / 1048e3
 
     return estimate_size
