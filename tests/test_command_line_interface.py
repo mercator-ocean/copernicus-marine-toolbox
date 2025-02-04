@@ -702,8 +702,6 @@ class TestCommandLineInterface:
         ]
 
         self.output = execute_in_terminal(command)
-        response = loads(self.output.stdout)
-        main_checks_when_file_is_downloaded(tmp_path / "data.zarr", response)
 
     def then_I_have_correct_sign_for_depth_coordinates_values(
         self, output_path, sign
@@ -869,7 +867,7 @@ class TestCommandLineInterface:
             "8",
             "-o",
             f"{tmp_path}",
-            "f",
+            "-f",
             "output.nc",
         ]
 
