@@ -168,14 +168,19 @@ class TestCommandLineInterface:
             "48.13780081656672",
             "--output-directory",
             tmp_path,
+            "--output-filename",
+            "dataset.nc",
             "--log-level",
             "DEBUG",
         ]
 
         self.output = execute_in_terminal(self.command)
+        assert self.output.returncode == 0
         assert (
             b"time       (time) datetime64[ns] 2023" not in self.output.stderr
         )
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(tmp_path / "dataset.nc", response)
 
     def test_retention_period_works_when_only_values_in_metadata(
         self, tmp_path
@@ -660,7 +665,7 @@ class TestCommandLineInterface:
 
     def when_I_request_subset_dataset_with_zarr_service(
         self,
-        output_path,
+        tmp_path,
         vertical_axis: Literal["depth", "elevation"] = "depth",
     ):
         command = [
@@ -691,12 +696,14 @@ class TestCommandLineInterface:
             "--service",
             "arco-time-series",
             "-o",
-            f"{output_path}",
+            f"{tmp_path}",
             "-f",
             "data.zarr",
         ]
 
         self.output = execute_in_terminal(command)
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(tmp_path / "data.zarr", response)
 
     def then_I_have_correct_sign_for_depth_coordinates_values(
         self, output_path, sign
@@ -862,11 +869,15 @@ class TestCommandLineInterface:
             "8",
             "-o",
             f"{tmp_path}",
+            "f",
+            "output.nc",
         ]
 
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(tmp_path / "output.nc", response)
 
     def test_short_option_for_copernicus_marine_command_helper(self):
         short_option_command = [
@@ -1047,6 +1058,10 @@ class TestCommandLineInterface:
             "thetao"
             in xarray.open_zarr(f"{tmp_path}/{output_filename}").variables
         )
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(
+            tmp_path / output_filename, response
+        )
 
     def test_log_level_debug(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -1084,6 +1099,10 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert b"DEBUG - " in self.output.stderr
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(
+            tmp_path / output_filename, response
+        )
 
     def test_arco_subset_is_fast(self, tmp_path):
         command = [
@@ -1219,6 +1238,10 @@ class TestCommandLineInterface:
                 ).sizes.keys()
             )
             == 4
+        )
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(
+            tmp_path / output_filename, response
         )
 
     def test_netcdf_compression_option(self, tmp_path):
