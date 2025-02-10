@@ -236,12 +236,10 @@ def get_approximation_size_final_result(
     coordinates_size = 1
     variables_size = 0
     baseline_size = 0.013
-    # compressed = False
+
     for variable in dataset.data_vars:
         variables_size += dataset[variable].encoding["dtype"].itemsize
-        # compressed = True if "add_offset" in dataset[variable].encoding else False
-    # if not compressed:
-    #     return dataset.nbytes / 1048e3
+
     for coordinate_name in dataset.sizes:
         for coord_label in COORDINATES_LABEL:
             if coordinate_name in COORDINATES_LABEL[coord_label]:
