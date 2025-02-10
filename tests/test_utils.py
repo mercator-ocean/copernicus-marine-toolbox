@@ -1,4 +1,6 @@
 import logging
+import os
+import pathlib
 import subprocess
 import time
 from subprocess import CompletedProcess
@@ -41,3 +43,22 @@ def execute_in_terminal(
     duration_second = t2 - t1
     logger.info(f"Command executed in {duration_second} s: {command_to_print}")
     return output
+
+
+def main_checks_when_file_is_downloaded(
+    file_path: pathlib.Path,
+    response: dict,
+):
+    size_variance = 0.2
+    offset_size = 0.05  # small datasets are hard to predict
+    file_size = os.path.getsize(file_path)
+    assert (
+        file_size / 1048e3
+        <= response["file_size"] * (1 + size_variance) + offset_size
+    )
+    assert (
+        file_size / 1048e3
+        >= response["file_size"] * (1 - size_variance) - offset_size
+    )
+    assert response["file_size"] <= response["data_transfer_size"]
+    return
