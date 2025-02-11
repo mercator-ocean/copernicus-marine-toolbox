@@ -92,11 +92,11 @@ In the `release page <https://github.com/mercator-ocean/copernicus-marine-toolbo
 
 To download directly the latest stable releases:
 
-- MacOS arm64: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine_macos-arm64.cli>`_
-- MacOS x86_64: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine_macos-x86_64.cli>`_
-- Linux (with glibc 2.35): `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine_linux-glibc-2.35.cli>`_
-- Linux (with glibc 2.31): `copernicusmarine_linux_2.31 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine_linux-glibc-2.31.cli>`_
-- Windows: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/latest/copernicusmarine.exe>`_
+- MacOS arm64: |download_macos_arm64|
+- MacOS x86_64: |download_macos_x86|
+- Linux (with glibc 2.35): |download_linux_235|
+- Linux (with glibc 2.31): |download_linux_231|
+- Windows: |download_windows|
 
 
 Once downloaded for the specific platform, you can use the Toolbox by running the binary as follows:

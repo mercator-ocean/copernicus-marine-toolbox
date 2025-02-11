@@ -1,4 +1,7 @@
+import toml
 from sphinx.builders.html import StandaloneHTMLBuilder
+
+data = toml.load("../pyproject.toml")
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -11,6 +14,7 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 project = "Copernicus Marine Toolbox"
 copyright = "2024, Mercator Ocean International"
 author = "Mercator Ocean International"
+version = data["project"]["version"]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -73,3 +77,13 @@ StandaloneHTMLBuilder.supported_image_types = [
 # https://myst-nb.readthedocs.io/en/latest/configuration.html#config-intro
 
 nb_execution_mode = "off"
+
+rst_epilog = """
+.. |download_macos_arm64| replace:: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-arm64.cli>`__
+.. |download_macos_x86| replace:: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-x86_64.cli>`__
+.. |download_linux_235| replace:: `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.35.cli>`__
+.. |download_linux_231| replace:: `copernicusmarine_linux_2.31 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.31.cli>`__
+.. |download_windows| replace:: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine.exe>`__
+""".format(
+    version
+)
