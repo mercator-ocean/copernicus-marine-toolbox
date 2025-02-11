@@ -234,14 +234,18 @@ def get_approximation_size_final_result(
     dataset: xarray.Dataset,
 ) -> Optional[float]:
     coordinates_size = 1
+    variables_size = 0
+    baseline_size = 0.013
+
+    for variable in dataset.data_vars:
+        variables_size += dataset[variable].encoding["dtype"].itemsize
+
     for coordinate_name in dataset.sizes:
-        coordinates_size *= dataset[coordinate_name].size
-    estimate_size = (
-        coordinates_size
-        * len(list(dataset.data_vars))
-        * dataset[list(dataset.data_vars)[0]].dtype.itemsize
-        / 1048e3
-    )
+        for coord_label in COORDINATES_LABEL:
+            if coordinate_name in COORDINATES_LABEL[coord_label]:
+                coordinates_size *= dataset[coordinate_name].size
+    estimate_size = baseline_size + coordinates_size * variables_size / 1048e3
+
     return estimate_size
 
 

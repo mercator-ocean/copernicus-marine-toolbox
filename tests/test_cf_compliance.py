@@ -3,7 +3,10 @@ import json
 import xarray
 
 from copernicusmarine import subset
-from tests.test_utils import execute_in_terminal
+from tests.test_utils import (
+    execute_in_terminal,
+    main_checks_when_file_is_downloaded,
+)
 
 
 class TestCFCompliance:
@@ -31,7 +34,7 @@ class TestCFCompliance:
     def if_I_subset_a_dataset(
         self, dataset_id, tmp_path, output_filename, variable
     ):
-        subset(
+        response = subset(
             dataset_id=dataset_id,
             variables=[variable],
             output_directory=tmp_path,
@@ -40,6 +43,9 @@ class TestCFCompliance:
             end_datetime="2022-01-05T00:00:00",
         )
         assert (tmp_path / output_filename).exists()
+        main_checks_when_file_is_downloaded(
+            tmp_path / output_filename, dict(response)
+        )
 
     def then_it_is_cf_compliant(
         self, dataset_id, tmp_path, snapshot, output_filename
