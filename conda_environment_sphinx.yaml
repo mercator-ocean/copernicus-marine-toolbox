@@ -3,13 +3,14 @@ dependencies:
   - python==3.9.18
   - pip
   - pip:
-    - sphinx==7.4.7
-    - sphinx-click==6.0.0
-    - numpydoc==1.8.0
-    - sphinx-copybutton==0.5.2
-    - furo==2024.8.6
-    - myst_parser==3.0.1
-    - notebook==7.1.2
-    - ipywidgets==8.1.5
-    - matplotlib==3.9.2
-    - myst-nb==1.1.2
+      - sphinx==7.4.7
+      - sphinx-click==6.0.0
+      - numpydoc==1.8.0
+      - sphinx-copybutton==0.5.2
+      - furo==2024.8.6
+      - myst_parser==3.0.1
+      - notebook==7.1.2
+      - ipywidgets==8.1.5
+      - matplotlib==3.9.2
+      - myst-nb==1.1.2
+      - toml==0.10.2
