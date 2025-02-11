@@ -19,3 +19,4 @@ ignore =
 per-file-ignores =
     # __init__ files
     dataset_product_mapping.py: E501
+    conf.py: E501

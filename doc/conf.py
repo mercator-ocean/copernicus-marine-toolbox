@@ -79,11 +79,11 @@ StandaloneHTMLBuilder.supported_image_types = [
 nb_execution_mode = "off"
 
 rst_epilog = """
-.. |download_macos_arm64| replace:: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-arm64.cli>`__ # noqa E501
-.. |download_macos_x86| replace:: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-x86_64.cli>`__ # noqa E501
-.. |download_linux_235| replace:: `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.35.cli>`__ # noqa E501
-.. |download_linux_231| replace:: `copernicusmarine_linux_2.31 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.31.cli>`__ # noqa E501
-.. |download_windows| replace:: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine.exe>`__ # noqa E501
+.. |download_macos_arm64| replace:: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-arm64.cli>`__
+.. |download_macos_x86| replace:: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-x86_64.cli>`__
+.. |download_linux_235| replace:: `copernicusmarine_linux <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.35.cli>`__
+.. |download_linux_231| replace:: `copernicusmarine_linux_2.31 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.31.cli>`__
+.. |download_windows| replace:: `copernicusmarine <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine.exe>`__
 """.format(
     version
 )
