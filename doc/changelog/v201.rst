@@ -1,0 +1,24 @@
+Release 2.0.1
+=====================
+
+Patch release with bug fixes and improvements.
+
+General
+''''''''
+
+Fixes
+------------------
+
+* Fixed some typos in the documentation.
+* Fixed broken links to binaries in the documentation when releasing a new version. They now point to the same version as the version of the documentation.
+
+Subset
+''''''''
+
+Fixes
+------------------
+
+* Fixed a bug where input just outside the range of the dataset would not be handled correctly.
+* Fixed a bug when using the 'nearest' method for a subset selection, it would not always return the correct extreme points.
+* Fixed a bug where ``pandas.Timestamp`` could not be used as input for the subset command.
+* Improve the evaluation of the size of the file that the subset command will save locally.
