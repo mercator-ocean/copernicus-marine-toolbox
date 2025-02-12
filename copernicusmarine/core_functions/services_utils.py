@@ -379,7 +379,9 @@ def _get_retrieval_service_from_dataset_version(
     if command_type == CommandType.SUBSET:
         logger.debug(f'Selected service: "{service.service_name}"')
     dataset_start_date = _get_dataset_start_date_from_service(service)
-    coordinates_names_and_axis = _get_coordinates_names_and_axis(service)
+    # dataset_coordinate_info_updated = _get_coordinates_names_and_axis(
+    #     service, dataset_coordinate_info
+    # )
     return RetrievalService(
         dataset_id=dataset_id,
         service_name=service.service_name,
@@ -387,7 +389,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
         service=service,
-        coordinates_name_and_axis=coordinates_names_and_axis,
+        coordinates_name_and_axis=dataset_part.coordinate_info,
         is_original_grid=dataset_part.name == "originalGrid",
     )
 
@@ -405,24 +407,25 @@ def _get_dataset_start_date_from_service(
     return None
 
 
-def _get_coordinates_names_and_axis(
-    service: CopernicusMarineService,
-) -> Optional[dict[str, str]]:
-    name_and_axis = {}
-    axis = 0
-    logger.info("aquiii")
-    if (
-        service.service_name != CopernicusMarineServiceNames.GEOSERIES
-        and service.service_name != CopernicusMarineServiceNames.TIMESERIES
-    ):
-        logger.error("First, throw a little warning about this")
-        return None
-    # assume all variables have same coordinates
-    for coordinate in service.variables[0].coordinates:
-        name_and_axis[str(axis)] = coordinate.coordinate_id
-        axis += 1
-    logger.info(f"aquiii {name_and_axis}")
-    return name_and_axis
+# def _get_coordinates_names_and_axis(
+#     service: CopernicusMarineService,
+#     dataset_coordinate_info: dict[str, str],
+# ) -> Optional[dict[str, str]]:
+#     logger.info("Getting coordinates names and axis")
+#     logger.info(f"Service: {service.service_name}")
+#     logger.info(f"Dataset coordinate info: {dataset_coordinate_info}")
+#     # assume all variables have same coordinates
+#     for coordinate in service.variables[0].coordinates:
+#         for axis in dataset_coordinate_info.keys():
+#             logger.info(axis)
+#             logger.info(coordinate.coordinate_id)
+#             if coordinate.coordinate_id in dataset_coordinate_info[axis]:
+#                 dataset_coordinate_info[axis] = [
+#                     coordinate.coordinate_id
+#                 ]  # we only one a name per axis
+#                 logger.info(f"passem per auqii")
+#     logger.info(f"Dataset coordinate info updated: {dataset_coordinate_info}")
+#     return dataset_coordinate_info
 
 
 class ServiceNotAvailable(Exception):

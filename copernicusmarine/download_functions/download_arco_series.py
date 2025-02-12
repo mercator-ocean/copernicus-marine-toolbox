@@ -200,7 +200,6 @@ def download_zarr(
     coordiantes_name_and_axis: Optional[dict[str, str]],
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
-    logger.info(coordiantes_name_and_axis)
     if not coordiantes_name_and_axis:
         raise ValueError(
             "The coordinates name and axis should be provided for the subset"
@@ -209,13 +208,13 @@ def download_zarr(
         latitude_parameters=LatitudeParameters(
             minimum_latitude=subset_request.minimum_latitude,
             maximum_latitude=subset_request.maximum_latitude,
-            name=coordiantes_name_and_axis["1"],
+            name=coordiantes_name_and_axis["y"],
             axis=1,
         ),
         longitude_parameters=LongitudeParameters(
             minimum_longitude=subset_request.minimum_longitude,
             maximum_longitude=subset_request.maximum_longitude,
-            name=coordiantes_name_and_axis["2"],
+            name=coordiantes_name_and_axis["x"],
             axis=2,
         ),
         projection="original" if is_original_grid else "lonlat",
