@@ -146,8 +146,12 @@ def subset(
             raise MutuallyExclusiveArguments("overwrite", "skip_existing")
 
     request_file = pathlib.Path(request_file) if request_file else None
-    output_directory = pathlib.Path(output_directory) if output_directory else None
-    credentials_file = pathlib.Path(credentials_file) if credentials_file else None
+    output_directory = (
+        pathlib.Path(output_directory) if output_directory else None
+    )
+    credentials_file = (
+        pathlib.Path(credentials_file) if credentials_file else None
+    )
 
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
