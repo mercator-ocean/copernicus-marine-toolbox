@@ -29,6 +29,7 @@ version_default = CopernicusMarineVersion(
             services=[],
             retired_date=None,
             released_date=None,
+            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2060",
@@ -56,6 +57,7 @@ to_be_released_version = CopernicusMarineVersion(
             services=[],
             retired_date=None,
             released_date="2060-01-01",
+            coordinate_info={},
         ),
     ],
 )
