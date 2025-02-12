@@ -121,3 +121,35 @@ class MutuallyExclusiveArguments(Exception):
         super().__init__(
             f"Arguments '{arg1}' and '{arg2}' are mutually exclusive."
         )
+
+
+class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
+    """
+    Exception raised when using longitude and latitude subset is not available
+    for original grid datasets.
+
+    Please make sure the dataset part is not 'originalGrid' when using longitude and
+    latitude subset.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "You cannot specify longitude and latitude when using the originalGrid "
+            "dataset part. Try using x and y instead."
+        )
+
+
+class XYNotAvailableInNonOriginalGridDatasets(Exception):
+    """
+    Exception raised when using x and y subset is not available for non-original grid
+    datasets.
+
+    Please make sure the dataset part is 'originalGrid' when using x and y subset.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "You cannot specify x and y when not using the originalGrid dataset part."
+            "Try using longitude and latitude instead or make sure to specify the "
+            "dataset_part."
+        )
