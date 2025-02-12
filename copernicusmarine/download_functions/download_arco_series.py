@@ -30,13 +30,10 @@ from copernicusmarine.core_functions.utils import (
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
-    GeographicalOriginalParameters,
     GeographicalParameters,
     LatitudeParameters,
     LongitudeParameters,
     TemporalParameters,
-    XParameters,
-    YParameters,
 )
 from copernicusmarine.download_functions.subset_xarray import (
     COORDINATES_LABEL,
@@ -82,9 +79,7 @@ def download_dataset(
     username: str,
     password: str,
     dataset_id: str,
-    geographical_parameters: Union[
-        GeographicalParameters, GeographicalOriginalParameters
-    ],
+    geographical_parameters: Union[GeographicalParameters],
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
@@ -102,9 +97,9 @@ def download_dataset(
     chunk_size_limit: Optional[int],
     skip_existing: bool,
 ) -> ResponseSubset:
-    if chunk_size_limit and isinstance(
-        geographical_parameters, GeographicalParameters
-    ):
+    if (
+        chunk_size_limit
+    ):  # TODO: check if it works with original grid or filter them here
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,
@@ -202,31 +197,29 @@ def download_zarr(
     dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
     is_original_grid: bool,
+    coordiantes_name_and_axis: Optional[dict[str, str]],
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
-    if not is_original_grid:
-        geographical_parameters = GeographicalParameters(
-            latitude_parameters=LatitudeParameters(
-                minimum_latitude=subset_request.minimum_latitude,
-                maximum_latitude=subset_request.maximum_latitude,
-            ),
-            longitude_parameters=LongitudeParameters(
-                minimum_longitude=subset_request.minimum_longitude,
-                maximum_longitude=subset_request.maximum_longitude,
-            ),
+    logger.info(coordiantes_name_and_axis)
+    if not coordiantes_name_and_axis:
+        raise ValueError(
+            "The coordinates name and axis should be provided for the subset"
         )
-    else:
-        logger.info("It is indeed, original grid!")  # TODO: remove this
-        geographical_original_parameters = GeographicalOriginalParameters(
-            y_parameters=YParameters(
-                minimum_y=subset_request.minimum_y,
-                maximum_y=subset_request.maximum_y,
-            ),
-            x_parameters=XParameters(
-                minimum_x=subset_request.minimum_x,
-                maximum_x=subset_request.maximum_x,
-            ),
-        )
+    geographical_parameters = GeographicalParameters(
+        latitude_parameters=LatitudeParameters(
+            minimum_latitude=subset_request.minimum_latitude,
+            maximum_latitude=subset_request.maximum_latitude,
+            name=coordiantes_name_and_axis["1"],
+            axis=1,
+        ),
+        longitude_parameters=LongitudeParameters(
+            minimum_longitude=subset_request.minimum_longitude,
+            maximum_longitude=subset_request.maximum_longitude,
+            name=coordiantes_name_and_axis["2"],
+            axis=2,
+        ),
+        projection="original" if is_original_grid else "lonlat",
+    )
     start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
         minimum_start_date = timestamp_or_datestring_to_datetime(
@@ -259,11 +252,7 @@ def download_zarr(
         username=username,
         password=password,
         dataset_id=dataset_id,
-        geographical_parameters=(
-            geographical_parameters
-            if not is_original_grid
-            else geographical_original_parameters
-        ),
+        geographical_parameters=geographical_parameters,
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=subset_request.coordinates_selection_method,
@@ -289,9 +278,7 @@ def open_dataset_from_arco_series(
     password: str,
     dataset_url: str,
     variables: Optional[list[str]],
-    geographical_parameters: Union[
-        GeographicalParameters, GeographicalOriginalParameters
-    ],
+    geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,

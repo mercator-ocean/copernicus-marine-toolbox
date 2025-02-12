@@ -57,10 +57,6 @@ def subset_function(
     vertical_axis: VerticalAxis,
     start_datetime: Optional[datetime],
     end_datetime: Optional[datetime],
-    minimum_x: Optional[float],
-    maximum_x: Optional[float],
-    minimum_y: Optional[float],
-    maximum_y: Optional[float],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -116,10 +112,6 @@ def subset_function(
         "vertical_axis": vertical_axis,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
-        "minimum_x": minimum_x,
-        "maximum_x": maximum_x,
-        "minimum_y": minimum_y,
-        "maximum_y": maximum_y,
         "coordinates_selection_method": coordinates_selection_method,
         "output_filename": output_filename,
         "file_format": file_format,
@@ -149,10 +141,6 @@ def subset_function(
             subset_request.maximum_depth,
             subset_request.start_datetime,
             subset_request.end_datetime,
-            subset_request.minimum_x,
-            subset_request.maximum_x,
-            subset_request.minimum_y,
-            subset_request.maximum_y,
         ]
     ):
         logger.info(
@@ -208,6 +196,7 @@ def subset_function(
                 retrieval_service.dataset_valid_start_date,
                 retrieval_service.service,
                 retrieval_service.is_original_grid,
+                retrieval_service.coordinates_name_and_axis,
                 None if chunk_size_limit == 0 else chunk_size_limit,
             )
     else:

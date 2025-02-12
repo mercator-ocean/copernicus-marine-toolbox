@@ -41,7 +41,10 @@ from copernicusmarine.core_functions.subset import (
     create_subset_template,
     subset_function,
 )
-from copernicusmarine.core_functions.utils import datetime_parser
+from copernicusmarine.core_functions.utils import (
+    datetime_parser,
+    original_grid_check,
+)
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
@@ -365,6 +368,18 @@ def subset(
         create_subset_template()
         return
 
+    original_grid_check(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+
     response = subset_function(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
@@ -372,10 +387,10 @@ def subset(
         username=username,
         password=password,
         variables=variables,
-        minimum_longitude=minimum_longitude,
-        maximum_longitude=maximum_longitude,
-        minimum_latitude=minimum_latitude,
-        maximum_latitude=maximum_latitude,
+        minimum_longitude=minimum_longitude or minimum_x,
+        maximum_longitude=maximum_longitude or maximum_x,
+        minimum_latitude=minimum_latitude or minimum_y,
+        maximum_latitude=maximum_latitude or maximum_y,
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
         vertical_axis=vertical_axis,
@@ -383,10 +398,6 @@ def subset(
             datetime_parser(start_datetime) if start_datetime else None
         ),
         end_datetime=datetime_parser(end_datetime) if end_datetime else None,
-        minimum_x=minimum_x,
-        maximum_x=maximum_x,
-        minimum_y=minimum_y,
-        maximum_y=maximum_y,
         coordinates_selection_method=coordinates_selection_method,
         output_filename=output_filename,
         file_format=file_format,

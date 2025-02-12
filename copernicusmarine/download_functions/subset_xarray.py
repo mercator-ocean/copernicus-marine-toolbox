@@ -28,13 +28,10 @@ from copernicusmarine.core_functions.utils import (
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
-    GeographicalOriginalParameters,
     GeographicalParameters,
     LatitudeParameters,
     LongitudeParameters,
     TemporalParameters,
-    XParameters,
-    YParameters,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -156,56 +153,53 @@ def _nearest_selection(
 
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
-    coord_type: Literal["latitude", "longitude", "depth", "time", "x", "y"],
+    coord_type: str,
     coord_selection: Union[float, slice, datetime, None],
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    for coord_label in COORDINATES_LABEL[coord_type]:
-        if coord_label in dataset.sizes:
-            if coordinates_selection_method == "outside":
-                if (
-                    isinstance(coord_selection, slice)
-                    and coord_selection.stop is not None
-                ):
-                    coord_selection = _enlarge_selection(
-                        dataset, coord_label, coord_selection
-                    )
-            if coordinates_selection_method == "nearest":
-                if (
-                    isinstance(coord_selection, slice)
-                    and coord_selection.stop is not None
-                ):
-                    coord_selection = _nearest_selection(
-                        dataset, coord_label, coord_selection
-                    )
-            if isinstance(coord_selection, slice):
-                tmp_dataset = dataset.sel(
-                    {coord_label: coord_selection}, method=None
+    coord_label = coord_type
+    if coordinates_selection_method == "outside":
+        if (
+            isinstance(coord_selection, slice)
+            and coord_selection.stop is not None
+        ):
+            coord_selection = _enlarge_selection(
+                dataset, coord_label, coord_selection
+            )
+    if coordinates_selection_method == "nearest":
+        if (
+            isinstance(coord_selection, slice)
+            and coord_selection.stop is not None
+        ):
+            coord_selection = _nearest_selection(
+                dataset, coord_label, coord_selection
+            )
+    if isinstance(coord_selection, slice):
+        tmp_dataset = dataset.sel({coord_label: coord_selection}, method=None)
+    else:
+        tmp_dataset = dataset.sel(
+            {coord_label: coord_selection}, method="nearest"
+        )
+    if tmp_dataset.coords[coord_label].size == 0 or (
+        coord_label not in tmp_dataset.sizes
+    ):
+        target = (
+            coord_selection.start
+            if isinstance(coord_selection, slice)
+            else coord_selection
+        )
+        nearest_neighbour_value = dataset.sel(
+            {coord_label: target}, method="nearest"
+        )[coord_label].values
+        dataset = dataset.sel(
+            {
+                coord_label: slice(
+                    nearest_neighbour_value, nearest_neighbour_value
                 )
-            else:
-                tmp_dataset = dataset.sel(
-                    {coord_label: coord_selection}, method="nearest"
-                )
-            if tmp_dataset.coords[coord_label].size == 0 or (
-                coord_label not in tmp_dataset.sizes
-            ):
-                target = (
-                    coord_selection.start
-                    if isinstance(coord_selection, slice)
-                    else coord_selection
-                )
-                nearest_neighbor_value = dataset.sel(
-                    {coord_label: target}, method="nearest"
-                )[coord_label].values
-                dataset = dataset.sel(
-                    {
-                        coord_label: slice(
-                            nearest_neighbor_value, nearest_neighbor_value
-                        )
-                    }
-                )
-            else:
-                dataset = tmp_dataset
+            }
+        )
+    else:
+        dataset = tmp_dataset
     return dataset
 
 
@@ -286,7 +280,7 @@ def _latitude_subset(
         )
         dataset = _dataset_custom_sel(
             dataset,
-            "latitude",
+            latitude_parameters.name,
             latitude_selection,
             coordinates_selection_method,
         )
@@ -296,11 +290,11 @@ def _latitude_subset(
 
 def _y_subset(
     dataset: xarray.Dataset,
-    y_parameters: YParameters,
-    coordinates_selection_method: CoordinatesSelectionMethod,  # TODO
+    y_parameters: LatitudeParameters,
+    coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    minimum_y = y_parameters.minimum_y
-    maximum_y = y_parameters.maximum_y
+    minimum_y = y_parameters.minimum_latitude
+    maximum_y = y_parameters.maximum_latitude
     if minimum_y is not None or maximum_y is not None:
         y_selection = (
             minimum_y
@@ -309,7 +303,7 @@ def _y_subset(
         )
         return _dataset_custom_sel(
             dataset,
-            "y",
+            y_parameters.name,
             y_selection,
             coordinates_selection_method,
         )
@@ -319,11 +313,11 @@ def _y_subset(
 
 def _x_subset(
     dataset: xarray.Dataset,
-    x_parameters: XParameters,
+    x_parameters: LongitudeParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,  # TODO
 ) -> xarray.Dataset:
-    minimum_x = x_parameters.minimum_x
-    maximum_x = x_parameters.maximum_x
+    minimum_x = x_parameters.minimum_longitude
+    maximum_x = x_parameters.maximum_longitude
     if minimum_x is not None or maximum_x is not None:
         x_selection = (
             minimum_x
@@ -332,7 +326,7 @@ def _x_subset(
         )
         return _dataset_custom_sel(
             dataset,
-            "x",
+            x_parameters.name,
             x_selection,
             coordinates_selection_method,
         )
@@ -367,7 +361,7 @@ def _longitude_subset(
 
     return _dataset_custom_sel(
         dataset,
-        "longitude",
+        longitude_parameters.name,
         longitude_selection,
         coordinates_selection_method,
     )
@@ -608,16 +602,14 @@ def _update_dataset_coordinate_attributes(
 def subset(
     dataset: xarray.Dataset,
     variables: Optional[List[str]],
-    geographical_parameters: Union[
-        GeographicalParameters, GeographicalOriginalParameters
-    ],
+    geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
-    if isinstance(geographical_parameters, GeographicalParameters):
+    if geographical_parameters.projection == "lonlat":
         dataset = _latitude_subset(
             dataset,
             geographical_parameters.latitude_parameters,
@@ -631,12 +623,12 @@ def subset(
     else:
         dataset = _x_subset(
             dataset,
-            geographical_parameters.x_parameters,
+            geographical_parameters.longitude_parameters,
             coordinates_selection_method,
         )
         dataset = _y_subset(
             dataset,
-            geographical_parameters.y_parameters,
+            geographical_parameters.latitude_parameters,
             coordinates_selection_method,
         )
 
