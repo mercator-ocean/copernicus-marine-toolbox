@@ -111,7 +111,7 @@ class TestOriginalGridDatasets:
             variable,
             "--dataset-part",
             "originalGrid",
-            "-x",
+            "--minimum-longitude",
             "0",
             "--dry-run",
             "--log-level",
@@ -122,17 +122,11 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert b"DEBUG" in self.output.stderr
-        assert (
-            b"Dataset part has the non lat lon projection."
-            in self.output.stderr
-        )
         assert b"ERROR" in self.output.stderr
         assert (
-            b"Geospatial subset not available for non lat lon: The "
-            b"geospatial subset of datasets in a projection that is not in "
-            b"latitude and longitude is not yet available. We are "
-            b"developing such feature and will be supported in future versions."
+            b"You cannot specify longitude and latitude when using"
+            b" the originalGrid "
+            b"dataset part. Try using x and y instead."
         ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):

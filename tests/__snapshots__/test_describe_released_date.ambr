@@ -12,6 +12,12 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                      'z': 'elevation',
+                    }),
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -448,6 +454,12 @@
                 'label': '206011',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                      'z': 'elevation',
+                    }),
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -890,6 +902,12 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                      'z': 'elevation',
+                    }),
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -1131,6 +1149,11 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                    }),
                     'name': 'default',
                     'services': list([
                       dict({
@@ -1270,6 +1293,12 @@
                 'label': '202012',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                      'z': 'elevation',
+                    }),
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -1459,6 +1488,12 @@
                 'label': '202012',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                      'z': 'elevation',
+                    }),
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -2401,6 +2436,12 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                      'z': 'elevation',
+                    }),
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -2843,6 +2884,11 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'coordinate_info': dict({
+                      't': 'time',
+                      'x': 'longitude',
+                      'y': 'latitude',
+                    }),
                     'name': 'default',
                     'services': list([
                       dict({

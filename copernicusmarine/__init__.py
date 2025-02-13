@@ -27,7 +27,6 @@ from copernicusmarine.core_functions.credentials_utils import (
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
     FormatNotSupported,
-    GeospatialSubsetNotAvailableForNonLatLon,
     MinimumLongitudeGreaterThanMaximumLongitude,
     NetCDFCompressionNotAvailable,
     ServiceNotSupported,
@@ -96,7 +95,6 @@ __all__ = [
     "ServiceNotAvailable",
     "ServiceNotHandled",
     "ServiceNotSupported",
-    "GeospatialSubsetNotAvailableForNonLatLon",
     "StatusCode",
     "FileStatus",
     "StatusMessage",
