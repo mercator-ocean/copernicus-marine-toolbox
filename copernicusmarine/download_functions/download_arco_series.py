@@ -197,24 +197,29 @@ def download_zarr(
     dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
     is_original_grid: bool,
-    coordiantes_name_and_axis: Optional[dict[str, str]],
+    coordinates_name_and_axis: Optional[dict[str, str]],
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
-    if not coordiantes_name_and_axis:
+    if not coordinates_name_and_axis:
         raise ValueError(
             "The coordinates name and axis should be provided for the subset"
         )
+    if (
+        "x" not in coordinates_name_and_axis.keys()
+    ):  # assume they will come together
+        coordinates_name_and_axis["y"] = "not_defined"
+        coordinates_name_and_axis["x"] = "not_defined"
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
             minimum_latitude=subset_request.minimum_latitude,
             maximum_latitude=subset_request.maximum_latitude,
-            name=coordiantes_name_and_axis["y"],
+            name=coordinates_name_and_axis["y"],
             axis=1,
         ),
         longitude_parameters=LongitudeParameters(
             minimum_longitude=subset_request.minimum_longitude,
             maximum_longitude=subset_request.maximum_longitude,
-            name=coordiantes_name_and_axis["x"],
+            name=coordinates_name_and_axis["x"],
             axis=2,
         ),
         projection="original" if is_original_grid else "lonlat",

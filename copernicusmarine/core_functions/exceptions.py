@@ -41,24 +41,6 @@ class CoordinatesOutOfDatasetBounds(Exception):
         self.__setattr__("custom_exception_message", message)
 
 
-class GeospatialSubsetNotAvailableForNonLatLon(Exception):
-    """
-    The data you are requesting is using a projection that is not on the
-    normalised latitude and longitude grid. The geospatial subset of such
-    datasets is not yet available.
-
-    Please check other parts of the dataset to subset it. The geospatial subset
-    of the datasets with different gridding will be fully available soon.
-    """
-
-    def __init__(self):
-        super().__init__(
-            "The geospatial subset of datasets in a projection that is not in "
-            "latitude and longitude is not yet available. "
-            "We are developing such feature and will be supported in future versions."
-        )
-
-
 class NetCDFCompressionNotAvailable(Exception):
     """
     Exception raised when the NetCDF compression is not available.
