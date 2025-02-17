@@ -479,7 +479,7 @@ def _depth_subset(
         )
         dataset = _dataset_custom_sel(
             dataset,
-            "depth",
+            depth_parameters.vertical_axis,
             depth_selection,
             coordinates_selection_method,
         )
@@ -679,7 +679,7 @@ def check_dataset_subset_bounds(
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_valid_date: Optional[Union[str, int, float]],
-    is_original_grid: bool,
+    coordinates_name_and_axis: dict[str, str],
 ) -> None:
     if service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -716,7 +716,10 @@ def check_dataset_subset_bounds(
                 is_strict=coordinates_selection_method == "strict-inside",
             )
     for coordinate_label in COORDINATES_LABEL["longitude"]:
-        if coordinate_label in dataset.sizes:
+        if (
+            coordinate_label in dataset.sizes
+            and coordinate_label == coordinates_name_and_axis["x"]
+        ):
             longitudes = dataset_coordinates[coordinate_label].values
             _check_coordinate_overlap(
                 dimension="longitude",

@@ -276,7 +276,7 @@ class RetrievalService:
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
     service: CopernicusMarineService
-    coordinates_name_and_axis: Optional[dict[str, str]]
+    coordinates_name_and_axis: dict[str, str]
     is_original_grid: bool = False
 
 

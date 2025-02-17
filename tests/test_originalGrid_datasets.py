@@ -76,31 +76,6 @@ datasets_w_originalGrid = [
 
 
 class TestOriginalGridDatasets:
-    def test_toolbox_identifies_originalGrid_datasets(self):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            dataset_name,
-            "-v",
-            variable,
-            "--dataset-part",
-            "originalGrid",
-            "--dry-run",
-            "--log-level",
-            "DEBUG",
-            "--staging",
-        ]
-        self.output = execute_in_terminal(command)
-        returned_value = loads(self.output.stdout)
-        assert returned_value["status"] == "001"
-        assert b"DEBUG" in self.output.stderr
-        assert self.output.returncode == 0
-        assert (
-            b"Dataset part has the non lat lon projection."
-            in self.output.stderr
-        )
-
     def test_originalGrid_error_when_geospatial(self):
         command = [
             "copernicusmarine",
@@ -163,10 +138,6 @@ class TestOriginalGridDatasets:
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
         assert b"DEBUG" in self.output.stderr
-        assert (
-            b"Dataset part has the non lat lon projection."
-            in self.output.stderr
-        )
         assert datetime_parser("2020-01-01") == datetime_parser(
             dataset.time.values[0]
         )
