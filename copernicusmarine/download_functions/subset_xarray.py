@@ -157,8 +157,6 @@ def _dataset_custom_sel(
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     coord_label = coord_type
-    logger.info(f"Selecting {coord_label} coordinates")
-    logger.info(f"Selection method: {dataset.sizes}")
     if coord_label in dataset.sizes:
         if coordinates_selection_method == "outside":
             if (
