@@ -30,7 +30,6 @@ def open_zarr(
             bucket=bucket,
             root_path=root_path,
             copernicus_marine_username=copernicus_marine_username,
-            number_of_retries=1,
         )
         return xarray.open_zarr(store, **kwargs)
     else:
@@ -44,6 +43,5 @@ def open_zarr(
             bucket=bucket,
             root_path=root_path,
             copernicus_marine_username=copernicus_marine_username,
-            number_of_retries=1,
         )
         return xarray.open_zarr(store, **kwargs, zarr_format=2)
