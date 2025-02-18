@@ -694,51 +694,63 @@ def check_dataset_subset_bounds(
     else:
         raise ServiceNotSupported(service_name)
 
-    for coordinate_label in COORDINATES_LABEL["latitude"]:
-        if coordinate_label in dataset.sizes:
-            latitudes = dataset_coordinates[coordinate_label].values
+    if (
+        "y" in coordinates_name_and_axis.keys()
+    ):  # latitude and y are the same, simple
+        coordinate_label = coordinates_name_and_axis["y"]
+        latitudes = dataset_coordinates[coordinate_label].values
+        user_minimum_coordinate_value = (
+            dataset_subset.minimum_latitude
+            if dataset_subset.minimum_latitude is not None
+            else latitudes.min()
+        )
+        user_maximum_coordinate_value = (
+            dataset_subset.maximum_latitude
+            if dataset_subset.maximum_latitude is not None
+            else latitudes.max()
+        )
+        _check_coordinate_overlap(
+            dimension=coordinate_label,
+            user_minimum_coordinate_value=user_minimum_coordinate_value,
+            user_maximum_coordinate_value=user_maximum_coordinate_value,
+            dataset_minimum_coordinate_value=latitudes.min(),
+            dataset_maximum_coordinate_value=latitudes.max(),
+            is_strict=coordinates_selection_method == "strict-inside",
+        )
+    if "x" in coordinates_name_and_axis.keys():
+        coordinate_label = coordinates_name_and_axis["x"]
+        longitudes = dataset_coordinates[coordinate_label].values
+        if coordinate_label == "longitude":
+            # longitude apply moduli if longitude
             user_minimum_coordinate_value = (
-                dataset_subset.minimum_latitude
-                if dataset_subset.minimum_latitude is not None
-                else latitudes.min()
+                longitude_modulus(dataset_subset.minimum_longitude)
+                if dataset_subset.minimum_longitude is not None
+                else longitudes.min()
             )
             user_maximum_coordinate_value = (
-                dataset_subset.maximum_latitude
-                if dataset_subset.maximum_latitude is not None
-                else latitudes.max()
+                longitude_modulus_upper_bound(dataset_subset.maximum_longitude)
+                if dataset_subset.maximum_longitude is not None
+                else longitudes.max()
             )
-            _check_coordinate_overlap(
-                dimension="latitude",
-                user_minimum_coordinate_value=user_minimum_coordinate_value,
-                user_maximum_coordinate_value=user_maximum_coordinate_value,
-                dataset_minimum_coordinate_value=latitudes.min(),
-                dataset_maximum_coordinate_value=latitudes.max(),
-                is_strict=coordinates_selection_method == "strict-inside",
+        else:  # don't aplpy moduli if x
+            user_minimum_coordinate_value = (
+                dataset_subset.minimum_longitude
+                if dataset_subset.minimum_longitude is not None
+                else longitudes.min()
             )
-    for coordinate_label in COORDINATES_LABEL["longitude"]:
-        if (
-            coordinate_label in dataset.sizes
-            and coordinate_label == coordinates_name_and_axis["x"]
-        ):
-            longitudes = dataset_coordinates[coordinate_label].values
-            _check_coordinate_overlap(
-                dimension="longitude",
-                user_minimum_coordinate_value=(
-                    longitude_modulus(dataset_subset.minimum_longitude)
-                    if dataset_subset.minimum_longitude is not None
-                    else longitudes.min()
-                ),
-                user_maximum_coordinate_value=(
-                    longitude_modulus_upper_bound(
-                        dataset_subset.maximum_longitude
-                    )
-                    if dataset_subset.maximum_longitude is not None
-                    else longitudes.max()
-                ),
-                dataset_minimum_coordinate_value=longitudes.min(),
-                dataset_maximum_coordinate_value=longitudes.max(),
-                is_strict=coordinates_selection_method == "strict-inside",
+            user_maximum_coordinate_value = (
+                dataset_subset.maximum_longitude
+                if dataset_subset.maximum_longitude is not None
+                else longitudes.max()
             )
+        _check_coordinate_overlap(
+            dimension=coordinate_label,
+            user_minimum_coordinate_value=user_minimum_coordinate_value,
+            user_maximum_coordinate_value=user_maximum_coordinate_value,
+            dataset_minimum_coordinate_value=longitudes.min(),
+            dataset_maximum_coordinate_value=longitudes.max(),
+            is_strict=coordinates_selection_method == "strict-inside",
+        )
     for coordinate_label in COORDINATES_LABEL["time"]:
         if coordinate_label in dataset.sizes:
             times = dataset_coordinates[coordinate_label].values
