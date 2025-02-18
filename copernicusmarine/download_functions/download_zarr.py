@@ -7,6 +7,12 @@ from typing import Hashable, Iterable, Literal, Optional, Union
 import pandas as pd
 import xarray
 import zarr
+
+if zarr.__version__.startswith("2"):
+    from zarr.storage import DirectoryStore
+else:
+    from zarr.storage import LocalStore as DirectoryStore
+
 from tqdm.dask import TqdmCallback
 
 from copernicusmarine.catalogue_parser.models import (
@@ -533,7 +539,7 @@ def _download_dataset_as_zarr(
     dataset: xarray.Dataset, output_path: pathlib.Path
 ):
     logger.debug("Writing dataset to Zarr")
-    store = zarr.DirectoryStore(output_path)
+    store = DirectoryStore(output_path)
     return dataset.to_zarr(store=store, mode="w")
 
 
