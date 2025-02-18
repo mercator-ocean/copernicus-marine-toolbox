@@ -203,3 +203,72 @@ class TestOriginalGridDatasets:
         assert returned_value["coordinates_extent"][1]["minimum"] == float(
             min_x
         )
+
+    def test_out_of_bounds(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            "100",
+            "--minimum-x",
+            "-100",
+            "--maximum-y",
+            "10",
+            "--minimum-y",
+            "4",
+            "-t",
+            "2020",
+            "-T",
+            "2020",
+            "--dry-run",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert b"WARNING" in self.output.stderr
+        assert (
+            b"Some of your subset selection [-100.0, 100.0] for the"
+            b" x dimension exceed the dataset coordinates [-36.0, 38.0]"
+            in self.output.stderr
+        )
+        assert (
+            b"Some of your subset selection [-100.0, 100.0] for the "
+            b"y dimension exceed the dataset coordinates [-43.0, 28.0]"
+            in self.output.stderr
+        )
+
+    def test_out_of_bounds_w_error(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            "1",
+            "--minimum-x",
+            "-1",
+            "--maximum-y",
+            "10",
+            "--minimum-y",
+            "4",
+            "-t",
+            "2020",
+            "-T",
+            "2020",
+            "--dry-run",
+            "--coordinates-selection-method",
+            "strict-inside",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
+        assert b"ERROR" in self.output.stderr
+        assert (
+            b"Some of your subset selection [-100.0, 100.0] for the y"
+            b" dimension exceed the dataset coordinates [-43.0, 28.0]"
+            in self.output.stderr
+        )
