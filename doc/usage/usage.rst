@@ -12,3 +12,4 @@ Usage and technical details
     network-configuration
     errors
     environment-variables
+    subset_using_polygons
