@@ -1,3 +1,4 @@
+import logging
 import re
 from enum import Enum
 from typing import Optional, Type, TypeVar, Union
@@ -12,6 +13,8 @@ from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
 )
+
+logger = logging.getLogger("copernicusmarine")
 
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
@@ -376,10 +379,15 @@ class CopernicusMarinePart(BaseModel):
     retired_date: Optional[str]
     #: Date when the part will be/was released.
     released_date: Optional[str]
+    #: Coordinate information of the part.
+    coordinate_info: dict[str, str]
 
     @classmethod
     def from_metadata_item(
-        cls: Type[VersionPart], metadata_item: pystac.Item, part_name: str
+        cls: Type[VersionPart],
+        metadata_item: pystac.Item,
+        part_name: str,
+        coordinate_info: dict,
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
@@ -406,6 +414,7 @@ class CopernicusMarinePart(BaseModel):
             services=services,
             retired_date=retired_date,
             released_date=released_date,
+            coordinate_info=coordinate_info,
         )
 
     def get_service_by_service_name(
@@ -519,14 +528,29 @@ class CopernicusMarineDataset(BaseModel):
         self, metadata_items: list[pystac.Item]
     ) -> None:
         all_versions = set()
+        dict_coordinates = {"t": "time"}
         for metadata_item in metadata_items:
             (
                 _,
                 dataset_version,
                 dataset_part,
             ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
+            for key in metadata_item.properties["cube:dimensions"]:
+                if (
+                    "axis"
+                    in metadata_item.properties["cube:dimensions"][key].keys()
+                ):
+                    # logger.info(
+                    #     metadata_item.properties["cube:dimensions"][key]["axis"]
+                    # )
+                    # logger.info(key)
+                    dict_coordinates[
+                        metadata_item.properties["cube:dimensions"][key][
+                            "axis"
+                        ]
+                    ] = key
             part = CopernicusMarinePart.from_metadata_item(
-                metadata_item, dataset_part
+                metadata_item, dataset_part, dict_coordinates
             )
             if not part:
                 continue

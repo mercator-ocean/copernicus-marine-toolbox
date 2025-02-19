@@ -17,7 +17,6 @@ from copernicusmarine.catalogue_parser.request_structure import (
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
-    GeospatialSubsetNotAvailableForNonLatLon,
     MinimumLongitudeGreaterThanMaximumLongitude,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
@@ -41,6 +40,8 @@ COORDINATES_LABEL = {
     "longitude": ["longitude", "nav_lon", "y", "lon"],
     "time": ["time_counter", "time"],
     "depth": ["depth", "deptht", "elevation"],
+    "x": ["x"],
+    "y": ["y"],
 }
 
 NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
@@ -151,56 +152,56 @@ def _nearest_selection(
 
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
-    coord_type: Literal["latitude", "longitude", "depth", "time"],
+    coord_type: str,
     coord_selection: Union[float, slice, datetime, None],
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    for coord_label in COORDINATES_LABEL[coord_type]:
-        if coord_label in dataset.sizes:
-            if coordinates_selection_method == "outside":
-                if (
-                    isinstance(coord_selection, slice)
-                    and coord_selection.stop is not None
-                ):
-                    coord_selection = _enlarge_selection(
-                        dataset, coord_label, coord_selection
-                    )
-            if coordinates_selection_method == "nearest":
-                if (
-                    isinstance(coord_selection, slice)
-                    and coord_selection.stop is not None
-                ):
-                    coord_selection = _nearest_selection(
-                        dataset, coord_label, coord_selection
-                    )
-            if isinstance(coord_selection, slice):
-                tmp_dataset = dataset.sel(
-                    {coord_label: coord_selection}, method=None
-                )
-            else:
-                tmp_dataset = dataset.sel(
-                    {coord_label: coord_selection}, method="nearest"
-                )
-            if tmp_dataset.coords[coord_label].size == 0 or (
-                coord_label not in tmp_dataset.sizes
+    coord_label = coord_type
+    if coord_label in dataset.sizes:
+        if coordinates_selection_method == "outside":
+            if (
+                isinstance(coord_selection, slice)
+                and coord_selection.stop is not None
             ):
-                target = (
-                    coord_selection.start
-                    if isinstance(coord_selection, slice)
-                    else coord_selection
+                coord_selection = _enlarge_selection(
+                    dataset, coord_label, coord_selection
                 )
-                nearest_neighbor_value = dataset.sel(
-                    {coord_label: target}, method="nearest"
-                )[coord_label].values
-                dataset = dataset.sel(
-                    {
-                        coord_label: slice(
-                            nearest_neighbor_value, nearest_neighbor_value
-                        )
-                    }
+        if coordinates_selection_method == "nearest":
+            if (
+                isinstance(coord_selection, slice)
+                and coord_selection.stop is not None
+            ):
+                coord_selection = _nearest_selection(
+                    dataset, coord_label, coord_selection
                 )
-            else:
-                dataset = tmp_dataset
+        if isinstance(coord_selection, slice):
+            tmp_dataset = dataset.sel(
+                {coord_label: coord_selection}, method=None
+            )
+        else:
+            tmp_dataset = dataset.sel(
+                {coord_label: coord_selection}, method="nearest"
+            )
+        if tmp_dataset.coords[coord_label].size == 0 or (
+            coord_label not in tmp_dataset.sizes
+        ):
+            target = (
+                coord_selection.start
+                if isinstance(coord_selection, slice)
+                else coord_selection
+            )
+            nearest_neighbour_value = dataset.sel(
+                {coord_label: target}, method="nearest"
+            )[coord_label].values
+            dataset = dataset.sel(
+                {
+                    coord_label: slice(
+                        nearest_neighbour_value, nearest_neighbour_value
+                    )
+                }
+            )
+        else:
+            dataset = tmp_dataset
     return dataset
 
 
@@ -281,11 +282,56 @@ def _latitude_subset(
         )
         dataset = _dataset_custom_sel(
             dataset,
-            "latitude",
+            latitude_parameters.name,
             latitude_selection,
             coordinates_selection_method,
         )
 
+    return dataset
+
+
+def _y_subset(
+    dataset: xarray.Dataset,
+    y_parameters: LatitudeParameters,
+    coordinates_selection_method: CoordinatesSelectionMethod,
+) -> xarray.Dataset:
+    minimum_y = y_parameters.minimum_latitude
+    maximum_y = y_parameters.maximum_latitude
+    if minimum_y is not None or maximum_y is not None:
+        y_selection = (
+            minimum_y
+            if minimum_y == maximum_y
+            else slice(minimum_y, maximum_y)
+        )
+        return _dataset_custom_sel(
+            dataset,
+            y_parameters.name,
+            y_selection,
+            coordinates_selection_method,
+        )
+
+    return dataset
+
+
+def _x_subset(
+    dataset: xarray.Dataset,
+    x_parameters: LongitudeParameters,
+    coordinates_selection_method: CoordinatesSelectionMethod,  # TODO
+) -> xarray.Dataset:
+    minimum_x = x_parameters.minimum_longitude
+    maximum_x = x_parameters.maximum_longitude
+    if minimum_x is not None or maximum_x is not None:
+        x_selection = (
+            minimum_x
+            if minimum_x == maximum_x
+            else slice(minimum_x, maximum_x)
+        )
+        return _dataset_custom_sel(
+            dataset,
+            x_parameters.name,
+            x_selection,
+            coordinates_selection_method,
+        )
     return dataset
 
 
@@ -317,7 +363,7 @@ def _longitude_subset(
 
     return _dataset_custom_sel(
         dataset,
-        "longitude",
+        longitude_parameters.name,
         longitude_selection,
         coordinates_selection_method,
     )
@@ -431,7 +477,7 @@ def _depth_subset(
         )
         dataset = _dataset_custom_sel(
             dataset,
-            "depth",
+            depth_parameters.vertical_axis,
             depth_selection,
             coordinates_selection_method,
         )
@@ -565,17 +611,28 @@ def subset(
 ) -> xarray.Dataset:
     if variables:
         dataset = _variables_subset(dataset, variables)
-
-    dataset = _latitude_subset(
-        dataset,
-        geographical_parameters.latitude_parameters,
-        coordinates_selection_method,
-    )
-    dataset = _longitude_subset(
-        dataset,
-        geographical_parameters.longitude_parameters,
-        coordinates_selection_method,
-    )
+    if geographical_parameters.projection == "lonlat":
+        dataset = _latitude_subset(
+            dataset,
+            geographical_parameters.latitude_parameters,
+            coordinates_selection_method,
+        )
+        dataset = _longitude_subset(
+            dataset,
+            geographical_parameters.longitude_parameters,
+            coordinates_selection_method,
+        )
+    else:
+        dataset = _x_subset(
+            dataset,
+            geographical_parameters.longitude_parameters,
+            coordinates_selection_method,
+        )
+        dataset = _y_subset(
+            dataset,
+            geographical_parameters.latitude_parameters,
+            coordinates_selection_method,
+        )
 
     dataset = _temporal_subset(
         dataset, temporal_parameters, coordinates_selection_method
@@ -620,7 +677,7 @@ def check_dataset_subset_bounds(
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
     dataset_valid_date: Optional[Union[str, int, float]],
-    is_original_grid: bool,
+    coordinates_name_and_axis: dict[str, str],
 ) -> None:
     if service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -634,58 +691,64 @@ def check_dataset_subset_bounds(
         dataset_coordinates = dataset.coords
     else:
         raise ServiceNotSupported(service_name)
-    if is_original_grid:
-        logger.debug("Dataset part has the non lat lon projection.")
-        if (
-            dataset_subset.minimum_latitude is not None
-            or dataset_subset.maximum_latitude is not None
-            or dataset_subset.minimum_longitude is not None
-            or dataset_subset.maximum_longitude is not None
-        ):
-            raise GeospatialSubsetNotAvailableForNonLatLon()
 
-    for coordinate_label in COORDINATES_LABEL["latitude"]:
-        if coordinate_label in dataset.sizes:
-            latitudes = dataset_coordinates[coordinate_label].values
+    if (
+        "y" in coordinates_name_and_axis.keys()
+    ):  # latitude and y are the same, simple
+        coordinate_label = coordinates_name_and_axis["y"]
+        latitudes = dataset_coordinates[coordinate_label].values
+        user_minimum_coordinate_value = (
+            dataset_subset.minimum_latitude
+            if dataset_subset.minimum_latitude is not None
+            else latitudes.min()
+        )
+        user_maximum_coordinate_value = (
+            dataset_subset.maximum_latitude
+            if dataset_subset.maximum_latitude is not None
+            else latitudes.max()
+        )
+        _check_coordinate_overlap(
+            dimension=coordinate_label,
+            user_minimum_coordinate_value=user_minimum_coordinate_value,
+            user_maximum_coordinate_value=user_maximum_coordinate_value,
+            dataset_minimum_coordinate_value=latitudes.min(),
+            dataset_maximum_coordinate_value=latitudes.max(),
+            is_strict=coordinates_selection_method == "strict-inside",
+        )
+    if "x" in coordinates_name_and_axis.keys():
+        coordinate_label = coordinates_name_and_axis["x"]
+        longitudes = dataset_coordinates[coordinate_label].values
+        if coordinate_label == "longitude":
+            # longitude apply moduli if longitude
             user_minimum_coordinate_value = (
-                dataset_subset.minimum_latitude
-                if dataset_subset.minimum_latitude is not None
-                else latitudes.min()
+                longitude_modulus(dataset_subset.minimum_longitude)
+                if dataset_subset.minimum_longitude is not None
+                else longitudes.min()
             )
             user_maximum_coordinate_value = (
-                dataset_subset.maximum_latitude
-                if dataset_subset.maximum_latitude is not None
-                else latitudes.max()
+                longitude_modulus_upper_bound(dataset_subset.maximum_longitude)
+                if dataset_subset.maximum_longitude is not None
+                else longitudes.max()
             )
-            _check_coordinate_overlap(
-                dimension="latitude",
-                user_minimum_coordinate_value=user_minimum_coordinate_value,
-                user_maximum_coordinate_value=user_maximum_coordinate_value,
-                dataset_minimum_coordinate_value=latitudes.min(),
-                dataset_maximum_coordinate_value=latitudes.max(),
-                is_strict=coordinates_selection_method == "strict-inside",
+        else:  # don't aplpy moduli if x
+            user_minimum_coordinate_value = (
+                dataset_subset.minimum_longitude
+                if dataset_subset.minimum_longitude is not None
+                else longitudes.min()
             )
-    for coordinate_label in COORDINATES_LABEL["longitude"]:
-        if coordinate_label in dataset.sizes:
-            longitudes = dataset_coordinates[coordinate_label].values
-            _check_coordinate_overlap(
-                dimension="longitude",
-                user_minimum_coordinate_value=(
-                    longitude_modulus(dataset_subset.minimum_longitude)
-                    if dataset_subset.minimum_longitude is not None
-                    else longitudes.min()
-                ),
-                user_maximum_coordinate_value=(
-                    longitude_modulus_upper_bound(
-                        dataset_subset.maximum_longitude
-                    )
-                    if dataset_subset.maximum_longitude is not None
-                    else longitudes.max()
-                ),
-                dataset_minimum_coordinate_value=longitudes.min(),
-                dataset_maximum_coordinate_value=longitudes.max(),
-                is_strict=coordinates_selection_method == "strict-inside",
+            user_maximum_coordinate_value = (
+                dataset_subset.maximum_longitude
+                if dataset_subset.maximum_longitude is not None
+                else longitudes.max()
             )
+        _check_coordinate_overlap(
+            dimension=coordinate_label,
+            user_minimum_coordinate_value=user_minimum_coordinate_value,
+            user_maximum_coordinate_value=user_maximum_coordinate_value,
+            dataset_minimum_coordinate_value=longitudes.min(),
+            dataset_maximum_coordinate_value=longitudes.max(),
+            is_strict=coordinates_selection_method == "strict-inside",
+        )
     for coordinate_label in COORDINATES_LABEL["time"]:
         if coordinate_label in dataset.sizes:
             times = dataset_coordinates[coordinate_label].values

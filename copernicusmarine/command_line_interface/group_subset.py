@@ -41,7 +41,10 @@ from copernicusmarine.core_functions.subset import (
     create_subset_template,
     subset_function,
 )
-from copernicusmarine.core_functions.utils import datetime_parser
+from copernicusmarine.core_functions.utils import (
+    datetime_parser,
+    original_grid_check,
+)
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
@@ -123,6 +126,16 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["MAXIMUM_LONGITUDE_HELP"],
 )
 @click.option(
+    "--minimum-x",
+    type=float,
+    help=documentation_utils.SUBSET["MINIMUM_X_HELP"],
+)
+@click.option(
+    "--maximum-x",
+    type=float,
+    help=documentation_utils.SUBSET["MAXIMUM_X_HELP"],
+)
+@click.option(
     "--minimum-latitude",
     "-y",
     type=click.FloatRange(min=-90, max=90),
@@ -133,6 +146,16 @@ def cli_subset() -> None:
     "-Y",
     type=click.FloatRange(min=-90, max=90),
     help=documentation_utils.SUBSET["MAXIMUM_LATITUDE_HELP"],
+)
+@click.option(
+    "--minimum-y",
+    type=float,
+    help=documentation_utils.SUBSET["MINIMUM_Y_HELP"],
+)
+@click.option(
+    "--maximum-y",
+    type=float,
+    help=documentation_utils.SUBSET["MAXIMUM_Y_HELP"],
 )
 @click.option(
     "--minimum-depth",
@@ -304,6 +327,10 @@ def subset(
     vertical_axis: VerticalAxis,
     start_datetime: Optional[str],
     end_datetime: Optional[str],
+    minimum_x: Optional[float],
+    maximum_x: Optional[float],
+    minimum_y: Optional[float],
+    maximum_y: Optional[float],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -341,6 +368,18 @@ def subset(
         create_subset_template()
         return
 
+    original_grid_check(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+
     response = subset_function(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
@@ -348,10 +387,10 @@ def subset(
         username=username,
         password=password,
         variables=variables,
-        minimum_longitude=minimum_longitude,
-        maximum_longitude=maximum_longitude,
-        minimum_latitude=minimum_latitude,
-        maximum_latitude=maximum_latitude,
+        minimum_longitude=minimum_longitude or minimum_x,
+        maximum_longitude=maximum_longitude or maximum_x,
+        minimum_latitude=minimum_latitude or minimum_y,
+        maximum_latitude=maximum_latitude or maximum_y,
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
         vertical_axis=vertical_axis,

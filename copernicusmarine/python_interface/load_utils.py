@@ -52,7 +52,7 @@ def load_data_object_from_load_request(
         dataset_subset=load_request.get_time_and_space_subset(),
         coordinates_selection_method=load_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
-        is_original_grid=retrieval_service.is_original_grid,
+        coordinates_name_and_axis=retrieval_service.coordinates_name_and_axis,
     )
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,

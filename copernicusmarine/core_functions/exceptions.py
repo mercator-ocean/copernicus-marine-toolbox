@@ -41,24 +41,6 @@ class CoordinatesOutOfDatasetBounds(Exception):
         self.__setattr__("custom_exception_message", message)
 
 
-class GeospatialSubsetNotAvailableForNonLatLon(Exception):
-    """
-    The data you are requesting is using a projection that is not on the
-    normalised latitude and longitude grid. The geospatial subset of such
-    datasets is not yet available.
-
-    Please check other parts of the dataset to subset it. The geospatial subset
-    of the datasets with different gridding will be fully available soon.
-    """
-
-    def __init__(self):
-        super().__init__(
-            "The geospatial subset of datasets in a projection that is not in "
-            "latitude and longitude is not yet available. "
-            "We are developing such feature and will be supported in future versions."
-        )
-
-
 class NetCDFCompressionNotAvailable(Exception):
     """
     Exception raised when the NetCDF compression is not available.
@@ -120,4 +102,36 @@ class MutuallyExclusiveArguments(Exception):
     def __init__(self, arg1, arg2):
         super().__init__(
             f"Arguments '{arg1}' and '{arg2}' are mutually exclusive."
+        )
+
+
+class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
+    """
+    Exception raised when using longitude and latitude subset is not available
+    for original grid datasets.
+
+    Please make sure the dataset part is not 'originalGrid' when using longitude and
+    latitude subset.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "You cannot specify longitude and latitude when using the originalGrid "
+            "dataset part. Try using x and y instead."
+        )
+
+
+class XYNotAvailableInNonOriginalGridDatasets(Exception):
+    """
+    Exception raised when using x and y subset is not available for non-original grid
+    datasets.
+
+    Please make sure the dataset part is 'originalGrid' when using x and y subset.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "You cannot specify x and y when not using the originalGrid dataset part."
+            "Try using longitude and latitude instead or make sure to specify the "
+            "dataset_part."
         )

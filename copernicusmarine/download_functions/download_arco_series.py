@@ -79,7 +79,7 @@ def download_dataset(
     username: str,
     password: str,
     dataset_id: str,
-    geographical_parameters: GeographicalParameters,
+    geographical_parameters: Union[GeographicalParameters],
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
@@ -97,7 +97,9 @@ def download_dataset(
     chunk_size_limit: Optional[int],
     skip_existing: bool,
 ) -> ResponseSubset:
-    if chunk_size_limit:
+    if (
+        chunk_size_limit
+    ):  # TODO: check if it works with original grid or filter them here
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,
@@ -194,17 +196,33 @@ def download_zarr(
     disable_progress_bar: bool,
     dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
+    is_original_grid: bool,
+    coordinates_name_and_axis: Optional[dict[str, str]],
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
+    if not coordinates_name_and_axis:
+        raise ValueError(
+            "The coordinates name and axis should be provided for the subset"
+        )
+    if (
+        "x" not in coordinates_name_and_axis.keys()
+    ):  # assume they will come together
+        coordinates_name_and_axis["y"] = "not_defined"
+        coordinates_name_and_axis["x"] = "not_defined"
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
             minimum_latitude=subset_request.minimum_latitude,
             maximum_latitude=subset_request.maximum_latitude,
+            name=coordinates_name_and_axis["y"],
+            axis=1,
         ),
         longitude_parameters=LongitudeParameters(
             minimum_longitude=subset_request.minimum_longitude,
             maximum_longitude=subset_request.maximum_longitude,
+            name=coordinates_name_and_axis["x"],
+            axis=2,
         ),
+        projection="original" if is_original_grid else "lonlat",
     )
     start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:

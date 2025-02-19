@@ -98,6 +98,10 @@ class SubsetRequest:
                 "maximum_latitude",
                 "minimum_depth",
                 "maximum_depth",
+                "minimum_x",
+                "maximum_x",
+                "minimum_y",
+                "maximum_y",
             ]:
                 new_value = float(value) if value is not None else None
             elif key in [

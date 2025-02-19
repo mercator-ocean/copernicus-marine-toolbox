@@ -8,34 +8,74 @@ from tests.test_utils import execute_in_terminal
 
 dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
 variable = "po4"
+datasets_w_originalGrid = [
+    ["cmems_mod_arc_bgc_anfc_ecosmo_P1D-m", "2020"],
+    ["cmems_mod_arc_bgc_anfc_ecosmo_P1M-m", "2020"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_PT1H-i", "2022"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_PT6H-m", "2024"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_P1D-m", "2024"],
+    ["cmems_mod_arc_phy_anfc_6km_detided_P1M-m", "2024"],
+    # "cmems_mod_arc_phy_anfc_nextsim_P1M-m", "2020", # not yet available
+    # "cmems_mod_arc_phy_anfc_nextsim_hm", # not yet available
+    # "dataset-topaz6-arc-15min-3km-be", # not yet available
+    ["cmems_mod_arc_bgc_my_ecosmo_P1D-m", "2020"],
+    ["cmems_mod_arc_bgc_my_ecosmo_P1M", "2020"],
+    ["cmems_mod_arc_bgc_my_ecosmo_P1Y", "2020"],
+    ["cmems_mod_arc_phy_my_topaz4_P1D-m", "2020"],
+    ["cmems_mod_arc_phy_my_topaz4_P1M", "2020"],
+    ["cmems_mod_arc_phy_my_topaz4_P1Y", "2020"],
+    [
+        "cmems_mod_arc_phy_my_hflux_P1D-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_hflux_P1M-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_mflux_P1D-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_mflux_P1M-m",
+        "2020",
+        "0",
+        "25000",
+        "12500",
+        "100000",
+    ],
+    [
+        "cmems_mod_arc_phy_my_nextsim_P1M-m",
+        "2020",
+        "-99000",
+        "-3000",
+        "-100000",
+        "-1000",
+    ],
+    [
+        "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
+        "2020",
+        "220000",
+        "2150000",
+        "215000",
+        "215000",
+    ],
+]
 
 
 class TestOriginalGridDatasets:
-    def test_toolbox_identifies_originalGrid_datasets(self):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            dataset_name,
-            "-v",
-            variable,
-            "--dataset-part",
-            "originalGrid",
-            "--dry-run",
-            "--log-level",
-            "DEBUG",
-            "--staging",
-        ]
-        self.output = execute_in_terminal(command)
-        returned_value = loads(self.output.stdout)
-        assert returned_value["status"] == "001"
-        assert b"DEBUG" in self.output.stderr
-        assert self.output.returncode == 0
-        assert (
-            b"Dataset part has the non lat lon projection."
-            in self.output.stderr
-        )
-
     def test_originalGrid_error_when_geospatial(self):
         command = [
             "copernicusmarine",
@@ -46,7 +86,7 @@ class TestOriginalGridDatasets:
             variable,
             "--dataset-part",
             "originalGrid",
-            "-x",
+            "--minimum-longitude",
             "0",
             "--dry-run",
             "--log-level",
@@ -57,17 +97,11 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert b"DEBUG" in self.output.stderr
-        assert (
-            b"Dataset part has the non lat lon projection."
-            in self.output.stderr
-        )
         assert b"ERROR" in self.output.stderr
         assert (
-            b"Geospatial subset not available for non lat lon: The "
-            b"geospatial subset of datasets in a projection that is not in "
-            b"latitude and longitude is not yet available. We are "
-            b"developing such feature and will be supported in future versions."
+            b"You cannot specify longitude and latitude when using"
+            b" the originalGrid "
+            b"dataset part. Try using x and y instead."
         ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
@@ -104,10 +138,6 @@ class TestOriginalGridDatasets:
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
         assert b"DEBUG" in self.output.stderr
-        assert (
-            b"Dataset part has the non lat lon projection."
-            in self.output.stderr
-        )
         assert datetime_parser("2020-01-01") == datetime_parser(
             dataset.time.values[0]
         )
@@ -123,3 +153,122 @@ class TestOriginalGridDatasets:
             returned_value["coordinates_extent"][3]["coordinate_id"] == "depth"
         )
         assert len(returned_value["coordinates_extent"]) == 4
+
+    def test_originalGrid_works_when_subsetting(self):
+        for dataset_info in datasets_w_originalGrid:
+            self.run_one_dataset(dataset_info)
+
+    def run_one_dataset(self, dataset_info):
+        dataset_name = dataset_info[0]
+        dataset_year = dataset_info[1]
+        max_x = dataset_info[3] if len(dataset_info) > 2 else "8"
+        min_x = dataset_info[2] if len(dataset_info) > 3 else "6"
+        max_y = dataset_info[5] if len(dataset_info) > 4 else "10"
+        min_y = dataset_info[4] if len(dataset_info) > 5 else "5"
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            dataset_name,
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            max_x,
+            "--minimum-x",
+            min_x,
+            "--maximum-y",
+            max_y,
+            "--minimum-y",
+            min_y,
+            "-t",
+            dataset_year,
+            "-T",
+            dataset_year,
+            "--dry-run",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        returned_value = loads(self.output.stdout)
+        assert returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
+        assert returned_value["coordinates_extent"][0]["maximum"] == float(
+            max_y
+        )
+        assert returned_value["coordinates_extent"][0]["minimum"] == float(
+            min_y
+        )
+        assert returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
+        assert returned_value["coordinates_extent"][1]["maximum"] == float(
+            max_x
+        )
+        assert returned_value["coordinates_extent"][1]["minimum"] == float(
+            min_x
+        )
+
+    def test_out_of_bounds(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            "100",
+            "--minimum-x",
+            "-100",
+            "--maximum-y",
+            "100",
+            "--minimum-y",
+            "-100",
+            "-t",
+            "2020",
+            "-T",
+            "2020",
+            "--dry-run",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert b"WARNING" in self.output.stderr
+        assert (
+            b"Some of your subset selection [-100.0, 100.0] for the"
+            b" x dimension exceed the dataset coordinates [-36.0, 38.0]"
+            in self.output.stderr
+        )
+        assert (
+            b"Some of your subset selection [-100.0, 100.0] for the "
+            b"y dimension exceed the dataset coordinates [-43.0, 28.0]"
+            in self.output.stderr
+        )
+
+    def test_out_of_bounds_w_error(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_anfc_ecosmo_P1D-m",
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            "1",
+            "--minimum-x",
+            "-1",
+            "--maximum-y",
+            "100",
+            "--minimum-y",
+            "-100",
+            "-t",
+            "2020",
+            "-T",
+            "2020",
+            "--dry-run",
+            "--coordinates-selection-method",
+            "strict-inside",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
+        assert b"ERROR" in self.output.stderr
+        assert (
+            b"Some of your subset selection [-100.0, 100.0] for the y"
+            b" dimension exceed the dataset coordinates [-43.0, 28.0]"
+            in self.output.stderr
+        )
