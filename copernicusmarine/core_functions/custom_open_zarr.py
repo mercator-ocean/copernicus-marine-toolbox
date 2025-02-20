@@ -24,7 +24,7 @@ def open_zarr(
             CustomS3StoreZarrV2,
         )
 
-        logger.debug("Using store for Zarr Python library v2")
+        logger.debug("Using custom store for Zarr Python library v2")
         store = CustomS3StoreZarrV2(
             endpoint=endpoint,
             bucket=bucket,
@@ -37,7 +37,7 @@ def open_zarr(
             CustomS3StoreZarrV3,
         )
 
-        logger.debug("Using store for Zarr Python library v3")
+        logger.debug("Using custom store for Zarr Python library v3")
         store = CustomS3StoreZarrV3(
             endpoint=endpoint,
             bucket=bucket,
