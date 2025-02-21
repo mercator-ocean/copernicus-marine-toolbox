@@ -232,6 +232,9 @@ SUBSET: dict[str, str] = {
         "Can be set to 0 to disable chunking. Positive integer values are accepted. "
         "This is an experimental feature."
     ),
+    "RAISE_IF_UPDATING_HELP": (
+        "If True, raise an error if the dataset is being updated."
+    ),
 }
 
 GET: dict[str, str] = {

@@ -68,6 +68,7 @@ def subset(
     netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
     chunk_size_limit: int = 100,
+    raise_if_updating: bool = False,
 ) -> ResponseSubset:
     """
     Extract a subset of data from a specified dataset using given parameters.
@@ -200,4 +201,5 @@ def subset(
         netcdf_compression_level,
         netcdf3_compatible,
         chunk_size_limit,
+        raise_if_updating,
     )
