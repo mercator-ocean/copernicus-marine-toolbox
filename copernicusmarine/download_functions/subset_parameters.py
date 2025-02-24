@@ -14,16 +14,14 @@ from copernicusmarine.core_functions.models import (
 class LatitudeParameters:
     minimum_latitude: Optional[float] = None
     maximum_latitude: Optional[float] = None
-    name: str = "latitude"
-    axis: int = 0
+    coordinate_id: str = "latitude"
 
 
 @dataclass
 class LongitudeParameters:
     minimum_longitude: Optional[float] = None
     maximum_longitude: Optional[float] = None
-    name: str = "longitude"
-    axis: int = 1
+    coordinate_id: str = "longitude"
 
 
 @dataclass
@@ -41,6 +39,7 @@ class GeographicalParameters:
 class TemporalParameters:
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
+    coordinate_id: str = "time"
 
 
 @dataclass
@@ -48,3 +47,4 @@ class DepthParameters:
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
+    coordinate_id: str = "depth"

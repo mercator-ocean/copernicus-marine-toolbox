@@ -20,7 +20,11 @@ from copernicusmarine.core_functions.models import (
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )
-from copernicusmarine.download_functions.subset_xarray import COORDINATES_LABEL
+from copernicusmarine.download_functions.subset_parameters import (
+    DepthParameters,
+    GeographicalParameters,
+    TemporalParameters,
+)
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -37,6 +41,7 @@ def get_filename(
     dataset: xarray.Dataset,
     dataset_id: str,
     file_format: FileFormat,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> str:
     if filename:
         if Path(filename).suffix in DEFAULT_FILE_EXTENSIONS:
@@ -44,13 +49,16 @@ def get_filename(
         else:
             return filename + get_file_extension(file_format)
     else:
-        return _build_filename_from_dataset(dataset, dataset_id, file_format)
+        return _build_filename_from_dataset(
+            dataset, dataset_id, file_format, axis_coordinate_id_mapping
+        )
 
 
 def _build_filename_from_dataset(
     dataset: xarray.Dataset,
     dataset_id: str,
     file_format: FileFormat,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> str:
     dataset_variables = "-".join(
         [str(variable_name) for variable_name in dataset.data_vars]
@@ -60,21 +68,38 @@ def _build_filename_from_dataset(
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
         else dataset_variables
     )
-    longitudes = _format_longitudes(
-        _get_min_coordinate(dataset, "longitude"),
-        _get_max_coordinate(dataset, "longitude"),
-    )
-    latitudes = _format_latitudes(
-        _get_min_coordinate(dataset, "latitude"),
-        _get_max_coordinate(dataset, "latitude"),
-    )
-    depths = _format_depths(
-        _get_min_coordinate(dataset, "depth"),
-        _get_max_coordinate(dataset, "depth"),
-    )
+    logger.info(axis_coordinate_id_mapping)
+    if "x" in axis_coordinate_id_mapping:
+        if axis_coordinate_id_mapping["x"] == "longitude":
+            longitudes = _format_longitudes(
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+            )
+        if axis_coordinate_id_mapping["x"] == "x":
+            longitudes = "no_name_yet"  # TODO!!!!
+    if "y" in axis_coordinate_id_mapping:
+        if axis_coordinate_id_mapping["y"] == "latitude":
+            latitudes = _format_latitudes(
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+            )
+        if axis_coordinate_id_mapping["y"] == "y":
+            latitudes = "no_name_yet"  # TODOOO
+    if "z" in axis_coordinate_id_mapping:
+        if axis_coordinate_id_mapping["z"] == "depth":
+            depths = _format_depths(
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+            )
+    else:  # TODOOO
+        depths = ""
 
-    min_time_coordinate = _get_min_coordinate(dataset, "time")
-    max_time_coordinate = _get_max_coordinate(dataset, "time")
+    min_time_coordinate = _get_min_coordinate(
+        dataset, axis_coordinate_id_mapping["t"]
+    )
+    max_time_coordinate = _get_max_coordinate(
+        dataset, axis_coordinate_id_mapping["t"]
+    )
     datetimes = _format_datetimes(
         (
             timestamp_or_datestring_to_datetime(min_time_coordinate)
@@ -99,24 +124,38 @@ def _build_filename_from_dataset(
     return filename + get_file_extension(file_format)
 
 
-def _get_min_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
-    for coord_label in COORDINATES_LABEL[coordinate]:
-        if coord_label in dataset.sizes:
-            return min(dataset[coord_label].values)
+def get_coordinate_ids_from_parameters(
+    geographical_parameters: GeographicalParameters,
+    temporal_parameters: TemporalParameters,
+    depth_parameters: DepthParameters,
+) -> list[str]:
+    return [
+        coordinate_id
+        for coordinate_id in [
+            geographical_parameters.longitude_parameters.coordinate_id,
+            geographical_parameters.latitude_parameters.coordinate_id,
+            temporal_parameters.coordinate_id,
+            depth_parameters.coordinate_id,
+        ]
+        if coordinate_id
+    ]
+
+
+def _get_min_coordinate(dataset: xarray.Dataset, coordinate_id: str) -> Any:
+    if coordinate_id in dataset.sizes:
+        return min(dataset[coordinate_id].values)
     return None
 
 
-def _get_max_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
-    for coord_label in COORDINATES_LABEL[coordinate]:
-        if coord_label in dataset.sizes:
-            return max(dataset[coord_label].values)
+def _get_max_coordinate(dataset: xarray.Dataset, coordinate_id: str) -> Any:
+    if coordinate_id in dataset.sizes:
+        return max(dataset[coordinate_id].values)
     return None
 
 
-def _get_unit_coordinate(dataset: xarray.Dataset, coordinate: str) -> Any:
-    for coord_label in COORDINATES_LABEL[coordinate]:
-        if coord_label in dataset.sizes:
-            return dataset[coord_label].attrs.get("units")
+def _get_unit_coordinate(dataset: xarray.Dataset, coordinate_id: str) -> Any:
+    if coordinate_id in dataset.sizes:
+        return dataset[coordinate_id].attrs.get("units")
     return None
 
 
@@ -188,45 +227,43 @@ def _format_datetimes(
 
 
 def get_dataset_coordinates_extent(
-    dataset: xarray.Dataset,
+    dataset: xarray.Dataset, axis_coordinate_id_mapping: dict[str, str]
 ) -> list[Union[GeographicalExtent, TimeExtent]]:
     coordinates_extent = []
-    for coord_label in ["longitude", "latitude", "time", "depth"]:
-        if coordinate_extent := _get_coordinate_extent(dataset, coord_label):
-            coordinates_extent.append(coordinate_extent)
+    for coord_axis in ["x", "y", "t", "z"]:
+        if coordinate_id := axis_coordinate_id_mapping.get(coord_axis):
+            if coordinate_extent := _get_coordinate_extent(
+                dataset, coordinate_id
+            ):
+                coordinates_extent.append(coordinate_extent)
 
     return coordinates_extent
 
 
 def _get_coordinate_extent(
     dataset: xarray.Dataset,
-    coordinate: str,
+    coordinate_id: str,
 ) -> Optional[Union[GeographicalExtent, TimeExtent]]:
-    for coord_label in COORDINATES_LABEL[coordinate]:
-        if coord_label in dataset.sizes:
-            minimum = _get_min_coordinate(dataset, coordinate)
-            maximum = _get_max_coordinate(dataset, coordinate)
-            unit = _get_unit_coordinate(dataset, coordinate)
-            if coordinate == "time":
-                minimum = timestamp_or_datestring_to_datetime(
-                    minimum
-                ).isoformat()
-                maximum = timestamp_or_datestring_to_datetime(
-                    maximum
-                ).isoformat()
-                unit = "iso8601"
-                return TimeExtent(
-                    minimum=minimum,
-                    maximum=maximum,
-                    unit=unit,
-                    coordinate_id=coord_label,
-                )
-            return GeographicalExtent(
+    if coordinate_id in dataset.sizes:
+        minimum = _get_min_coordinate(dataset, coordinate_id)
+        maximum = _get_max_coordinate(dataset, coordinate_id)
+        unit = _get_unit_coordinate(dataset, coordinate_id)
+        if coordinate_id == "time":
+            minimum = timestamp_or_datestring_to_datetime(minimum).isoformat()
+            maximum = timestamp_or_datestring_to_datetime(maximum).isoformat()
+            unit = "iso8601"
+            return TimeExtent(
                 minimum=minimum,
                 maximum=maximum,
                 unit=unit,
-                coordinate_id=coord_label,
+                coordinate_id=coordinate_id,
             )
+        return GeographicalExtent(
+            minimum=minimum,
+            maximum=maximum,
+            unit=unit,
+            coordinate_id=coordinate_id,
+        )
     return None
 
 
@@ -250,7 +287,9 @@ def get_approximation_size_final_result(
 
 
 def get_approximation_size_data_downloaded(
-    dataset: xarray.Dataset, service: CopernicusMarineService
+    dataset: xarray.Dataset,
+    service: CopernicusMarineService,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> Optional[float]:
     temp_dataset = dataset.copy()
     if "elevation" in dataset.sizes:
@@ -269,7 +308,7 @@ def get_approximation_size_data_downloaded(
                 temp_dataset["elevation"] = temp_dataset.elevation * (-1)
             possible_coordinate_ids = [
                 coordinate_names
-                for coordinate_names in COORDINATES_LABEL.values()
+                for coordinate_names in axis_coordinate_id_mapping.values()
                 if coordinate_name in coordinate_names
             ]
             if not possible_coordinate_ids:

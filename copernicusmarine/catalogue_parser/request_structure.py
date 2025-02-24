@@ -305,6 +305,20 @@ class LoadRequest:
             end_datetime=self.temporal_parameters.end_datetime,
         )
 
+    def update_attributes(self, axis_coordinate_id_mapping: dict):
+        self.geographical_parameters.longitude_parameters.coordinate_id = (
+            axis_coordinate_id_mapping.get("x", "")
+        )
+        self.geographical_parameters.latitude_parameters.coordinate_id = (
+            axis_coordinate_id_mapping.get("y", "")
+        )
+        self.temporal_parameters.coordinate_id = (
+            axis_coordinate_id_mapping.get("t", "")
+        )
+        self.depth_parameters.coordinate_id = axis_coordinate_id_mapping.get(
+            "z", ""
+        )
+
 
 def filter_to_regex(filter: str) -> str:
     return fnmatch.translate(filter)

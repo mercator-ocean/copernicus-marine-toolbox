@@ -36,8 +36,7 @@ from copernicusmarine.download_functions.subset_parameters import (
     TemporalParameters,
 )
 from copernicusmarine.download_functions.subset_xarray import (
-    COORDINATES_LABEL,
-    apply_longitude_modulus,
+    _x_axis_selection,
     subset,
 )
 from copernicusmarine.download_functions.utils import (
@@ -83,6 +82,7 @@ def download_dataset(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
+    axis_coordinate_id_mapping: dict[str, str],
     dataset_url: str,
     output_directory: pathlib.Path,
     output_filename: Optional[str],
@@ -107,6 +107,7 @@ def download_dataset(
             depth_parameters,
             variables,
             chunk_size_limit,
+            axis_coordinate_id_mapping,
         )
     else:
         optimum_dask_chunking = None
@@ -127,11 +128,17 @@ def download_dataset(
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
 
-    filename = get_filename(output_filename, dataset, dataset_id, file_format)
+    filename = get_filename(
+        output_filename,
+        dataset,
+        dataset_id,
+        file_format,
+        axis_coordinate_id_mapping,
+    )
     output_path = pathlib.Path(output_directory, filename)
     final_result_size_estimation = get_approximation_size_final_result(dataset)
     data_needed_approximation = get_approximation_size_data_downloaded(
-        dataset, service
+        dataset, service, axis_coordinate_id_mapping
     )
 
     if not output_directory.is_dir():
@@ -149,7 +156,9 @@ def download_dataset(
         file_size=final_result_size_estimation,
         data_transfer_size=data_needed_approximation,
         variables=list(dataset.data_vars),
-        coordinates_extent=get_dataset_coordinates_extent(dataset),
+        coordinates_extent=get_dataset_coordinates_extent(
+            dataset, axis_coordinate_id_mapping
+        ),
         status=StatusCode.SUCCESS,
         message=StatusMessage.SUCCESS,
         file_status=FileStatus.DOWNLOADED,
@@ -197,32 +206,21 @@ def download_zarr(
     dataset_valid_start_date: Optional[Union[str, int, float]],
     service: CopernicusMarineService,
     is_original_grid: bool,
-    coordinates_name_and_axis: Optional[dict[str, str]],
+    axis_coordinate_id_mapping: dict[str, str],
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
-    if not coordinates_name_and_axis:
-        raise ValueError(
-            "The coordinates name and axis should be provided for the subset"
-        )
-    if (
-        "x" not in coordinates_name_and_axis.keys()
-    ):  # assume they will come together
-        coordinates_name_and_axis["y"] = "not_defined"
-        coordinates_name_and_axis["x"] = "not_defined"
     geographical_parameters = GeographicalParameters(
         latitude_parameters=LatitudeParameters(
             minimum_latitude=subset_request.minimum_latitude,
             maximum_latitude=subset_request.maximum_latitude,
-            name=coordinates_name_and_axis["y"],
-            axis=1,
+            coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
         ),
         longitude_parameters=LongitudeParameters(
             minimum_longitude=subset_request.minimum_longitude,
             maximum_longitude=subset_request.maximum_longitude,
-            name=coordinates_name_and_axis["x"],
-            axis=2,
+            coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
         ),
-        projection="original" if is_original_grid else "lonlat",
+        projection="originalGrid" if is_original_grid else "lonlat",
     )
     start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
@@ -238,11 +236,13 @@ def download_zarr(
     temporal_parameters = TemporalParameters(
         start_datetime=start_datetime,
         end_datetime=subset_request.end_datetime,
+        coordinate_id=axis_coordinate_id_mapping.get("t", "time"),
     )
     depth_parameters = DepthParameters(
         minimum_depth=subset_request.minimum_depth,
         maximum_depth=subset_request.maximum_depth,
         vertical_axis=subset_request.vertical_axis,
+        coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
     )
     dataset_url = str(subset_request.dataset_url)
     output_directory = (
@@ -260,6 +260,7 @@ def download_zarr(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=subset_request.coordinates_selection_method,
+        axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         dataset_url=dataset_url,
         output_directory=output_directory,
         output_filename=subset_request.output_filename,
@@ -336,6 +337,7 @@ def get_optimum_dask_chunking(
     depth_parameters: DepthParameters,
     variables: Optional[list[str]],
     chunk_size_limit: int,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> Optional[dict[str, Union[int, float]]]:
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
@@ -378,6 +380,7 @@ def get_optimum_dask_chunking(
             geographical_parameters,
             temporal_parameters,
             depth_parameters,
+            axis_coordinate_id_mapping,
         )
         number_of_zarr_chunks_needed = get_number_of_chunks_for_coordinate(
             requested_minimum,
@@ -395,6 +398,7 @@ def get_optimum_dask_chunking(
     optimum_dask_factors = _get_optimum_factors(
         max_dask_chunk_factor,
         chunk_size_limit,
+        axis_coordinate_id_mapping,
     )
     logger.debug(f"Optimum dask factors: {optimum_dask_factors}")
     optimum_dask_chunking = {
@@ -418,9 +422,10 @@ def _extract_requested_min_max(
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> tuple[Optional[float], Optional[float]]:
     # TODO: should work the same as the custom_sel we do
-    if coordinate_id in COORDINATES_LABEL["time"]:
+    if coordinate_id in axis_coordinate_id_mapping["t"]:
         min_time_datetime = temporal_parameters.start_datetime
         min_time = None
         if min_time_datetime:
@@ -430,33 +435,20 @@ def _extract_requested_min_max(
         if max_time_datetime:
             max_time = max_time_datetime.timestamp() * 1e3
         return min_time, max_time
-    if coordinate_id in COORDINATES_LABEL["latitude"]:
+    if coordinate_id in axis_coordinate_id_mapping["y"]:
         return (
             geographical_parameters.latitude_parameters.minimum_latitude,
             geographical_parameters.latitude_parameters.maximum_latitude,
         )
-    if coordinate_id in COORDINATES_LABEL["longitude"]:
-        longitude_moduli = apply_longitude_modulus(
+    if coordinate_id in axis_coordinate_id_mapping["x"]:
+        x_selection, _ = _x_axis_selection(
             geographical_parameters.longitude_parameters
         )
-        if longitude_moduli:
-            (
-                minimum_longitude_modulus,
-                maximum_longitude_modulus,
-            ) = longitude_moduli
-            if (
-                maximum_longitude_modulus
-                and minimum_longitude_modulus
-                and maximum_longitude_modulus < minimum_longitude_modulus
-            ):
-                maximum_longitude_modulus += 360
-            return (
-                minimum_longitude_modulus,
-                maximum_longitude_modulus,
-            )
+        if isinstance(x_selection, slice):
+            return x_selection.start, x_selection.stop
         else:
             return (None, None)
-    if coordinate_id in COORDINATES_LABEL["depth"]:
+    if coordinate_id in axis_coordinate_id_mapping["z"]:
         return depth_parameters.minimum_depth, depth_parameters.maximum_depth
     return None, None
 
@@ -464,10 +456,11 @@ def _extract_requested_min_max(
 def _get_optimum_factors(
     coordinate_max_dask_chunk_factor: dict[str, int],
     limit: int,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> dict[str, int]:
     optimum_factors = {
-        coodinate_name: 1
-        for coodinate_name in coordinate_max_dask_chunk_factor
+        coordinate_name: 1
+        for coordinate_name in coordinate_max_dask_chunk_factor
     }
     coordinate_selection_pool = {
         coordinate_name
@@ -482,10 +475,10 @@ def _get_optimum_factors(
             coordinate_selection_pool,
             key=lambda x: (
                 coordinate_max_dask_chunk_factor[x],
-                x in COORDINATES_LABEL["depth"],
-                x in COORDINATES_LABEL["time"],
-                x in COORDINATES_LABEL["latitude"],
-                x in COORDINATES_LABEL["longitude"],
+                x in axis_coordinate_id_mapping["z"],
+                x in axis_coordinate_id_mapping["t"],
+                x in axis_coordinate_id_mapping["y"],
+                x in axis_coordinate_id_mapping["x"],
             ),
         )
 

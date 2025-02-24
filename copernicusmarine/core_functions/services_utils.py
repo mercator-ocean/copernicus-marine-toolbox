@@ -148,35 +148,33 @@ def _get_best_arco_service_type(
     dataset_subset: DatasetTimeAndSpaceSubset,
     dataset_url: str,
     username: Optional[str],
-    dataset_version_part_name: str,
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> Literal[
     CopernicusMarineServiceNames.TIMESERIES,
     CopernicusMarineServiceNames.GEOSERIES,
 ]:
-    geospatial_dim1 = "longitude"
-    geospatial_dim2 = "latitude"
-    if dataset_version_part_name == "originalGrid":
-        geospatial_dim1 = "x"
-        geospatial_dim2 = "y"
     dataset = custom_open_zarr.open_zarr(
         dataset_url, copernicus_marine_username=username
     )
+    y_axis_name = axis_coordinate_id_mapping.get("y", "latitude")
+    x_axis_name = axis_coordinate_id_mapping.get("x", "longitude")
+    t_axis_name = axis_coordinate_id_mapping.get("t", "time")
 
     latitude_size = get_size_of_coordinate_subset(
         dataset,
-        geospatial_dim2,
+        y_axis_name,
         dataset_subset.minimum_latitude,
         dataset_subset.maximum_latitude,
     )
     longitude_size = get_size_of_coordinate_subset(
         dataset,
-        geospatial_dim1,
+        x_axis_name,
         dataset_subset.minimum_longitude,
         dataset_subset.maximum_longitude,
     )
     time_size = get_size_of_coordinate_subset(
         dataset,
-        "time",
+        t_axis_name,
         (
             dataset_subset.start_datetime.astimezone(tz=UTC).replace(
                 tzinfo=None
@@ -193,11 +191,11 @@ def _get_best_arco_service_type(
     dataset_coordinates = dataset.coords
 
     geographical_dimensions = (
-        dataset_coordinates[geospatial_dim2].size
-        * dataset_coordinates[geospatial_dim1].size
+        dataset_coordinates[y_axis_name].size
+        * dataset_coordinates[x_axis_name].size
     )
     subset_geographical_dimensions = latitude_size * longitude_size
-    temporal_dimensions = dataset_coordinates["time"].size
+    temporal_dimensions = dataset_coordinates[t_axis_name].size
     subset_temporal_dimensions = time_size
 
     geographical_coverage = (
@@ -259,7 +257,7 @@ def _select_service_by_priority(
                 dataset_subset,
                 first_available_service.uri,
                 username,
-                dataset_version_part.name,
+                first_available_service.get_axis_coordinate_id_mapping(),
             )
         )
         return dataset_version_part.get_service_by_service_name(
@@ -276,7 +274,7 @@ class RetrievalService:
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
     service: CopernicusMarineService
-    coordinates_name_and_axis: dict[str, str]
+    axis_coordinate_id_mapping: dict[str, str]
     is_original_grid: bool = False
 
 
@@ -379,9 +377,6 @@ def _get_retrieval_service_from_dataset_version(
     if command_type == CommandType.SUBSET:
         logger.debug(f'Selected service: "{service.service_name}"')
     dataset_start_date = _get_dataset_start_date_from_service(service)
-    # dataset_coordinate_info_updated = _get_coordinates_names_and_axis(
-    #     service, dataset_coordinate_info
-    # )
     return RetrievalService(
         dataset_id=dataset_id,
         service_name=service.service_name,
@@ -389,7 +384,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
         service=service,
-        coordinates_name_and_axis=dataset_part.coordinate_info,
+        axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
         is_original_grid=dataset_part.name == "originalGrid",
     )
 
@@ -405,27 +400,6 @@ def _get_dataset_start_date_from_service(
                 if coordinate.values:
                     return min(coordinate.values)
     return None
-
-
-# def _get_coordinates_names_and_axis(
-#     service: CopernicusMarineService,
-#     dataset_coordinate_info: dict[str, str],
-# ) -> Optional[dict[str, str]]:
-#     logger.info("Getting coordinates names and axis")
-#     logger.info(f"Service: {service.service_name}")
-#     logger.info(f"Dataset coordinate info: {dataset_coordinate_info}")
-#     # assume all variables have same coordinates
-#     for coordinate in service.variables[0].coordinates:
-#         for axis in dataset_coordinate_info.keys():
-#             logger.info(axis)
-#             logger.info(coordinate.coordinate_id)
-#             if coordinate.coordinate_id in dataset_coordinate_info[axis]:
-#                 dataset_coordinate_info[axis] = [
-#                     coordinate.coordinate_id
-#                 ]  # we only one a name per axis
-#                 logger.info(f"passem per auqii")
-#     logger.info(f"Dataset coordinate info updated: {dataset_coordinate_info}")
-#     return dataset_coordinate_info
 
 
 class ServiceNotAvailable(Exception):
