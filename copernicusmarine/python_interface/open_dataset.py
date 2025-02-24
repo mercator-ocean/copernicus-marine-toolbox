@@ -22,9 +22,9 @@ from copernicusmarine.download_functions.download_arco_series import (
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
-    LatitudeParameters,
-    LongitudeParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
@@ -126,13 +126,13 @@ def open_dataset(
         password=password,
         variables=variables,
         geographical_parameters=GeographicalParameters(
-            latitude_parameters=LatitudeParameters(
-                minimum_latitude=minimum_latitude,
-                maximum_latitude=maximum_latitude,
+            latitude_parameters=YParameters(
+                minimum_y=minimum_latitude,
+                maximum_y=maximum_latitude,
             ),
-            longitude_parameters=LongitudeParameters(
-                minimum_longitude=minimum_longitude,
-                maximum_longitude=maximum_longitude,
+            longitude_parameters=XParameters(
+                minimum_x=minimum_longitude,
+                maximum_x=maximum_longitude,
             ),
         ),
         temporal_parameters=TemporalParameters(

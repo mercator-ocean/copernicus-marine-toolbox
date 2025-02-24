@@ -28,9 +28,9 @@ from copernicusmarine.core_functions.utils import (
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
-    LatitudeParameters,
-    LongitudeParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 from copernicusmarine.download_functions.utils import (
     get_coordinate_ids_from_parameters,
@@ -263,11 +263,11 @@ def _shift_longitude_dimension(
 
 def _y_axis_subset(
     dataset: xarray.Dataset,
-    y_parameters: LatitudeParameters,
+    y_parameters: YParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    minimum_y = y_parameters.minimum_latitude
-    maximum_y = y_parameters.maximum_latitude
+    minimum_y = y_parameters.minimum_y
+    maximum_y = y_parameters.maximum_y
     if minimum_y is not None or maximum_y is not None:
         y_selection = (
             minimum_y
@@ -285,11 +285,11 @@ def _y_axis_subset(
 
 
 def _x_axis_selection(
-    longitude_parameters: LongitudeParameters,
+    longitude_parameters: XParameters,
 ) -> tuple[Union[float, slice, None], bool]:
     shift_window = False
-    minimum_x = longitude_parameters.minimum_longitude
-    maximum_x = longitude_parameters.maximum_longitude
+    minimum_x = longitude_parameters.minimum_x
+    maximum_x = longitude_parameters.maximum_x
 
     if minimum_x is not None and maximum_x is not None:
         if longitude_parameters.coordinate_id == "longitude":
@@ -319,7 +319,7 @@ def _x_axis_selection(
 
 def _x_axis_subset(
     dataset: xarray.Dataset,
-    longitude_parameters: LongitudeParameters,
+    longitude_parameters: XParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     (x_selection, shift_window) = _x_axis_selection(longitude_parameters)

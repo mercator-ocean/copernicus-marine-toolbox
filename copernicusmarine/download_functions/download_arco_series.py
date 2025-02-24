@@ -31,9 +31,9 @@ from copernicusmarine.core_functions.utils import (
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
-    LatitudeParameters,
-    LongitudeParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 from copernicusmarine.download_functions.subset_xarray import (
     _x_axis_selection,
@@ -210,14 +210,14 @@ def download_zarr(
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
-        latitude_parameters=LatitudeParameters(
-            minimum_latitude=subset_request.minimum_latitude,
-            maximum_latitude=subset_request.maximum_latitude,
+        latitude_parameters=YParameters(
+            minimum_y=subset_request.minimum_latitude,
+            maximum_y=subset_request.maximum_latitude,
             coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
         ),
-        longitude_parameters=LongitudeParameters(
-            minimum_longitude=subset_request.minimum_longitude,
-            maximum_longitude=subset_request.maximum_longitude,
+        longitude_parameters=XParameters(
+            minimum_x=subset_request.minimum_longitude,
+            maximum_x=subset_request.maximum_longitude,
             coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
         ),
         projection="originalGrid" if is_original_grid else "lonlat",
@@ -437,8 +437,8 @@ def _extract_requested_min_max(
         return min_time, max_time
     if coordinate_id in axis_coordinate_id_mapping["y"]:
         return (
-            geographical_parameters.latitude_parameters.minimum_latitude,
-            geographical_parameters.latitude_parameters.maximum_latitude,
+            geographical_parameters.latitude_parameters.minimum_y,
+            geographical_parameters.latitude_parameters.maximum_y,
         )
     if coordinate_id in axis_coordinate_id_mapping["x"]:
         x_selection, _ = _x_axis_selection(

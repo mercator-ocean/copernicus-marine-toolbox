@@ -295,10 +295,10 @@ class LoadRequest:
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
-            minimum_longitude=self.geographical_parameters.longitude_parameters.minimum_longitude,  # noqa
-            maximum_longitude=self.geographical_parameters.longitude_parameters.maximum_longitude,  # noqa
-            minimum_latitude=self.geographical_parameters.latitude_parameters.minimum_latitude,  # noqa
-            maximum_latitude=self.geographical_parameters.latitude_parameters.maximum_latitude,  # noqa
+            minimum_longitude=self.geographical_parameters.longitude_parameters.minimum_x,  # noqa
+            maximum_longitude=self.geographical_parameters.longitude_parameters.maximum_x,  # noqa
+            minimum_latitude=self.geographical_parameters.latitude_parameters.minimum_y,  # noqa
+            maximum_latitude=self.geographical_parameters.latitude_parameters.maximum_y,  # noqa
             minimum_depth=self.depth_parameters.minimum_depth,
             maximum_depth=self.depth_parameters.maximum_depth,
             start_datetime=self.temporal_parameters.start_datetime,
