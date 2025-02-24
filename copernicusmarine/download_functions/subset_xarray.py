@@ -147,19 +147,18 @@ def _nearest_selection(
 
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
-    coord_type: str,
+    coordinate_label: str,
     coord_selection: Union[float, slice, datetime, None],
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    coord_label = coord_type
-    if coord_label in dataset.sizes:
+    if coordinate_label in dataset.sizes:
         if coordinates_selection_method == "outside":
             if (
                 isinstance(coord_selection, slice)
                 and coord_selection.stop is not None
             ):
                 coord_selection = _enlarge_selection(
-                    dataset, coord_label, coord_selection
+                    dataset, coordinate_label, coord_selection
                 )
         if coordinates_selection_method == "nearest":
             if (
@@ -167,18 +166,18 @@ def _dataset_custom_sel(
                 and coord_selection.stop is not None
             ):
                 coord_selection = _nearest_selection(
-                    dataset, coord_label, coord_selection
+                    dataset, coordinate_label, coord_selection
                 )
         if isinstance(coord_selection, slice):
             tmp_dataset = dataset.sel(
-                {coord_label: coord_selection}, method=None
+                {coordinate_label: coord_selection}, method=None
             )
         else:
             tmp_dataset = dataset.sel(
-                {coord_label: coord_selection}, method="nearest"
+                {coordinate_label: coord_selection}, method="nearest"
             )
-        if tmp_dataset.coords[coord_label].size == 0 or (
-            coord_label not in tmp_dataset.sizes
+        if tmp_dataset.coords[coordinate_label].size == 0 or (
+            coordinate_label not in tmp_dataset.sizes
         ):
             target = (
                 coord_selection.start
@@ -186,11 +185,11 @@ def _dataset_custom_sel(
                 else coord_selection
             )
             nearest_neighbour_value = dataset.sel(
-                {coord_label: target}, method="nearest"
-            )[coord_label].values
+                {coordinate_label: target}, method="nearest"
+            )[coordinate_label].values
             dataset = dataset.sel(
                 {
-                    coord_label: slice(
+                    coordinate_label: slice(
                         nearest_neighbour_value, nearest_neighbour_value
                     )
                 }
@@ -284,7 +283,7 @@ def _y_axis_subset(
     return dataset
 
 
-def _x_axis_selection(
+def x_axis_selection(
     longitude_parameters: XParameters,
 ) -> tuple[Union[float, slice, None], bool]:
     shift_window = False
@@ -322,7 +321,7 @@ def _x_axis_subset(
     longitude_parameters: XParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    (x_selection, shift_window) = _x_axis_selection(longitude_parameters)
+    (x_selection, shift_window) = x_axis_selection(longitude_parameters)
     if shift_window and isinstance(x_selection, slice):
         dataset = _shift_longitude_dimension(
             dataset,
@@ -339,11 +338,10 @@ def _x_axis_subset(
     )
 
 
-def _temporal_subset(
-    dataset: xarray.Dataset,
+def t_axis_selection(
     temporal_parameters: TemporalParameters,
-    coordinates_selection_method: CoordinatesSelectionMethod,
-) -> xarray.Dataset:
+) -> Union[slice, datetime, None]:
+
     start_datetime = (
         temporal_parameters.start_datetime.astimezone(UTC).replace(tzinfo=None)
         if temporal_parameters.start_datetime
@@ -354,12 +352,23 @@ def _temporal_subset(
         if temporal_parameters.end_datetime
         else temporal_parameters.end_datetime
     )
+
     if start_datetime is not None or end_datetime is not None:
-        temporal_selection = (
+        return (
             start_datetime
             if start_datetime == end_datetime
             else slice(start_datetime, end_datetime)
         )
+    return None
+
+
+def _temporal_subset(
+    dataset: xarray.Dataset,
+    temporal_parameters: TemporalParameters,
+    coordinates_selection_method: CoordinatesSelectionMethod,
+) -> xarray.Dataset:
+    temporal_selection = t_axis_selection(temporal_parameters)
+    if temporal_selection is not None:
         dataset = _dataset_custom_sel(
             dataset,
             "time",

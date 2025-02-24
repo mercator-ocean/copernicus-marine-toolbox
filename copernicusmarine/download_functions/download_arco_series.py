@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+from datetime import datetime
 from typing import Hashable, Iterable, Literal, Optional, Union
 
 import pandas as pd
@@ -36,8 +37,9 @@ from copernicusmarine.download_functions.subset_parameters import (
     YParameters,
 )
 from copernicusmarine.download_functions.subset_xarray import (
-    _x_axis_selection,
     subset,
+    t_axis_selection,
+    x_axis_selection,
 )
 from copernicusmarine.download_functions.utils import (
     FileFormat,
@@ -426,14 +428,19 @@ def _extract_requested_min_max(
 ) -> tuple[Optional[float], Optional[float]]:
     # TODO: should work the same as the custom_sel we do
     if coordinate_id in axis_coordinate_id_mapping["t"]:
-        min_time_datetime = temporal_parameters.start_datetime
-        min_time = None
-        if min_time_datetime:
-            min_time = min_time_datetime.timestamp() * 1e3
-        max_time_datetime = temporal_parameters.end_datetime
-        max_time = None
-        if max_time_datetime:
-            max_time = max_time_datetime.timestamp() * 1e3
+        temporal_selection = t_axis_selection(temporal_parameters)
+        if isinstance(temporal_selection, slice):
+            min_time_datetime = temporal_selection.start
+            max_time_datetime = temporal_selection.stop
+        elif isinstance(temporal_selection, datetime):
+            min_time_datetime = temporal_selection
+            max_time_datetime = temporal_selection
+        else:
+            return None, None
+
+        min_time = min_time_datetime.timestamp() * 1e3
+        max_time = max_time_datetime.timestamp() * 1e3
+
         return min_time, max_time
     if coordinate_id in axis_coordinate_id_mapping["y"]:
         return (
@@ -441,7 +448,7 @@ def _extract_requested_min_max(
             geographical_parameters.latitude_parameters.maximum_y,
         )
     if coordinate_id in axis_coordinate_id_mapping["x"]:
-        x_selection, _ = _x_axis_selection(
+        x_selection, _ = x_axis_selection(
             geographical_parameters.longitude_parameters
         )
         if isinstance(x_selection, slice):

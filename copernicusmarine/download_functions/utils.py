@@ -68,7 +68,6 @@ def _build_filename_from_dataset(
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
         else dataset_variables
     )
-    logger.info(axis_coordinate_id_mapping)
     if "x" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["x"] == "longitude":
             longitudes = _format_longitudes(
