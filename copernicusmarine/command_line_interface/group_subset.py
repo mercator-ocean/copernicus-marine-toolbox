@@ -115,7 +115,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-longitude",
-    # "-x",
+    "-x",
     # "--minimum-x",
     type=float,
     help=documentation_utils.SUBSET["MINIMUM_LONGITUDE_HELP"],
@@ -128,7 +128,6 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-x",
-    "-x",
     type=float,
     help=documentation_utils.SUBSET["MINIMUM_X_HELP"],
 )
