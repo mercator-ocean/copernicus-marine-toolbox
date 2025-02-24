@@ -212,12 +212,12 @@ def download_zarr(
     chunk_size_limit: Optional[int],
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
-        latitude_parameters=YParameters(
+        y_axis_parameters=YParameters(
             minimum_y=subset_request.minimum_latitude,
             maximum_y=subset_request.maximum_latitude,
             coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
         ),
-        longitude_parameters=XParameters(
+        x_axis_parameters=XParameters(
             minimum_x=subset_request.minimum_longitude,
             maximum_x=subset_request.maximum_longitude,
             coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
@@ -444,12 +444,12 @@ def _extract_requested_min_max(
         return min_time, max_time
     if coordinate_id in axis_coordinate_id_mapping["y"]:
         return (
-            geographical_parameters.latitude_parameters.minimum_y,
-            geographical_parameters.latitude_parameters.maximum_y,
+            geographical_parameters.y_axis_parameters.minimum_y,
+            geographical_parameters.y_axis_parameters.maximum_y,
         )
     if coordinate_id in axis_coordinate_id_mapping["x"]:
         x_selection, _ = x_axis_selection(
-            geographical_parameters.longitude_parameters
+            geographical_parameters.x_axis_parameters
         )
         if isinstance(x_selection, slice):
             return x_selection.start, x_selection.stop

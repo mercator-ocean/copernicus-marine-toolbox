@@ -295,10 +295,10 @@ class LoadRequest:
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
-            minimum_longitude=self.geographical_parameters.longitude_parameters.minimum_x,  # noqa
-            maximum_longitude=self.geographical_parameters.longitude_parameters.maximum_x,  # noqa
-            minimum_latitude=self.geographical_parameters.latitude_parameters.minimum_y,  # noqa
-            maximum_latitude=self.geographical_parameters.latitude_parameters.maximum_y,  # noqa
+            minimum_longitude=self.geographical_parameters.x_axis_parameters.minimum_x,  # noqa
+            maximum_longitude=self.geographical_parameters.x_axis_parameters.maximum_x,  # noqa
+            minimum_latitude=self.geographical_parameters.y_axis_parameters.minimum_y,  # noqa
+            maximum_latitude=self.geographical_parameters.y_axis_parameters.maximum_y,  # noqa
             minimum_depth=self.depth_parameters.minimum_depth,
             maximum_depth=self.depth_parameters.maximum_depth,
             start_datetime=self.temporal_parameters.start_datetime,
@@ -306,10 +306,10 @@ class LoadRequest:
         )
 
     def update_attributes(self, axis_coordinate_id_mapping: dict):
-        self.geographical_parameters.longitude_parameters.coordinate_id = (
+        self.geographical_parameters.x_axis_parameters.coordinate_id = (
             axis_coordinate_id_mapping.get("x", "")
         )
-        self.geographical_parameters.latitude_parameters.coordinate_id = (
+        self.geographical_parameters.y_axis_parameters.coordinate_id = (
             axis_coordinate_id_mapping.get("y", "")
         )
         self.temporal_parameters.coordinate_id = (

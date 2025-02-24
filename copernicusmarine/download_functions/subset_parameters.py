@@ -26,8 +26,8 @@ class XParameters:
 
 @dataclass
 class GeographicalParameters:
-    latitude_parameters: YParameters = field(default_factory=YParameters)
-    longitude_parameters: XParameters = field(default_factory=XParameters)
+    y_axis_parameters: YParameters = field(default_factory=YParameters)
+    x_axis_parameters: XParameters = field(default_factory=XParameters)
     projection: GeoSpatialProjection = DEFAULT_GEOSPATIAL_PROJECTION
 
 

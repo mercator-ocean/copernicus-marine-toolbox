@@ -131,8 +131,8 @@ def get_coordinate_ids_from_parameters(
     return [
         coordinate_id
         for coordinate_id in [
-            geographical_parameters.longitude_parameters.coordinate_id,
-            geographical_parameters.latitude_parameters.coordinate_id,
+            geographical_parameters.x_axis_parameters.coordinate_id,
+            geographical_parameters.y_axis_parameters.coordinate_id,
             temporal_parameters.coordinate_id,
             depth_parameters.coordinate_id,
         ]

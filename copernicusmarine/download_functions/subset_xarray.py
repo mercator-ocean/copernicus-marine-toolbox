@@ -568,12 +568,12 @@ def subset(
         dataset = _variables_subset(dataset, variables)
     dataset = _y_axis_subset(
         dataset,
-        geographical_parameters.latitude_parameters,
+        geographical_parameters.y_axis_parameters,
         coordinates_selection_method,
     )
     dataset = _x_axis_subset(
         dataset,
-        geographical_parameters.longitude_parameters,
+        geographical_parameters.x_axis_parameters,
         coordinates_selection_method,
     )
 

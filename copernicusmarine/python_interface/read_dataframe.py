@@ -123,11 +123,11 @@ def read_dataframe(
         password=password,
         variables=variables,
         geographical_parameters=GeographicalParameters(
-            latitude_parameters=YParameters(
+            y_axis_parameters=YParameters(
                 minimum_y=minimum_latitude,
                 maximum_y=maximum_latitude,
             ),
-            longitude_parameters=XParameters(
+            x_axis_parameters=XParameters(
                 minimum_x=minimum_longitude,
                 maximum_x=maximum_longitude,
             ),
