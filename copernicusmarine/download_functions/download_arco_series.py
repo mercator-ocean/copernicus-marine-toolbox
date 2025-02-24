@@ -431,6 +431,8 @@ def _extract_requested_min_max(
     # TODO: should work the same as the custom_sel we do
     if coordinate_id in axis_coordinate_id_mapping["t"]:
         temporal_selection = t_axis_selection(temporal_parameters)
+        min_time = None
+        max_time = None
         if isinstance(temporal_selection, slice):
             min_time_datetime = temporal_selection.start
             max_time_datetime = temporal_selection.stop
@@ -439,9 +441,10 @@ def _extract_requested_min_max(
             max_time_datetime = temporal_selection
         else:
             return None, None
-
-        min_time = min_time_datetime.timestamp() * 1e3
-        max_time = max_time_datetime.timestamp() * 1e3
+        if min_time_datetime:
+            min_time = min_time_datetime.timestamp() * 1e3
+        if max_time_datetime:
+            max_time = max_time_datetime.timestamp() * 1e3
 
         return min_time, max_time
     if coordinate_id in axis_coordinate_id_mapping["y"]:
@@ -484,10 +487,10 @@ def _get_optimum_factors(
             coordinate_selection_pool,
             key=lambda x: (
                 coordinate_max_dask_chunk_factor[x],
-                x in axis_coordinate_id_mapping["z"],
-                x in axis_coordinate_id_mapping["t"],
-                x in axis_coordinate_id_mapping["y"],
-                x in axis_coordinate_id_mapping["x"],
+                x in axis_coordinate_id_mapping.get("z", ""),
+                x in axis_coordinate_id_mapping.get("t", ""),
+                x in axis_coordinate_id_mapping.get("y", ""),
+                x in axis_coordinate_id_mapping.get("x", ""),
             ),
         )
 

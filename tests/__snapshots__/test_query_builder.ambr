@@ -71,13 +71,13 @@
 # ---
 # name: TestQueryBuilder.test_return_available_fields
   list([
+    'axis',
     'bbox',
     'chunk_geometric_factor',
     'chunk_reference_coordinate',
     'chunk_type',
     'chunking_length',
     'coordinate_id',
-    'coordinate_info',
     'coordinate_unit',
     'coordinates',
     'dataset_id',

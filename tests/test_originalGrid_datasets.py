@@ -144,15 +144,16 @@ class TestOriginalGridDatasets:
         assert len(dataset.x.values) > 0
         assert len(dataset.y.values) > 0
         returned_value = loads(self.output.stdout)
-        assert returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
-        assert returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
-        assert (
-            returned_value["coordinates_extent"][2]["coordinate_id"] == "time"
+        coordinates = sorted(
+            returned_value["coordinates_extent"],
+            key=lambda the_dict: the_dict["coordinate_id"],
+            reverse=True,
         )
-        assert (
-            returned_value["coordinates_extent"][3]["coordinate_id"] == "depth"
-        )
-        assert len(returned_value["coordinates_extent"]) == 4
+        assert coordinates[0]["coordinate_id"] == "y"
+        assert coordinates[1]["coordinate_id"] == "x"
+        assert coordinates[2]["coordinate_id"] == "time"
+        assert coordinates[3]["coordinate_id"] == "depth"
+        assert len(coordinates) == 4
 
     def test_originalGrid_works_when_subsetting(self):
         for dataset_info in datasets_w_originalGrid:
@@ -189,20 +190,17 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         returned_value = loads(self.output.stdout)
-        assert returned_value["coordinates_extent"][0]["coordinate_id"] == "y"
-        assert returned_value["coordinates_extent"][0]["maximum"] == float(
-            max_y
+        coordinates = sorted(
+            returned_value["coordinates_extent"],
+            key=lambda the_dict: the_dict["coordinate_id"],
+            reverse=True,
         )
-        assert returned_value["coordinates_extent"][0]["minimum"] == float(
-            min_y
-        )
-        assert returned_value["coordinates_extent"][1]["coordinate_id"] == "x"
-        assert returned_value["coordinates_extent"][1]["maximum"] == float(
-            max_x
-        )
-        assert returned_value["coordinates_extent"][1]["minimum"] == float(
-            min_x
-        )
+        assert coordinates[0]["coordinate_id"] == "y"
+        assert coordinates[0]["maximum"] == float(max_y)
+        assert coordinates[0]["minimum"] == float(min_y)
+        assert coordinates[1]["coordinate_id"] == "x"
+        assert coordinates[1]["maximum"] == float(max_x)
+        assert coordinates[1]["minimum"] == float(min_x)
 
     def test_out_of_bounds(self):
         command = [
