@@ -267,7 +267,7 @@ def _get_coordinate_extent(
 
 
 def get_approximation_size_final_result(
-    dataset: xarray.Dataset,
+    dataset: xarray.Dataset, axis_coordinate_id_mapping: dict[str, str]
 ) -> Optional[float]:
     coordinates_size = 1
     variables_size = 0
@@ -277,8 +277,8 @@ def get_approximation_size_final_result(
         variables_size += dataset[variable].encoding["dtype"].itemsize
 
     for coordinate_name in dataset.sizes:
-        for coord_label in COORDINATES_LABEL:
-            if coordinate_name in COORDINATES_LABEL[coord_label]:
+        for coord_label in axis_coordinate_id_mapping:
+            if coordinate_name == axis_coordinate_id_mapping[coord_label]:
                 coordinates_size *= dataset[coordinate_name].size
     estimate_size = baseline_size + coordinates_size * variables_size / 1048e3
 

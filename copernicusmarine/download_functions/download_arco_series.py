@@ -138,7 +138,9 @@ def download_dataset(
         axis_coordinate_id_mapping,
     )
     output_path = pathlib.Path(output_directory, filename)
-    final_result_size_estimation = get_approximation_size_final_result(dataset)
+    final_result_size_estimation = get_approximation_size_final_result(
+        dataset, axis_coordinate_id_mapping
+    )
     data_needed_approximation = get_approximation_size_data_downloaded(
         dataset, service, axis_coordinate_id_mapping
     )
