@@ -130,6 +130,9 @@ def download_dataset(
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
 
+    if depth_parameters.vertical_axis == "elevation":
+        axis_coordinate_id_mapping["z"] = "elevation"
+
     filename = get_filename(
         output_filename,
         dataset,
@@ -429,7 +432,7 @@ def _extract_requested_min_max(
     axis_coordinate_id_mapping: dict[str, str],
 ) -> tuple[Optional[float], Optional[float]]:
     # TODO: should work the same as the custom_sel we do
-    if coordinate_id in axis_coordinate_id_mapping["t"]:
+    if coordinate_id in axis_coordinate_id_mapping.get("t", ""):
         temporal_selection = t_axis_selection(temporal_parameters)
         min_time = None
         max_time = None
@@ -447,12 +450,12 @@ def _extract_requested_min_max(
             max_time = max_time_datetime.timestamp() * 1e3
 
         return min_time, max_time
-    if coordinate_id in axis_coordinate_id_mapping["y"]:
+    if coordinate_id in axis_coordinate_id_mapping.get("y", ""):
         return (
             geographical_parameters.y_axis_parameters.minimum_y,
             geographical_parameters.y_axis_parameters.maximum_y,
         )
-    if coordinate_id in axis_coordinate_id_mapping["x"]:
+    if coordinate_id in axis_coordinate_id_mapping.get("x", ""):
         x_selection, _ = x_axis_selection(
             geographical_parameters.x_axis_parameters
         )
@@ -460,7 +463,7 @@ def _extract_requested_min_max(
             return x_selection.start, x_selection.stop
         else:
             return (None, None)
-    if coordinate_id in axis_coordinate_id_mapping["z"]:
+    if coordinate_id in axis_coordinate_id_mapping.get("z", ""):
         return depth_parameters.minimum_depth, depth_parameters.maximum_depth
     return None, None
 

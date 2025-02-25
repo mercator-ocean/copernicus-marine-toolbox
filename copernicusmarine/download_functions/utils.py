@@ -76,6 +76,8 @@ def _build_filename_from_dataset(
             )
         if axis_coordinate_id_mapping["x"] == "x":
             longitudes = "no_name_yet"  # TODO!!!!
+    else:
+        longitudes = ""
     if "y" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["y"] == "latitude":
             latitudes = _format_latitudes(
@@ -84,34 +86,40 @@ def _build_filename_from_dataset(
             )
         if axis_coordinate_id_mapping["y"] == "y":
             latitudes = "no_name_yet"  # TODOOO
+    else:
+        latitudes = ""
     if "z" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["z"] == "depth":
             depths = _format_depths(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
             )
+        else:  # elevation
+            depths = ""
     else:  # TODOOO
         depths = ""
 
-    min_time_coordinate = _get_min_coordinate(
-        dataset, axis_coordinate_id_mapping["t"]
-    )
-    max_time_coordinate = _get_max_coordinate(
-        dataset, axis_coordinate_id_mapping["t"]
-    )
-    datetimes = _format_datetimes(
-        (
-            timestamp_or_datestring_to_datetime(min_time_coordinate)
-            if min_time_coordinate is not None
-            else None
-        ),
-        (
-            timestamp_or_datestring_to_datetime(max_time_coordinate)
-            if max_time_coordinate is not None
-            else None
-        ),
-    )
-
+    if "t" in axis_coordinate_id_mapping:
+        min_time_coordinate = _get_min_coordinate(
+            dataset, axis_coordinate_id_mapping["t"]
+        )
+        max_time_coordinate = _get_max_coordinate(
+            dataset, axis_coordinate_id_mapping["t"]
+        )
+        datetimes = _format_datetimes(
+            (
+                timestamp_or_datestring_to_datetime(min_time_coordinate)
+                if min_time_coordinate is not None
+                else None
+            ),
+            (
+                timestamp_or_datestring_to_datetime(max_time_coordinate)
+                if max_time_coordinate is not None
+                else None
+            ),
+        )
+    else:
+        datetimes = ""
     filename = "_".join(
         filter(
             None,

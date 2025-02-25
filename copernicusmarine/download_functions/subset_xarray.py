@@ -735,8 +735,12 @@ def check_dataset_subset_bounds(
                 dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
                 is_strict=coordinates_selection_method == "strict-inside",
             )
+    logger.info(axis_coordinate_id_mapping)
+    logger.info(dataset.sizes)
     if "z" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["z"]
+        coordinate_id = "elevation"
+        # let's first hardcode it and see if it brings problems
         if coordinate_id in dataset.sizes:
             depths = -1 * dataset_coordinates[coordinate_id].values
             _check_coordinate_overlap(

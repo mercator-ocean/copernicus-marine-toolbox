@@ -12,12 +12,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                      'z': 'elevation',
-                    }),
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -69,6 +63,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -126,6 +121,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -134,6 +130,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -142,6 +139,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -163,6 +161,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -220,6 +219,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -228,6 +228,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -236,6 +237,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -265,6 +267,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -322,6 +325,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -330,6 +334,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -338,6 +343,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -359,6 +365,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -416,6 +423,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -424,6 +432,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -432,6 +441,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -454,12 +464,6 @@
                 'label': '206011',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                      'z': 'elevation',
-                    }),
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -511,6 +515,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -568,6 +573,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -576,6 +582,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -584,6 +591,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -605,6 +613,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -662,6 +671,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -670,6 +680,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -678,6 +689,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -707,6 +719,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -764,6 +777,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -772,6 +786,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -780,6 +795,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -801,6 +817,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -858,6 +875,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -866,6 +884,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -874,6 +893,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -902,12 +922,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                      'z': 'elevation',
-                    }),
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -946,6 +960,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -1003,6 +1018,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1011,6 +1027,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1019,6 +1036,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1048,6 +1066,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -1105,6 +1124,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1113,6 +1133,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1121,6 +1142,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1149,11 +1171,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                    }),
                     'name': 'default',
                     'services': list([
                       dict({
@@ -1171,6 +1188,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1179,6 +1197,7 @@
                                 'step': 86400000.0,
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 400,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1187,6 +1206,7 @@
                                 'step': 0.0055555555974190944,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 1200,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1236,6 +1256,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 300,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1244,6 +1265,7 @@
                                 'step': 86400000.0,
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 60,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1252,6 +1274,7 @@
                                 'step': 0.0055555555974190944,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 60,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1293,12 +1316,6 @@
                 'label': '202012',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                      'z': 'elevation',
-                    }),
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -1337,6 +1354,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 4,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1345,6 +1363,7 @@
                                 'step': 86400000.0,
                               }),
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -1376,6 +1395,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 375,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1384,6 +1404,7 @@
                                 'step': 0.06667000469676951,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 297,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1413,6 +1434,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 2156,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1421,6 +1443,7 @@
                                 'step': 86400000.0,
                               }),
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -1452,6 +1475,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 16,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1460,6 +1484,7 @@
                                 'step': 0.06667000469676951,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 16,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1488,12 +1513,6 @@
                 'label': '202012',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                      'z': 'elevation',
-                    }),
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -1532,6 +1551,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 4,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -1907,6 +1927,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -1938,6 +1959,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 375,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -1946,6 +1968,7 @@
                                 'step': 0.06667000469676951,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 297,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -1975,6 +1998,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 72,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2350,6 +2374,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -2381,6 +2406,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 64,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2389,6 +2415,7 @@
                                 'step': 0.06667000469676951,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -2436,12 +2463,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                      'z': 'elevation',
-                    }),
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -2493,6 +2514,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -2550,6 +2572,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2558,6 +2581,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -2566,6 +2590,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2587,6 +2612,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 1,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -2644,6 +2670,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 512,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2652,6 +2679,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 2048,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -2660,6 +2688,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2689,6 +2718,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -2746,6 +2776,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2754,6 +2785,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -2762,6 +2794,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2783,6 +2816,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 'z',
                                 'chunking_length': 2,
                                 'coordinate_id': 'depth',
                                 'coordinate_unit': 'm',
@@ -2840,6 +2874,7 @@
                                 ]),
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 32,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2848,6 +2883,7 @@
                                 'step': 0.08333333333333333,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 64,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -2856,6 +2892,7 @@
                                 'step': 0.08333333804392655,
                               }),
                               dict({
+                                'axis': 't',
                                 'chunking_length': 177,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2884,11 +2921,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'coordinate_info': dict({
-                      't': 'time',
-                      'x': 'longitude',
-                      'y': 'latitude',
-                    }),
                     'name': 'default',
                     'services': list([
                       dict({
@@ -2906,6 +2938,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 1,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2914,6 +2947,7 @@
                                 'step': 86400000.0,
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 400,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2922,6 +2956,7 @@
                                 'step': 0.0055555555974190944,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 1200,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
@@ -2971,6 +3006,7 @@
                             ]),
                             'coordinates': list([
                               dict({
+                                'axis': 't',
                                 'chunking_length': 300,
                                 'coordinate_id': 'time',
                                 'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
@@ -2979,6 +3015,7 @@
                                 'step': 86400000.0,
                               }),
                               dict({
+                                'axis': 'y',
                                 'chunking_length': 60,
                                 'coordinate_id': 'latitude',
                                 'coordinate_unit': 'degrees_north',
@@ -2987,6 +3024,7 @@
                                 'step': 0.0055555555974190944,
                               }),
                               dict({
+                                'axis': 'x',
                                 'chunking_length': 60,
                                 'coordinate_id': 'longitude',
                                 'coordinate_unit': 'degrees_east',
