@@ -75,7 +75,11 @@ def _build_filename_from_dataset(
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
             )
         if axis_coordinate_id_mapping["x"] == "x":
-            longitudes = "no_name_yet"  # TODO!!!!
+            longitudes = _format_xy_axis(
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                axis_coordinate_id_mapping["x"],
+            )
     else:
         longitudes = ""
     if "y" in axis_coordinate_id_mapping:
@@ -85,7 +89,11 @@ def _build_filename_from_dataset(
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["y"]),
             )
         if axis_coordinate_id_mapping["y"] == "y":
-            latitudes = "no_name_yet"  # TODOOO
+            latitudes = _format_xy_axis(
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["y"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["y"]),
+                axis_coordinate_id_mapping["y"],
+            )
     else:
         latitudes = ""
     if "z" in axis_coordinate_id_mapping:
@@ -202,6 +210,27 @@ def _format_latitudes(
                 f"{abs(maximum_latitude):.2f}{maximum_suffix}"
             )
         return latitude
+
+
+def _format_xy_axis(
+    minimum_value: Optional[float],
+    maximum_value: Optional[float],
+    coordinate_id: str,
+) -> str:
+    if minimum_value is None or maximum_value is None:
+        return ""
+    else:
+        if minimum_value == maximum_value:
+            suffix = coordinate_id
+            value = f"{abs(minimum_value):.2f}{suffix}"
+        else:
+            minimum_suffix = coordinate_id
+            maximum_suffix = coordinate_id.upper()
+            value = (
+                f"{abs(minimum_value):.2f}{minimum_suffix}-"
+                f"{abs(maximum_value):.2f}{maximum_suffix}"
+            )
+        return value
 
 
 def _format_depths(
