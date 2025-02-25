@@ -14,56 +14,48 @@ version_default = CopernicusMarineVersion(
             services=[],
             retired_date=None,
             released_date=None,
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="latest_to_be_released",
             services=[],
             retired_date=None,
             released_date="2060-01-01",
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="bathy",
             services=[],
             retired_date=None,
             released_date=None,
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="history",
             services=[],
             retired_date=None,
             released_date=None,
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name=PART_DEFAULT,
             services=[],
             retired_date=None,
             released_date=None,
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2060",
             services=[],
             retired_date="2060-01-01",
             released_date=None,
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2030",
             services=[],
             retired_date="2030-01-01",
             released_date=None,
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="monthly",
             services=[],
             retired_date=None,
             released_date=None,
-            coordinate_info={},
         ),
     ],
 )
@@ -76,7 +68,6 @@ to_be_released_version = CopernicusMarineVersion(
             services=[],
             retired_date=None,
             released_date="2060-01-01",
-            coordinate_info={},
         ),
     ],
 )
@@ -89,7 +80,6 @@ will_be_retired_soon_version = CopernicusMarineVersion(
             services=[],
             retired_date="2025-01-01",
             released_date=None,
-            coordinate_info={},
         ),
     ],
 )
@@ -102,7 +92,6 @@ will_be_retired_in_a_long_time_version = CopernicusMarineVersion(
             services=[],
             retired_date="2060-01-01",
             released_date=None,
-            coordinate_info={},
         ),
     ],
 )
@@ -115,14 +104,12 @@ newly_released_version = CopernicusMarineVersion(
             services=[],
             retired_date=None,
             released_date="2022-01-01",
-            coordinate_info={},
         ),
         CopernicusMarinePart(
             name="to_be_released_part",
             services=[],
             retired_date=None,
             released_date="2060-01-01",
-            coordinate_info={},
         ),
     ],
 )
@@ -135,7 +122,6 @@ old_version = CopernicusMarineVersion(
             services=[],
             retired_date=None,
             released_date="2019-01-01",
-            coordinate_info={},
         ),
     ],
 )
