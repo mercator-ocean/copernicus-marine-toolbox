@@ -207,3 +207,47 @@ class TestArcoServiceSelection:
         assert self.output.returncode == 0
 
         assert b'Selected service: "arco-geo-series"' in self.output.stderr
+
+    def test_time_series_service_originalGrid(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
+            "--dataset-part",
+            "originalGrid",
+            "--maximum-x",
+            "1",
+            "--minimum-x",
+            "-1",
+            "--maximum-y",
+            "-1",
+            "--minimum-y",
+            "1",
+            "--dry-run",
+            "--log-level",
+            "DEBUG",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert b'Selected service: "arco-time-series"' in self.output.stderr
+
+    def test_geo_series_service_originalGrid(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_arc_bgc_my_ecosmo_P1D-m",
+            "--dataset-part",
+            "originalGrid",
+            "-t",
+            "2020",
+            "-T",
+            "2020",
+            "--dry-run",
+            "--log-level",
+            "DEBUG",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert b'Selected service: "arco-geo-series"' in self.output.stderr
