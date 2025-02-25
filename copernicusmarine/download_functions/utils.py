@@ -81,8 +81,8 @@ def _build_filename_from_dataset(
     if "y" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["y"] == "latitude":
             latitudes = _format_latitudes(
-                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
-                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["y"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["y"]),
             )
         if axis_coordinate_id_mapping["y"] == "y":
             latitudes = "no_name_yet"  # TODOOO

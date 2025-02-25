@@ -336,12 +336,15 @@ def _x_axis_subset(
             coordinates_selection_method,
         )
 
-    return _dataset_custom_sel(
-        dataset,
-        longitude_parameters.coordinate_id,
-        x_selection,
-        coordinates_selection_method,
-    )
+    if x_selection is not None:
+
+        return _dataset_custom_sel(
+            dataset,
+            longitude_parameters.coordinate_id,
+            x_selection,
+            coordinates_selection_method,
+        )
+    return dataset
 
 
 def t_axis_selection(
@@ -735,8 +738,6 @@ def check_dataset_subset_bounds(
                 dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
                 is_strict=coordinates_selection_method == "strict-inside",
             )
-    logger.info(axis_coordinate_id_mapping)
-    logger.info(dataset.sizes)
     if "z" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["z"]
         coordinate_id = "elevation"

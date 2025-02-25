@@ -21,7 +21,6 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.subset import subset_function
-from copernicusmarine.core_functions.utils import original_grid_check
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -156,17 +155,17 @@ def subset(
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
 
-    original_grid_check(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
-    )
+    # original_grid_check(
+    #     minimum_longitude,
+    #     maximum_longitude,
+    #     minimum_latitude,
+    #     maximum_latitude,
+    #     minimum_x,
+    #     maximum_x,
+    #     minimum_y,
+    #     maximum_y,
+    #     dataset_part,
+    # )
 
     return subset_function(
         dataset_id,

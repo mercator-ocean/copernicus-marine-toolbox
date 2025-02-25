@@ -76,33 +76,33 @@ datasets_w_originalGrid = [
 
 
 class TestOriginalGridDatasets:
-    def test_originalGrid_error_when_geospatial(self):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            dataset_name,
-            "-v",
-            variable,
-            "--dataset-part",
-            "originalGrid",
-            "--minimum-longitude",
-            "0",
-            "--dry-run",
-            "--log-level",
-            "DEBUG",
-            "--staging",
-        ]
+    # def test_originalGrid_error_when_geospatial(self):
+    #     command = [
+    #         "copernicusmarine",
+    #         "subset",
+    #         "-i",
+    #         dataset_name,
+    #         "-v",
+    #         variable,
+    #         "--dataset-part",
+    #         "originalGrid",
+    #         "--minimum-longitude",
+    #         "0",
+    #         "--dry-run",
+    #         "--log-level",
+    #         "DEBUG",
+    #         "--staging",
+    #     ]
 
-        self.output = execute_in_terminal(command)
+    #     self.output = execute_in_terminal(command)
 
-        assert self.output.returncode == 1
-        assert b"ERROR" in self.output.stderr
-        assert (
-            b"You cannot specify longitude and latitude when using"
-            b" the originalGrid "
-            b"dataset part. Try using x and y instead."
-        ) in self.output.stderr
+    #     assert self.output.returncode == 1
+    #     assert b"ERROR" in self.output.stderr
+    #     assert (
+    #         b"You cannot specify longitude and latitude when using"
+    #         b" the originalGrid "
+    #         b"dataset part. Try using x and y instead."
+    #     ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
         output_filename = "output.nc"

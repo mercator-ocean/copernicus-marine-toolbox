@@ -21,11 +21,7 @@ from dateutil.parser._parser import ParserError
 from requests import PreparedRequest
 from tqdm import tqdm
 
-from copernicusmarine.core_functions.exceptions import (
-    LonLatSubsetNotAvailableInOriginalGridDatasets,
-    WrongDatetimeFormat,
-    XYNotAvailableInNonOriginalGridDatasets,
-)
+from copernicusmarine.core_functions.exceptions import WrongDatetimeFormat
 from copernicusmarine.versioner import __version__ as copernicusmarine_version
 
 logger = logging.getLogger("copernicusmarine")
@@ -188,31 +184,31 @@ def create_custom_query_function(username: Optional[str]) -> Callable:
     return _add_custom_query_param
 
 
-def original_grid_check(
-    minimum_longitude: Optional[float],
-    maximum_longitude: Optional[float],
-    minimum_latitude: Optional[float],
-    maximum_latitude: Optional[float],
-    minimum_x: Optional[float],
-    maximum_x: Optional[float],
-    minimum_y: Optional[float],
-    maximum_y: Optional[float],
-    dataset_part: Optional[str],
-) -> bool:
-    if dataset_part == "originalGrid":
-        if (
-            minimum_longitude is not None
-            or maximum_longitude is not None
-            or minimum_latitude is not None
-            or maximum_latitude is not None
-        ):
-            raise LonLatSubsetNotAvailableInOriginalGridDatasets
-    else:
-        if (
-            minimum_x is not None
-            or maximum_x is not None
-            or minimum_y is not None
-            or maximum_y is not None
-        ):
-            raise XYNotAvailableInNonOriginalGridDatasets
-    return True
+# def original_grid_check(
+#     minimum_longitude: Optional[float],
+#     maximum_longitude: Optional[float],
+#     minimum_latitude: Optional[float],
+#     maximum_latitude: Optional[float],
+#     minimum_x: Optional[float],
+#     maximum_x: Optional[float],
+#     minimum_y: Optional[float],
+#     maximum_y: Optional[float],
+#     dataset_part: Optional[str],
+# ) -> bool:
+#     if dataset_part == "originalGrid":
+#         if (
+#             minimum_longitude is not None
+#             or maximum_longitude is not None
+#             or minimum_latitude is not None
+#             or maximum_latitude is not None
+#         ):
+#             raise LonLatSubsetNotAvailableInOriginalGridDatasets
+#     else:
+#         if (
+#             minimum_x is not None
+#             or maximum_x is not None
+#             or minimum_y is not None
+#             or maximum_y is not None
+#         ):
+#             raise XYNotAvailableInNonOriginalGridDatasets
+#     return True
