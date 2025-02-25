@@ -128,14 +128,14 @@ def cli_subset() -> None:
     "--minimum-latitude",
     "-y",
     "--minimum-y",
-    type=click.FloatRange(min=-90, max=90),
+    type=float,
     help=documentation_utils.SUBSET["MINIMUM_LATITUDE_HELP"],
 )
 @click.option(
     "--maximum-latitude",
     "-Y",
     "--maximum-y",
-    type=click.FloatRange(min=-90, max=90),
+    type=float,
     help=documentation_utils.SUBSET["MAXIMUM_LATITUDE_HELP"],
 )
 @click.option(
