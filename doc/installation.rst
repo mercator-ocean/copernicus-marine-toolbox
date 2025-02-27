@@ -174,12 +174,13 @@ and ``h5netcdf`` library as the backend.
 
     .. code-block:: bash
 
-        # with pip
-        python -m pip install netcdf4
-
         # with conda | mamba | micromamba
         conda install -c conda-forge netcdf4
         # or add it to you environment.yml file
+
+        # with pip
+        python -m pip install netcdf4
+
 
 
     The docker image of the toolbox should already have the ``netcdf4`` library installed.
