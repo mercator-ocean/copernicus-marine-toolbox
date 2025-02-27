@@ -36,6 +36,7 @@ from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
 )
 from copernicusmarine.download_functions.utils import FileFormat
+from copernicusmarine.versioner import __version__ as copernicusmarine_version
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -82,9 +83,13 @@ def subset_function(
 
     subset_request = SubsetRequest(dataset_id=dataset_id or "")
     if netcdf3_compatible:
+        documentation_url = (
+            f"https://toolbox-docs.marine.copernicus.eu"
+            f"/en/v{copernicusmarine_version}/installation.html#dependencies"
+        )
         assert importlib.util.find_spec("netCDF4"), (
             "To use the NETCDF3_COMPATIBLE option you need to have 'netCDF4' "
-            "installed. You can install it with 'pip install netcdf4'."
+            f"installed. Please see {documentation_url}."
         )
     if request_file:
         subset_request.from_file(request_file)

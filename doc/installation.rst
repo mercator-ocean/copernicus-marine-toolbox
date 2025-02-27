@@ -167,16 +167,22 @@ There are some compatibility issues with the latest versions of xarray and numpy
 Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
 and ``h5netcdf`` library as the backend.
 
-The ``h5netcdf`` library is not compatible with the NetCDF3 format.
-If you need to save files in NetCDF3 format please just manually install ``netcdf4`` library:
-
-.. code-block:: bash
-
-    python -m pip install netcdf4
-
 .. note::
 
-    The image of the toolbox should already have the ``netcdf4`` library installed.
+    The ``h5netcdf`` library is not compatible with the NetCDF3 format.
+    If you need to save files in NetCDF3 format please just manually install ``netcdf4`` library:
+
+    .. code-block:: bash
+
+        # with pip
+        python -m pip install netcdf4
+
+        # with conda | mamba | micromamba
+        conda install -c conda-forge netcdf4
+        # or add it to you environment.yml file
+
+
+    The docker image of the toolbox should already have the ``netcdf4`` library installed.
 
 
 Domains required by the Copernicus Marine Toolbox
