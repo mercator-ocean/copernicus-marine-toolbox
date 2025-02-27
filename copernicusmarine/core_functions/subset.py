@@ -88,8 +88,9 @@ def subset_function(
             f"/en/v{copernicusmarine_version}/installation.html#dependencies"
         )
         assert importlib.util.find_spec("netCDF4"), (
-            "To use the NETCDF3_COMPATIBLE option you need to have 'netCDF4' "
-            f"installed. Please see {documentation_url}."
+            "To enable the NETCDF3_COMPATIBLE option, the 'netCDF4' "
+            f"package is required. "
+            f"Please see {documentation_url}."
         )
     if request_file:
         subset_request.from_file(request_file)

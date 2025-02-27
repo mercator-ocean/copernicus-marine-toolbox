@@ -170,16 +170,17 @@ and ``h5netcdf`` library as the backend.
 .. note::
 
     The ``h5netcdf`` library is not compatible with the NetCDF3 format.
-    If you need to save files in NetCDF3 format please just manually install ``netcdf4`` library:
+    If you need to save files in NetCDF3 format please just manually install ``netcdf4``
+    library (see also `netCDF4 page <https://unidata.github.io/netcdf4-python/>`_):
 
     .. code-block:: bash
 
         # with conda | mamba | micromamba
-        conda install -c conda-forge netcdf4
+        conda install -c conda-forge netCDF4
         # or add it to you environment.yml file
 
         # with pip
-        python -m pip install netcdf4
+        python -m pip install netCDF4
 
 
 
