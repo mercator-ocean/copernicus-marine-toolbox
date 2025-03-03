@@ -160,3 +160,20 @@ We defined some automatisation processes that listen to these events and trigger
 
 - If a tag of a release is pushed (eg v1.3.3) then the doc is built and the v1.3.3 will be available and the default documentation ie any user going to the root of the documentation [https://copernicusmarine.readthedocs.io](https://copernicusmarine.readthedocs.io) will be directed to the newest version: `copernicusmarine.readthedocs.io/en/v1.3.3`.
 - If a tag of a pre-release is pushed (eg v2.0.0a1) then the doc is built and the v2.0.0a1 is available but won't be the default one.
+
+## Miscellaneous
+
+### About poetry.lock
+
+If you do any action that leads to a `poetry lock` then you might enconter an infinite loop: `Resolving dependencied... (1232.3s)`.
+
+It seems to be an known issue due to the use of `botocore` and `urllib3`.
+
+Here the [issue on `poetry` repository issue](https://github.com/orgs/python-poetry/discussions/7937) and the [issue on the `botocore` repository](https://github.com/boto/botocore/issues/2926).
+
+It seems that one work around is setting `urllib3<2`. So when you want to do `poetry add` or `poetry lock` follow this instructions (it suppose you use `poetry>=2.0.0`):
+
+- In the "pyproject.toml" add `urllib3 = "<2.0"` at the end of the list of dependencies.
+- Run your command: eg `poetry add pendulum`.
+- Delete the line `urllib3 = "<2.0"` in the "pyproject.toml".
+- Run `poetry lock`.

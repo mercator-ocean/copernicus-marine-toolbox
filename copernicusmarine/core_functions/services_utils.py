@@ -17,11 +17,10 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineVersion,
     short_name_from_service_name,
 )
-from copernicusmarine.catalogue_parser.request_structure import (
+from copernicusmarine.core_functions import custom_open_zarr
+from copernicusmarine.core_functions.request_structure import (
     DatasetTimeAndSpaceSubset,
 )
-from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.exceptions import FormatNotSupported
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
@@ -247,7 +246,7 @@ def _select_service_by_priority(
             first_available_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
-            raise FormatNotSupported(first_available_service.service_format)
+            return first_available_service
         best_arco_service_type: CopernicusMarineServiceNames = (
             _get_best_arco_service_type(
                 dataset_subset, first_available_service.uri, username
@@ -266,7 +265,9 @@ class RetrievalService:
     service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
+    metadata_url: str
     service: CopernicusMarineService
+
     is_original_grid: bool = False
 
 
@@ -281,7 +282,6 @@ def get_retrieval_service(
     staging: bool = False,
 ) -> RetrievalService:
     dataset_metadata = get_dataset_metadata(dataset_id, staging=staging)
-    # logger.debug(dataset_metadata)
     if not dataset_metadata:
         raise KeyError(
             f"The requested dataset '{dataset_id}' was not found in the catalogue,"
@@ -357,8 +357,6 @@ def _get_retrieval_service_from_dataset_version(
             force_service_name=force_service_name,
             command_type=command_type,
         )
-        if service.service_format == CopernicusMarineServiceFormat.SQLITE:
-            raise FormatNotSupported(service.service_format)
     else:
         service = _select_service_by_priority(
             dataset_version_part=dataset_part,
@@ -366,7 +364,7 @@ def _get_retrieval_service_from_dataset_version(
             dataset_subset=dataset_subset,
             username=username,
         )
-    if command_type == CommandType.SUBSET:
+    if command_type in [CommandType.SUBSET, CommandType.LOAD]:
         logger.debug(f'Selected service: "{service.service_name}"')
     dataset_start_date = _get_dataset_start_date_from_service(service)
     return RetrievalService(
@@ -376,6 +374,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
         service=service,
+        metadata_url=dataset_part.dataset_version_part_url,
         is_original_grid=dataset_part.name == "originalGrid",
     )
 

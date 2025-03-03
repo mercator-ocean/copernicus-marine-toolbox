@@ -11,10 +11,6 @@ from botocore.client import ClientError
 from dateutil.tz import UTC
 from tqdm import tqdm
 
-from copernicusmarine.catalogue_parser.request_structure import (
-    GetRequest,
-    overload_regex_with_additionnal_filter,
-)
 from copernicusmarine.core_functions.models import (
     FileGet,
     FileStatus,
@@ -23,6 +19,10 @@ from copernicusmarine.core_functions.models import (
     S3FilesDescriptor,
     StatusCode,
     StatusMessage,
+)
+from copernicusmarine.core_functions.request_structure import (
+    GetRequest,
+    overload_regex_with_additionnal_filter,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
