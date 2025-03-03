@@ -9,10 +9,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.catalogue_parser.request_structure import (
-    SubsetRequest,
-    convert_motu_api_request_to_structure,
-)
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
@@ -22,6 +18,10 @@ from copernicusmarine.core_functions.models import (
     ResponseSubset,
     VerticalAxis,
 )
+from copernicusmarine.core_functions.request_structure import (
+    SubsetRequest,
+    convert_motu_api_request_to_structure,
+)
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
@@ -29,9 +29,8 @@ from copernicusmarine.core_functions.services_utils import (
 )
 from copernicusmarine.core_functions.utils import get_unique_filename
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
-from copernicusmarine.download_functions.download_arco_series import (
-    download_zarr,
-)
+from copernicusmarine.download_functions.download_sparse import download_sparse
+from copernicusmarine.download_functions.download_zarr import download_zarr
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
 )
@@ -167,6 +166,7 @@ def subset_function(
         staging=staging,
     )
     subset_request.dataset_url = retrieval_service.uri
+    # TODO: Add check for insitu datasets
     check_dataset_subset_bounds(
         username=username,
         password=password,
@@ -177,6 +177,7 @@ def subset_function(
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
+    # TODO: add the platform chunked
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
         CopernicusMarineServiceNames.TIMESERIES,
@@ -198,6 +199,19 @@ def subset_function(
                 retrieval_service.is_original_grid,
                 retrieval_service.axis_coordinate_id_mapping,
                 None if chunk_size_limit == 0 else chunk_size_limit,
+            )
+        if (
+            retrieval_service.service_format
+            == CopernicusMarineServiceFormat.SQLITE
+        ):
+            response = download_sparse(
+                username,
+                subset_request,
+                # retrieval_service.dataset_id,
+                disable_progress_bar,
+                retrieval_service.metadata_url,
+                # retrieval_service.dataset_valid_start_date,
+                # retrieval_service.service,
             )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)

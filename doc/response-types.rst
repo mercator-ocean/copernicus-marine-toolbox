@@ -85,7 +85,7 @@ Subtypes
 .. autoclass:: copernicusmarine.CopernicusMarinePart()
     :members:
     :undoc-members:
-    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_service_by_service_name
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_service_by_service_name, _dataset_version_part_url
     :member-order: bysource
 
 .. autoclass:: copernicusmarine.CopernicusMarineService()

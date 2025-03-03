@@ -13,7 +13,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCoordinate,
     CopernicusMarineService,
 )
-from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     NetCDFCompressionNotAvailable,
@@ -25,6 +24,7 @@ from copernicusmarine.core_functions.models import (
     StatusCode,
     StatusMessage,
 )
+from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
     get_unique_filename,
