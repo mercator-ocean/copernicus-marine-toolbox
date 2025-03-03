@@ -4,6 +4,8 @@
 Command ``subset``
 ===================
 
+# TODO: doc for sparse data
+
 The ``subset`` command allows you to remotely subset a dataset based on variable names, geographical parameters, and time ranges.
 
 **Example:**

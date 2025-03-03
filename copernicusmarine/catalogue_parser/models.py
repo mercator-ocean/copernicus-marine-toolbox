@@ -312,6 +312,7 @@ class CopernicusMarineService(BaseModel):
     #: List of variables of the service.
     variables: list[CopernicusMarineVariable]
 
+    # TODO: retrieve platformChunked service
     @classmethod
     def from_metadata_item(
         cls: Type[Service],
@@ -373,9 +374,9 @@ class CopernicusMarineService(BaseModel):
             for coordinate in variable.coordinates:
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
-                axis_coordinate_id_mapping[
-                    coordinate.axis
-                ] = coordinate.coordinate_id
+                axis_coordinate_id_mapping[coordinate.axis] = (
+                    coordinate.coordinate_id
+                )
 
         return axis_coordinate_id_mapping
 
@@ -406,12 +407,17 @@ class CopernicusMarinePart(BaseModel):
     #: Only applies to ARCO series
     #: and not to the original files.
     arco_updated_date: Optional[str]
+    #: TODO: ask if this should be hidden
+    # = Field(..., exclude=True)
+    # if yes: needs to modify the query builder
+    dataset_version_part_url: str
 
     @classmethod
     def from_metadata_item(
         cls: Type[VersionPart],
         metadata_item: pystac.Item,
         part_name: str,
+        dataset_version_part_url: str,
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
@@ -444,6 +450,7 @@ class CopernicusMarinePart(BaseModel):
             released_date=released_date,
             arco_updated_date=arco_updated_date,
             arco_updating_start_date=arco_updating_start_date,
+            dataset_version_part_url=dataset_version_part_url,
         )
 
     def get_service_by_service_name(
@@ -554,17 +561,23 @@ class CopernicusMarineDataset(BaseModel):
         )
 
     def parse_dataset_metadata_items(
-        self, metadata_items: list[pystac.Item]
+        self,
+        url_dataset_items_mapping: dict[str, pystac.Item],
     ) -> None:
         all_versions = set()
-        for metadata_item in metadata_items:
+        for (
+            dataset_version_part_url,
+            metadata_item,
+        ) in url_dataset_items_mapping.items():
             (
                 _,
                 dataset_version,
                 dataset_part,
             ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
             part = CopernicusMarinePart.from_metadata_item(
-                metadata_item, dataset_part
+                metadata_item,
+                dataset_part,
+                dataset_version_part_url,
             )
             if not part:
                 continue

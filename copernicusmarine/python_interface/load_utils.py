@@ -6,17 +6,17 @@ import xarray
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.credentials_utils import (
     get_username_password,
 )
 from copernicusmarine.core_functions.exceptions import ServiceNotSupported
+from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.download_functions.download_arco_series import (
+from copernicusmarine.download_functions.download_zarr import (
     get_optimum_dask_chunking,
 )
 from copernicusmarine.download_functions.subset_xarray import (
