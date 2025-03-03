@@ -67,12 +67,12 @@ class WrongDatetimeFormat(Exception):
     pass
 
 
+# TODO: delete next major release
 class FormatNotSupported(Exception):
     """
-    Exception raised when the format is not supported for the subset.
+    Deprecated exception.
 
-    For now, we are not able to subset sparse datasets which are in sqlite format.
-    This feature will be available in the future.
+    Will be deleted in the next major release. Not used right now.
     """
 
     def __init__(self, format_type):

@@ -25,6 +25,7 @@ lxml = ">=4.9.0"
 numpy = ">=1.23.0"
 pydantic = "^2.9.1"
 h5netcdf = "^1.4.0"
+arcosparse = "==0.1.2"
 
 [project.scripts]
 copernicusmarine = 'copernicusmarine.command_line_interface.copernicus_marine:command_line_interface'
