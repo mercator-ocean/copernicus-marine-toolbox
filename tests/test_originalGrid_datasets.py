@@ -100,8 +100,8 @@ class TestOriginalGridDatasets:
         assert b"ERROR" in self.output.stderr
         assert (
             b"You cannot specify longitude and latitude when using"
-            b" the originalGrid "
-            b"dataset part. Try using x and y instead."
+            b" the originalGrid dataset part yet."
+            b" Try using x and y instead and then convert it."
         ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
