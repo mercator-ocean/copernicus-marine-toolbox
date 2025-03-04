@@ -115,9 +115,13 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-longitude",
-    "-x",
     type=float,
     help=documentation_utils.SUBSET["MINIMUM_LONGITUDE_HELP"],
+)
+@click.option(
+    "-x",
+    type=float,
+    help=documentation_utils.SUBSET["ALIAS_MIN_X_HELP"],
 )
 @click.option(
     "--minimum-x",
@@ -126,9 +130,13 @@ def cli_subset() -> None:
 )
 @click.option(
     "--maximum-longitude",
-    "-X",
     type=float,
     help=documentation_utils.SUBSET["MAXIMUM_LONGITUDE_HELP"],
+)
+@click.option(
+    "-X",
+    type=float,
+    help=documentation_utils.SUBSET["ALIAS_MAX_X_HELP"],
 )
 @click.option(
     "--maximum-x",
@@ -137,9 +145,13 @@ def cli_subset() -> None:
 )
 @click.option(
     "--minimum-latitude",
-    "-y",
     type=click.FloatRange(min=-90, max=90),
     help=documentation_utils.SUBSET["MINIMUM_LATITUDE_HELP"],
+)
+@click.option(
+    "-y",
+    type=float,
+    help=documentation_utils.SUBSET["ALIAS_MIN_Y_HELP"],
 )
 @click.option(
     "--minimum-y",
@@ -148,9 +160,13 @@ def cli_subset() -> None:
 )
 @click.option(
     "--maximum-latitude",
-    "-Y",
     type=click.FloatRange(min=-90, max=90),
     help=documentation_utils.SUBSET["MAXIMUM_LATITUDE_HELP"],
+)
+@click.option(
+    "-Y",
+    type=float,
+    help=documentation_utils.SUBSET["ALIAS_MAX_Y_HELP"],
 )
 @click.option(
     "--maximum-y",
@@ -326,6 +342,10 @@ def subset(
     maximum_x: Optional[float],
     minimum_y: Optional[float],
     maximum_y: Optional[float],
+    alias_min_x: Optional[float],
+    alias_max_x: Optional[float],
+    alias_min_y: Optional[float],
+    alias_max_y: Optional[float],
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
     vertical_axis: VerticalAxis,
@@ -379,6 +399,12 @@ def subset(
         maximum_y,
         dataset_part,
     )
+    if dataset_part == "originalGrid":
+        if alias_max_x or alias_min_x or alias_max_y or alias_min_y:
+            logger.warning(
+                "Because you are using an originalGrid dataset, we are considering"
+                " the options -x, -X, -y, -Y to be in kms, not in degrees."
+            )
 
     response = subset_function(
         dataset_id=dataset_id,
@@ -387,10 +413,10 @@ def subset(
         username=username,
         password=password,
         variables=variables,
-        minimum_longitude=minimum_longitude or minimum_x,
-        maximum_longitude=maximum_longitude or maximum_x,
-        minimum_latitude=minimum_latitude or minimum_y,
-        maximum_latitude=maximum_latitude or maximum_y,
+        minimum_longitude=minimum_longitude or minimum_x or alias_min_x,
+        maximum_longitude=maximum_longitude or maximum_x or alias_max_x,
+        minimum_latitude=minimum_latitude or minimum_y or alias_min_y,
+        maximum_latitude=maximum_latitude or maximum_y or alias_max_y,
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
         vertical_axis=vertical_axis,
