@@ -63,6 +63,7 @@ class SubsetRequest:
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
+    platform_ids: Optional[List[str]] = None
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     )
@@ -105,7 +106,7 @@ class SubsetRequest:
                 "end_datetime",
             ]:
                 new_value = datetime_parser(value) if value else None
-            elif key in ["variables"]:
+            elif key in ["variables", "platform_ids"]:
                 new_value = list(value) if value is not None else None
             elif key in ["output_directory"]:
                 new_value = pathlib.Path(value) if value is not None else None

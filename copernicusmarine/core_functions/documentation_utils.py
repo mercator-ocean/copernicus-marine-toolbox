@@ -178,6 +178,10 @@ SUBSET: dict[str, str] = {
         "format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html)."  # noqa
     ),  # hardocded in cli: Caution: encapsulate date with “ “
     # to ensure valid expression for format “%Y-%m-%d %H:%M:%S”.
+    "PLATFORM_IDS_HELP": (
+        "Specify platform ID. Can be used multiple times. "
+        "Only available for platform chunked datasets."
+    ),
     "COORDINATES_SELECTION_METHOD_HELP": (
         "If ``inside``, the "
         "selection retrieved will be inside the requested range. If ``strict-"
