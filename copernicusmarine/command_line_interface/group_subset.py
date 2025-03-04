@@ -213,6 +213,14 @@ def cli_subset() -> None:
     "expression for format “%Y-%m-%d %H:%M:%S”.",
 )
 @click.option(
+    "--platform-id",
+    "-p",
+    "platform_ids",
+    type=str,
+    help=documentation_utils.SUBSET["PLATFORM_IDS_HELP"],
+    multiple=True,
+)
+@click.option(
     "--coordinates-selection-method",
     type=click.Choice(DEFAULT_COORDINATES_SELECTION_METHODS),
     default=DEFAULT_COORDINATES_SELECTION_METHOD,
@@ -355,6 +363,7 @@ def subset(
     vertical_axis: VerticalAxis,
     start_datetime: Optional[str],
     end_datetime: Optional[str],
+    platform_ids: Optional[List[str]],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -457,6 +466,7 @@ def subset(
             datetime_parser(start_datetime) if start_datetime else None
         ),
         end_datetime=datetime_parser(end_datetime) if end_datetime else None,
+        platform_ids=platform_ids,
         coordinates_selection_method=coordinates_selection_method,
         output_filename=output_filename,
         file_format=file_format,

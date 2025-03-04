@@ -24,6 +24,7 @@ class CopernicusMarineServiceNames(str, Enum):
 
     GEOSERIES = "arco-geo-series"
     TIMESERIES = "arco-time-series"
+    PLATFORMSERIES = "arco-platform-series"
     FILES = "original-files"
     WMTS = "wmts"
     OMI_ARCO = "omi-arco"
@@ -38,6 +39,7 @@ class CoperniusMarineServiceShortNames(str, Enum):
 
     GEOSERIES = "geoseries"
     TIMESERIES = "timeseries"
+    PLATFORMSERIES = "platformseries"
     FILES = "files"
     WMTS = "wmts"
     OMI_ARCO = "omi-arco"
@@ -50,6 +52,7 @@ def short_name_from_service_name(
     mapping = {
         CopernicusMarineServiceNames.GEOSERIES: CoperniusMarineServiceShortNames.GEOSERIES,  # noqa
         CopernicusMarineServiceNames.TIMESERIES: CoperniusMarineServiceShortNames.TIMESERIES,  # noqa
+        CopernicusMarineServiceNames.PLATFORMSERIES: CoperniusMarineServiceShortNames.PLATFORMSERIES,  # noqa
         CopernicusMarineServiceNames.FILES: CoperniusMarineServiceShortNames.FILES,  # noqa
         CopernicusMarineServiceNames.WMTS: CoperniusMarineServiceShortNames.WMTS,  # noqa
         CopernicusMarineServiceNames.OMI_ARCO: CoperniusMarineServiceShortNames.OMI_ARCO,  # noqa
@@ -64,6 +67,7 @@ def _service_type_from_web_api_string(
     class WebApi(Enum):
         GEOSERIES = "timeChunked"
         TIMESERIES = "geoChunked"
+        PLATFORMSERIES = "platformChunked"
         FILES = "native"
         WMTS = "wmts"
         OMI_ARCO = "omi"
@@ -72,6 +76,7 @@ def _service_type_from_web_api_string(
     web_api_mapping: dict[WebApi, CopernicusMarineServiceNames] = {
         WebApi.GEOSERIES: CopernicusMarineServiceNames.GEOSERIES,
         WebApi.TIMESERIES: CopernicusMarineServiceNames.TIMESERIES,
+        WebApi.PLATFORMSERIES: CopernicusMarineServiceNames.PLATFORMSERIES,
         WebApi.FILES: CopernicusMarineServiceNames.FILES,
         WebApi.WMTS: CopernicusMarineServiceNames.WMTS,
         WebApi.OMI_ARCO: CopernicusMarineServiceNames.OMI_ARCO,
@@ -311,8 +316,10 @@ class CopernicusMarineService(BaseModel):
     uri: str
     #: List of variables of the service.
     variables: list[CopernicusMarineVariable]
+    #: A link to information about available platforms.
+    #: Only for arco-platform-series service.
+    platforms_metadata: Optional[str]
 
-    # TODO: retrieve platformChunked service
     @classmethod
     def from_metadata_item(
         cls: Type[Service],
@@ -341,11 +348,24 @@ class CopernicusMarineService(BaseModel):
 
             if not service_uri.endswith("/"):
                 if admp_in_preparation and (
-                    service_name == CopernicusMarineServiceNames.GEOSERIES
-                    or service_name == CopernicusMarineServiceNames.TIMESERIES
+                    service_name_parsed
+                    == CopernicusMarineServiceNames.GEOSERIES
+                    or service_name_parsed
+                    == CopernicusMarineServiceNames.TIMESERIES
                 ):
                     return None
                 else:
+                    platforms_metadata = None
+                    if (
+                        service_name_parsed
+                        == CopernicusMarineServiceNames.PLATFORMSERIES
+                    ):
+                        platforms_asset = metadata_item.get_assets().get(
+                            "platforms"
+                        )
+                        if platforms_asset is not None:
+                            platforms_metadata = platforms_asset.href
+
                     bbox = metadata_item.bbox
                     return cls(
                         service_name=service_name_parsed,
@@ -360,6 +380,7 @@ class CopernicusMarineService(BaseModel):
                             ].values()
                         ],
                         service_format=service_format,
+                        platforms_metadata=platforms_metadata,
                     )
             return None
         except ServiceNotHandled as service_not_handled:

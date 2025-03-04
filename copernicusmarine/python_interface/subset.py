@@ -50,6 +50,7 @@ def subset(
     maximum_x: Optional[float] = None,
     minimum_y: Optional[float] = None,
     maximum_y: Optional[float] = None,
+    platform_ids: Optional[List[str]] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
@@ -106,6 +107,8 @@ def subset(
         The start datetime of the temporal subset. Supports common format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html).
     end_datetime : Union[datetime, str], optional
         The end datetime of the temporal subset. Supports common format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html).
+    platform_ids : List[str], optional
+        List of platform IDs to extract. Only available for platform chunked datasets.
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     output_directory : Union[pathlib.Path, str], optional
@@ -184,6 +187,7 @@ def subset(
         vertical_axis,
         start_datetime,
         end_datetime,
+        platform_ids,
         coordinates_selection_method,
         output_filename,
         file_format,
