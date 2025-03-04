@@ -1,8 +1,13 @@
-from arcosparse import UserConfiguration, subset_and_save
+from arcosparse import UserConfiguration, get_platforms_names, subset_and_save
 
+from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
     COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
+)
+from copernicusmarine.core_functions.exceptions import (
+    NotEnoughPlatformMetadata,
+    WrongPlatformID,
 )
 from copernicusmarine.core_functions.models import (  # TimeExtent,
     FileStatus,
@@ -23,8 +28,9 @@ from copernicusmarine.core_functions.utils import (
 def download_sparse(
     username: str,
     subset_request: SubsetRequest,
-    disable_progress_bar,
-    metadata_url,
+    metadata_url: str,
+    retrieval_service: CopernicusMarineService,
+    disable_progress_bar: bool,
 ) -> ResponseSubset:
     user_configuration = UserConfiguration(
         disable_ssl=COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True",
@@ -34,7 +40,17 @@ def download_sparse(
             username
         ),
     )
-    # TODO: handle the outputs path, skip existing etc
+    if subset_request.platform_ids:
+        platforms_names = get_platforms_names(metadata_url, user_configuration)
+        if not platforms_names:
+            raise NotEnoughPlatformMetadata()
+        for platform_id in subset_request.platform_ids:
+            if platform_id not in platforms_names:
+                raise WrongPlatformID(
+                    platform_id, retrieval_service.platforms_metadata
+                )
+
+    # TODO: handle the outputs path, skip existing etc.
     subset_and_save(
         minimum_latitude=subset_request.minimum_latitude,
         maximum_latitude=subset_request.maximum_latitude,
@@ -61,7 +77,7 @@ def download_sparse(
             else None
         ),
         variables=subset_request.variables or [],
-        platform_ids=[],
+        platform_ids=subset_request.platform_ids or [],
         url_metadata=metadata_url,
         user_configuration=user_configuration,
         output_path=subset_request.output_directory / "sparse_data.parquet",
