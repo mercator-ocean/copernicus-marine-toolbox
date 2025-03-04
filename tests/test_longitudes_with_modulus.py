@@ -164,7 +164,7 @@ class TestLongitudesWithModulus:
         dataset = xarray.open_dataset(Path(tmp_path, filename_dataset))
 
         longitudes = dataset.longitude.values
-        print(longitudes)
+
         assert self.output.returncode == 0
         assert longitudes.min() == numpy.float32(-180)
         assert longitudes.max() == numpy.float32(179.91669)
