@@ -357,3 +357,17 @@ class TestPythonInterface:
             "standard_name": "latitude",
             "units": "degrees_north",
         }
+        for coordinate in dataset_response.coordinates_extent:
+            assert coordinate.coordinate_id in dataset.sizes
+            if coordinate.coordinate_id in [
+                "longitude",
+                "latitude",
+            ]:  # not time
+                assert (
+                    min(dataset[coordinate.coordinate_id].values)
+                    == coordinate.minimum
+                )
+                assert (
+                    dataset[coordinate.coordinate_id].values.max()
+                    == coordinate.maximum
+                )

@@ -117,7 +117,7 @@ class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
     def __init__(self):
         super().__init__(
             "You cannot specify longitude and latitude when using the originalGrid "
-            "dataset part. Try using x and y instead."
+            "dataset part yet. Try using x and y instead and then convert it."
         )
 
 

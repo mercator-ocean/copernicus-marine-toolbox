@@ -80,7 +80,7 @@ def download_dataset(
     username: str,
     password: str,
     dataset_id: str,
-    geographical_parameters: Union[GeographicalParameters],
+    geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,

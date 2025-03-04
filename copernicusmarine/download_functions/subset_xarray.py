@@ -636,6 +636,7 @@ def check_dataset_subset_bounds(
     dataset_valid_date: Optional[Union[str, int, float]],
     axis_coordinate_id_mapping: dict[str, str],
 ) -> None:
+    # TODO: check lon/lat for original grid
     if service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
         CopernicusMarineServiceNames.TIMESERIES,
