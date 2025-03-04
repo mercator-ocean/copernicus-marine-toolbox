@@ -175,6 +175,12 @@ def subset_function(
             == CopernicusMarineServiceFormat.ZARR
         ):
             raise_when_all_dataset_requested(subset_request, False)
+            if subset_request.file_format not in ["netcdf", "zarr"]:
+                raise ValueError(
+                    f"{subset_request.file_format} is not a valid format "
+                    "for this dataset."
+                    "Available format for this dataset is 'netcdf' or 'zarr'."
+                )
             response = download_zarr(
                 username,
                 password,
@@ -191,6 +197,12 @@ def subset_function(
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
+            if subset_request.file_format not in ["parquet", "csv"]:
+                logger.info(
+                    "Using 'parquet' format by default."
+                    "'csv' format can also be set with 'file-format' option."
+                )
+                subset_request.file_format = "parquet"
             raise_when_all_dataset_requested(subset_request, True)
             response = download_sparse(
                 username,
