@@ -1,11 +1,4 @@
-from arcosparse import subset_and_save
-
-# TODO: update this when available in main
-from arcosparse.models import (
-    RequestedCoordinate,
-    UserConfiguration,
-    UserRequest,
-)
+from arcosparse import UserConfiguration, subset_and_save
 
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
@@ -33,48 +26,6 @@ def download_sparse(
     disable_progress_bar,
     metadata_url,
 ) -> ResponseSubset:
-    user_request = UserRequest(
-        time=RequestedCoordinate(
-            minimum=(
-                subset_request.start_datetime.timestamp()
-                if subset_request.start_datetime
-                else None
-            ),
-            maximum=(
-                subset_request.end_datetime.timestamp()
-                if subset_request.end_datetime
-                else None
-            ),
-            coordinate_id="time",
-        ),
-        elevation=RequestedCoordinate(
-            minimum=(
-                -subset_request.minimum_depth
-                if subset_request.minimum_depth
-                else None
-            ),
-            maximum=(
-                -subset_request.maximum_depth
-                if subset_request.maximum_depth
-                else None
-            ),
-            coordinate_id="depth",
-        ),
-        latitude=RequestedCoordinate(
-            minimum=subset_request.minimum_latitude,
-            maximum=subset_request.maximum_latitude,
-            coordinate_id="latitude",
-        ),
-        longitude=RequestedCoordinate(
-            minimum=subset_request.minimum_longitude,
-            maximum=subset_request.maximum_longitude,
-            coordinate_id="longitude",
-        ),
-        # TODO: add support for platform_ids
-        platform_ids=[],
-        variables=subset_request.variables or [],
-    )
-
     user_configuration = UserConfiguration(
         disable_ssl=COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True",
         trust_env=TRUST_ENV,
@@ -84,9 +35,34 @@ def download_sparse(
         ),
     )
     # TODO: handle the outputs path, skip existing etc
-    _ = subset_and_save(
+    subset_and_save(
+        minimum_latitude=subset_request.minimum_latitude,
+        maximum_latitude=subset_request.maximum_latitude,
+        minimum_longitude=subset_request.minimum_longitude,
+        maximum_longitude=subset_request.maximum_longitude,
+        minimum_elevation=(
+            -subset_request.minimum_depth
+            if subset_request.minimum_depth
+            else None
+        ),
+        maximum_elevation=(
+            -subset_request.maximum_depth
+            if subset_request.maximum_depth
+            else None
+        ),
+        minimum_time=(
+            subset_request.start_datetime.timestamp()
+            if subset_request.start_datetime
+            else None
+        ),
+        maximum_time=(
+            subset_request.end_datetime.timestamp()
+            if subset_request.end_datetime
+            else None
+        ),
+        variables=subset_request.variables or [],
+        platform_ids=[],
         url_metadata=metadata_url,
-        request=user_request,
         user_configuration=user_configuration,
         output_path=subset_request.output_directory / "sparse_data.parquet",
         disable_progress_bar=disable_progress_bar,
