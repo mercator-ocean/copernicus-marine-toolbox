@@ -381,7 +381,6 @@ def _get_retrieval_service_from_dataset_version(
                 dataset_version=dataset_version,
                 dataset_part=dataset_part,
             )
-            logger.warning(error_message)
             if raise_if_updating:
                 raise ValueError(error_message)
 
@@ -484,6 +483,7 @@ def _warning_dataset_updating(
         f"Data after {dataset_part.updating_start_date} may not be up to date."
     )
     logger.warning(message)
+    return message
 
 
 def _service_not_available_error(
