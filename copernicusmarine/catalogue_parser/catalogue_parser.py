@@ -63,7 +63,7 @@ def get_dataset_metadata(
         ).get(dataset_id)
         if not product_ids:
             raise DatasetNotFound(dataset_id)
-        dataset_jsons: list[dict] = []
+        url_dataset_jsons_mapping: dict[str, dict] = {}
         for product_id in product_ids.split(","):
             url = f"{stac_url}/{product_id}/product.stac.json"
             product_json = connection.get_json_file(url)
@@ -78,18 +78,18 @@ def get_dataset_metadata(
             ]
             if not datasets_metadata_links:
                 continue
-            dataset_jsons.extend(
-                [
-                    connection.get_json_file(
+            url_dataset_jsons_mapping.update(
+                {
+                    f"{stac_url}/{product_id}/{link.href}": connection.get_json_file(
                         f"{stac_url}/{product_id}/{link.href}"
                     )
                     for link in datasets_metadata_links
-                ]
+                }
             )
 
-        dataset_items = [
-            dataset_item
-            for dataset_json in dataset_jsons
+        url_dataset_items_mapping = {
+            url: dataset_item
+            for url, dataset_json in url_dataset_jsons_mapping.items()
             if (
                 dataset_item := _parse_dataset_json_to_pystac_item(
                     dataset_json
@@ -97,8 +97,8 @@ def get_dataset_metadata(
             )
             and get_version_and_part_from_full_dataset_id(dataset_item.id)[0]
             == dataset_id
-        ]
-        return _parse_and_sort_dataset_items(dataset_items)
+        }
+        return _parse_and_sort_dataset_items(url_dataset_items_mapping)
 
 
 def _parse_dataset_json_to_pystac_item(
@@ -130,15 +130,15 @@ def _parse_product_json_to_pystac_collection(
 
 
 def _parse_and_sort_dataset_items(
-    dataset_items: list[pystac.Item],
+    url_dataset_items_mapping: dict[str, pystac.Item],
 ) -> Optional[CopernicusMarineDataset]:
     """
     Return all dataset metadata parsed and sorted.
     The first version and part are the default.
     """
-    dataset_item_example = dataset_items[0]
+    dataset_item_example = list(url_dataset_items_mapping.values())[0]
     dataset_without_parts: list[tuple[pystac.Item, str]] = []
-    for dataset_item in dataset_items:
+    for dataset_item in url_dataset_items_mapping.values():
         dataset_id, _, part = get_version_and_part_from_full_dataset_id(
             dataset_item.id
         )
@@ -159,7 +159,9 @@ def _parse_and_sort_dataset_items(
         dataset_name=dataset_title,
         versions=[],
     )
-    dataset_part_version_merged.parse_dataset_metadata_items(dataset_items)
+    dataset_part_version_merged.parse_dataset_metadata_items(
+        url_dataset_items_mapping
+    )
 
     if dataset_part_version_merged.versions == []:
         return None
@@ -169,13 +171,13 @@ def _parse_and_sort_dataset_items(
 
 
 def _construct_marine_data_store_product(
-    stac_tuple: tuple[pystac.Collection, list[pystac.Item]],
+    stac_tuple: tuple[pystac.Collection, list[tuple[pystac.Item, str]]],
 ) -> CopernicusMarineProduct:
     stac_product, stac_datasets = stac_tuple
-    stac_datasets_sorted = sorted(stac_datasets, key=lambda x: x.id)
+    stac_datasets_sorted = sorted(stac_datasets, key=lambda x: x[0].id)
     dataset_items_by_dataset_id = groupby(
         stac_datasets_sorted,
-        key=lambda x: get_version_and_part_from_full_dataset_id(x.id)[0],
+        key=lambda x: get_version_and_part_from_full_dataset_id(x[0].id)[0],
     )
 
     datasets = [
@@ -183,7 +185,7 @@ def _construct_marine_data_store_product(
         for _, dataset_items in dataset_items_by_dataset_id
         if (
             dataset_metadata := _parse_and_sort_dataset_items(
-                list(dataset_items)
+                {url_item: item for item, url_item in dataset_items}
             )
         )
     ]
@@ -242,7 +244,7 @@ def fetch_dataset_items(
     connection: JsonParserConnection,
     collection: pystac.Collection,
     force_dataset_id: Optional[str],
-) -> list[pystac.Item]:
+) -> list[tuple[pystac.Item, str]]:
     items = []
     for link in collection.get_item_links():
         if not link.owner:
@@ -254,7 +256,7 @@ def fetch_dataset_items(
         item_json = connection.get_json_file(url)
         item = _parse_dataset_json_to_pystac_item(item_json)
         if item:
-            items.append(item)
+            items.append((item, url))
     return items
 
 
@@ -263,7 +265,7 @@ def fetch_collection(
     connection: JsonParserConnection,
     url: str,
     force_dataset_id: Optional[str],
-) -> Optional[tuple[pystac.Collection, list[pystac.Item]]]:
+) -> Optional[tuple[pystac.Collection, list[tuple[pystac.Item, str]]]]:
     json_collection = connection.get_json_file(url)
     collection = _parse_product_json_to_pystac_collection(json_collection)
     if collection:
@@ -282,7 +284,7 @@ def fetch_product_items(
     force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
-) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
+) -> list[Optional[tuple[pystac.Collection, list[tuple[pystac.Item, str]]]]]:
     tasks = []
     for link in child_links:
         if force_product_id and force_product_id not in link.href:
@@ -314,7 +316,7 @@ def fetch_all_products_items(
     max_concurrent_requests: int,
     staging: bool,
     disable_progress_bar: bool,
-) -> list[Optional[tuple[pystac.Collection, list[pystac.Item]]]]:
+) -> list[Optional[tuple[pystac.Collection, list[tuple[pystac.Item, str]]]]]:
     catalog_root_url = (
         MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL
         if not staging

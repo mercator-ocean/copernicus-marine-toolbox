@@ -85,12 +85,12 @@ class WrongDatetimeFormat(Exception):
     pass
 
 
+# TODO: delete next major release
 class FormatNotSupported(Exception):
     """
-    Exception raised when the format is not supported for the subset.
+    Deprecated exception.
 
-    For now, we are not able to subset sparse datasets which are in sqlite format.
-    This feature will be available in the future.
+    Will be deleted in the next major release. Not used right now.
     """
 
     def __init__(self, format_type):
@@ -120,4 +120,50 @@ class MutuallyExclusiveArguments(Exception):
     def __init__(self, arg1, arg2):
         super().__init__(
             f"Arguments '{arg1}' and '{arg2}' are mutually exclusive."
+        )
+
+
+class NotEnoughPlatformMetadata(Exception):
+    """
+    Exception raised when there is not enough platform metadata.
+    And user wants to perform subset on platform ids.
+
+    Please contact the Copernicus Marine support team if needed.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "Not enough platform metadata. "
+            "Please make sure the platform metadata is available."
+        )
+
+
+class PlatformsSubsettingNotAvailable(Exception):
+    """
+    Exception raised when the subsetting on platforms is not available.
+
+
+    Please make sure to not request platform ids for this dataset.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "Subsetting on platforms is not available for this dataset. "
+            "Please make sure not to request platform IDs for this dataset."
+        )
+
+
+class WrongPlatformID(Exception):
+    """
+    Exception raised when the platform id is not in the list of platforms.
+
+    Please make sure the platform id is in the list of platforms.
+    Check the describe output and the "platformseries" service for more information.
+    """
+
+    def __init__(self, platform_id, platforms_metadata_url):
+        super().__init__(
+            f"The platform id '{platform_id}' is not in the list of platforms."
+            f" Please check the describe output and the platforms metadata at"
+            f" '{platforms_metadata_url}' for more information."
         )

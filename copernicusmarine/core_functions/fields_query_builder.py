@@ -137,7 +137,7 @@ def _return_available_fields(
     type_to_check: Type, available_fields: Optional[set[str]] = None
 ) -> set[str]:
     """
-    Reccursively get all the fields that are available in the model
+    Recursively get all the fields that are available in the model
     """
     if available_fields is None:
         available_fields = set()

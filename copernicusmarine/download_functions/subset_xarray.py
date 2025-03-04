@@ -11,9 +11,6 @@ from dateutil.tz import UTC
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.catalogue_parser.request_structure import (
-    DatasetTimeAndSpaceSubset,
-)
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
@@ -23,6 +20,9 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
+from copernicusmarine.core_functions.request_structure import (
+    DatasetTimeAndSpaceSubset,
+)
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )

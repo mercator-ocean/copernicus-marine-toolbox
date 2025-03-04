@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 import pandas as pd
 import xarray
 
-from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
@@ -16,7 +15,8 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
-from copernicusmarine.download_functions.download_arco_series import (
+from copernicusmarine.core_functions.request_structure import LoadRequest
+from copernicusmarine.download_functions.download_zarr import (
     open_dataset_from_arco_series,
 )
 from copernicusmarine.download_functions.subset_parameters import (
@@ -113,6 +113,7 @@ def open_dataset(
     xarray.Dataset
         The loaded xarray dataset.
     """  # noqa
+    # TODO: check the format because cannot be used for sparse datasets
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
     credentials_file = (
