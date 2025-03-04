@@ -165,7 +165,7 @@ def subset_function(
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.ZARR
         ):
-            raise_is_not_subsetting_requested(subset_request, False)
+            raise_when_all_dataset_requested(subset_request, False)
             response = download_zarr(
                 username,
                 password,
@@ -180,7 +180,7 @@ def subset_function(
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
-            raise_is_not_subsetting_requested(subset_request, True)
+            raise_when_all_dataset_requested(subset_request, True)
             response = download_sparse(
                 username,
                 subset_request,
@@ -225,7 +225,7 @@ def create_subset_template() -> None:
     logger.info(f"Template created at: {filename}")
 
 
-def raise_is_not_subsetting_requested(
+def raise_when_all_dataset_requested(
     subset_request: SubsetRequest, sparse_data: bool
 ) -> None:
     """
