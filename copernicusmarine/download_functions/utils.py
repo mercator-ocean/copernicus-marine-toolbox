@@ -222,13 +222,13 @@ def _format_xy_axis(
     else:
         if minimum_value == maximum_value:
             suffix = coordinate_id
-            value = f"{abs(minimum_value):.2f}{suffix}"
+            value = f"{(minimum_value):.2f}{suffix}"
         else:
             minimum_suffix = coordinate_id
             maximum_suffix = coordinate_id.upper()
             value = (
-                f"{abs(minimum_value):.2f}{minimum_suffix}-"
-                f"{abs(maximum_value):.2f}{maximum_suffix}"
+                f"{(minimum_value):.2f}{minimum_suffix}_"
+                f"{(maximum_value):.2f}{maximum_suffix}"
             )
         return value
 
