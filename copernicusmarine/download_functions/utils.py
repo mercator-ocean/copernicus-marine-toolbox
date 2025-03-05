@@ -102,9 +102,9 @@ def _build_filename_from_dataset(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
             )
-        else:  # elevation
+        else:
             depths = ""
-    else:  # TODOOO
+    else:
         depths = ""
 
     if "t" in axis_coordinate_id_mapping:

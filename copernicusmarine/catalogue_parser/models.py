@@ -1,4 +1,3 @@
-import logging
 import re
 from enum import Enum
 from typing import Literal, Optional, Type, TypeVar, Union
@@ -13,8 +12,6 @@ from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
 )
-
-logger = logging.getLogger("copernicusmarine")
 
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
@@ -371,7 +368,6 @@ class CopernicusMarineService(BaseModel):
     def get_axis_coordinate_id_mapping(
         self,
     ) -> dict[str, str]:
-        # TODO: include or exclude from documentation (and add if necessary)
         axis_coordinate_id_mapping: dict[str, str] = {}
         for variable in self.variables:
             for coordinate in variable.coordinates:

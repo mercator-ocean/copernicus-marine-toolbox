@@ -650,9 +650,7 @@ def check_dataset_subset_bounds(
     else:
         raise ServiceNotSupported(service_name)
 
-    if (
-        "y" in axis_coordinate_id_mapping
-    ):  # latitude and y are the same, simple
+    if "y" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["y"]
         y_axis_values = dataset_coordinates[coordinate_id].values
         user_minimum_coordinate_value = (
@@ -677,7 +675,6 @@ def check_dataset_subset_bounds(
         coordinate_id = axis_coordinate_id_mapping["x"]
         x_axis_values = dataset_coordinates[coordinate_id].values
         if coordinate_id == "longitude":
-            # longitude apply moduli if longitude
             user_minimum_coordinate_value = (
                 longitude_modulus(dataset_subset.minimum_longitude)
                 if dataset_subset.minimum_longitude is not None
@@ -688,7 +685,7 @@ def check_dataset_subset_bounds(
                 if dataset_subset.maximum_longitude is not None
                 else x_axis_values.max()
             )
-        else:  # don't aplpy moduli if x
+        else:
             user_minimum_coordinate_value = (
                 dataset_subset.minimum_longitude
                 if dataset_subset.minimum_longitude is not None
@@ -742,7 +739,6 @@ def check_dataset_subset_bounds(
     if "z" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["z"]
         coordinate_id = "elevation"
-        # let's first hardcode it and see if it brings problems
         if coordinate_id in dataset.sizes:
             depths = -1 * dataset_coordinates[coordinate_id].values
             _check_coordinate_overlap(

@@ -99,9 +99,7 @@ def download_dataset(
     chunk_size_limit: Optional[int],
     skip_existing: bool,
 ) -> ResponseSubset:
-    if (
-        chunk_size_limit
-    ):  # TODO: check if it works with original grid or filter them here
+    if chunk_size_limit:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,

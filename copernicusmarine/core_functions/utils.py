@@ -198,7 +198,7 @@ def original_grid_check(
     minimum_y: Optional[float],
     maximum_y: Optional[float],
     dataset_part: Optional[str],
-) -> bool:
+) -> None:
     if dataset_part == "originalGrid":
         if (
             minimum_longitude is not None
@@ -215,4 +215,4 @@ def original_grid_check(
             or maximum_y is not None
         ):
             raise XYNotAvailableInNonOriginalGridDatasets
-    return True
+    return
