@@ -21,9 +21,9 @@ from copernicusmarine.download_functions.download_arco_series import (
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
-    LatitudeParameters,
-    LongitudeParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
@@ -47,6 +47,10 @@ def read_dataframe(
     maximum_longitude: Optional[float] = None,
     minimum_latitude: Optional[float] = None,
     maximum_latitude: Optional[float] = None,
+    minimum_x: Optional[float] = None,
+    maximum_x: Optional[float] = None,
+    minimum_y: Optional[float] = None,
+    maximum_y: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
@@ -115,6 +119,27 @@ def read_dataframe(
     credentials_file = (
         pathlib.Path(credentials_file) if credentials_file else None
     )
+    if dataset_part == "originalGrid":
+        geographicalparameters = GeographicalParameters(
+            y_axis_parameters=YParameters(
+                minimum_y=minimum_y, maximum_y=maximum_y, coordinate_id="y"
+            ),
+            x_axis_parameters=XParameters(
+                minimum_x=minimum_x, maximum_x=maximum_x, coordinate_id="x"
+            ),
+            projection="originalGrid",
+        )
+    else:
+        geographicalparameters = GeographicalParameters(
+            y_axis_parameters=YParameters(
+                minimum_y=minimum_latitude,
+                maximum_y=maximum_latitude,
+            ),
+            x_axis_parameters=XParameters(
+                minimum_x=minimum_longitude,
+                maximum_x=maximum_longitude,
+            ),
+        )
     load_request = LoadRequest(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
@@ -122,16 +147,7 @@ def read_dataframe(
         username=username,
         password=password,
         variables=variables,
-        geographical_parameters=GeographicalParameters(
-            latitude_parameters=LatitudeParameters(
-                minimum_latitude=minimum_latitude,
-                maximum_latitude=maximum_latitude,
-            ),
-            longitude_parameters=LongitudeParameters(
-                minimum_longitude=minimum_longitude,
-                maximum_longitude=maximum_longitude,
-            ),
-        ),
+        geographical_parameters=geographicalparameters,
         temporal_parameters=TemporalParameters(
             start_datetime=start_datetime,
             end_datetime=end_datetime,

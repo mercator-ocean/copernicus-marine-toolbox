@@ -71,6 +71,7 @@
 # ---
 # name: TestQueryBuilder.test_return_available_fields
   list([
+    'axis',
     'bbox',
     'chunk_geometric_factor',
     'chunk_reference_coordinate',

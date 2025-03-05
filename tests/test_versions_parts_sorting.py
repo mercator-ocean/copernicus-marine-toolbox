@@ -10,7 +10,10 @@ version_default = CopernicusMarineVersion(
     label=VERSION_DEFAULT,
     parts=[
         CopernicusMarinePart(
-            name="latest", services=[], retired_date=None, released_date=None
+            name="latest",
+            services=[],
+            retired_date=None,
+            released_date=None,
         ),
         CopernicusMarinePart(
             name="latest_to_be_released",
@@ -19,10 +22,16 @@ version_default = CopernicusMarineVersion(
             released_date="2060-01-01",
         ),
         CopernicusMarinePart(
-            name="bathy", services=[], retired_date=None, released_date=None
+            name="bathy",
+            services=[],
+            retired_date=None,
+            released_date=None,
         ),
         CopernicusMarinePart(
-            name="history", services=[], retired_date=None, released_date=None
+            name="history",
+            services=[],
+            retired_date=None,
+            released_date=None,
         ),
         CopernicusMarinePart(
             name=PART_DEFAULT,
@@ -43,7 +52,10 @@ version_default = CopernicusMarineVersion(
             released_date=None,
         ),
         CopernicusMarinePart(
-            name="monthly", services=[], retired_date=None, released_date=None
+            name="monthly",
+            services=[],
+            retired_date=None,
+            released_date=None,
         ),
     ],
 )

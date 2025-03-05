@@ -52,7 +52,10 @@ def load_data_object_from_load_request(
         dataset_subset=load_request.get_time_and_space_subset(),
         coordinates_selection_method=load_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
-        is_original_grid=retrieval_service.is_original_grid,
+        axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+    )
+    load_request.update_attributes(
+        retrieval_service.axis_coordinate_id_mapping
     )
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -80,6 +83,7 @@ def load_data_object_from_load_request(
                 load_request.depth_parameters,
                 load_request.variables,
                 chunks_factor_size_limit,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
             )
             if chunks_factor_size_limit
             else None

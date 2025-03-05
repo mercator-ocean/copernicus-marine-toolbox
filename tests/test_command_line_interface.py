@@ -1935,7 +1935,7 @@ class TestCommandLineInterface:
         This command can take several minutes or even end up in a memory issue
         because of the dask graph
 
-        copernicusmarine subset -i cmems_mod_glo_phy_my_0.083deg_P1D-m -t "2013-08-01" -T "2013-08-01" -x 113.896034  -y -11.045679 -Y -6.366948 -z 0 -Z 5000 --force-download
+        copernicusmarine subset -i cmems_mod_glo_phy_my_0.083deg_P1D-m -t "2013-08-01" -T "2013-08-01" -x 113.896034  -y -11.045679 -Y -6.366948 -z 0 -Z 5000
         """  # noqa
         command = [
             "copernicusmarine",

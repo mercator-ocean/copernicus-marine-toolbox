@@ -98,6 +98,10 @@ class SubsetRequest:
                 "maximum_latitude",
                 "minimum_depth",
                 "maximum_depth",
+                "minimum_x",
+                "maximum_x",
+                "minimum_y",
+                "maximum_y",
             ]:
                 new_value = float(value) if value is not None else None
             elif key in [
@@ -291,14 +295,28 @@ class LoadRequest:
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
-            minimum_longitude=self.geographical_parameters.longitude_parameters.minimum_longitude,  # noqa
-            maximum_longitude=self.geographical_parameters.longitude_parameters.maximum_longitude,  # noqa
-            minimum_latitude=self.geographical_parameters.latitude_parameters.minimum_latitude,  # noqa
-            maximum_latitude=self.geographical_parameters.latitude_parameters.maximum_latitude,  # noqa
+            minimum_longitude=self.geographical_parameters.x_axis_parameters.minimum_x,
+            maximum_longitude=self.geographical_parameters.x_axis_parameters.maximum_x,
+            minimum_latitude=self.geographical_parameters.y_axis_parameters.minimum_y,
+            maximum_latitude=self.geographical_parameters.y_axis_parameters.maximum_y,
             minimum_depth=self.depth_parameters.minimum_depth,
             maximum_depth=self.depth_parameters.maximum_depth,
             start_datetime=self.temporal_parameters.start_datetime,
             end_datetime=self.temporal_parameters.end_datetime,
+        )
+
+    def update_attributes(self, axis_coordinate_id_mapping: dict):
+        self.geographical_parameters.x_axis_parameters.coordinate_id = (
+            axis_coordinate_id_mapping.get("x", "")
+        )
+        self.geographical_parameters.y_axis_parameters.coordinate_id = (
+            axis_coordinate_id_mapping.get("y", "")
+        )
+        self.temporal_parameters.coordinate_id = (
+            axis_coordinate_id_mapping.get("t", "")
+        )
+        self.depth_parameters.coordinate_id = axis_coordinate_id_mapping.get(
+            "z", ""
         )
 
 

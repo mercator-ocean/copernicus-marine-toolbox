@@ -198,6 +198,8 @@ class TestPythonInterface:
         )
 
         assert dataframe is not None
+        assert dataframe.size > 0
+        assert "ERROR" not in caplog.text
 
     def test_open_dataset_with_retention_date(self):
         dataset = open_dataset(
@@ -308,7 +310,13 @@ class TestPythonInterface:
         )
         size_uncompressed = (tmp_path / "uncompressed_data.nc").stat().st_size
         size_compressed = (tmp_path / "compressed_data.nc").stat().st_size
+        assert len(dataset_uncompressed.longitude.values) > 4300
+        assert len(dataset_compressed.longitude.values) > 4300
+        assert len(dataset_uncompressed.latitude.values) > 2000
+        assert len(dataset_compressed.latitude.values) > 2000
+
         assert size_uncompressed > 2 * size_compressed
+
         diff = dataset_uncompressed - dataset_compressed
         diff.attrs = dataset_uncompressed.attrs
         for var in diff.data_vars:
@@ -350,3 +358,17 @@ class TestPythonInterface:
             "standard_name": "latitude",
             "units": "degrees_north",
         }
+        for coordinate in dataset_response.coordinates_extent:
+            assert coordinate.coordinate_id in dataset.sizes
+            if coordinate.coordinate_id in [
+                "longitude",
+                "latitude",
+            ]:  # not time
+                assert (
+                    min(dataset[coordinate.coordinate_id].values)
+                    == coordinate.minimum
+                )
+                assert (
+                    dataset[coordinate.coordinate_id].values.max()
+                    == coordinate.maximum
+                )
