@@ -108,6 +108,8 @@
     'thumbnail_url',
     'title',
     'units',
+    'updated_data_date',
+    'updating_start_date',
     'uri',
     'values',
     'variables',
