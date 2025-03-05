@@ -75,6 +75,7 @@ class SubsetRequest:
     netcdf_compression_level: int = 0
     netcdf3_compatible: bool = False
     dry_run: bool = False
+    raise_if_updating: bool = False
 
     def update(self, new_dict: dict):
         """Method to update values in SubsetRequest object.

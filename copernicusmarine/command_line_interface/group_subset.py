@@ -286,6 +286,13 @@ def cli_subset() -> None:
     default="INFO",
     help=documentation_utils.SUBSET["LOG_LEVEL_HELP"],
 )
+@click.option(
+    "--raise-if-updating",
+    type=bool,
+    default=False,
+    is_flag=True,
+    help=documentation_utils.SUBSET["RAISE_IF_UPDATING_HELP"],
+)
 @force_download_option
 @log_exception_and_exit
 def subset(
@@ -323,6 +330,7 @@ def subset(
     log_level: str,
     chunk_size_limit: int,
     staging: bool,
+    raise_if_updating: bool,
     force_download: bool,
 ):
     if log_level == "QUIET":
@@ -375,6 +383,7 @@ def subset(
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
         chunk_size_limit=chunk_size_limit,
+        raise_if_updating=raise_if_updating,
     )
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))

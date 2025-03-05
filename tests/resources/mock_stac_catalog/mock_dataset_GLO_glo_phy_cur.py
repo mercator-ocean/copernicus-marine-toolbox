@@ -166,6 +166,7 @@ MOCK_DATASET_GLO_PHY_CUR = {
         "admp_in_preparation": False,
         "admp_updated": "2024-04-23T04:23:46.808754Z",
         "admp_released_date": "2022-04-23T04:23:46.808754Z",
+        "admp_updating_start_date": "2024-05-01T00:00:00Z",
         "admp_retired_date": None,
     },
     "links": [

@@ -73,6 +73,7 @@ def subset_function(
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
     chunk_size_limit: int,
+    raise_if_updating: bool,
 ) -> ResponseSubset:
     VersionVerifier.check_version_subset(staging)
     if staging:
@@ -120,6 +121,7 @@ def subset_function(
         "netcdf_compression_level": netcdf_compression_level,
         "netcdf3_compatible": netcdf3_compatible,
         "dry_run": dry_run,
+        "raise_if_updating": raise_if_updating,
     }
     subset_request.update(request_update_dict)
     if not subset_request.dataset_id:
@@ -165,6 +167,7 @@ def subset_function(
         CommandType.SUBSET,
         dataset_subset=subset_request.get_time_and_space_subset(),
         staging=staging,
+        raise_if_updating=subset_request.raise_if_updating,
     )
     subset_request.dataset_url = retrieval_service.uri
     check_dataset_subset_bounds(
