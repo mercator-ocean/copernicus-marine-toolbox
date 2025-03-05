@@ -198,7 +198,8 @@ class TestPythonInterface:
         )
 
         assert dataframe is not None
-        # TODO: maybe some other check to add here, no?
+        assert dataframe.size > 0
+        assert "ERROR" not in caplog.text
 
     def test_open_dataset_with_retention_date(self):
         dataset = open_dataset(

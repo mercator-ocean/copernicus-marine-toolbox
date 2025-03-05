@@ -120,6 +120,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "-x",
+    "alias_min_x",
     type=float,
     help=documentation_utils.SUBSET["ALIAS_MIN_X_HELP"],
 )
@@ -135,6 +136,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "-X",
+    "alias_max_x",
     type=float,
     help=documentation_utils.SUBSET["ALIAS_MAX_X_HELP"],
 )
@@ -150,6 +152,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "-y",
+    "alias_min_y",
     type=float,
     help=documentation_utils.SUBSET["ALIAS_MIN_Y_HELP"],
 )
@@ -165,6 +168,7 @@ def cli_subset() -> None:
 )
 @click.option(
     "-Y",
+    "alias_max_y",
     type=float,
     help=documentation_utils.SUBSET["ALIAS_MAX_Y_HELP"],
 )
@@ -342,10 +346,10 @@ def subset(
     maximum_x: Optional[float],
     minimum_y: Optional[float],
     maximum_y: Optional[float],
-    x: Optional[float],
-    X: Optional[float],
-    y: Optional[float],
-    Y: Optional[float],
+    alias_min_x: Optional[float],
+    alias_max_x: Optional[float],
+    alias_min_y: Optional[float],
+    alias_max_y: Optional[float],
     minimum_depth: Optional[float],
     maximum_depth: Optional[float],
     vertical_axis: VerticalAxis,
@@ -400,7 +404,7 @@ def subset(
         dataset_part,
     )
     if dataset_part == "originalGrid":
-        if X or x or Y or y:
+        if alias_max_x or alias_min_x or alias_max_y or alias_min_y:
             logger.warning(
                 "Because you are using an originalGrid dataset, we are considering"
                 " the options -x, -X, -y, -Y to be in kms, not in degrees."
@@ -413,10 +417,10 @@ def subset(
         username=username,
         password=password,
         variables=variables,
-        minimum_longitude=minimum_longitude or minimum_x or x,
-        maximum_longitude=maximum_longitude or maximum_x or X,
-        minimum_latitude=minimum_latitude or minimum_y or y,
-        maximum_latitude=maximum_latitude or maximum_y or Y,
+        minimum_longitude=minimum_longitude or minimum_x or alias_min_x,
+        maximum_longitude=maximum_longitude or maximum_x or alias_max_x,
+        minimum_latitude=minimum_latitude or minimum_y or alias_min_y,
+        maximum_latitude=maximum_latitude or maximum_y or alias_max_y,
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
         vertical_axis=vertical_axis,

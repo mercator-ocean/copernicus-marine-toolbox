@@ -146,24 +146,32 @@ SUBSET: dict[str, str] = {
         "to the interval [-180; 360[."
     ),
     "MINIMUM_X_HELP": ("Minimum x-axis value for the subset."),
-    "ALIAS_MIN_X_HELP": ("Alias for --minimum-longitude and --minimum-x."),
+    "ALIAS_MIN_X_HELP": (
+        "Alias for ``--minimum-longitude`` and ``--minimum-x``."
+    ),
     "MAXIMUM_LONGITUDE_HELP": (
         "Maximum longitude for the subset. The value will be transposed"
         " to the interval [-180; 360[."
     ),
-    "ALIAS_MAX_X_HELP": ("Alias for --maximum-longitude and --maximum-x."),
+    "ALIAS_MAX_X_HELP": (
+        "Alias for ``--maximum-longitude`` and ``--maximum-x``."
+    ),
     "MAXIMUM_X_HELP": ("Maximum x-axis value for the subset."),
     "MINIMUM_LATITUDE_HELP": (
         "Minimum latitude for the subset. Requires a float from -90 "
         "degrees to +90."
     ),
-    "ALIAS_MIN_Y_HELP": ("Alias for --minimum-latitude and --minimum-y."),
+    "ALIAS_MIN_Y_HELP": (
+        "Alias for ``--minimum-latitude`` and ``--minimum-y``."
+    ),
     "MINIMUM_Y_HELP": ("Minimum y-axis value for the subset."),
     "MAXIMUM_LATITUDE_HELP": (
         "Maximum latitude for the subset. Requires a float from -90 degrees "
         "to +90."
     ),
-    "ALIAS_MAX_Y_HELP": ("Alias for --maximum-latitude and --maximum-y."),
+    "ALIAS_MAX_Y_HELP": (
+        "Alias for ``--maximum-latitude`` and ``--maximum-y``."
+    ),
     "MAXIMUM_Y_HELP": ("Maximum y-axis value for the subset."),
     "MINIMUM_DEPTH_HELP": (
         "Minimum depth for the subset. Requires a positive float (or 0)."

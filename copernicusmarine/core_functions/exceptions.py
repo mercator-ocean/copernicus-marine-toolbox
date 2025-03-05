@@ -107,31 +107,37 @@ class MutuallyExclusiveArguments(Exception):
 
 class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
     """
-    Exception raised when using longitude and latitude subset is not available
-    for original grid datasets.
+    Exception raised when using longitude and latitude subset on
+    a original grid dataset.
 
-    Please make sure the dataset part is not 'originalGrid' when using longitude and
-    latitude subset.
+    For now, make sure the dataset part is not 'originalGrid' when using
+    the options ``--maximum-longitude``, ``--minimum-longitude``,
+    ``--maximum-latitude`` and ``--minimum-latitude``.
+
     """
 
     def __init__(self):
         super().__init__(
             "You cannot specify longitude and latitude when using the originalGrid "
-            "dataset part yet. Try using x and y instead and then convert it."
+            "dataset part yet. "
+            "Try using ``--minimum-x``, ``--maximum-x``, ``--minimum-y``, "
+            "``--maximum-y`` instead and then convert it."
         )
 
 
 class XYNotAvailableInNonOriginalGridDatasets(Exception):
     """
-    Exception raised when using x and y subset is not available for non-original grid
-    datasets.
+    Exception raised when using x and y subset on a non-original grid
+    dataset.
 
-    Please make sure the dataset part is 'originalGrid' when using x and y subset.
+    Please make sure the dataset part is 'originalGrid' when the options
+    ``--minimum-x``, ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``.
     """
 
     def __init__(self):
         super().__init__(
             "You cannot specify x and y when not using the originalGrid dataset part."
-            "Try using longitude and latitude instead or make sure to specify the "
-            "dataset_part."
+            "Try using ``--maximum-longitude``, ``--minimum-longitude``, "
+            "``--maximum-latitude`` and ``--minimum-latitude`` instead"
+            " or make sure to specify the dataset_part."
         )

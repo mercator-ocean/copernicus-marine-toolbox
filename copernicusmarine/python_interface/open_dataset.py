@@ -48,6 +48,10 @@ def open_dataset(
     maximum_longitude: Optional[float] = None,
     minimum_latitude: Optional[float] = None,
     maximum_latitude: Optional[float] = None,
+    maximum_x: Optional[float] = None,
+    minimum_x: Optional[float] = None,
+    maximum_y: Optional[float] = None,
+    minimum_y: Optional[float] = None,
     minimum_depth: Optional[float] = None,
     maximum_depth: Optional[float] = None,
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
@@ -118,14 +122,18 @@ def open_dataset(
     credentials_file = (
         pathlib.Path(credentials_file) if credentials_file else None
     )
-    load_request = LoadRequest(
-        dataset_id=dataset_id,
-        force_dataset_version=dataset_version,
-        force_dataset_part=dataset_part,
-        username=username,
-        password=password,
-        variables=variables,
-        geographical_parameters=GeographicalParameters(
+    if dataset_part == "originalGrid":
+        geographicalparameters = GeographicalParameters(
+            y_axis_parameters=YParameters(
+                minimum_y=minimum_y, maximum_y=maximum_y, coordinate_id="y"
+            ),
+            x_axis_parameters=XParameters(
+                minimum_x=minimum_x, maximum_x=maximum_x, coordinate_id="x"
+            ),
+            projection="originalGrid",
+        )
+    else:
+        geographicalparameters = GeographicalParameters(
             y_axis_parameters=YParameters(
                 minimum_y=minimum_latitude,
                 maximum_y=maximum_latitude,
@@ -134,7 +142,15 @@ def open_dataset(
                 minimum_x=minimum_longitude,
                 maximum_x=maximum_longitude,
             ),
-        ),
+        )
+    load_request = LoadRequest(
+        dataset_id=dataset_id,
+        force_dataset_version=dataset_version,
+        force_dataset_part=dataset_part,
+        username=username,
+        password=password,
+        variables=variables,
+        geographical_parameters=geographicalparameters,
         temporal_parameters=TemporalParameters(
             start_datetime=start_datetime,
             end_datetime=end_datetime,

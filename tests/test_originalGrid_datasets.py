@@ -3,6 +3,7 @@ from json import loads
 
 import xarray
 
+from copernicusmarine import open_dataset, read_dataframe, subset
 from copernicusmarine.core_functions.utils import datetime_parser
 from tests.test_utils import execute_in_terminal
 
@@ -297,3 +298,64 @@ class TestOriginalGridDatasets:
             b" dimension exceed the dataset coordinates [-43.0, 28.0]"
             in self.output.stderr
         )
+
+    def test_subset_w_python_interface(self, tmp_path):
+        _ = subset(
+            dataset_id="cmems_mod_arc_phy_my_topaz4_P1Y",
+            dataset_part="originalGrid",
+            maximum_x=8,
+            minimum_x=6,
+            maximum_y=10,
+            minimum_y=5,
+            start_datetime="2020",
+            end_datetime="2020",
+            output_filename="output.nc",
+            output_directory=tmp_path,
+            coordinates_selection_method="outside",
+        )
+        assert (tmp_path / "output.nc").exists()
+        dataset = xarray.open_dataset(tmp_path / "output.nc")
+        assert dataset is not None
+        assert dataset.x.max() >= 8
+        assert dataset.x.min() <= 6
+        assert dataset.y.max() >= 10
+        assert dataset.y.min() <= 5
+        assert dataset.latitudes is not None
+        assert dataset.longitudes is not None
+
+    def test_open_dataset_w_python_interface(self):
+        dataset = open_dataset(
+            dataset_id="cmems_mod_arc_phy_my_topaz4_P1Y",
+            dataset_part="originalGrid",
+            maximum_x=8,
+            minimum_x=6,
+            maximum_y=10,
+            minimum_y=5,
+            start_datetime="2020",
+            end_datetime="2020",
+            coordinates_selection_method="outside",
+        )
+        assert dataset is not None
+        assert dataset.x.max() >= 8
+        assert dataset.x.min() <= 6
+        assert dataset.y.max() >= 10
+        assert dataset.y.min() <= 5
+        assert dataset.latitude is not None
+        assert dataset.longitude is not None
+
+    def test_read_dataframe_w_python_interface(self):
+        dataframe = read_dataframe(
+            dataset_id="cmems_mod_arc_phy_my_topaz4_P1Y",
+            dataset_part="originalGrid",
+            maximum_x=8,
+            minimum_x=6,
+            maximum_y=10,
+            minimum_y=5,
+            start_datetime="2020",
+            end_datetime="2020",
+            coordinates_selection_method="nearest",
+        )
+        assert dataframe is not None
+        assert dataframe["so"] is not None
+        assert dataframe["latitude"] is not None
+        assert dataframe["longitude"] is not None
