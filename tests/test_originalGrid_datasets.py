@@ -130,7 +130,7 @@ class TestOriginalGridDatasets:
         assert b"WARNING" in self.output.stderr
         assert (
             b"Because you are using an originalGrid dataset, we are considering"
-            b" the options -x, -X, -y, -Y to be in kms, not in degrees."
+            b" the options -x, -X, -y, -Y to be in m/km, not in degrees."
         ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
