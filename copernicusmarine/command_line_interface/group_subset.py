@@ -404,7 +404,6 @@ def subset(
         dataset_part,
     )
     if dataset_part == "originalGrid":
-        logger.info("aqui si xd")
         if (
             alias_max_x is not None
             or alias_min_x is not None
