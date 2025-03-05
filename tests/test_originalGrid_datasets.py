@@ -100,10 +100,12 @@ class TestOriginalGridDatasets:
         assert self.output.returncode == 1
         assert b"ERROR" in self.output.stderr
         assert (
-            b"You cannot specify longitude and latitude when using"
-            b" the originalGrid dataset part yet."
-            b" Try using x and y instead and then convert it."
-        ) in self.output.stderr
+            b"Lon lat subset not available in original grid datasets: "
+            b"You cannot specify longitude and latitude when using the"
+            b" originalGrid dataset part yet. Try using ``--minimum-x``"
+            b", ``--maximum-x``, ``--minimum-y``, ``--maximum-y`` instead"
+            b" and then convert it." in self.output.stderr
+        )
 
     def test_originalGrid_alias_work(self):
         command = [
@@ -120,7 +122,6 @@ class TestOriginalGridDatasets:
             "--dry-run",
             "--log-level",
             "DEBUG",
-            "--staging",
         ]
 
         self.output = execute_in_terminal(command)
@@ -226,6 +227,7 @@ class TestOriginalGridDatasets:
         assert coordinates[0]["coordinate_id"] == "y"
         assert coordinates[0]["maximum"] == float(max_y)
         assert coordinates[0]["minimum"] == float(min_y)
+        print(coordinates)
         assert coordinates[1]["coordinate_id"] == "x"
         assert coordinates[1]["maximum"] == float(max_x)
         assert coordinates[1]["minimum"] == float(min_x)
@@ -320,8 +322,8 @@ class TestOriginalGridDatasets:
         assert dataset.x.min() <= 6
         assert dataset.y.max() >= 10
         assert dataset.y.min() <= 5
-        assert dataset.latitudes is not None
-        assert dataset.longitudes is not None
+        assert dataset.latitude is not None
+        assert dataset.longitude is not None
 
     def test_open_dataset_w_python_interface(self):
         dataset = open_dataset(

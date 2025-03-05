@@ -404,7 +404,13 @@ def subset(
         dataset_part,
     )
     if dataset_part == "originalGrid":
-        if alias_max_x or alias_min_x or alias_max_y or alias_min_y:
+        logger.info("aqui si xd")
+        if (
+            alias_max_x is not None
+            or alias_min_x is not None
+            or alias_max_y is not None
+            or alias_min_y is not None
+        ):
             logger.warning(
                 "Because you are using an originalGrid dataset, we are considering"
                 " the options -x, -X, -y, -Y to be in kms, not in degrees."
@@ -417,10 +423,34 @@ def subset(
         username=username,
         password=password,
         variables=variables,
-        minimum_longitude=minimum_longitude or minimum_x or alias_min_x,
-        maximum_longitude=maximum_longitude or maximum_x or alias_max_x,
-        minimum_latitude=minimum_latitude or minimum_y or alias_min_y,
-        maximum_latitude=maximum_latitude or maximum_y or alias_max_y,
+        minimum_longitude=(
+            minimum_longitude
+            if minimum_longitude is not None
+            else minimum_x
+            if minimum_x is not None
+            else alias_min_x
+        ),
+        maximum_longitude=(
+            maximum_longitude
+            if maximum_longitude is not None
+            else maximum_x
+            if maximum_x is not None
+            else alias_max_x
+        ),
+        minimum_latitude=(
+            minimum_latitude
+            if minimum_latitude is not None
+            else minimum_y
+            if minimum_y is not None
+            else alias_min_y
+        ),
+        maximum_latitude=(
+            maximum_latitude
+            if maximum_latitude is not None
+            else maximum_y
+            if maximum_y is not None
+            else alias_max_y
+        ),
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
         vertical_axis=vertical_axis,
