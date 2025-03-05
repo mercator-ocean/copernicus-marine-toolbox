@@ -137,7 +137,7 @@ class XYNotAvailableInNonOriginalGridDatasets(Exception):
     def __init__(self):
         super().__init__(
             "You cannot specify x and y when not using the originalGrid dataset part."
-            "Try using ``--maximum-longitude``, ``--minimum-longitude``, "
+            " Try using ``--maximum-longitude``, ``--minimum-longitude``, "
             "``--maximum-latitude`` and ``--minimum-latitude`` instead"
             " or make sure to specify the dataset_part."
         )
