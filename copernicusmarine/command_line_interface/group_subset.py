@@ -412,7 +412,7 @@ def subset(
         ):
             logger.warning(
                 "Because you are using an originalGrid dataset, we are considering"
-                " the options -x, -X, -y, -Y to be in kms, not in degrees."
+                " the options -x, -X, -y, -Y to be in m/km, not in degrees."
             )
 
     response = subset_function(
