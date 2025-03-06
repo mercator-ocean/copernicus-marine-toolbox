@@ -412,6 +412,8 @@
     '  --log-level [DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]',
     '                                  Set the details printed to console by the',
     '                                  command (based on standard logging library).',
+    '  --raise-if-updating             If True, raise an error if the dataset is',
+    '                                  being updated.',
     '  -h, --help                      Show this message and exit.',
     '',
     '',
