@@ -21,6 +21,7 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.subset import subset_function
+from copernicusmarine.core_functions.utils import original_grid_check
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -45,6 +46,10 @@ def subset(
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
     start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
     end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    minimum_x: Optional[float] = None,
+    maximum_x: Optional[float] = None,
+    minimum_y: Optional[float] = None,
+    maximum_y: Optional[float] = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
@@ -151,6 +156,18 @@ def subset(
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
 
+    original_grid_check(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+
     return subset_function(
         dataset_id,
         dataset_version,
@@ -158,10 +175,10 @@ def subset(
         username,
         password,
         variables,
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
+        minimum_longitude or minimum_x,
+        maximum_longitude or maximum_x,
+        minimum_latitude or minimum_y,
+        maximum_latitude or maximum_y,
         minimum_depth,
         maximum_depth,
         vertical_axis,

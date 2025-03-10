@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Optional, Type, TypeVar, Union
+from typing import Literal, Optional, Type, TypeVar, Union
 
 import pystac
 from pydantic import BaseModel, ConfigDict
@@ -139,6 +139,8 @@ class CopernicusMarineCoordinate(BaseModel):
     chunk_reference_coordinate: Optional[Union[float, int]]
     #: Chunk geometric factor of the coordinate.
     chunk_geometric_factor: Optional[Union[float, int]]
+    #: Axis of the coordinate
+    axis: Literal["x", "y", "z", "t"]
 
     @classmethod
     def from_metadata_item(
@@ -148,6 +150,7 @@ class CopernicusMarineCoordinate(BaseModel):
         dimension_metadata: dict,
         arco_data_metadata_producer_valid_start_date: Optional[str],
         arco_data_metadata_producer_valid_start_index: Optional[int],
+        cube_dimensions: dict,
     ) -> Coordinate:
         coordinates_info = dimension_metadata.get("coords", {})
         minimum_value = None
@@ -172,6 +175,7 @@ class CopernicusMarineCoordinate(BaseModel):
                     arco_data_metadata_producer_valid_start_index:
                 ]
         chunking_length = dimension_metadata.get("chunkLen")
+        axis = cube_dimensions[dimension].get("axis", "t")
         if isinstance(chunking_length, dict):
             chunking_length = chunking_length.get(variable_id)
 
@@ -188,6 +192,7 @@ class CopernicusMarineCoordinate(BaseModel):
             chunk_geometric_factor=dimension_metadata.get(
                 "chunkGeometricFactor", {}
             ).get(variable_id),
+            axis=axis,
         )
         if dimension == "elevation":
             coordinate._convert_elevation_to_depth()
@@ -257,6 +262,7 @@ class CopernicusMarineVariable(BaseModel):
     ) -> Variable:
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]
+        cube_dimensions = metadata_item.properties["cube:dimensions"]
 
         extra_fields_asset = asset.extra_fields
         dimensions = extra_fields_asset.get("viewDims") or {}
@@ -272,6 +278,7 @@ class CopernicusMarineVariable(BaseModel):
                     dimension_metadata,
                     metadata_item.properties.get("admp_valid_start_date"),
                     metadata_item.properties.get("admp_valid_start_index"),
+                    cube_dimensions,
                 )
                 for dimension, dimension_metadata in dimensions.items()
                 if dimension in cube_variable["dimensions"]
@@ -358,6 +365,20 @@ class CopernicusMarineService(BaseModel):
             log_exception_debug(service_not_handled)
             return None
 
+    def get_axis_coordinate_id_mapping(
+        self,
+    ) -> dict[str, str]:
+        axis_coordinate_id_mapping: dict[str, str] = {}
+        for variable in self.variables:
+            for coordinate in variable.coordinates:
+                if len(axis_coordinate_id_mapping) == 4:
+                    return axis_coordinate_id_mapping
+                axis_coordinate_id_mapping[
+                    coordinate.axis
+                ] = coordinate.coordinate_id
+
+        return axis_coordinate_id_mapping
+
 
 VersionPart = TypeVar("VersionPart", bound="CopernicusMarinePart")
 
@@ -379,7 +400,9 @@ class CopernicusMarinePart(BaseModel):
 
     @classmethod
     def from_metadata_item(
-        cls: Type[VersionPart], metadata_item: pystac.Item, part_name: str
+        cls: Type[VersionPart],
+        metadata_item: pystac.Item,
+        part_name: str,
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")

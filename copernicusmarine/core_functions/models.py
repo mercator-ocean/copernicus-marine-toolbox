@@ -24,6 +24,9 @@ VerticalAxis = Literal["depth", "elevation"]
 DEFAULT_VERTICAL_AXIS: VerticalAxis = "depth"
 DEFAULT_VERTICAL_AXES = list(get_args(VerticalAxis))
 
+GeoSpatialProjection = Literal["lonlat", "originalGrid"]
+DEFAULT_GEOSPATIAL_PROJECTION: GeoSpatialProjection = "lonlat"
+
 
 class StatusCode(str, Enum):
     """

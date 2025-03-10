@@ -175,7 +175,7 @@ def subset_function(
         dataset_subset=subset_request.get_time_and_space_subset(),
         coordinates_selection_method=subset_request.coordinates_selection_method,
         dataset_valid_date=retrieval_service.dataset_valid_start_date,
-        is_original_grid=retrieval_service.is_original_grid,
+        axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
@@ -195,6 +195,8 @@ def subset_function(
                 disable_progress_bar,
                 retrieval_service.dataset_valid_start_date,
                 retrieval_service.service,
+                retrieval_service.is_original_grid,
+                retrieval_service.axis_coordinate_id_mapping,
                 None if chunk_size_limit == 0 else chunk_size_limit,
             )
     else:

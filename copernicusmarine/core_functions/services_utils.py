@@ -148,6 +148,7 @@ def _get_best_arco_service_type(
     dataset_subset: DatasetTimeAndSpaceSubset,
     dataset_url: str,
     username: Optional[str],
+    axis_coordinate_id_mapping: dict[str, str],
 ) -> Literal[
     CopernicusMarineServiceNames.TIMESERIES,
     CopernicusMarineServiceNames.GEOSERIES,
@@ -155,22 +156,25 @@ def _get_best_arco_service_type(
     dataset = custom_open_zarr.open_zarr(
         dataset_url, copernicus_marine_username=username
     )
+    y_axis_name = axis_coordinate_id_mapping.get("y", "latitude")
+    x_axis_name = axis_coordinate_id_mapping.get("x", "longitude")
+    t_axis_name = axis_coordinate_id_mapping.get("t", "time")
 
     latitude_size = get_size_of_coordinate_subset(
         dataset,
-        "latitude",
-        dataset_subset.minimum_latitude,
-        dataset_subset.maximum_latitude,
+        y_axis_name,
+        dataset_subset.minimum_y,
+        dataset_subset.maximum_y,
     )
     longitude_size = get_size_of_coordinate_subset(
         dataset,
-        "longitude",
-        dataset_subset.minimum_longitude,
-        dataset_subset.maximum_longitude,
+        x_axis_name,
+        dataset_subset.minimum_x,
+        dataset_subset.maximum_x,
     )
     time_size = get_size_of_coordinate_subset(
         dataset,
-        "time",
+        t_axis_name,
         (
             dataset_subset.start_datetime.astimezone(tz=UTC).replace(
                 tzinfo=None
@@ -187,11 +191,11 @@ def _get_best_arco_service_type(
     dataset_coordinates = dataset.coords
 
     geographical_dimensions = (
-        dataset_coordinates["latitude"].size
-        * dataset_coordinates["longitude"].size
+        dataset_coordinates[y_axis_name].size
+        * dataset_coordinates[x_axis_name].size
     )
     subset_geographical_dimensions = latitude_size * longitude_size
-    temporal_dimensions = dataset_coordinates["time"].size
+    temporal_dimensions = dataset_coordinates[t_axis_name].size
     subset_temporal_dimensions = time_size
 
     geographical_coverage = (
@@ -250,7 +254,10 @@ def _select_service_by_priority(
             raise FormatNotSupported(first_available_service.service_format)
         best_arco_service_type: CopernicusMarineServiceNames = (
             _get_best_arco_service_type(
-                dataset_subset, first_available_service.uri, username
+                dataset_subset,
+                first_available_service.uri,
+                username,
+                first_available_service.get_axis_coordinate_id_mapping(),
             )
         )
         return dataset_version_part.get_service_by_service_name(
@@ -267,6 +274,7 @@ class RetrievalService:
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
     service: CopernicusMarineService
+    axis_coordinate_id_mapping: dict[str, str]
     is_original_grid: bool = False
 
 
@@ -376,6 +384,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
         service=service,
+        axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
         is_original_grid=dataset_part.name == "originalGrid",
     )
 
