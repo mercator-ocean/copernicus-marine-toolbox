@@ -102,8 +102,8 @@ class TestOriginalGridDatasets:
         assert (
             b"Lon lat subset not available in original grid datasets: "
             b"You cannot specify longitude and latitude when using the"
-            b" originalGrid dataset part yet. Try using ``--minimum-x``"
-            b", ``--maximum-x``, ``--minimum-y``, ``--maximum-y`` instead."
+            b" 'originalGrid' dataset part yet. Try using ``--minimum-x``"
+            b", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
             in self.output.stderr
         )
 
