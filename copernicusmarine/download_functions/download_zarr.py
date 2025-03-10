@@ -27,7 +27,7 @@ from copernicusmarine.core_functions.models import (
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
-    get_unique_filename,
+    get_unique_filepath,
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -150,7 +150,7 @@ def download_dataset(
         pathlib.Path.mkdir(output_directory, parents=True)
 
     if not overwrite and not skip_existing:
-        output_path = get_unique_filename(
+        output_path = get_unique_filepath(
             filepath=output_path,
         )
     logger.debug(f"Xarray Dataset: {dataset}")
