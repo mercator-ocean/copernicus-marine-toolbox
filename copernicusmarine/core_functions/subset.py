@@ -27,7 +27,7 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import get_unique_filename
+from copernicusmarine.core_functions.utils import get_unique_filepath
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_sparse import download_sparse
 from copernicusmarine.download_functions.download_zarr import download_zarr
@@ -216,7 +216,7 @@ def subset_function(
 def create_subset_template() -> None:
     filename = pathlib.Path("subset_template.json")
     if filename.exists():
-        get_unique_filename(
+        get_unique_filepath(
             filepath=filename,
         )
     with open(filename, "w") as output_file:

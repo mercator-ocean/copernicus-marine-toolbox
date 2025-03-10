@@ -18,7 +18,7 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import get_unique_filename
+from copernicusmarine.core_functions.utils import get_unique_filepath
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_original_files import (
     download_original_files,
@@ -169,7 +169,7 @@ def _run_get_request(
 def create_get_template() -> None:
     filename = pathlib.Path("get_template.json")
     if filename.exists():
-        get_unique_filename(
+        get_unique_filepath(
             filepath=pathlib.Path("get_template.json"),
         )
     with open(filename, "w") as output_file:

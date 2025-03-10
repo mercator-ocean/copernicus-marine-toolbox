@@ -1,3 +1,5 @@
+import pathlib
+
 from arcosparse import UserConfiguration, get_platforms_names, subset_and_save
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineService
@@ -19,7 +21,9 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
+    get_unique_filepath,
 )
+from copernicusmarine.download_functions.utils import get_file_extension
 
 
 # TODO: do the case where we want to return a pandas dataframe
@@ -49,6 +53,43 @@ def download_sparse(
                 raise WrongPlatformID(
                     platform_id, retrieval_service.platforms_metadata
                 )
+    extension_file = get_file_extension(
+        subset_request.file_format or "parquet"
+    )
+    filename = pathlib.Path(
+        subset_request.output_filename
+        or f"{subset_request.dataset_id}_subset{extension_file}"
+    )
+
+    if filename.suffix != extension_file:
+        filename = pathlib.Path(f"{filename}{extension_file}")
+    output_path = pathlib.Path(
+        subset_request.output_directory,
+        filename,
+    )
+    if not subset_request.overwrite and not subset_request.skip_existing:
+        output_path = get_unique_filepath(output_path)
+    response = ResponseSubset(
+        file_path=output_path,
+        output_directory=subset_request.output_directory,
+        filename=str(filename),
+        file_size=0,
+        data_transfer_size=0,
+        variables=subset_request.variables or [],
+        # TODO: handle thoses extents maybe opening the dataframe
+        coordinates_extent=[],
+        status=StatusCode.SUCCESS,
+        message=StatusMessage.SUCCESS,
+        file_status=FileStatus.DOWNLOADED,
+    )
+
+    if subset_request.dry_run:
+        response.status = StatusCode.DRY_RUN
+        response.message = StatusMessage.DRY_RUN
+        return response
+    elif subset_request.skip_existing and output_path.exists():
+        response.file_status = FileStatus.IGNORED
+        return response
 
     # TODO: handle the outputs path, skip existing etc.
     subset_and_save(
@@ -80,19 +121,7 @@ def download_sparse(
         platform_ids=subset_request.platform_ids or [],
         url_metadata=metadata_url,
         user_configuration=user_configuration,
-        output_path=subset_request.output_directory / "sparse_data.parquet",
+        output_path=output_path,
         disable_progress_bar=disable_progress_bar,
     )
-    return ResponseSubset(
-        file_path=subset_request.output_directory / "sparse_data.parquet",
-        output_directory=subset_request.output_directory,
-        filename="sparse_data.parquet",
-        file_size=0,
-        data_transfer_size=0,
-        variables=subset_request.variables or [],
-        # TODO: handle thoses extents
-        coordinates_extent=[],
-        status=StatusCode.SUCCESS,
-        message=StatusMessage.SUCCESS,
-        file_status=FileStatus.DOWNLOADED,
-    )
+    return response

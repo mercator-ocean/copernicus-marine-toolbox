@@ -1,3 +1,5 @@
+from json import loads
+
 from tests.test_utils import execute_in_terminal
 
 # TODO: maybe reduce the size of the request
@@ -11,9 +13,9 @@ BASIC_COMMAND = [
     "--variable",
     "PSAL",
     "--variable",
-    "ATMP",
+    "TEMP",
     "-y",
-    "-63.90",
+    "45",
     "-Y",
     "90",
     "-x",
@@ -27,7 +29,9 @@ BASIC_COMMAND = [
     "--start-datetime",
     "2023-11-25T00:00:00",
     "--end-datetime",
-    "2023-12-02T03:00:00",
+    "2023-11-26T03:00:00",
+    "-r",
+    "all",
 ]
 
 
@@ -39,7 +43,8 @@ class TestSparseSubset:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (tmp_path / "sparse_data.parquet").exists()
+        filename = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_subset.parquet"
+        assert (tmp_path / filename).exists()
 
     def test_I_can_subset_on_platform_ids(self, tmp_path):
         command = BASIC_COMMAND + [
@@ -49,15 +54,47 @@ class TestSparseSubset:
             "F-Vartdalsfjorden___MO",
             "--output-directory",
             tmp_path,
+            "--output-filename",
+            "sparse_data",
         ]
         expected_files = [
             "B-Sulafjorden___MO_PSAL_6672.0.0.0.parquet",
-            "B-Sulafjorden___MO_PSAL_6673.0.0.0.parquet",
+            "B-Sulafjorden___MO_TEMP_6672.0.0.0.parquet",
             "F-Vartdalsfjorden___MO_PSAL_6672.0.0.0.parquet",
-            "F-Vartdalsfjorden___MO_PSAL_6673.0.0.0.parquet",
+            "F-Vartdalsfjorden___MO_TEMP_6672.0.0.0.parquet",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (tmp_path / "sparse_data.parquet").exists()
         for file_ in expected_files:
             assert (tmp_path / "sparse_data.parquet" / file_).exists()
+
+    def test_skip_existing_overwrite_default(self, tmp_path):
+        command = BASIC_COMMAND + [
+            "--output-directory",
+            tmp_path,
+            "--output-filename",
+            "sparse_data",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert (tmp_path / "sparse_data.parquet").exists()
+
+        command_skip_existing = command + ["--skip-existing"]
+        self.output = execute_in_terminal(command_skip_existing)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        assert response["status"] == "000"
+        assert response["file_status"] == "IGNORED"
+
+        command_overwrite = command + ["--overwrite"]
+        self.output = execute_in_terminal(command_overwrite)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        assert response["status"] == "000"
+        assert response["file_status"] == "DOWNLOADED"
+
+        command_default = command
+        self.output = execute_in_terminal(command_default)
+        assert self.output.returncode == 0
+        assert (tmp_path / "sparse_data_(1).parquet").exists()
