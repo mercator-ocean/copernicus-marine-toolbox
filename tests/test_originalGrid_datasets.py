@@ -103,8 +103,8 @@ class TestOriginalGridDatasets:
             b"Lon lat subset not available in original grid datasets: "
             b"You cannot specify longitude and latitude when using the"
             b" originalGrid dataset part yet. Try using ``--minimum-x``"
-            b", ``--maximum-x``, ``--minimum-y``, ``--maximum-y`` instead"
-            b" and then convert it." in self.output.stderr
+            b", ``--maximum-x``, ``--minimum-y``, ``--maximum-y`` instead."
+            in self.output.stderr
         )
 
     def test_originalGrid_alias_work(self):
