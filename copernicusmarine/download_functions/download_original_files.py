@@ -4,7 +4,6 @@ import pathlib
 import re
 from datetime import datetime
 from itertools import chain
-from pathlib import Path
 from typing import Literal, Optional
 
 from botocore.client import ClientError
@@ -28,7 +27,7 @@ from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
 )
 from copernicusmarine.core_functions.utils import (
-    get_unique_filename,
+    get_unique_filepath,
     parse_access_dataset_url,
     run_concurrently,
     timestamp_parser,
@@ -239,7 +238,7 @@ def _get_files_to_delete_with_sync(
         return files_information
     product_structure = str(
         _local_path_from_s3_url(
-            files_information.s3_files[0].filename_in, Path("")
+            files_information.s3_files[0].filename_in, pathlib.Path("")
         )
     ).split("/")
     product_id = product_structure[0]
@@ -264,7 +263,7 @@ def download_files(
     disable_progress_bar: bool,
 ) -> None:
     for filename_out in filenames_out:
-        parent_dir = Path(filename_out).parent
+        parent_dir = pathlib.Path(filename_out).parent
         if not parent_dir.is_dir():
             pathlib.Path.mkdir(parent_dir, parents=True)
     if max_concurrent_requests:
@@ -355,7 +354,7 @@ def _download_header(
     if create_file_list and create_file_list.endswith(".txt"):
         download_filename = directory_out / create_file_list
         if not overwrite:
-            download_filename = get_unique_filename(
+            download_filename = get_unique_filepath(
                 directory_out / create_file_list,
             )
         with open(download_filename, "w") as file_out:
@@ -366,7 +365,7 @@ def _download_header(
     elif create_file_list and create_file_list.endswith(".csv"):
         download_filename = directory_out / create_file_list
         if not overwrite:
-            download_filename = get_unique_filename(
+            download_filename = get_unique_filepath(
                 directory_out / create_file_list,
             )
         with open(download_filename, "w") as file_out:
@@ -657,7 +656,7 @@ def _create_filenames_out(
             no_directories,
         )
         if not s3_file.overwrite and not s3_file.ignore:
-            filename_out = get_unique_filename(
+            filename_out = get_unique_filepath(
                 filepath=filename_out,
             )
         s3_file.filename_out = filename_out

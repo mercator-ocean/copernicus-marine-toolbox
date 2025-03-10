@@ -1,8 +1,8 @@
 import bisect
 import logging
 import math
+import pathlib
 from datetime import datetime
-from pathlib import Path
 from typing import Any, Optional, Union
 
 import xarray
@@ -32,6 +32,10 @@ logger = logging.getLogger("copernicusmarine")
 def get_file_extension(file_format: FileFormat) -> str:
     if file_format == "zarr":
         return ".zarr"
+    if file_format == "csv":
+        return ".csv"
+    if file_format == "parquet":
+        return ".parquet"
     else:
         return ".nc"
 
@@ -44,7 +48,7 @@ def get_filename(
     axis_coordinate_id_mapping: dict[str, str],
 ) -> str:
     if filename:
-        if Path(filename).suffix in DEFAULT_FILE_EXTENSIONS:
+        if pathlib.Path(filename).suffix in DEFAULT_FILE_EXTENSIONS:
             return filename
         else:
             return filename + get_file_extension(file_format)
