@@ -410,7 +410,7 @@ def subset(
             or alias_max_y is not None
             or alias_min_y is not None
         ):
-            logger.warning(
+            logger.debug(
                 "Because you are using an originalGrid dataset, we are considering"
                 " the options -x, -X, -y, -Y to be in m/km, not in degrees."
             )

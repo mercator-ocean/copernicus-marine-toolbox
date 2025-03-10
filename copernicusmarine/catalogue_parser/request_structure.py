@@ -37,10 +37,10 @@ MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
 
 @dataclass
 class DatasetTimeAndSpaceSubset:
-    minimum_longitude: Optional[float] = None
-    maximum_longitude: Optional[float] = None
-    minimum_latitude: Optional[float] = None
-    maximum_latitude: Optional[float] = None
+    minimum_x: Optional[float] = None
+    maximum_x: Optional[float] = None
+    minimum_y: Optional[float] = None
+    maximum_y: Optional[float] = None
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
     start_datetime: Optional[datetime] = None
@@ -122,10 +122,10 @@ class SubsetRequest:
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
-            minimum_longitude=self.minimum_longitude,
-            maximum_longitude=self.maximum_longitude,
-            minimum_latitude=self.minimum_latitude,
-            maximum_latitude=self.maximum_latitude,
+            minimum_x=self.minimum_longitude,
+            maximum_x=self.maximum_longitude,
+            minimum_y=self.minimum_latitude,
+            maximum_y=self.maximum_latitude,
             minimum_depth=self.minimum_depth,
             maximum_depth=self.maximum_depth,
             start_datetime=self.start_datetime,
@@ -295,10 +295,10 @@ class LoadRequest:
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
-            minimum_longitude=self.geographical_parameters.x_axis_parameters.minimum_x,
-            maximum_longitude=self.geographical_parameters.x_axis_parameters.maximum_x,
-            minimum_latitude=self.geographical_parameters.y_axis_parameters.minimum_y,
-            maximum_latitude=self.geographical_parameters.y_axis_parameters.maximum_y,
+            minimum_x=self.geographical_parameters.x_axis_parameters.minimum_x,
+            maximum_x=self.geographical_parameters.x_axis_parameters.maximum_x,
+            minimum_y=self.geographical_parameters.y_axis_parameters.minimum_y,
+            maximum_y=self.geographical_parameters.y_axis_parameters.maximum_y,
             minimum_depth=self.depth_parameters.minimum_depth,
             maximum_depth=self.depth_parameters.maximum_depth,
             start_datetime=self.temporal_parameters.start_datetime,

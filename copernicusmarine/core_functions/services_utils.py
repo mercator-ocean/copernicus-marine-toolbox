@@ -163,14 +163,14 @@ def _get_best_arco_service_type(
     latitude_size = get_size_of_coordinate_subset(
         dataset,
         y_axis_name,
-        dataset_subset.minimum_latitude,
-        dataset_subset.maximum_latitude,
+        dataset_subset.minimum_y,
+        dataset_subset.maximum_y,
     )
     longitude_size = get_size_of_coordinate_subset(
         dataset,
         x_axis_name,
-        dataset_subset.minimum_longitude,
-        dataset_subset.maximum_longitude,
+        dataset_subset.minimum_x,
+        dataset_subset.maximum_x,
     )
     time_size = get_size_of_coordinate_subset(
         dataset,

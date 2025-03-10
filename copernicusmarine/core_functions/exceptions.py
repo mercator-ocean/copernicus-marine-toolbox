@@ -110,18 +110,17 @@ class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
     Exception raised when using longitude and latitude subset on
     a original grid dataset.
 
-    For now, make sure the dataset part is not 'originalGrid' when using
-    the options ``--maximum-longitude``, ``--minimum-longitude``,
-    ``--maximum-latitude`` and ``--minimum-latitude``.
-
+    The options ``--maximum-longitude``, ``--minimum-longitude``,
+    ``--maximum-latitude`` and ``--minimum-latitude`` cannot be
+      used with 'originalGrid' dataset part.
     """
 
     def __init__(self):
         super().__init__(
-            "You cannot specify longitude and latitude when using the originalGrid "
+            "You cannot specify longitude and latitude when using the 'originalGrid' "
             "dataset part yet. "
-            "Try using ``--minimum-x``, ``--maximum-x``, ``--minimum-y``, "
-            "``--maximum-y`` instead and then convert it."
+            "Try using ``--minimum-x``, ``--maximum-x``, ``--minimum-y`` and "
+            "``--maximum-y``."
         )
 
 
@@ -136,7 +135,7 @@ class XYNotAvailableInNonOriginalGridDatasets(Exception):
 
     def __init__(self):
         super().__init__(
-            "You cannot specify x and y when not using the originalGrid dataset part."
+            "You cannot specify x and y when not using the 'originalGrid' dataset part."
             " Try using ``--maximum-longitude``, ``--minimum-longitude``, "
             "``--maximum-latitude`` and ``--minimum-latitude`` instead"
             " or make sure to specify the dataset_part."

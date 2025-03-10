@@ -654,13 +654,13 @@ def check_dataset_subset_bounds(
         coordinate_id = axis_coordinate_id_mapping["y"]
         y_axis_values = dataset_coordinates[coordinate_id].values
         user_minimum_coordinate_value = (
-            dataset_subset.minimum_latitude
-            if dataset_subset.minimum_latitude is not None
+            dataset_subset.minimum_y
+            if dataset_subset.minimum_y is not None
             else y_axis_values.min()
         )
         user_maximum_coordinate_value = (
-            dataset_subset.maximum_latitude
-            if dataset_subset.maximum_latitude is not None
+            dataset_subset.maximum_y
+            if dataset_subset.maximum_y is not None
             else y_axis_values.max()
         )
         _check_coordinate_overlap(
@@ -676,24 +676,24 @@ def check_dataset_subset_bounds(
         x_axis_values = dataset_coordinates[coordinate_id].values
         if coordinate_id == "longitude":
             user_minimum_coordinate_value = (
-                longitude_modulus(dataset_subset.minimum_longitude)
-                if dataset_subset.minimum_longitude is not None
+                longitude_modulus(dataset_subset.minimum_x)
+                if dataset_subset.minimum_x is not None
                 else x_axis_values.min()
             )
             user_maximum_coordinate_value = (
-                longitude_modulus_upper_bound(dataset_subset.maximum_longitude)
-                if dataset_subset.maximum_longitude is not None
+                longitude_modulus_upper_bound(dataset_subset.maximum_x)
+                if dataset_subset.maximum_x is not None
                 else x_axis_values.max()
             )
         else:
             user_minimum_coordinate_value = (
-                dataset_subset.minimum_longitude
-                if dataset_subset.minimum_longitude is not None
+                dataset_subset.minimum_x
+                if dataset_subset.minimum_x is not None
                 else x_axis_values.min()
             )
             user_maximum_coordinate_value = (
-                dataset_subset.maximum_longitude
-                if dataset_subset.maximum_longitude is not None
+                dataset_subset.maximum_x
+                if dataset_subset.maximum_x is not None
                 else x_axis_values.max()
             )
         _check_coordinate_overlap(
