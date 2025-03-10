@@ -127,7 +127,7 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
-        assert b"INFO" in self.output.stderr
+        assert b"DEBUG" in self.output.stderr
         assert (
             b"Because you are using an originalGrid dataset, we are considering"
             b" the options -x, -X, -y, -Y to be in m/km, not in degrees."
