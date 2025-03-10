@@ -17,11 +17,13 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineVersion,
     short_name_from_service_name,
 )
-from copernicusmarine.catalogue_parser.request_structure import (
+from copernicusmarine.core_functions import custom_open_zarr
+from copernicusmarine.core_functions.exceptions import (
+    PlatformsSubsettingNotAvailable,
+)
+from copernicusmarine.core_functions.request_structure import (
     DatasetTimeAndSpaceSubset,
 )
-from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.exceptions import FormatNotSupported
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
@@ -228,6 +230,7 @@ def _select_service_by_priority(
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
+    platform_ids_subset: bool,
 ) -> CopernicusMarineService:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
@@ -251,7 +254,15 @@ def _select_service_by_priority(
             first_available_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
-            raise FormatNotSupported(first_available_service.service_format)
+            if platform_ids_subset:
+                try:
+                    return dataset_version_part.get_service_by_service_name(
+                        CopernicusMarineServiceNames.PLATFORMSERIES
+                    )
+                except StopIteration:
+                    raise PlatformsSubsettingNotAvailable()
+
+            return first_available_service
         best_arco_service_type: CopernicusMarineServiceNames = (
             _get_best_arco_service_type(
                 dataset_subset,
@@ -273,6 +284,7 @@ class RetrievalService:
     service_format: Optional[CopernicusMarineServiceFormat]
     uri: str
     dataset_valid_start_date: Optional[Union[str, int, float]]
+    metadata_url: str
     service: CopernicusMarineService
     axis_coordinate_id_mapping: dict[str, str]
     is_original_grid: bool = False
@@ -285,11 +297,11 @@ def get_retrieval_service(
     force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
+    platform_ids_subset: bool = False,
     username: Optional[str] = None,
     staging: bool = False,
 ) -> RetrievalService:
     dataset_metadata = get_dataset_metadata(dataset_id, staging=staging)
-    # logger.debug(dataset_metadata)
     if not dataset_metadata:
         raise KeyError(
             f"The requested dataset '{dataset_id}' was not found in the catalogue,"
@@ -312,6 +324,7 @@ def get_retrieval_service(
         command_type=command_type,
         dataset_subset=dataset_subset,
         username=username,
+        platform_ids_subset=platform_ids_subset,
     )
 
 
@@ -323,6 +336,7 @@ def _get_retrieval_service_from_dataset(
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
+    platform_ids_subset: bool,
 ) -> RetrievalService:
     dataset_version = dataset.get_version(force_dataset_version_label)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
@@ -334,6 +348,7 @@ def _get_retrieval_service_from_dataset(
         command_type=command_type,
         dataset_subset=dataset_subset,
         username=username,
+        platform_ids_subset=platform_ids_subset,
     )
 
 
@@ -345,6 +360,7 @@ def _get_retrieval_service_from_dataset_version(
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
+    platform_ids_subset: bool,
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
@@ -358,7 +374,7 @@ def _get_retrieval_service_from_dataset_version(
         _warning_dataset_not_yet_released(
             dataset_id, dataset_version, dataset_part
         )
-
+    service = None
     if force_service_name:
         service = _select_forced_service(
             dataset_version_part=dataset_part,
@@ -366,15 +382,23 @@ def _get_retrieval_service_from_dataset_version(
             command_type=command_type,
         )
         if service.service_format == CopernicusMarineServiceFormat.SQLITE:
-            raise FormatNotSupported(service.service_format)
-    else:
+            logger.warning(
+                "Forcing a service will not be taken into account for "
+                "SQLite format services i.e. for sparse datasets."
+            )
+            service = None
+    if not service:
         service = _select_service_by_priority(
             dataset_version_part=dataset_part,
             command_type=command_type,
             dataset_subset=dataset_subset,
             username=username,
+            platform_ids_subset=platform_ids_subset,
         )
-    if command_type == CommandType.SUBSET:
+    if (
+        command_type in [CommandType.SUBSET, CommandType.LOAD]
+        and service.service_format != CopernicusMarineServiceFormat.SQLITE
+    ):
         logger.debug(f'Selected service: "{service.service_name}"')
     dataset_start_date = _get_dataset_start_date_from_service(service)
     return RetrievalService(
@@ -385,6 +409,7 @@ def _get_retrieval_service_from_dataset_version(
         service_format=service.service_format,
         service=service,
         axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
+        metadata_url=dataset_part.dataset_version_part_url,
         is_original_grid=dataset_part.name == "originalGrid",
     )
 

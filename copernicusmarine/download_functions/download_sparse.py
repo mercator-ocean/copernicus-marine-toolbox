@@ -1,0 +1,127 @@
+import pathlib
+
+from arcosparse import UserConfiguration, get_platforms_names, subset_and_save
+
+from copernicusmarine.catalogue_parser.models import CopernicusMarineService
+from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
+    COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
+)
+from copernicusmarine.core_functions.exceptions import (
+    NotEnoughPlatformMetadata,
+    WrongPlatformID,
+)
+from copernicusmarine.core_functions.models import (  # TimeExtent,
+    FileStatus,
+    ResponseSubset,
+    StatusCode,
+    StatusMessage,
+)
+from copernicusmarine.core_functions.request_structure import SubsetRequest
+from copernicusmarine.core_functions.sessions import TRUST_ENV
+from copernicusmarine.core_functions.utils import (
+    construct_query_params_for_marine_data_store_monitoring,
+    get_unique_filepath,
+)
+from copernicusmarine.download_functions.utils import get_file_extension
+
+
+# TODO: do the case where we want to return a pandas dataframe
+# TODO: should we support necdf?
+# https://stackoverflow.com/questions/46476920/xarray-writing-to-netcdf-from-pandas-dimension-issue # noqa
+def download_sparse(
+    username: str,
+    subset_request: SubsetRequest,
+    metadata_url: str,
+    retrieval_service: CopernicusMarineService,
+    disable_progress_bar: bool,
+) -> ResponseSubset:
+    user_configuration = UserConfiguration(
+        disable_ssl=COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True",
+        trust_env=TRUST_ENV,
+        ssl_certificate_path=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
+        extra_params=construct_query_params_for_marine_data_store_monitoring(
+            username
+        ),
+    )
+    if subset_request.platform_ids:
+        platforms_names = get_platforms_names(metadata_url, user_configuration)
+        if not platforms_names:
+            raise NotEnoughPlatformMetadata()
+        for platform_id in subset_request.platform_ids:
+            if platform_id not in platforms_names:
+                raise WrongPlatformID(
+                    platform_id, retrieval_service.platforms_metadata
+                )
+    extension_file = get_file_extension(
+        subset_request.file_format or "parquet"
+    )
+    filename = pathlib.Path(
+        subset_request.output_filename
+        or f"{subset_request.dataset_id}_subset{extension_file}"
+    )
+
+    if filename.suffix != extension_file:
+        filename = pathlib.Path(f"{filename}{extension_file}")
+    output_path = pathlib.Path(
+        subset_request.output_directory,
+        filename,
+    )
+    if not subset_request.overwrite and not subset_request.skip_existing:
+        output_path = get_unique_filepath(output_path)
+    response = ResponseSubset(
+        file_path=output_path,
+        output_directory=subset_request.output_directory,
+        filename=str(filename),
+        file_size=0,
+        data_transfer_size=0,
+        variables=subset_request.variables or [],
+        # TODO: handle thoses extents maybe opening the dataframe
+        coordinates_extent=[],
+        status=StatusCode.SUCCESS,
+        message=StatusMessage.SUCCESS,
+        file_status=FileStatus.DOWNLOADED,
+    )
+
+    if subset_request.dry_run:
+        response.status = StatusCode.DRY_RUN
+        response.message = StatusMessage.DRY_RUN
+        return response
+    elif subset_request.skip_existing and output_path.exists():
+        response.file_status = FileStatus.IGNORED
+        return response
+
+    # TODO: handle the outputs path, skip existing etc.
+    subset_and_save(
+        minimum_latitude=subset_request.minimum_latitude,
+        maximum_latitude=subset_request.maximum_latitude,
+        minimum_longitude=subset_request.minimum_longitude,
+        maximum_longitude=subset_request.maximum_longitude,
+        minimum_elevation=(
+            -subset_request.minimum_depth
+            if subset_request.minimum_depth
+            else None
+        ),
+        maximum_elevation=(
+            -subset_request.maximum_depth
+            if subset_request.maximum_depth
+            else None
+        ),
+        minimum_time=(
+            subset_request.start_datetime.timestamp()
+            if subset_request.start_datetime
+            else None
+        ),
+        maximum_time=(
+            subset_request.end_datetime.timestamp()
+            if subset_request.end_datetime
+            else None
+        ),
+        variables=subset_request.variables or [],
+        platform_ids=subset_request.platform_ids or [],
+        url_metadata=metadata_url,
+        user_configuration=user_configuration,
+        output_path=output_path,
+        disable_progress_bar=disable_progress_bar,
+    )
+    return response

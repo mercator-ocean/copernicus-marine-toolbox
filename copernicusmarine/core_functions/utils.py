@@ -31,7 +31,7 @@ from copernicusmarine.versioner import __version__ as copernicusmarine_version
 logger = logging.getLogger("copernicusmarine")
 
 
-def get_unique_filename(
+def get_unique_filepath(
     filepath: pathlib.Path,
 ) -> pathlib.Path:
     parent = filepath.parent

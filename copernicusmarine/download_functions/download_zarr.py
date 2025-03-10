@@ -13,7 +13,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCoordinate,
     CopernicusMarineService,
 )
-from copernicusmarine.catalogue_parser.request_structure import SubsetRequest
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     NetCDFCompressionNotAvailable,
@@ -25,9 +24,10 @@ from copernicusmarine.core_functions.models import (
     StatusCode,
     StatusMessage,
 )
+from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
-    get_unique_filename,
+    get_unique_filepath,
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -150,7 +150,7 @@ def download_dataset(
         pathlib.Path.mkdir(output_directory, parents=True)
 
     if not overwrite and not skip_existing:
-        output_path = get_unique_filename(
+        output_path = get_unique_filepath(
             filepath=output_path,
         )
     logger.debug(f"Xarray Dataset: {dataset}")

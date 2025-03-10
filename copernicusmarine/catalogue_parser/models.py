@@ -24,6 +24,7 @@ class CopernicusMarineServiceNames(str, Enum):
 
     GEOSERIES = "arco-geo-series"
     TIMESERIES = "arco-time-series"
+    PLATFORMSERIES = "arco-platform-series"
     FILES = "original-files"
     WMTS = "wmts"
     OMI_ARCO = "omi-arco"
@@ -38,6 +39,7 @@ class CoperniusMarineServiceShortNames(str, Enum):
 
     GEOSERIES = "geoseries"
     TIMESERIES = "timeseries"
+    PLATFORMSERIES = "platformseries"
     FILES = "files"
     WMTS = "wmts"
     OMI_ARCO = "omi-arco"
@@ -50,6 +52,7 @@ def short_name_from_service_name(
     mapping = {
         CopernicusMarineServiceNames.GEOSERIES: CoperniusMarineServiceShortNames.GEOSERIES,  # noqa
         CopernicusMarineServiceNames.TIMESERIES: CoperniusMarineServiceShortNames.TIMESERIES,  # noqa
+        CopernicusMarineServiceNames.PLATFORMSERIES: CoperniusMarineServiceShortNames.PLATFORMSERIES,  # noqa
         CopernicusMarineServiceNames.FILES: CoperniusMarineServiceShortNames.FILES,  # noqa
         CopernicusMarineServiceNames.WMTS: CoperniusMarineServiceShortNames.WMTS,  # noqa
         CopernicusMarineServiceNames.OMI_ARCO: CoperniusMarineServiceShortNames.OMI_ARCO,  # noqa
@@ -64,6 +67,7 @@ def _service_type_from_web_api_string(
     class WebApi(Enum):
         GEOSERIES = "timeChunked"
         TIMESERIES = "geoChunked"
+        PLATFORMSERIES = "platformChunked"
         FILES = "native"
         WMTS = "wmts"
         OMI_ARCO = "omi"
@@ -72,6 +76,7 @@ def _service_type_from_web_api_string(
     web_api_mapping: dict[WebApi, CopernicusMarineServiceNames] = {
         WebApi.GEOSERIES: CopernicusMarineServiceNames.GEOSERIES,
         WebApi.TIMESERIES: CopernicusMarineServiceNames.TIMESERIES,
+        WebApi.PLATFORMSERIES: CopernicusMarineServiceNames.PLATFORMSERIES,
         WebApi.FILES: CopernicusMarineServiceNames.FILES,
         WebApi.WMTS: CopernicusMarineServiceNames.WMTS,
         WebApi.OMI_ARCO: CopernicusMarineServiceNames.OMI_ARCO,
@@ -311,6 +316,9 @@ class CopernicusMarineService(BaseModel):
     uri: str
     #: List of variables of the service.
     variables: list[CopernicusMarineVariable]
+    #: A link to information about available platforms.
+    #: Only for arco-platform-series service.
+    platforms_metadata: Optional[str]
 
     @classmethod
     def from_metadata_item(
@@ -340,11 +348,24 @@ class CopernicusMarineService(BaseModel):
 
             if not service_uri.endswith("/"):
                 if admp_in_preparation and (
-                    service_name == CopernicusMarineServiceNames.GEOSERIES
-                    or service_name == CopernicusMarineServiceNames.TIMESERIES
+                    service_name_parsed
+                    == CopernicusMarineServiceNames.GEOSERIES
+                    or service_name_parsed
+                    == CopernicusMarineServiceNames.TIMESERIES
                 ):
                     return None
                 else:
+                    platforms_metadata = None
+                    if (
+                        service_name_parsed
+                        == CopernicusMarineServiceNames.PLATFORMSERIES
+                    ):
+                        platforms_asset = metadata_item.get_assets().get(
+                            "platforms"
+                        )
+                        if platforms_asset is not None:
+                            platforms_metadata = platforms_asset.href
+
                     bbox = metadata_item.bbox
                     return cls(
                         service_name=service_name_parsed,
@@ -359,6 +380,7 @@ class CopernicusMarineService(BaseModel):
                             ].values()
                         ],
                         service_format=service_format,
+                        platforms_metadata=platforms_metadata,
                     )
             return None
         except ServiceNotHandled as service_not_handled:
@@ -373,9 +395,9 @@ class CopernicusMarineService(BaseModel):
             for coordinate in variable.coordinates:
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
-                axis_coordinate_id_mapping[
-                    coordinate.axis
-                ] = coordinate.coordinate_id
+                axis_coordinate_id_mapping[coordinate.axis] = (
+                    coordinate.coordinate_id
+                )
 
         return axis_coordinate_id_mapping
 
@@ -397,12 +419,17 @@ class CopernicusMarinePart(BaseModel):
     retired_date: Optional[str]
     #: Date when the part will be/was released.
     released_date: Optional[str]
+    #: TODO: ask if this should be hidden
+    # = Field(..., exclude=True)
+    # if yes: needs to modify the query builder
+    dataset_version_part_url: str
 
     @classmethod
     def from_metadata_item(
         cls: Type[VersionPart],
         metadata_item: pystac.Item,
         part_name: str,
+        dataset_version_part_url: str,
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
@@ -429,6 +456,7 @@ class CopernicusMarinePart(BaseModel):
             services=services,
             retired_date=retired_date,
             released_date=released_date,
+            dataset_version_part_url=dataset_version_part_url,
         )
 
     def get_service_by_service_name(
@@ -539,17 +567,23 @@ class CopernicusMarineDataset(BaseModel):
         )
 
     def parse_dataset_metadata_items(
-        self, metadata_items: list[pystac.Item]
+        self,
+        url_dataset_items_mapping: dict[str, pystac.Item],
     ) -> None:
         all_versions = set()
-        for metadata_item in metadata_items:
+        for (
+            dataset_version_part_url,
+            metadata_item,
+        ) in url_dataset_items_mapping.items():
             (
                 _,
                 dataset_version,
                 dataset_part,
             ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
             part = CopernicusMarinePart.from_metadata_item(
-                metadata_item, dataset_part
+                metadata_item,
+                dataset_part,
+                dataset_version_part_url,
             )
             if not part:
                 continue

@@ -24,6 +24,12 @@ class TestDocumentation:
                     "List of variable names to extract."
                 ]
                 continue
+            if name_of_variable == "platform_ids":
+                assert text_subset["Parameters"][i].desc == [
+                    "List of platform IDs to extract. "
+                    "Only available for platform chunked datasets."
+                ]
+                continue
             if name_of_variable == "netcdf_compression_level":
                 assert text_subset["Parameters"][i].desc == [
                     documentation_utils.SUBSET[
