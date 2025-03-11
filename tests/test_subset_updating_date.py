@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 
 from copernicusmarine import CopernicusMarineCatalogue, subset
+from copernicusmarine.core_functions.exceptions import DatasetUpdating
 from copernicusmarine.core_functions.fields_query_builder import build_query
 from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock import (
     mocked_stac_requests_get,
@@ -19,7 +20,7 @@ class TestSubsetUpdatingDate:
         side_effect=mocked_stac_requests_get,
     )
     def test_raise(self, snapshot):
-        with pytest.raises(ValueError) as e:
+        with pytest.raises(DatasetUpdating) as e:
             subset(
                 dataset_id="cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
                 start_datetime="2024-01-01",

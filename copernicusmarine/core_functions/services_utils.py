@@ -15,14 +15,16 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
     CopernicusMarineVersion,
-    DatasetUpdating,
     short_name_from_service_name,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.exceptions import FormatNotSupported
+from copernicusmarine.core_functions.exceptions import (
+    DatasetUpdating,
+    FormatNotSupported,
+)
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,

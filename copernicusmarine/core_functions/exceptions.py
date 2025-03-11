@@ -140,3 +140,14 @@ class XYNotAvailableInNonOriginalGridDatasets(Exception):
             "``--maximum-latitude`` and ``--minimum-latitude`` instead"
             " or make sure to specify the dataset_part."
         )
+
+class DatasetUpdating(Exception):
+    """
+    Exception raised when the dataset is currently updating
+    and the flag raise-if-updating is set to True.
+    To avoid this exception, you can remove the flag from the query
+    or request a subset of data before the updating start date.
+    """
+
+    def __init__(self, message: str):
+        super().__init__(message)

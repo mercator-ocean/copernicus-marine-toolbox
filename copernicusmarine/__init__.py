@@ -32,6 +32,7 @@ from copernicusmarine.core_functions.exceptions import (
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
     WrongDatetimeFormat,
+    DatasetUpdating,
 )
 from copernicusmarine.core_functions.fields_query_builder import (
     WrongFieldsError,
@@ -101,6 +102,7 @@ __all__ = [
     "TimeExtent",
     "VariableDoesNotExistInTheDataset",
     "WrongDatetimeFormat",
+    "DatasetUpdating",
     "WrongFieldsError",
     "__version__",
     "describe",

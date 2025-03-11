@@ -715,18 +715,6 @@ class DatasetIsNotPartOfTheProduct(Exception):
         super().__init__(message)
 
 
-class DatasetUpdating(Exception):
-    """
-    Exception raised when the dataset is currently updating
-    and the flag raise-if-updating is set to True.
-    To avoid this exception, you can remove the flag from the query
-    or request a subset of data before the updating start date.
-    """
-
-    def __init__(self, message: str):
-        super().__init__(message)
-
-
 REGEX_PATTERN_DATE_YYYYMM = r"[12]\d{3}(0[1-9]|1[0-2])"
 PART_SEPARATOR = "--ext--"
 
