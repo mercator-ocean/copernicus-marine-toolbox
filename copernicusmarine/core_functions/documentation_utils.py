@@ -233,7 +233,9 @@ SUBSET: dict[str, str] = {
         "This is an experimental feature."
     ),
     "RAISE_IF_UPDATING_HELP": (
-        "If True, raise an error if the dataset is being updated."
+        "If set to True, raise an error if the dataset is currently being updated "
+        "and the subset interval includes dates in the updating period. "
+        "See field 'updating_start_date'."
     ),
 }
 

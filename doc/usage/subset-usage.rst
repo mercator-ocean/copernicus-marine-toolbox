@@ -147,3 +147,10 @@ To sum up, the ``--chunk-size-limit`` option allows you to play with the chunk s
 The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the ressources needed.
 If the chunk size is too small, many tasks are being created and handled by dask which means a consequent dask graph need to be handled.
 The latter can lead to huge overhead and slow down the process.
+
+Option ``--raise-if-updating``
+""""""""""""""""""""""""""""""""""""""""""
+
+When a dataset is being updated, it can happen that data is not reliable for a certain time period. When setting this flag,
+the toolbox will raise an error if the subset requested interval is within the time period of the update. By default, the flag is not set
+and the toolbox will only emit a warning. see ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and :class:`copernicusmarine.DatasetUpdating`.

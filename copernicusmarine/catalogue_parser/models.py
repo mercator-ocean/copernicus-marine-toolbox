@@ -397,9 +397,10 @@ class CopernicusMarinePart(BaseModel):
     retired_date: Optional[str]
     #: Date when the part will be/was released.
     released_date: Optional[str]
-    #: Date when the part will be/was updated.
+    #: Date (of the data) starting from which the data is currently being updated.
+    #: If set, the data after this date may not be up to date.
     updating_start_date: Optional[str]
-    #: Date when the part was last updated.
+    #: Date when the dataset was last updated.
     updated_data_date: Optional[str]
 
     @classmethod
@@ -711,6 +712,18 @@ class DatasetIsNotPartOfTheProduct(Exception):
             f"Please check that the dataset is part of the product and "
             f"the input datasetID is correct."
         )
+        super().__init__(message)
+
+
+class DatasetUpdating(Exception):
+    """
+    Exception raised when the dataset is currently updating
+    and the flag raise-if-updating is set to True.
+    To avoid this exception, you can remove the flag from the query
+    or request a subset of data before the updating start date.
+    """
+
+    def __init__(self, message: str):
         super().__init__(message)
 
 

@@ -15,6 +15,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
     CopernicusMarineVersion,
+    DatasetUpdating,
     short_name_from_service_name,
 )
 from copernicusmarine.catalogue_parser.request_structure import (
@@ -381,8 +382,9 @@ def _get_retrieval_service_from_dataset_version(
                 dataset_version=dataset_version,
                 dataset_part=dataset_part,
             )
+            logger.warning(error_message)
             if raise_if_updating:
-                raise ValueError(error_message)
+                raise DatasetUpdating(error_message)
 
     if force_service_name:
         service = _select_forced_service(
@@ -482,7 +484,6 @@ def _warning_dataset_updating(
         f"is currently being updated. "
         f"Data after {dataset_part.updating_start_date} may not be up to date."
     )
-    logger.warning(message)
     return message
 
 
