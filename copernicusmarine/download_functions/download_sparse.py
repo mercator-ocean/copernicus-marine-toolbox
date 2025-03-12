@@ -1,6 +1,12 @@
+import logging
 import pathlib
 
-from arcosparse import UserConfiguration, get_platforms_names, subset_and_save
+from arcosparse import (
+    UserConfiguration,
+    get_platforms_names,
+    subset_and_return_dataframe,
+    subset_and_save,
+)
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.core_functions.environment_variables import (
@@ -24,6 +30,8 @@ from copernicusmarine.core_functions.utils import (
     get_unique_filepath,
 )
 from copernicusmarine.download_functions.utils import get_file_extension
+
+logger = logging.getLogger("copernicusmarine")
 
 
 # TODO: do the case where we want to return a pandas dataframe
@@ -69,13 +77,16 @@ def download_sparse(
     )
     if not subset_request.overwrite and not subset_request.skip_existing:
         output_path = get_unique_filepath(output_path)
+    variables = subset_request.variables or [
+        variable.short_name for variable in retrieval_service.variables
+    ]
     response = ResponseSubset(
         file_path=output_path,
         output_directory=subset_request.output_directory,
         filename=str(filename),
-        file_size=0,
-        data_transfer_size=0,
-        variables=subset_request.variables or [],
+        file_size=None,
+        data_transfer_size=None,
+        variables=variables,
         # TODO: handle thoses extents maybe opening the dataframe
         coordinates_extent=[],
         status=StatusCode.SUCCESS,
@@ -91,37 +102,43 @@ def download_sparse(
         response.file_status = FileStatus.IGNORED
         return response
 
-    # TODO: handle the outputs path, skip existing etc.
-    subset_and_save(
-        minimum_latitude=subset_request.minimum_latitude,
-        maximum_latitude=subset_request.maximum_latitude,
-        minimum_longitude=subset_request.minimum_longitude,
-        maximum_longitude=subset_request.maximum_longitude,
-        minimum_elevation=(
+    kwargs = {
+        "minimum_latitude": subset_request.minimum_latitude,
+        "maximum_latitude": subset_request.maximum_latitude,
+        "minimum_longitude": subset_request.minimum_longitude,
+        "maximum_longitude": subset_request.maximum_longitude,
+        "minimum_elevation": (
             -subset_request.minimum_depth
             if subset_request.minimum_depth
             else None
         ),
-        maximum_elevation=(
+        "maximum_elevation": (
             -subset_request.maximum_depth
             if subset_request.maximum_depth
             else None
         ),
-        minimum_time=(
+        "minimum_time": (
             subset_request.start_datetime.timestamp()
             if subset_request.start_datetime
             else None
         ),
-        maximum_time=(
+        "maximum_time": (
             subset_request.end_datetime.timestamp()
             if subset_request.end_datetime
             else None
         ),
-        variables=subset_request.variables or [],
-        platform_ids=subset_request.platform_ids or [],
-        url_metadata=metadata_url,
-        user_configuration=user_configuration,
-        output_path=output_path,
-        disable_progress_bar=disable_progress_bar,
-    )
+        "variables": variables,
+        "platform_ids": subset_request.platform_ids or [],
+        "url_metadata": metadata_url,
+        "user_configuration": user_configuration,
+        "disable_progress_bar": disable_progress_bar,
+    }
+    # TODO: handle the outputs path, skip existing etc.
+    if subset_request.file_format == "parquet":
+        kwargs["output_path"] = output_path
+        subset_and_save(**kwargs)
+    else:
+        df = subset_and_return_dataframe(**kwargs)
+        df.to_csv(output_path, index=False)
+
     return response
