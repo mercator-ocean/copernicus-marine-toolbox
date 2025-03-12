@@ -98,3 +98,16 @@ class TestSparseSubset:
         self.output = execute_in_terminal(command_default)
         assert self.output.returncode == 0
         assert (tmp_path / "sparse_data_(1).parquet").exists()
+
+    def test_can_download_in_csv_format(self, tmp_path):
+        command = BASIC_COMMAND + [
+            "--output-directory",
+            tmp_path,
+            "--output-filename",
+            "sparse_data",
+            "--file-format",
+            "csv",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert (tmp_path / "sparse_data.csv").exists()
