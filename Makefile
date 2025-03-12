@@ -127,3 +127,9 @@ run-tests-binaries:
 
 change-name-binary:
 	mv dist/copernicusmari* ./copernicusmarine.cli
+
+update-tests-snapshots:
+	pytest --snapshot-update tests/test_help_command_interface.py
+	pytest --snapshot-update tests/test_dependencies_updates.py
+	pytest --snapshot-update tests/test_describe_released_date.py
+	pytest --snapshot-update tests/test_help_command_interface.py

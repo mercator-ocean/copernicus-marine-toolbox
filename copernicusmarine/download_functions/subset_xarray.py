@@ -240,7 +240,7 @@ def _shift_longitude_dimension(
             coordinate_id,
             minimum_longitude_modulus,
             "nearest",
-        )
+        )  # type: ignore
     window = (
         minimum_longitude_modulus + 180
     )  # compute the degrees needed to move the dataset
@@ -767,6 +767,11 @@ def _check_coordinate_overlap(
         f"[{dataset_minimum_coordinate_value}, "
         f"{dataset_maximum_coordinate_value}]"
     )
+    if dataset_maximum_coordinate_value < dataset_minimum_coordinate_value:
+        dataset_maximum_coordinate_value, dataset_minimum_coordinate_value = (
+            dataset_minimum_coordinate_value,
+            dataset_maximum_coordinate_value,
+        )
     if dimension == "longitude":
         if dataset_minimum_coordinate_value == -180:
             dataset_maximum_coordinate_value = 180

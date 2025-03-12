@@ -13,6 +13,7 @@
                 'parts': list([
                   dict({
                     'arco_updating_start_date': '2024-05-01T00:00:00Z',
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -466,6 +467,7 @@
                 'parts': list([
                   dict({
                     'arco_updating_start_date': '2024-05-01T00:00:00Z',
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -924,6 +926,7 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -1173,56 +1176,9 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json',
                     'name': 'default',
                     'services': list([
-                      dict({
-                        'service_format': 'zarr',
-                        'service_name': 'arco-geo-series',
-                        'service_short_name': 'geoseries',
-                        'uri': 'https://s3.waw3-1.cloudferro.com:443/mdl-arco-time-005-dta/arco/OCEANCOLOUR_GLO_BGC_L3_MY_009_103/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/timeChunked.zarr',
-                        'variables': list([
-                          dict({
-                            'bbox': list([
-                              -179.99722290039062,
-                              -89.99722290039062,
-                              179.9972381591797,
-                              89.99722290039062,
-                            ]),
-                            'coordinates': list([
-                              dict({
-                                'axis': 't',
-                                'chunking_length': 1,
-                                'coordinate_id': 'time',
-                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
-                                'maximum_value': 1487376000000.0,
-                                'minimum_value': 1461542400000.0,
-                                'step': 86400000.0,
-                              }),
-                              dict({
-                                'axis': 'y',
-                                'chunking_length': 400,
-                                'coordinate_id': 'latitude',
-                                'coordinate_unit': 'degrees_north',
-                                'maximum_value': 89.99722290039062,
-                                'minimum_value': -89.99722290039062,
-                                'step': 0.0055555555974190944,
-                              }),
-                              dict({
-                                'axis': 'x',
-                                'chunking_length': 1200,
-                                'coordinate_id': 'longitude',
-                                'coordinate_unit': 'degrees_east',
-                                'maximum_value': 179.9972381591797,
-                                'minimum_value': -179.99722290039062,
-                                'step': 0.0055555555764870024,
-                              }),
-                            ]),
-                            'short_name': 'CHL',
-                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
-                            'units': 'milligram m-3',
-                          }),
-                        ]),
-                      }),
                       dict({
                         'service_name': 'original-files',
                         'service_short_name': 'files',
@@ -1236,54 +1192,6 @@
                               89.99722290039062,
                             ]),
                             'coordinates': list([
-                            ]),
-                            'short_name': 'CHL',
-                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
-                            'units': 'milligram m-3',
-                          }),
-                        ]),
-                      }),
-                      dict({
-                        'service_format': 'zarr',
-                        'service_name': 'arco-time-series',
-                        'service_short_name': 'timeseries',
-                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-005-dta/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/geoChunked.zarr',
-                        'variables': list([
-                          dict({
-                            'bbox': list([
-                              -179.99722290039062,
-                              -89.99722290039062,
-                              179.9972381591797,
-                              89.99722290039062,
-                            ]),
-                            'coordinates': list([
-                              dict({
-                                'axis': 't',
-                                'chunking_length': 300,
-                                'coordinate_id': 'time',
-                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
-                                'maximum_value': 1487376000000.0,
-                                'minimum_value': 1461542400000.0,
-                                'step': 86400000.0,
-                              }),
-                              dict({
-                                'axis': 'y',
-                                'chunking_length': 60,
-                                'coordinate_id': 'latitude',
-                                'coordinate_unit': 'degrees_north',
-                                'maximum_value': 89.99722290039062,
-                                'minimum_value': -89.99722290039062,
-                                'step': 0.0055555555974190944,
-                              }),
-                              dict({
-                                'axis': 'x',
-                                'chunking_length': 60,
-                                'coordinate_id': 'longitude',
-                                'coordinate_unit': 'degrees_east',
-                                'maximum_value': 179.9972381591797,
-                                'minimum_value': -179.99722290039062,
-                                'step': 0.0055555555764870024,
-                              }),
                             ]),
                             'short_name': 'CHL',
                             'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
@@ -1318,6 +1226,7 @@
                 'label': '202012',
                 'parts': list([
                   dict({
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -1516,6 +1425,7 @@
                 'parts': list([
                   dict({
                     'arco_updating_start_date': '2023-05-01T00:00:00Z',
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -2467,6 +2377,7 @@
                 'parts': list([
                   dict({
                     'arco_updating_start_date': '2024-05-01T00:00:00Z',
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -2925,56 +2836,9 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json',
                     'name': 'default',
                     'services': list([
-                      dict({
-                        'service_format': 'zarr',
-                        'service_name': 'arco-geo-series',
-                        'service_short_name': 'geoseries',
-                        'uri': 'https://s3.waw3-1.cloudferro.com:443/mdl-arco-time-005-dta/arco/OCEANCOLOUR_GLO_BGC_L3_MY_009_103/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/timeChunked.zarr',
-                        'variables': list([
-                          dict({
-                            'bbox': list([
-                              -179.99722290039062,
-                              -89.99722290039062,
-                              179.9972381591797,
-                              89.99722290039062,
-                            ]),
-                            'coordinates': list([
-                              dict({
-                                'axis': 't',
-                                'chunking_length': 1,
-                                'coordinate_id': 'time',
-                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
-                                'maximum_value': 1487376000000.0,
-                                'minimum_value': 1461542400000.0,
-                                'step': 86400000.0,
-                              }),
-                              dict({
-                                'axis': 'y',
-                                'chunking_length': 400,
-                                'coordinate_id': 'latitude',
-                                'coordinate_unit': 'degrees_north',
-                                'maximum_value': 89.99722290039062,
-                                'minimum_value': -89.99722290039062,
-                                'step': 0.0055555555974190944,
-                              }),
-                              dict({
-                                'axis': 'x',
-                                'chunking_length': 1200,
-                                'coordinate_id': 'longitude',
-                                'coordinate_unit': 'degrees_east',
-                                'maximum_value': 179.9972381591797,
-                                'minimum_value': -179.99722290039062,
-                                'step': 0.0055555555764870024,
-                              }),
-                            ]),
-                            'short_name': 'CHL',
-                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
-                            'units': 'milligram m-3',
-                          }),
-                        ]),
-                      }),
                       dict({
                         'service_name': 'original-files',
                         'service_short_name': 'files',
@@ -2988,54 +2852,6 @@
                               89.99722290039062,
                             ]),
                             'coordinates': list([
-                            ]),
-                            'short_name': 'CHL',
-                            'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
-                            'units': 'milligram m-3',
-                          }),
-                        ]),
-                      }),
-                      dict({
-                        'service_format': 'zarr',
-                        'service_name': 'arco-time-series',
-                        'service_short_name': 'timeseries',
-                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-geo-005-dta/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/geoChunked.zarr',
-                        'variables': list([
-                          dict({
-                            'bbox': list([
-                              -179.99722290039062,
-                              -89.99722290039062,
-                              179.9972381591797,
-                              89.99722290039062,
-                            ]),
-                            'coordinates': list([
-                              dict({
-                                'axis': 't',
-                                'chunking_length': 300,
-                                'coordinate_id': 'time',
-                                'coordinate_unit': 'milliseconds since 1970-01-01 00:00:00Z (no leap seconds)',
-                                'maximum_value': 1487376000000.0,
-                                'minimum_value': 1461542400000.0,
-                                'step': 86400000.0,
-                              }),
-                              dict({
-                                'axis': 'y',
-                                'chunking_length': 60,
-                                'coordinate_id': 'latitude',
-                                'coordinate_unit': 'degrees_north',
-                                'maximum_value': 89.99722290039062,
-                                'minimum_value': -89.99722290039062,
-                                'step': 0.0055555555974190944,
-                              }),
-                              dict({
-                                'axis': 'x',
-                                'chunking_length': 60,
-                                'coordinate_id': 'longitude',
-                                'coordinate_unit': 'degrees_east',
-                                'maximum_value': 179.9972381591797,
-                                'minimum_value': -179.99722290039062,
-                                'step': 0.0055555555764870024,
-                              }),
                             ]),
                             'short_name': 'CHL',
                             'standard_name': 'mass_concentration_of_chlorophyll_a_in_sea_water',
