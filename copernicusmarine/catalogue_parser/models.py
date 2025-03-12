@@ -395,9 +395,9 @@ class CopernicusMarineService(BaseModel):
             for coordinate in variable.coordinates:
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
-                axis_coordinate_id_mapping[coordinate.axis] = (
-                    coordinate.coordinate_id
-                )
+                axis_coordinate_id_mapping[
+                    coordinate.axis
+                ] = coordinate.coordinate_id
 
         return axis_coordinate_id_mapping
 
@@ -482,6 +482,50 @@ class CopernicusMarinePart(BaseModel):
             for service in self.services
             if service.service_name == service_name
         )
+
+    def get_coordinates(
+        self,
+    ) -> dict[str, tuple[CopernicusMarineCoordinate, list[str], list[str]]]:
+        """
+        Get the coordinates of the part as a dict.
+        The dict has the coordinate ids as keys and the values are tuples of:
+        - the coordinate
+        - variable_ids: list of variable the coordinate is associated with
+        - service_names: list of service names the coordinate is associated with
+
+        Parameters
+        ----------
+        service : CopernicusMarinePart
+            The service to get the coordinates
+
+        Returns
+        -------
+        dict
+            The coordinates of the part and the associated variables and services
+        """
+        coordinates = {}
+        variables = []
+        services = []
+        for service in self.services:
+            services.append(service.service_name)
+            for variable in service.variables:
+                variables.append(variable)
+                for coordinate in variable.coordinates:
+                    coordinate_id = coordinate.coordinate_id
+                    if coordinate_id not in coordinates:
+                        coordinates[coordinate_id] = (
+                            coordinate,
+                            [variable.short_name],
+                            [service.service_name.value],
+                        )
+                    else:
+                        coordinates[coordinate_id][1].append(
+                            variable.short_name
+                        )
+                        coordinates[coordinate_id][2].append(
+                            service.service_name
+                        )
+        return coordinates
 
 
 class CopernicusMarineVersion(BaseModel):

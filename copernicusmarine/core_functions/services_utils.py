@@ -278,6 +278,7 @@ def _select_service_by_priority(
     return first_available_service
 
 
+# TODO: clear this as there is redundancy
 @dataclass
 class RetrievalService:
     dataset_id: str
@@ -287,6 +288,7 @@ class RetrievalService:
     dataset_valid_start_date: Optional[Union[str, int, float]]
     metadata_url: str
     service: CopernicusMarineService
+    dataset_part: CopernicusMarinePart
     axis_coordinate_id_mapping: dict[str, str]
     is_original_grid: bool = False
 
@@ -437,6 +439,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_valid_start_date=dataset_start_date,
         service_format=service.service_format,
         service=service,
+        dataset_part=dataset_part,
         axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
         metadata_url=dataset_part.dataset_version_part_url,
         is_original_grid=dataset_part.name == "originalGrid",

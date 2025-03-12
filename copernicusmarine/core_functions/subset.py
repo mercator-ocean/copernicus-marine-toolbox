@@ -153,13 +153,10 @@ def subset_function(
     subset_request.dataset_url = retrieval_service.uri
     # TODO: Add check for insitu datasets
     check_dataset_subset_bounds(
-        username=username,
-        password=password,
-        dataset_url=subset_request.dataset_url,
-        service_name=retrieval_service.service_name,
+        service=retrieval_service.service,
+        part=retrieval_service.dataset_part,
         dataset_subset=subset_request.get_time_and_space_subset(),
         coordinates_selection_method=subset_request.coordinates_selection_method,
-        dataset_valid_date=retrieval_service.dataset_valid_start_date,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
     # TODO: add the platform chunked

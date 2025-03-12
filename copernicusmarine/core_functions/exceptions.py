@@ -132,9 +132,6 @@ class XYNotAvailableInNonOriginalGridDatasets(Exception):
 
     Please make sure the dataset part is 'originalGrid' when the options
     ``--minimum-x``, ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``.
-            "Not enough platform metadata. "
-            "Please make sure the platform metadata is available."
-        )
     """
 
     def __init__(self):
