@@ -412,7 +412,7 @@ def _get_retrieval_service_from_dataset_version(
         service=service,
         dataset_part=dataset_part,
         axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
-        metadata_url=dataset_part.dataset_version_part_url,
+        metadata_url=dataset_part.url_metadata,
         is_original_grid=dataset_part.name == "originalGrid",
     )
 

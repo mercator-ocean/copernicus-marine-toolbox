@@ -422,14 +422,14 @@ class CopernicusMarinePart(BaseModel):
     #: TODO: ask if this should be hidden
     # = Field(..., exclude=True)
     # if yes: needs to modify the query builder
-    dataset_version_part_url: str
+    url_metadata: str
 
     @classmethod
     def from_metadata_item(
         cls: Type[VersionPart],
         metadata_item: pystac.Item,
         part_name: str,
-        dataset_version_part_url: str,
+        url_metadata: str,
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
@@ -456,7 +456,7 @@ class CopernicusMarinePart(BaseModel):
             services=services,
             retired_date=retired_date,
             released_date=released_date,
-            dataset_version_part_url=dataset_version_part_url,
+            url_metadata=url_metadata,
         )
 
     def get_service_by_service_name(
@@ -623,7 +623,7 @@ class CopernicusMarineDataset(BaseModel):
     ) -> None:
         all_versions = set()
         for (
-            dataset_version_part_url,
+            url_metadata,
             metadata_item,
         ) in url_dataset_items_mapping.items():
             (
@@ -634,7 +634,7 @@ class CopernicusMarineDataset(BaseModel):
             part = CopernicusMarinePart.from_metadata_item(
                 metadata_item,
                 dataset_part,
-                dataset_version_part_url,
+                url_metadata,
             )
             if not part:
                 continue
