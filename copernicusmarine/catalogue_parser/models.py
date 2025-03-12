@@ -470,7 +470,14 @@ class CopernicusMarinePart(BaseModel):
 
     def get_coordinates(
         self,
-    ) -> dict[str, tuple[CopernicusMarineCoordinate, list[str], list[str]]]:
+    ) -> dict[
+        str,
+        tuple[
+            CopernicusMarineCoordinate,
+            list[str],
+            list[CopernicusMarineServiceNames],
+        ],
+    ]:
         """
         Get the coordinates of the part as a dict.
         The dict has the coordinate ids as keys and the values are tuples of:
@@ -501,7 +508,7 @@ class CopernicusMarinePart(BaseModel):
                         coordinates[coordinate_id] = (
                             coordinate,
                             [variable.short_name],
-                            [service.service_name.value],
+                            [service.service_name],
                         )
                     else:
                         coordinates[coordinate_id][1].append(
