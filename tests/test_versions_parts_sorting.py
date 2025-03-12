@@ -16,7 +16,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="latest_to_be_released",
@@ -25,7 +25,7 @@ version_default = CopernicusMarineVersion(
             released_date="2060-01-01",
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="bathy",
@@ -34,7 +34,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="history",
@@ -43,7 +43,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name=PART_DEFAULT,
@@ -52,7 +52,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2060",
@@ -61,7 +61,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2030",
@@ -70,7 +70,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="monthly",
@@ -79,7 +79,7 @@ version_default = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
     ],
 )
@@ -94,7 +94,7 @@ to_be_released_version = CopernicusMarineVersion(
             released_date="2060-01-01",
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
     ],
 )
@@ -109,7 +109,7 @@ will_be_retired_soon_version = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
     ],
 )
@@ -124,7 +124,7 @@ will_be_retired_in_a_long_time_version = CopernicusMarineVersion(
             released_date=None,
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
     ],
 )
@@ -139,7 +139,7 @@ newly_released_version = CopernicusMarineVersion(
             released_date="2022-01-01",
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
         CopernicusMarinePart(
             name="to_be_released_part",
@@ -148,7 +148,7 @@ newly_released_version = CopernicusMarineVersion(
             released_date="2060-01-01",
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
     ],
 )
@@ -163,7 +163,7 @@ old_version = CopernicusMarineVersion(
             released_date="2019-01-01",
             arco_updating_start_date=None,
             arco_updated_date=None,
-            dataset_version_part_url="https://example.com",
+            url_metadata="https://example.com",
         ),
     ],
 )

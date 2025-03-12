@@ -459,6 +459,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -913,6 +914,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -926,7 +928,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -1163,6 +1164,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -1176,7 +1178,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json',
                     'name': 'default',
                     'services': list([
                       dict({
@@ -1200,6 +1201,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -1226,7 +1228,6 @@
                 'label': '202012',
                 'parts': list([
                   dict({
-                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/dataset.stac.json',
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
@@ -1411,6 +1412,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -2344,6 +2346,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -2823,6 +2826,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/dataset.stac.json',
                   }),
                 ]),
               }),
@@ -2836,7 +2840,6 @@
                 'label': '202211',
                 'parts': list([
                   dict({
-                    'dataset_version_part_url': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json',
                     'name': 'default',
                     'services': list([
                       dict({
@@ -2860,6 +2863,7 @@
                         ]),
                       }),
                     ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json',
                   }),
                 ]),
               }),

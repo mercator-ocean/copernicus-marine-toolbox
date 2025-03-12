@@ -395,9 +395,9 @@ class CopernicusMarineService(BaseModel):
             for coordinate in variable.coordinates:
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
-                axis_coordinate_id_mapping[
-                    coordinate.axis
-                ] = coordinate.coordinate_id
+                axis_coordinate_id_mapping[coordinate.axis] = (
+                    coordinate.coordinate_id
+                )
 
         return axis_coordinate_id_mapping
 
@@ -431,14 +431,14 @@ class CopernicusMarinePart(BaseModel):
     #: TODO: ask if this should be hidden
     # = Field(..., exclude=True)
     # if yes: needs to modify the query builder
-    dataset_version_part_url: str
+    url_metadata: str
 
     @classmethod
     def from_metadata_item(
         cls: Type[VersionPart],
         metadata_item: pystac.Item,
         part_name: str,
-        dataset_version_part_url: str,
+        url_metadata: str,
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
@@ -471,7 +471,7 @@ class CopernicusMarinePart(BaseModel):
             released_date=released_date,
             arco_updated_date=arco_updated_date,
             arco_updating_start_date=arco_updating_start_date,
-            dataset_version_part_url=dataset_version_part_url,
+            url_metadata=url_metadata,
         )
 
     def get_service_by_service_name(
@@ -638,7 +638,7 @@ class CopernicusMarineDataset(BaseModel):
     ) -> None:
         all_versions = set()
         for (
-            dataset_version_part_url,
+            url_metadata,
             metadata_item,
         ) in url_dataset_items_mapping.items():
             (
@@ -649,7 +649,7 @@ class CopernicusMarineDataset(BaseModel):
             part = CopernicusMarinePart.from_metadata_item(
                 metadata_item,
                 dataset_part,
-                dataset_version_part_url,
+                url_metadata,
             )
             if not part:
                 continue
