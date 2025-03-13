@@ -15,6 +15,7 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.request_structure import LoadRequest
+from copernicusmarine.core_functions.services_utils import CommandType
 from copernicusmarine.download_functions.download_zarr import (
     read_dataframe_from_arco_series,
 )
@@ -61,6 +62,7 @@ def read_dataframe(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    disable_progress_bar: bool = False,
 ) -> pd.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
@@ -106,7 +108,8 @@ def read_dataframe(
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-
+    disable_progress_bar : bool, optional
+        Disable the progress bar during the download process. Default is False.
 
     Returns
     -------
@@ -160,10 +163,12 @@ def read_dataframe(
         ),
         force_service=service,
         credentials_file=credentials_file,
+        disable_progress_bar=disable_progress_bar,
     )
     dataset = load_data_object_from_load_request(
         load_request,
         read_dataframe_from_arco_series,
         chunks_factor_size_limit=100,
+        command_type=CommandType.READ_DATAFRAME,
     )
     return dataset

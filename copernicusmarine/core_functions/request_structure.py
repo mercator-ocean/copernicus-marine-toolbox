@@ -292,6 +292,7 @@ class LoadRequest:
     )
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None
+    disable_progress_bar: bool = False
 
     def get_time_and_space_subset(
         self,
@@ -319,6 +320,26 @@ class LoadRequest:
         )
         self.depth_parameters.coordinate_id = axis_coordinate_id_mapping.get(
             "z", ""
+        )
+
+    def to_subset_request(self) -> SubsetRequest:
+        return SubsetRequest(
+            dataset_id=self.dataset_id,
+            dataset_url=self.dataset_url,
+            force_dataset_version=self.force_dataset_version,
+            force_dataset_part=self.force_dataset_part,
+            variables=self.variables,
+            minimum_longitude=self.geographical_parameters.x_axis_parameters.minimum_x,
+            maximum_longitude=self.geographical_parameters.x_axis_parameters.maximum_x,
+            minimum_latitude=self.geographical_parameters.y_axis_parameters.minimum_y,
+            maximum_latitude=self.geographical_parameters.y_axis_parameters.maximum_y,
+            minimum_depth=self.depth_parameters.minimum_depth,
+            maximum_depth=self.depth_parameters.maximum_depth,
+            vertical_axis=self.depth_parameters.vertical_axis,
+            start_datetime=self.temporal_parameters.start_datetime,
+            end_datetime=self.temporal_parameters.end_datetime,
+            coordinates_selection_method=self.coordinates_selection_method,
+            force_service=self.force_service,
         )
 
 

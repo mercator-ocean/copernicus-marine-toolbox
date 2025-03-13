@@ -67,17 +67,21 @@ class WrongDatetimeFormat(Exception):
     pass
 
 
-# TODO: delete next major release
 class FormatNotSupported(Exception):
     """
-    Deprecated exception.
+    Exception raised when the format is not supported for the command.
+    Usually it means that you are trying to subset a sparse dataset.
 
-    Will be deleted in the next major release. Not used right now.
+    Please try other commands or use datasets with the supported format.
     """
 
-    def __init__(self, format_type):
+    def __init__(
+        self, format_type: str, command_type: str, recommended_command: str
+    ):
         super().__init__(
-            f"Subsetting format type {format_type} not supported yet."
+            f"Subsetting format type '{format_type}' not "
+            f"supported for command '{command_type}'. "
+            f"You may want to look into '{recommended_command}' instead."
         )
 
 

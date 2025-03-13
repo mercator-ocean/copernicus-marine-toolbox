@@ -1,6 +1,7 @@
 import logging
 import pathlib
 
+import pandas as pd
 from arcosparse import (
     UserConfiguration,
     get_platforms_names,
@@ -41,26 +42,16 @@ def download_sparse(
     username: str,
     subset_request: SubsetRequest,
     metadata_url: str,
-    retrieval_service: CopernicusMarineService,
+    service: CopernicusMarineService,
     disable_progress_bar: bool,
 ) -> ResponseSubset:
-    user_configuration = UserConfiguration(
-        disable_ssl=COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True",
-        trust_env=TRUST_ENV,
-        ssl_certificate_path=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
-        extra_params=construct_query_params_for_marine_data_store_monitoring(
-            username
-        ),
+    user_configuration = _get_user_configuration(username)
+    _check_plaform_ids(
+        subset_request.platform_ids or [],
+        metadata_url,
+        service,
+        user_configuration,
     )
-    if subset_request.platform_ids:
-        platforms_names = get_platforms_names(metadata_url, user_configuration)
-        if not platforms_names:
-            raise NotEnoughPlatformMetadata()
-        for platform_id in subset_request.platform_ids:
-            if platform_id not in platforms_names:
-                raise WrongPlatformID(
-                    platform_id, retrieval_service.platforms_metadata
-                )
     extension_file = get_file_extension(
         subset_request.file_format or "parquet"
     )
@@ -78,7 +69,7 @@ def download_sparse(
     if not subset_request.overwrite and not subset_request.skip_existing:
         output_path = get_unique_filepath(output_path)
     variables = subset_request.variables or [
-        variable.short_name for variable in retrieval_service.variables
+        variable.short_name for variable in service.variables
     ]
     response = ResponseSubset(
         file_path=output_path,
@@ -142,3 +133,81 @@ def download_sparse(
         df.to_csv(output_path, index=False)
 
     return response
+
+
+def read_dataframe_sparse(
+    username: str,
+    subset_request: SubsetRequest,
+    metadata_url: str,
+    service: CopernicusMarineService,
+    disable_progress_bar: bool,
+) -> pd.DataFrame:
+    user_configuration = _get_user_configuration(username)
+    _check_plaform_ids(
+        subset_request.platform_ids or [],
+        metadata_url,
+        service,
+        user_configuration,
+    )
+    variables = subset_request.variables or [
+        variable.short_name for variable in service.variables
+    ]
+    return subset_and_return_dataframe(
+        minimum_latitude=subset_request.minimum_latitude,
+        maximum_latitude=subset_request.maximum_latitude,
+        minimum_longitude=subset_request.minimum_longitude,
+        maximum_longitude=subset_request.maximum_longitude,
+        minimum_elevation=(
+            -subset_request.minimum_depth
+            if subset_request.minimum_depth
+            else None
+        ),
+        maximum_elevation=(
+            -subset_request.maximum_depth
+            if subset_request.maximum_depth
+            else None
+        ),
+        minimum_time=(
+            subset_request.start_datetime.timestamp()
+            if subset_request.start_datetime
+            else None
+        ),
+        maximum_time=(
+            subset_request.end_datetime.timestamp()
+            if subset_request.end_datetime
+            else None
+        ),
+        variables=variables,
+        platform_ids=subset_request.platform_ids or [],
+        url_metadata=metadata_url,
+        user_configuration=user_configuration,
+        disable_progress_bar=disable_progress_bar,
+    )
+
+
+def _get_user_configuration(username: str) -> UserConfiguration:
+    return UserConfiguration(
+        disable_ssl=COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True",
+        trust_env=TRUST_ENV,
+        ssl_certificate_path=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
+        extra_params=construct_query_params_for_marine_data_store_monitoring(
+            username
+        ),
+    )
+
+
+def _check_plaform_ids(
+    platform_ids: list[str],
+    metadata_url: str,
+    retrieval_service: CopernicusMarineService,
+    user_configuration: UserConfiguration,
+) -> None:
+    if platform_ids:
+        platforms_names = get_platforms_names(metadata_url, user_configuration)
+        if not platforms_names:
+            raise NotEnoughPlatformMetadata()
+        for platform_id in platform_ids:
+            if platform_id not in platforms_names:
+                raise WrongPlatformID(
+                    platform_id, retrieval_service.platforms_metadata
+                )
