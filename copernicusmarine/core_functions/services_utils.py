@@ -367,8 +367,8 @@ def _get_retrieval_service_from_dataset_version(
             dataset_id, dataset_version, dataset_part
         )
 
-    if dataset_part.updating_start_date:
-        updating_date = datetime_parser(dataset_part.updating_start_date)
+    if dataset_part.arco_updating_start_date:
+        updating_date = datetime_parser(dataset_part.arco_updating_start_date)
         if not dataset_subset or (
             dataset_subset
             and (
@@ -484,7 +484,7 @@ def _warning_dataset_updating(
         f", version '{dataset_version.label}'"
         f", part '{dataset_part.name}' "
         f"is currently being updated. "
-        f"Data after {dataset_part.updating_start_date} may not be up to date."
+        f"Data after {dataset_part.arco_updating_start_date} may not be up to date."
     )
     return message
 

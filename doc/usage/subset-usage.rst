@@ -152,7 +152,7 @@ Option ``--raise-if-updating``
 """"""""""""""""""""""""""""""""""""""""""
 
 .. note::
-  This option only applies to ARCO datasets and not native data.
+  This option only applies to ARCO services (``arco-geo-series`` and ``arco-time-series``) and not native files (``original-files`` service).
 
 When a dataset is being updated, it can happen that data after a certain date becomes unreliable. When setting this flag,
 the toolbox will raise an error if the subset requested interval overpasses the updating start date. By default, the flag is not set
