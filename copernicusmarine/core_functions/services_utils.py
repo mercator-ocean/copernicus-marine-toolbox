@@ -38,7 +38,8 @@ logger = logging.getLogger("copernicusmarine")
 class _Command(Enum):
     GET = "get"
     SUBSET = "subset"
-    LOAD = "load"
+    OPEN_DATASET = "open_dataset"
+    READ_DATAFRAME = "read_dataframe"
 
 
 @dataclass(frozen=True)
@@ -86,8 +87,17 @@ class CommandType(Command, Enum):
             CopernicusMarineServiceNames.FILES,
         ],
     )
-    LOAD = (
-        _Command.LOAD,
+    OPEN_DATASET = (
+        _Command.OPEN_DATASET,
+        [
+            CopernicusMarineServiceNames.GEOSERIES,
+            CopernicusMarineServiceNames.TIMESERIES,
+            CopernicusMarineServiceNames.OMI_ARCO,
+            CopernicusMarineServiceNames.STATIC_ARCO,
+        ],
+    )
+    READ_DATAFRAME = (
+        _Command.READ_DATAFRAME,
         [
             CopernicusMarineServiceNames.GEOSERIES,
             CopernicusMarineServiceNames.TIMESERIES,
@@ -247,7 +257,12 @@ def _select_service_by_priority(
         in dataset_available_service_names
         and CopernicusMarineServiceNames.TIMESERIES
         in dataset_available_service_names
-        and command_type in [CommandType.SUBSET, CommandType.LOAD]
+        and command_type
+        in [
+            CommandType.SUBSET,
+            CommandType.OPEN_DATASET,
+            CommandType.READ_DATAFRAME,
+        ]
         and dataset_subset is not None
     ):
         if (
@@ -398,7 +413,12 @@ def _get_retrieval_service_from_dataset_version(
             platform_ids_subset=platform_ids_subset,
         )
     if (
-        command_type in [CommandType.SUBSET, CommandType.LOAD]
+        command_type
+        in [
+            CommandType.SUBSET,
+            CommandType.OPEN_DATASET,
+            CommandType.READ_DATAFRAME,
+        ]
         and service.service_format != CopernicusMarineServiceFormat.SQLITE
     ):
         logger.debug(f'Selected service: "{service.service_name}"')

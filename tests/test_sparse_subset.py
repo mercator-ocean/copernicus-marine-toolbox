@@ -1,5 +1,6 @@
 from json import loads
 
+from copernicusmarine import read_dataframe
 from tests.test_utils import execute_in_terminal
 
 # TODO: maybe reduce the size of the request
@@ -14,17 +15,17 @@ BASIC_COMMAND = [
     "PSAL",
     "--variable",
     "TEMP",
-    "-y",
+    "--minimum-latitude",
     "45",
-    "-Y",
+    "--maximum-latitude",
     "90",
-    "-x",
+    "--minimum-longitude",
     "-146.99",
-    "-X",
+    "--maximum-longitude",
     "180",
-    "-z",
+    "--minimum-depth",
     "0",
-    "-Z",
+    "--maximum-depth",
     "10",
     "--start-datetime",
     "2023-11-25T00:00:00",
@@ -33,6 +34,20 @@ BASIC_COMMAND = [
     "-r",
     "all",
 ]
+
+BASIC_COMMAND_DICT = {
+    "dataset_id": "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+    "dataset_part": "history",
+    "variables": ["PSAL", "TEMP"],
+    "minimum_latitude": 45,
+    "maximum_latitude": 90,
+    "minimum_longitude": -146.99,
+    "maximum_longitude": 180,
+    "minimum_depth": 0,
+    "maximum_depth": 10,
+    "start_datetime": "2023-11-25T00:00:00",
+    "end_datetime": "2023-11-26T03:00:00",
+}
 
 
 class TestSparseSubset:
@@ -111,3 +126,9 @@ class TestSparseSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (tmp_path / "sparse_data.csv").exists()
+
+    def test_can_read_dataframe(self):
+        df = read_dataframe(**BASIC_COMMAND_DICT)
+        assert not df.empty
+        assert "value" in df.columns
+        assert len(df.columns) == 10

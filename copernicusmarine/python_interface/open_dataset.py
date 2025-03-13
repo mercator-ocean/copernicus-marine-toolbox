@@ -16,6 +16,7 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.request_structure import LoadRequest
+from copernicusmarine.core_functions.services_utils import CommandType
 from copernicusmarine.download_functions.download_zarr import (
     open_dataset_from_arco_series,
 )
@@ -169,5 +170,6 @@ def open_dataset(
         load_request,
         open_dataset_from_arco_series,
         chunks_factor_size_limit=chunk_size_limit,
+        command_type=CommandType.OPEN_DATASET,
     )
     return dataset
