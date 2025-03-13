@@ -415,8 +415,10 @@ class CopernicusMarinePart(BaseModel):
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
-        updated_data_date = metadata_item.properties.get("admp_updated_data")
-        updating_start_date = metadata_item.properties.get(
+        arco_updated_data_date = metadata_item.properties.get(
+            "admp_updated_data"
+        )
+        arco_updating_start_date = metadata_item.properties.get(
             "admp_updating_start_date"
         )
         if retired_date and datetime_parser(retired_date) < datetime_parser(
@@ -442,8 +444,8 @@ class CopernicusMarinePart(BaseModel):
             services=services,
             retired_date=retired_date,
             released_date=released_date,
-            updated_data_date=updated_data_date,
-            updating_start_date=updating_start_date,
+            arco_updated_data_date=arco_updated_data_date,
+            arco_updating_start_date=arco_updating_start_date,
         )
 
     def get_service_by_service_name(
