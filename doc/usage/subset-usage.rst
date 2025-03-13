@@ -156,7 +156,7 @@ Option ``--raise-if-updating``
 
 When a dataset is being updated, it can happen that data after a certain date becomes unreliable. When setting this flag,
 the toolbox will raise an error if the subset requested interval overpasses the updating start date. By default, the flag is not set
-and the toolbox will only emit a warning. see ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and :class:`copernicusmarine.DatasetUpdating`.
+and the toolbox will only emit a warning. See ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
 
 .. code-block:: python
 
