@@ -136,7 +136,7 @@ def subset(
     chunk_size_limit : int, default 100
         Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
     raise_if_updating : bool, default False
-        If set to true, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset.
+        If set to True, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset.
 
     Returns
     -------
