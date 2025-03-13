@@ -12,6 +12,7 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'arco_updating_start_date': '2024-05-01T00:00:00Z',
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -457,7 +458,6 @@
                         ]),
                       }),
                     ]),
-                    'updating_start_date': '2024-05-01T00:00:00Z',
                   }),
                 ]),
               }),
@@ -465,6 +465,7 @@
                 'label': '206011',
                 'parts': list([
                   dict({
+                    'arco_updating_start_date': '2024-05-01T00:00:00Z',
                     'name': 'default',
                     'released_date': '2060-04-23T04:23:46.808754Z',
                     'services': list([
@@ -910,7 +911,6 @@
                         ]),
                       }),
                     ]),
-                    'updating_start_date': '2024-05-01T00:00:00Z',
                   }),
                 ]),
               }),
@@ -2465,6 +2465,7 @@
                 'label': '202211',
                 'parts': list([
                   dict({
+                    'arco_updating_start_date': '2024-05-01T00:00:00Z',
                     'name': 'default',
                     'released_date': '2022-04-23T04:23:46.808754Z',
                     'services': list([
@@ -2910,7 +2911,6 @@
                         ]),
                       }),
                     ]),
-                    'updating_start_date': '2024-05-01T00:00:00Z',
                   }),
                 ]),
               }),
