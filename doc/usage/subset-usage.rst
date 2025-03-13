@@ -151,6 +151,21 @@ The latter can lead to huge overhead and slow down the process.
 Option ``--raise-if-updating``
 """"""""""""""""""""""""""""""""""""""""""
 
-When a dataset is being updated, it can happen that data is not reliable for a certain time period. When setting this flag,
-the toolbox will raise an error if the subset requested interval is within the time period of the update. By default, the flag is not set
+.. note::
+  This option only applies to ARCO datasets and not native data.
+
+When a dataset is being updated, it can happen that data after a certain date becomes unreliable. When setting this flag,
+the toolbox will raise an error if the subset requested interval overpasses the updating start date. By default, the flag is not set
 and the toolbox will only emit a warning. see ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and :class:`copernicusmarine.DatasetUpdating`.
+
+.. code-block:: python
+
+  try:
+      dataset = copernicusmarine.subset(
+          dataset_id=dataset_id,
+          start_datetime="2021-01-01",
+          end_datetime="2025-01-03",
+          raise_if_updating=True,
+      )
+  except copernicusmarine.DatasetUpdating as e:
+      logging.error(e)
