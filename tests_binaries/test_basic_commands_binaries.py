@@ -13,6 +13,8 @@ class TestBasicCommandsBinaries:
         assert self.output.returncode == 0
         self.output = execute_in_terminal([BINARY, "get", "-h"])
         assert self.output.returncode == 0
+        self.output = execute_in_terminal([BINARY, "subset", "-h"])
+        assert self.output.returncode == 0
 
     def test_describe(self):
         command = [

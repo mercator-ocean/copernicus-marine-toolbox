@@ -13,6 +13,8 @@ on:
     paths:
       - 'pyproject.toml'
       - 'conda_environment_binary.yaml'
+      - 'tests_binaries/test_*.py'
+      - 'Makefile'
 
 
 
