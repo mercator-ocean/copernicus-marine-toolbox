@@ -94,36 +94,38 @@ def download_sparse(
         return response
 
     kwargs = {
+        "url_metadata": metadata_url,
         "minimum_latitude": subset_request.minimum_latitude,
         "maximum_latitude": subset_request.maximum_latitude,
         "minimum_longitude": subset_request.minimum_longitude,
         "maximum_longitude": subset_request.maximum_longitude,
-        "minimum_elevation": (
+        "maximum_elevation": (
             -subset_request.minimum_depth
-            if subset_request.minimum_depth
+            if subset_request.minimum_depth is not None
             else None
         ),
-        "maximum_elevation": (
+        "minimum_elevation": (
             -subset_request.maximum_depth
-            if subset_request.maximum_depth
+            if subset_request.maximum_depth is not None
             else None
         ),
         "minimum_time": (
             subset_request.start_datetime.timestamp()
-            if subset_request.start_datetime
+            if subset_request.start_datetime is not None
             else None
         ),
         "maximum_time": (
             subset_request.end_datetime.timestamp()
-            if subset_request.end_datetime
+            if subset_request.end_datetime is not None
             else None
         ),
         "variables": variables,
-        "platform_ids": subset_request.platform_ids or [],
-        "url_metadata": metadata_url,
+        "entities": subset_request.platform_ids or [],
+        "vertical_axis": subset_request.vertical_axis,
         "user_configuration": user_configuration,
         "disable_progress_bar": disable_progress_bar,
     }
+    print(kwargs)
     # TODO: handle the outputs path, skip existing etc.
     if subset_request.file_format == "parquet":
         kwargs["output_path"] = output_path
@@ -178,7 +180,8 @@ def read_dataframe_sparse(
             else None
         ),
         variables=variables,
-        platform_ids=subset_request.platform_ids or [],
+        entities=subset_request.platform_ids or [],
+        vertical_axis=subset_request.vertical_axis,
         url_metadata=metadata_url,
         user_configuration=user_configuration,
         disable_progress_bar=disable_progress_bar,
@@ -190,6 +193,7 @@ def _get_user_configuration(username: str) -> UserConfiguration:
         disable_ssl=COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True",
         trust_env=TRUST_ENV,
         ssl_certificate_path=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
+        max_concurrent_requests=20,
         extra_params=construct_query_params_for_marine_data_store_monitoring(
             username
         ),
