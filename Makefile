@@ -118,7 +118,7 @@ run-using-pyinstaller-linux:
 run-using-pyinstaller-ubuntu-22.04: DISTRIBUTION = linux-glibc-2.35
 run-using-pyinstaller-ubuntu-22.04: run-using-pyinstaller-linux
 
-run-using-pyinstaller-ubuntu-24.04: DISTRIBUTION = linux-glibc-2.38
+run-using-pyinstaller-ubuntu-24.04: DISTRIBUTION = linux-glibc-2.39
 run-using-pyinstaller-ubuntu-24.04: run-using-pyinstaller-linux
 
 # Tests for the binaries

@@ -95,7 +95,7 @@ To download directly the latest stable releases:
 - MacOS arm64: |download_macos_arm64|
 - MacOS x86_64: |download_macos_x86|
 - Linux (with glibc 2.35): |download_linux_235|
-- Linux (with glibc 2.38): |download_linux_238|
+- Linux (with glibc 2.39): |download_linux_239|
 - Windows: |download_windows|
 
 

@@ -50,6 +50,6 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
           ARCH="linux-glibc-2.35"
         elif [ "${{ matrix.os }}" == "ubuntu-24.04" ]; then
-          ARCH="linux-glibc-2.38"
+          ARCH="linux-glibc-2.39"
         fi
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
