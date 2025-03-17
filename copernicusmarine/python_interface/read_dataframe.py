@@ -109,7 +109,7 @@ def read_dataframe(
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     disable_progress_bar : bool, optional
-        Disable the progress bar during the download process. Default is False.
+        Flag to hide progress bar.
 
     Returns
     -------
