@@ -237,7 +237,7 @@ SUBSET: dict[str, str] = {
         "error if the dataset is being updated "
         "and the subset interval requested overpasses "
         "the updating start date of the dataset."
-        "Otherwise, a simple warning is displayed."
+        " Otherwise, a simple warning is displayed."
     ),
 }
 
