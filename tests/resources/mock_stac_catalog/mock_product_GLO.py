@@ -77,12 +77,6 @@ MOCK_PRODUCT_GLO = {
             "type": "application/json",
         },
         {
-            "rel": "item",
-            "href": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406/dataset.stac.json",
-            "title": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406",
-            "type": "application/json",
-        },
-        {
             "rel": "item",  # fake item
             "href": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/dataset.stac.json",
             "title": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011",
