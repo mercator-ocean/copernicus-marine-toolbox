@@ -125,7 +125,6 @@ def download_sparse(
         "user_configuration": user_configuration,
         "disable_progress_bar": disable_progress_bar,
     }
-    print(kwargs)
     # TODO: handle the outputs path, skip existing etc.
     if subset_request.file_format == "parquet":
         kwargs["output_path"] = output_path
