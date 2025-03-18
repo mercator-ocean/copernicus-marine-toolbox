@@ -405,7 +405,7 @@ class CopernicusMarinePart(BaseModel):
     #: Date when the arco series of the part were last updated.
     #: Only applies to ARCO series
     #: and not to the original files.
-    arco_updated_data_date: Optional[str]
+    arco_updated_date: Optional[str]
 
     @classmethod
     def from_metadata_item(
@@ -415,9 +415,7 @@ class CopernicusMarinePart(BaseModel):
     ) -> Optional[VersionPart]:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
-        arco_updated_data_date = metadata_item.properties.get(
-            "admp_updated_data"
-        )
+        arco_updated_date = metadata_item.properties.get("admp_updated_data")
         arco_updating_start_date = metadata_item.properties.get(
             "admp_updating_start_date"
         )
@@ -444,7 +442,7 @@ class CopernicusMarinePart(BaseModel):
             services=services,
             retired_date=retired_date,
             released_date=released_date,
-            arco_updated_data_date=arco_updated_data_date,
+            arco_updated_date=arco_updated_date,
             arco_updating_start_date=arco_updating_start_date,
         )
 

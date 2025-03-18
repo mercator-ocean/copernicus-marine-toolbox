@@ -168,4 +168,5 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
           raise_if_updating=True,
       )
   except copernicusmarine.DatasetUpdating as e:
+      # add retries here if needed
       logging.error(e)

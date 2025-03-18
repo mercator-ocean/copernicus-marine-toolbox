@@ -71,7 +71,7 @@
 # ---
 # name: TestQueryBuilder.test_return_available_fields
   list([
-    'arco_updated_data_date',
+    'arco_updated_date',
     'arco_updating_start_date',
     'axis',
     'bbox',

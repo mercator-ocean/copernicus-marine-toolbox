@@ -15,7 +15,7 @@ version_default = CopernicusMarineVersion(
             retired_date=None,
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="latest_to_be_released",
@@ -23,7 +23,7 @@ version_default = CopernicusMarineVersion(
             retired_date=None,
             released_date="2060-01-01",
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="bathy",
@@ -31,7 +31,7 @@ version_default = CopernicusMarineVersion(
             retired_date=None,
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="history",
@@ -39,7 +39,7 @@ version_default = CopernicusMarineVersion(
             retired_date=None,
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name=PART_DEFAULT,
@@ -47,7 +47,7 @@ version_default = CopernicusMarineVersion(
             retired_date=None,
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2060",
@@ -55,7 +55,7 @@ version_default = CopernicusMarineVersion(
             retired_date="2060-01-01",
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="latest_will_be_retired_in_2030",
@@ -63,7 +63,7 @@ version_default = CopernicusMarineVersion(
             retired_date="2030-01-01",
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="monthly",
@@ -71,7 +71,7 @@ version_default = CopernicusMarineVersion(
             retired_date=None,
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
     ],
 )
@@ -85,7 +85,7 @@ to_be_released_version = CopernicusMarineVersion(
             retired_date=None,
             released_date="2060-01-01",
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
     ],
 )
@@ -99,7 +99,7 @@ will_be_retired_soon_version = CopernicusMarineVersion(
             retired_date="2025-01-01",
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
     ],
 )
@@ -113,7 +113,7 @@ will_be_retired_in_a_long_time_version = CopernicusMarineVersion(
             retired_date="2060-01-01",
             released_date=None,
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
     ],
 )
@@ -127,7 +127,7 @@ newly_released_version = CopernicusMarineVersion(
             retired_date=None,
             released_date="2022-01-01",
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
         CopernicusMarinePart(
             name="to_be_released_part",
@@ -135,7 +135,7 @@ newly_released_version = CopernicusMarineVersion(
             retired_date=None,
             released_date="2060-01-01",
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
     ],
 )
@@ -149,7 +149,7 @@ old_version = CopernicusMarineVersion(
             retired_date=None,
             released_date="2019-01-01",
             arco_updating_start_date=None,
-            arco_updated_data_date=None,
+            arco_updated_date=None,
         ),
     ],
 )
