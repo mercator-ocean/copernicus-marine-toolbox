@@ -148,7 +148,7 @@ class DatasetUpdating(Exception):
     and the flag raise-if-updating is set to True.
     To avoid this exception, you can remove the flag from the query,
     request a subset of data before the updating start date or
-    wait for the ARCO datacube update to be completed, which can
+    wait for the ARCO service update to be completed, which can
     take from 5 minutes to some hours.
     """
 

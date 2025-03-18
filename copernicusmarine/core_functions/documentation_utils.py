@@ -233,10 +233,11 @@ SUBSET: dict[str, str] = {
         "This is an experimental feature."
     ),
     "RAISE_IF_UPDATING_HELP": (
-        "If set to True, raises a :class:`copernicusmarine.DatasetUpdating` "
+        "If set, raises a :class:`copernicusmarine.DatasetUpdating` "
         "error if the dataset is being updated "
         "and the subset interval requested overpasses "
         "the updating start date of the dataset."
+        "Otherwise, a simple warning is displayed."
     ),
 }
 
