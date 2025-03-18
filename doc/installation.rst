@@ -95,7 +95,7 @@ To download directly the latest stable releases:
 - MacOS arm64: |download_macos_arm64|
 - MacOS x86_64: |download_macos_x86|
 - Linux (with glibc 2.35): |download_linux_235|
-- Linux (with glibc 2.31): |download_linux_231|
+- Linux (with glibc 2.39): |download_linux_239|
 - Windows: |download_windows|
 
 
@@ -113,7 +113,7 @@ You might have to update the permissions of the binary to be able to execute it 
 
 .. code-block:: bash
 
-    chmod +rwx copernicusmarine_linux-glibc-2.31.cli
+    chmod +rwx copernicusmarine_linux-glibc-2.35.cli
 
 And from a Windows os (cmd):
 
