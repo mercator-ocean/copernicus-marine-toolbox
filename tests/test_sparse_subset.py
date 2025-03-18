@@ -98,6 +98,7 @@ class TestSparseSubset:
         command_skip_existing = command + ["--skip-existing"]
         self.output = execute_in_terminal(command_skip_existing)
         assert self.output.returncode == 0
+        print(self.output.stdout)
         response = loads(self.output.stdout)
         assert response["status"] == "000"
         assert response["file_status"] == "IGNORED"
@@ -131,4 +132,4 @@ class TestSparseSubset:
         df = read_dataframe(**BASIC_COMMAND_DICT)
         assert not df.empty
         assert "value" in df.columns
-        assert len(df.columns) == 10
+        assert len(df.columns) == 11
