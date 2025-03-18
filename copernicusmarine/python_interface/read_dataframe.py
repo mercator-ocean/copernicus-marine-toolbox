@@ -63,6 +63,7 @@ def read_dataframe(
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
     disable_progress_bar: bool = False,
+    platform_ids: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
@@ -110,6 +111,8 @@ def read_dataframe(
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
+    platform_ids : List[str], optional
+        List of platform IDs to extract. Only available for platform chunked datasets.
 
     Returns
     -------
@@ -150,6 +153,7 @@ def read_dataframe(
         username=username,
         password=password,
         variables=variables,
+        platform_ids=platform_ids,
         geographical_parameters=geographicalparameters,
         temporal_parameters=TemporalParameters(
             start_datetime=start_datetime,

@@ -165,11 +165,11 @@ We defined some automatisation processes that listen to these events and trigger
 
 ### About poetry.lock
 
-If you do any action that leads to a `poetry lock` then you might enconter an infinite loop: `Resolving dependencied... (1232.3s)`.
+If you do any action that leads to a `poetry lock` then you might enconter an infinite loop: `Resolving dependencies... (1232.3s)`.
 
-It seems to be an known issue due to the use of `botocore` and `urllib3`.
+It seems to be a known issue due to the use of `botocore` and `urllib3`.
 
-Here the [issue on `poetry` repository issue](https://github.com/orgs/python-poetry/discussions/7937) and the [issue on the `botocore` repository](https://github.com/boto/botocore/issues/2926).
+Here the [issue on `poetry` repository](https://github.com/orgs/python-poetry/discussions/7937) and the [issue on the `botocore` repository](https://github.com/boto/botocore/issues/2926).
 
 It seems that one work around is setting `urllib3<2`. So when you want to do `poetry add` or `poetry lock` follow this instructions (it suppose you use `poetry>=2.0.0`):
 

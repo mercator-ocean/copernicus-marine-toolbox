@@ -4,9 +4,6 @@ from typing import Literal, Optional, Union, get_args
 
 from pydantic import BaseModel, ConfigDict
 
-# TODO: filter the formats between sparse and zarr
-# also "pandas" shouldn't be available for command line
-# or should I directly use read dataframe?
 FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
 DEFAULT_FILE_FORMATS = list(get_args(FileFormat))

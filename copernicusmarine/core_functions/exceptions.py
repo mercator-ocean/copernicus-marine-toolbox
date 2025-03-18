@@ -70,18 +70,21 @@ class WrongDatetimeFormat(Exception):
 class FormatNotSupported(Exception):
     """
     Exception raised when the format is not supported for the command.
-    Usually it means that you are trying to subset a sparse dataset.
+    Usually, it means that you are trying to subset a sparse dataset and
+    for sparse datasets lazy loading is not available.
+    Use :func:`copernicusmarine.read_dataframe` or :func:`copernicusmarine.subset` instead.
 
     Please try other commands or use datasets with the supported format.
-    """
+    """  # noqa
 
     def __init__(
         self, format_type: str, command_type: str, recommended_command: str
     ):
         super().__init__(
-            f"Subsetting format type '{format_type}' not "
-            f"supported for command '{command_type}'. "
-            f"You may want to look into '{recommended_command}' instead."
+            f"Lazy loading of format type '{format_type}' not "
+            f"supported with command '{command_type}'. "
+            f"You may want to look into '{recommended_command}' instead "
+            f"to subset your data."
         )
 
 
@@ -163,8 +166,8 @@ class DatasetUpdating(Exception):
 
 class NotEnoughPlatformMetadata(Exception):
     """
-    Exception raised when there is not enough platform metadata.
-    And user wants to perform subset on platform ids.
+    Exception raised when there is not enough platform metadata
+    and user wants to perform subset on platform ids.
 
     Please contact the Copernicus Marine support team if needed.
     """

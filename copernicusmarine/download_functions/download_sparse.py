@@ -35,7 +35,6 @@ from copernicusmarine.download_functions.utils import get_file_extension
 logger = logging.getLogger("copernicusmarine")
 
 
-# TODO: do the case where we want to return a pandas dataframe
 # TODO: should we support necdf?
 # https://stackoverflow.com/questions/46476920/xarray-writing-to-netcdf-from-pandas-dimension-issue # noqa
 def download_sparse(
@@ -125,7 +124,6 @@ def download_sparse(
         "user_configuration": user_configuration,
         "disable_progress_bar": disable_progress_bar,
     }
-    # TODO: handle the outputs path, skip existing etc.
     if subset_request.file_format == "parquet":
         kwargs["output_path"] = output_path
         subset_and_save(**kwargs)

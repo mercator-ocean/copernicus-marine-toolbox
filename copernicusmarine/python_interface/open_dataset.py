@@ -118,7 +118,6 @@ def open_dataset(
     xarray.Dataset
         The loaded xarray dataset.
     """  # noqa
-    # TODO: check the format because cannot be used for sparse datasets
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
     credentials_file = (

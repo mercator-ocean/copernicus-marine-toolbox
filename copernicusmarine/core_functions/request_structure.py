@@ -280,6 +280,7 @@ class LoadRequest:
     username: Optional[str] = None
     password: Optional[str] = None
     variables: Optional[List[str]] = None
+    platform_ids: Optional[List[str]] = None
     geographical_parameters: GeographicalParameters = field(
         default_factory=GeographicalParameters
     )
@@ -329,6 +330,7 @@ class LoadRequest:
             force_dataset_version=self.force_dataset_version,
             force_dataset_part=self.force_dataset_part,
             variables=self.variables,
+            platform_ids=self.platform_ids,
             minimum_longitude=self.geographical_parameters.x_axis_parameters.minimum_x,
             maximum_longitude=self.geographical_parameters.x_axis_parameters.maximum_x,
             minimum_latitude=self.geographical_parameters.y_axis_parameters.minimum_y,
