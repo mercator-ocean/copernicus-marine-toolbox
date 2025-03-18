@@ -3,7 +3,6 @@ from json import loads
 from copernicusmarine import read_dataframe
 from tests.test_utils import execute_in_terminal
 
-# TODO: maybe reduce the size of the request
 BASIC_COMMAND = [
     "copernicusmarine",
     "subset",
@@ -98,7 +97,6 @@ class TestSparseSubset:
         command_skip_existing = command + ["--skip-existing"]
         self.output = execute_in_terminal(command_skip_existing)
         assert self.output.returncode == 0
-        print(self.output.stdout)
         response = loads(self.output.stdout)
         assert response["status"] == "000"
         assert response["file_status"] == "IGNORED"

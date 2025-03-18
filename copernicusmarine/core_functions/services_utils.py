@@ -79,6 +79,7 @@ class CommandType(Command, Enum):
             CopernicusMarineServiceNames.TIMESERIES,
             CopernicusMarineServiceNames.OMI_ARCO,
             CopernicusMarineServiceNames.STATIC_ARCO,
+            CopernicusMarineServiceNames.PLATFORMSERIES,
         ],
     )
     GET = (
@@ -103,6 +104,7 @@ class CommandType(Command, Enum):
             CopernicusMarineServiceNames.TIMESERIES,
             CopernicusMarineServiceNames.OMI_ARCO,
             CopernicusMarineServiceNames.STATIC_ARCO,
+            CopernicusMarineServiceNames.PLATFORMSERIES,
         ],
     )
 

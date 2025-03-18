@@ -156,7 +156,6 @@ def subset_function(
         coordinates_selection_method=subset_request.coordinates_selection_method,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
-    # TODO: add the platform chunked
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
         CopernicusMarineServiceNames.TIMESERIES,
@@ -172,7 +171,7 @@ def subset_function(
             if subset_request.file_format not in ["netcdf", "zarr"]:
                 raise ValueError(
                     f"{subset_request.file_format} is not a valid format "
-                    "for this dataset."
+                    "for this dataset. "
                     "Available format for this dataset is 'netcdf' or 'zarr'."
                 )
             response = download_zarr(
@@ -191,13 +190,23 @@ def subset_function(
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
+            raise_when_all_dataset_requested(subset_request, True)
             if subset_request.file_format not in ["parquet", "csv"]:
                 logger.info(
-                    "Using 'parquet' format by default."
+                    "Using 'parquet' format by default. "
                     "'csv' format can also be set with 'file-format' option."
                 )
                 subset_request.file_format = "parquet"
-            raise_when_all_dataset_requested(subset_request, True)
+            if subset_request.coordinates_selection_method not in [
+                "inside",
+                "strict-inside",
+            ]:
+                logger.warning(
+                    f"coordinates-selection-method "
+                    f"{subset_request.coordinates_selection_method} "
+                    "is not supported for sparse data. "
+                    "Using 'inside' by default."
+                )
             response = download_sparse(
                 username,
                 subset_request,

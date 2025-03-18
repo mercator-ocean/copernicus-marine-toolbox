@@ -501,7 +501,7 @@ class CopernicusMarinePart(BaseModel):
         for service in self.services:
             services.append(service.service_name)
             for variable in service.variables:
-                variables.append(variable)
+                variables.append(variable.short_name)
                 for coordinate in variable.coordinates:
                     coordinate_id = coordinate.coordinate_id
                     if coordinate_id not in coordinates:
