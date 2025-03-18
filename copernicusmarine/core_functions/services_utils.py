@@ -367,6 +367,7 @@ def _get_retrieval_service_from_dataset_version(
             dataset_id, dataset_version, dataset_part
         )
 
+    # check that the dataset is not being updated
     if dataset_part.arco_updating_start_date:
         updating_date = datetime_parser(dataset_part.arco_updating_start_date)
         if not dataset_subset or (
