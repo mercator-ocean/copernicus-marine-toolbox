@@ -1515,6 +1515,7 @@
                 'label': '202012',
                 'parts': list([
                   dict({
+                    'arco_updating_start_date': '2023-05-01T00:00:00Z',
                     'name': 'default',
                     'released_date': '2060-02-28T19:49:29.817792Z',
                     'services': list([
