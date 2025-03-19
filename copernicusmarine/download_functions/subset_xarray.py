@@ -156,9 +156,13 @@ def _dataset_custom_sel(
     if coordinate_label in dataset.sizes:
         if isinstance(coord_selection, slice):
             if (
-                dataset[coordinate_label].values[0]
-                > dataset[coordinate_label].values[1]
-            ) and coord_selection.start < coord_selection.stop:
+                len(dataset[coordinate_label].values) > 1
+                and (
+                    dataset[coordinate_label].values[0]
+                    > dataset[coordinate_label].values[1]
+                )
+                and coord_selection.start < coord_selection.stop
+            ):
                 coord_selection = slice(
                     coord_selection.stop, coord_selection.start
                 )
