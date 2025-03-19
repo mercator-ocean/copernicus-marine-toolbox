@@ -216,13 +216,13 @@ def download_zarr(
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
         y_axis_parameters=YParameters(
-            minimum_y=subset_request.minimum_latitude,
-            maximum_y=subset_request.maximum_latitude,
+            minimum_y=subset_request.minimum_y,
+            maximum_y=subset_request.maximum_y,
             coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
         ),
         x_axis_parameters=XParameters(
-            minimum_x=subset_request.minimum_longitude,
-            maximum_x=subset_request.maximum_longitude,
+            minimum_x=subset_request.minimum_x,
+            maximum_x=subset_request.maximum_x,
             coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
         ),
         projection="originalGrid" if is_original_grid else "lonlat",
