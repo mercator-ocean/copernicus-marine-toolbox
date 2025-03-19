@@ -39,3 +39,5 @@ Custom errors
 .. autoclass:: copernicusmarine.ServiceNotAvailable()
 
 .. autoclass:: copernicusmarine.NoServiceAvailable()
+
+.. autoclass:: copernicusmarine.DatasetUpdating()

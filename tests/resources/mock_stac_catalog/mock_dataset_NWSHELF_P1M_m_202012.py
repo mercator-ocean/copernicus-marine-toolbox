@@ -494,6 +494,7 @@ MOCK_DATASET_NWSHELF_P1M_M_202012 = {
         "admp_in_preparation": False,
         "admp_updated": "2024-02-28T19:50:33.119183Z",
         "admp_released_date": "2060-02-28T19:49:29.817792Z",  # here manually modified
+        "admp_updating_start_date": "2023-05-01T00:00:00Z",
         "admp_retired_date": None,
     },
     "links": [

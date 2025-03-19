@@ -21,7 +21,10 @@ from copernicusmarine.catalogue_parser.request_structure import (
     DatasetTimeAndSpaceSubset,
 )
 from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.exceptions import FormatNotSupported
+from copernicusmarine.core_functions.exceptions import (
+    DatasetUpdating,
+    FormatNotSupported,
+)
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
@@ -287,6 +290,7 @@ def get_retrieval_service(
     dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
     username: Optional[str] = None,
     staging: bool = False,
+    raise_if_updating: bool = False,
 ) -> RetrievalService:
     dataset_metadata = get_dataset_metadata(dataset_id, staging=staging)
     # logger.debug(dataset_metadata)
@@ -312,6 +316,7 @@ def get_retrieval_service(
         command_type=command_type,
         dataset_subset=dataset_subset,
         username=username,
+        raise_if_updating=raise_if_updating,
     )
 
 
@@ -323,6 +328,7 @@ def _get_retrieval_service_from_dataset(
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
+    raise_if_updating: bool,
 ) -> RetrievalService:
     dataset_version = dataset.get_version(force_dataset_version_label)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
@@ -334,6 +340,7 @@ def _get_retrieval_service_from_dataset(
         command_type=command_type,
         dataset_subset=dataset_subset,
         username=username,
+        raise_if_updating=raise_if_updating,
     )
 
 
@@ -345,6 +352,7 @@ def _get_retrieval_service_from_dataset_version(
     command_type: CommandType,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset],
     username: Optional[str],
+    raise_if_updating: bool,
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
@@ -358,6 +366,28 @@ def _get_retrieval_service_from_dataset_version(
         _warning_dataset_not_yet_released(
             dataset_id, dataset_version, dataset_part
         )
+
+    # check that the dataset is not being updated
+    if dataset_part.arco_updating_start_date:
+        updating_date = datetime_parser(dataset_part.arco_updating_start_date)
+        if not dataset_subset or (
+            dataset_subset
+            and (
+                not dataset_subset.end_datetime
+                or (
+                    dataset_subset.end_datetime
+                    and dataset_subset.end_datetime > updating_date
+                )
+            )
+        ):
+            error_message = _warning_dataset_updating(
+                dataset_id=dataset_id,
+                dataset_version=dataset_version,
+                dataset_part=dataset_part,
+            )
+            logger.warning(error_message)
+            if raise_if_updating:
+                raise DatasetUpdating(error_message)
 
     if force_service_name:
         service = _select_forced_service(
@@ -443,6 +473,21 @@ def _warning_dataset_not_yet_released(
         f"on the toolbox on the {dataset_part.released_date}."
     )
     logger.warning(message)
+
+
+def _warning_dataset_updating(
+    dataset_id: str,
+    dataset_version: CopernicusMarineVersion,
+    dataset_part: CopernicusMarinePart,
+):
+    message = (
+        f"The dataset {dataset_id}"
+        f", version '{dataset_version.label}'"
+        f", part '{dataset_part.name}' "
+        f"is currently being updated. "
+        f"Data after {dataset_part.arco_updating_start_date} may not be up to date."
+    )
+    return message
 
 
 def _service_not_available_error(

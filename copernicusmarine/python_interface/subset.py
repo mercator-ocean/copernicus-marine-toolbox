@@ -68,6 +68,7 @@ def subset(
     netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
     chunk_size_limit: int = 100,
+    raise_if_updating: bool = False,
 ) -> ResponseSubset:
     """
     Extract a subset of data from a specified dataset using given parameters.
@@ -134,6 +135,8 @@ def subset(
         Enable downloading the dataset in a netCDF3 compatible format.
     chunk_size_limit : int, default 100
         Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
+    raise_if_updating : bool, default False
+        If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
 
     Returns
     -------
@@ -200,4 +203,5 @@ def subset(
         netcdf_compression_level,
         netcdf3_compatible,
         chunk_size_limit,
+        raise_if_updating,
     )

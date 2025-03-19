@@ -147,3 +147,26 @@ To sum up, the ``--chunk-size-limit`` option allows you to play with the chunk s
 The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the ressources needed.
 If the chunk size is too small, many tasks are being created and handled by dask which means a consequent dask graph need to be handled.
 The latter can lead to huge overhead and slow down the process.
+
+Option ``--raise-if-updating``
+""""""""""""""""""""""""""""""""""""""""""
+
+.. note::
+  This option only applies to ARCO services (``arco-geo-series`` and ``arco-time-series``) and not native files (``original-files`` service).
+
+When a dataset is being updated, it can happen that data after a certain date becomes unreliable. When setting this flag,
+the toolbox will raise an error if the subset requested interval overpasses the updating start date. By default, the flag is not set
+and the toolbox will only emit a warning. See ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
+
+.. code-block:: python
+
+  try:
+      dataset = copernicusmarine.subset(
+          dataset_id=dataset_id,
+          start_datetime="2021-01-01",
+          end_datetime="2025-01-03",
+          raise_if_updating=True,
+      )
+  except copernicusmarine.DatasetUpdating as e:
+      # add retries here if needed
+      logging.error(e)

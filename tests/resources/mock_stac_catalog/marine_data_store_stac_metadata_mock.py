@@ -3,6 +3,9 @@ from typing import Optional
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     MARINE_DATA_STORE_STAC_URL,
 )
+from copernicusmarine.core_functions.credentials_utils import (
+    COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT,
+)
 from tests.resources.mock_stac_catalog.mock_catalog import MOCK_STAC_CATALOG
 from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_cur import (
     MOCK_DATASET_GLO_PHY_CUR,
@@ -21,6 +24,9 @@ from tests.resources.mock_stac_catalog.mock_dataset_NWSHELF_P1D_m_202012 import 
 )
 from tests.resources.mock_stac_catalog.mock_dataset_NWSHELF_P1M_m_202012 import (
     MOCK_DATASET_NWSHELF_P1M_M_202012,
+)
+from tests.resources.mock_stac_catalog.mock_dataset_product_id_mapping import (
+    MOCK_DATASET_PRODUCT_ID_MAPPING,
 )
 from tests.resources.mock_stac_catalog.mock_mds_version import MOCK_MDS_VERSION
 from tests.resources.mock_stac_catalog.mock_product_GLO import MOCK_PRODUCT_GLO
@@ -49,6 +55,8 @@ def mocked_stac_requests_get(*args, **kwargs):
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
+
+    print(args[0])
 
     if args[0] == f"{BASE_URL}/catalog.stac.json":
         return MockResponse(MOCK_STAC_CATALOG, 200)
@@ -103,4 +111,13 @@ def mocked_stac_requests_get(*args, **kwargs):
         == "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
     ):
         return MockResponse(MOCK_MDS_VERSION, 200)
+
+    elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
+        return MockResponse(None, 200)
+
+    elif (
+        args[0]
+        == "https://s3.waw3-1.cloudferro.com/mdl-metadata/dataset_product_id_mapping.json"
+    ):
+        return MockResponse(MOCK_DATASET_PRODUCT_ID_MAPPING, 200)
     return MockResponse(None, 404)
