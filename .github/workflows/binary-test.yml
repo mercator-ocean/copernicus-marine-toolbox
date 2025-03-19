@@ -13,6 +13,8 @@ on:
     paths:
       - 'pyproject.toml'
       - 'conda_environment_binary.yaml'
+      - 'tests_binaries/test_*.py'
+      - 'Makefile'
 
 
 
@@ -21,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-20.04]
+        os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 

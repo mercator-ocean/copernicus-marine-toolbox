@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-20.04]
+        os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -49,7 +49,7 @@ jobs:
           ARCH="macos-x86_64"
         elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
           ARCH="linux-glibc-2.35"
-        elif [ "${{ matrix.os }}" == "ubuntu-20.04" ]; then
-          ARCH="linux-glibc-2.31"
+        elif [ "${{ matrix.os }}" == "ubuntu-24.04" ]; then
+          ARCH="linux-glibc-2.39"
         fi
           gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
