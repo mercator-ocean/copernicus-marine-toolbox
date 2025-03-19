@@ -395,9 +395,9 @@ class CopernicusMarineService(BaseModel):
             for coordinate in variable.coordinates:
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
-                axis_coordinate_id_mapping[coordinate.axis] = (
-                    coordinate.coordinate_id
-                )
+                axis_coordinate_id_mapping[
+                    coordinate.axis
+                ] = coordinate.coordinate_id
 
         return axis_coordinate_id_mapping
 
