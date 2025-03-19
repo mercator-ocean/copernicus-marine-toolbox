@@ -129,6 +129,12 @@ class TestDocumentation:
                     "List of variable names to extract."
                 ]
                 continue
+            if name_of_variable == "platform_ids":
+                assert text_read_dataframe["Parameters"][i].desc == [
+                    "List of platform IDs to extract. "
+                    "Only available for platform chunked datasets."
+                ]
+                continue
             if name_of_variable == "dataset_id":
                 assert text_read_dataframe["Parameters"][i].desc == [
                     "The datasetID, required."

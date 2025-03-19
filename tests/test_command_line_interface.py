@@ -660,7 +660,8 @@ class TestCommandLineInterface:
         assert (
             b"Service unavailable-service does not exist for command subset. "
             b"Possible services: ['arco-geo-series', 'geoseries', "
-            b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco']"
+            b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco', "
+            b"'arco-platform-series', 'platformseries']"
         ) in self.output.stderr
 
     def when_I_request_subset_dataset_with_zarr_service(
