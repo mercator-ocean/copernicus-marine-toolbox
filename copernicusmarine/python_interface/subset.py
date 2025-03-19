@@ -69,6 +69,7 @@ def subset(
     netcdf3_compatible: bool = False,
     chunk_size_limit: int = 100,
     raise_if_updating: bool = False,
+    platform_ids: Optional[List[str]] = None,
 ) -> ResponseSubset:
     """
     Extract a subset of data from a specified dataset using given parameters.
@@ -122,7 +123,7 @@ def subset(
     skip_existing : bool, optional
         If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
     service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     motu_api_request : str, optional
@@ -137,6 +138,8 @@ def subset(
         Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
     raise_if_updating : bool, default False
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
+    platform_ids : List[str], optional
+        List of platform IDs to extract. Only available for platform chunked datasets.
 
     Returns
     -------
@@ -187,6 +190,7 @@ def subset(
         vertical_axis,
         start_datetime,
         end_datetime,
+        platform_ids,
         coordinates_selection_method,
         output_filename,
         file_format,

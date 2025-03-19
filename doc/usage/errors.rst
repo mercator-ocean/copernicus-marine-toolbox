@@ -41,3 +41,9 @@ Custom errors
 .. autoclass:: copernicusmarine.NoServiceAvailable()
 
 .. autoclass:: copernicusmarine.DatasetUpdating()
+
+.. autoclass:: copernicusmarine.NotEnoughPlatformMetadata()
+
+.. autoclass:: copernicusmarine.PlatformsSubsettingNotAvailable()
+
+.. autoclass:: copernicusmarine.WrongPlatformID()

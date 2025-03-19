@@ -4,7 +4,6 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
@@ -15,7 +14,9 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
-from copernicusmarine.download_functions.download_arco_series import (
+from copernicusmarine.core_functions.request_structure import LoadRequest
+from copernicusmarine.core_functions.services_utils import CommandType
+from copernicusmarine.download_functions.download_zarr import (
     read_dataframe_from_arco_series,
 )
 from copernicusmarine.download_functions.subset_parameters import (
@@ -61,6 +62,8 @@ def read_dataframe(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    disable_progress_bar: bool = False,
+    platform_ids: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
@@ -103,10 +106,13 @@ def read_dataframe(
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-
+    disable_progress_bar : bool, optional
+        Flag to hide progress bar.
+    platform_ids : List[str], optional
+        List of platform IDs to extract. Only available for platform chunked datasets.
 
     Returns
     -------
@@ -147,6 +153,7 @@ def read_dataframe(
         username=username,
         password=password,
         variables=variables,
+        platform_ids=platform_ids,
         geographical_parameters=geographicalparameters,
         temporal_parameters=TemporalParameters(
             start_datetime=start_datetime,
@@ -160,10 +167,12 @@ def read_dataframe(
         ),
         force_service=service,
         credentials_file=credentials_file,
+        disable_progress_bar=disable_progress_bar,
     )
     dataset = load_data_object_from_load_request(
         load_request,
         read_dataframe_from_arco_series,
         chunks_factor_size_limit=100,
+        command_type=CommandType.READ_DATAFRAME,
     )
     return dataset

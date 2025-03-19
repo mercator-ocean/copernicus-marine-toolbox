@@ -2,19 +2,18 @@ import logging
 import typing
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Literal, Optional, Union
+from typing import Any, List, Literal, Optional, Union
 
 import numpy
 import xarray
 from dateutil.tz import UTC
 
 from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineCoordinate,
+    CopernicusMarinePart,
+    CopernicusMarineService,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.catalogue_parser.request_structure import (
-    DatasetTimeAndSpaceSubset,
-)
-from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
     MinimumLongitudeGreaterThanMaximumLongitude,
@@ -22,6 +21,9 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
+from copernicusmarine.core_functions.request_structure import (
+    DatasetTimeAndSpaceSubset,
+)
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )
@@ -238,7 +240,7 @@ def _shift_longitude_dimension(
             coordinate_id,
             minimum_longitude_modulus,
             "nearest",
-        )
+        )  # type: ignore
     window = (
         minimum_longitude_modulus + 180
     )  # compute the degrees needed to move the dataset
@@ -627,136 +629,126 @@ def longitude_modulus_upper_bound(longitude: float) -> float:
 
 
 def check_dataset_subset_bounds(
-    username: str,
-    password: str,
-    dataset_url: str,
-    service_name: CopernicusMarineServiceNames,
+    service: CopernicusMarineService,
+    part: CopernicusMarinePart,
     dataset_subset: DatasetTimeAndSpaceSubset,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    dataset_valid_date: Optional[Union[str, int, float]],
     axis_coordinate_id_mapping: dict[str, str],
 ) -> None:
     # TODO: check lon/lat for original grid
-    if service_name in [
+    if service.service_name not in [
         CopernicusMarineServiceNames.GEOSERIES,
         CopernicusMarineServiceNames.TIMESERIES,
         CopernicusMarineServiceNames.OMI_ARCO,
         CopernicusMarineServiceNames.STATIC_ARCO,
+        CopernicusMarineServiceNames.PLATFORMSERIES,
     ]:
-        dataset = custom_open_zarr.open_zarr(
-            dataset_url, copernicus_marine_username=username
-        )
-        dataset_coordinates = dataset.coords
-    else:
-        raise ServiceNotSupported(service_name)
-
+        raise ServiceNotSupported(service.service_name)
+    all_coordinates = part.get_coordinates()
     if "y" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["y"]
-        y_axis_values = dataset_coordinates[coordinate_id].values
+        coordinate, _, _ = all_coordinates[coordinate_id]
+        minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
         user_minimum_coordinate_value = (
             dataset_subset.minimum_y
             if dataset_subset.minimum_y is not None
-            else y_axis_values.min()
+            else minimum_value
         )
         user_maximum_coordinate_value = (
             dataset_subset.maximum_y
             if dataset_subset.maximum_y is not None
-            else y_axis_values.max()
+            else maximum_value
         )
         _check_coordinate_overlap(
             dimension=coordinate_id,
             user_minimum_coordinate_value=user_minimum_coordinate_value,
             user_maximum_coordinate_value=user_maximum_coordinate_value,
-            dataset_minimum_coordinate_value=y_axis_values.min(),
-            dataset_maximum_coordinate_value=y_axis_values.max(),
+            dataset_minimum_coordinate_value=minimum_value,
+            dataset_maximum_coordinate_value=maximum_value,
             is_strict=coordinates_selection_method == "strict-inside",
         )
     if "x" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["x"]
-        x_axis_values = dataset_coordinates[coordinate_id].values
+        coordinate, _, _ = all_coordinates[coordinate_id]
+        minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
         if coordinate_id == "longitude":
             user_minimum_coordinate_value = (
                 longitude_modulus(dataset_subset.minimum_x)
                 if dataset_subset.minimum_x is not None
-                else x_axis_values.min()
+                else minimum_value
             )
             user_maximum_coordinate_value = (
                 longitude_modulus_upper_bound(dataset_subset.maximum_x)
                 if dataset_subset.maximum_x is not None
-                else x_axis_values.max()
+                else maximum_value
             )
         else:
             user_minimum_coordinate_value = (
                 dataset_subset.minimum_x
                 if dataset_subset.minimum_x is not None
-                else x_axis_values.min()
+                else minimum_value
             )
             user_maximum_coordinate_value = (
                 dataset_subset.maximum_x
                 if dataset_subset.maximum_x is not None
-                else x_axis_values.max()
+                else maximum_value
             )
         _check_coordinate_overlap(
             dimension=coordinate_id,
             user_minimum_coordinate_value=user_minimum_coordinate_value,
             user_maximum_coordinate_value=user_maximum_coordinate_value,
-            dataset_minimum_coordinate_value=x_axis_values.min(),
-            dataset_maximum_coordinate_value=x_axis_values.max(),
+            dataset_minimum_coordinate_value=minimum_value,
+            dataset_maximum_coordinate_value=maximum_value,
             is_strict=coordinates_selection_method == "strict-inside",
         )
     if "t" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["t"]
-        if coordinate_id in dataset.sizes:
-            times = dataset_coordinates[coordinate_id].values
-            if dataset_valid_date:
-                times_min = dataset_valid_date
-            else:
-                times_min = times.min()
-            dataset_minimum_coordinate_value = (
-                timestamp_or_datestring_to_datetime(times_min)
-            )
-            dataset_maximum_coordinate_value = (
-                timestamp_or_datestring_to_datetime(times.max())
-            )
-            user_minimum_coordinate_value = (
-                dataset_subset.start_datetime
-                if dataset_subset.start_datetime is not None
-                else dataset_minimum_coordinate_value
-            )
-            user_maximum_coordinate_value = (
-                dataset_subset.end_datetime
-                if dataset_subset.end_datetime is not None
-                else dataset_maximum_coordinate_value
-            )
-            _check_coordinate_overlap(
-                dimension="time",
-                user_minimum_coordinate_value=user_minimum_coordinate_value,
-                user_maximum_coordinate_value=user_maximum_coordinate_value,
-                dataset_minimum_coordinate_value=dataset_minimum_coordinate_value,
-                dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
-                is_strict=coordinates_selection_method == "strict-inside",
-            )
+        coordinate, _, _ = all_coordinates[coordinate_id]
+        minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
+        dataset_minimum_coordinate_value = timestamp_or_datestring_to_datetime(
+            minimum_value
+        )
+        dataset_maximum_coordinate_value = timestamp_or_datestring_to_datetime(
+            maximum_value
+        )
+        user_minimum_coordinate_value = (
+            dataset_subset.start_datetime
+            if dataset_subset.start_datetime is not None
+            else dataset_minimum_coordinate_value
+        )
+        user_maximum_coordinate_value = (
+            dataset_subset.end_datetime
+            if dataset_subset.end_datetime is not None
+            else dataset_maximum_coordinate_value
+        )
+        _check_coordinate_overlap(
+            dimension="time",
+            user_minimum_coordinate_value=user_minimum_coordinate_value,
+            user_maximum_coordinate_value=user_maximum_coordinate_value,
+            dataset_minimum_coordinate_value=dataset_minimum_coordinate_value,
+            dataset_maximum_coordinate_value=dataset_maximum_coordinate_value,
+            is_strict=coordinates_selection_method == "strict-inside",
+        )
     if "z" in axis_coordinate_id_mapping:
         coordinate_id = axis_coordinate_id_mapping["z"]
-        coordinate_id = "elevation"
-        if coordinate_id in dataset.sizes:
-            depths = -1 * dataset_coordinates[coordinate_id].values
-            _check_coordinate_overlap(
-                dimension="depth",
-                user_minimum_coordinate_value=(
-                    dataset_subset.minimum_depth
-                    if dataset_subset.minimum_depth is not None
-                    else depths.min()
-                ),
-                user_maximum_coordinate_value=(
-                    dataset_subset.maximum_depth
-                    if dataset_subset.maximum_depth is not None
-                    else depths.max()
-                ),
-                dataset_minimum_coordinate_value=depths.min(),
-                dataset_maximum_coordinate_value=depths.max(),
-                is_strict=coordinates_selection_method == "strict-inside",
-            )
+        coordinate, _, _ = all_coordinates[coordinate_id]
+        minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
+        _check_coordinate_overlap(
+            dimension="depth",
+            user_minimum_coordinate_value=(
+                dataset_subset.minimum_depth
+                if dataset_subset.minimum_depth is not None
+                else minimum_value
+            ),
+            user_maximum_coordinate_value=(
+                dataset_subset.maximum_depth
+                if dataset_subset.maximum_depth is not None
+                else maximum_value
+            ),
+            dataset_minimum_coordinate_value=minimum_value,
+            dataset_maximum_coordinate_value=maximum_value,
+            is_strict=coordinates_selection_method == "strict-inside",
+        )
 
 
 @typing.no_type_check
@@ -775,6 +767,11 @@ def _check_coordinate_overlap(
         f"[{dataset_minimum_coordinate_value}, "
         f"{dataset_maximum_coordinate_value}]"
     )
+    if dataset_maximum_coordinate_value < dataset_minimum_coordinate_value:
+        dataset_maximum_coordinate_value, dataset_minimum_coordinate_value = (
+            dataset_minimum_coordinate_value,
+            dataset_maximum_coordinate_value,
+        )
     if dimension == "longitude":
         if dataset_minimum_coordinate_value == -180:
             dataset_maximum_coordinate_value = 180
@@ -813,3 +810,17 @@ def _check_coordinate_overlap(
             raise CoordinatesOutOfDatasetBounds(message)
         else:
             logger.warning(message)
+
+
+def _get_minimun_maximum_dataset(
+    coordinate: CopernicusMarineCoordinate,
+) -> tuple[Any, Any]:
+    maximum_value = coordinate.maximum_value
+    minimum_value = coordinate.minimum_value
+    values = coordinate.values
+
+    if maximum_value is None and values:
+        maximum_value = max(values)
+    if minimum_value is None and values:
+        minimum_value = min(values)
+    return minimum_value, maximum_value

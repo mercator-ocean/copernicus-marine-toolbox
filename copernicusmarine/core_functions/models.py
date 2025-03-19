@@ -4,7 +4,7 @@ from typing import Literal, Optional, Union, get_args
 
 from pydantic import BaseModel, ConfigDict
 
-FileFormat = Literal["netcdf", "zarr"]
+FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
 DEFAULT_FILE_FORMATS = list(get_args(FileFormat))
 

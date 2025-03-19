@@ -4,19 +4,26 @@ import pandas as pd
 import xarray
 
 from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.credentials_utils import (
-    get_username_password,
+    get_and_check_username_password,
 )
-from copernicusmarine.core_functions.exceptions import ServiceNotSupported
+from copernicusmarine.core_functions.exceptions import (
+    FormatNotSupported,
+    ServiceNotSupported,
+)
+from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.download_functions.download_arco_series import (
+from copernicusmarine.download_functions.download_sparse import (
+    read_dataframe_sparse,
+)
+from copernicusmarine.download_functions.download_zarr import (
     get_optimum_dask_chunking,
 )
 from copernicusmarine.download_functions.subset_xarray import (
@@ -29,29 +36,48 @@ def load_data_object_from_load_request(
     load_request: LoadRequest,
     arco_series_load_function: Callable,
     chunks_factor_size_limit: int,
+    command_type: CommandType,
 ) -> Union[xarray.Dataset, pd.DataFrame]:
     retrieval_service: RetrievalService = get_retrieval_service(
         dataset_id=load_request.dataset_id,
         force_dataset_version_label=load_request.force_dataset_version,
         force_dataset_part_label=load_request.force_dataset_part,
         force_service_name_or_short_name=load_request.force_service,
-        command_type=CommandType.LOAD,
+        command_type=command_type,
         dataset_subset=load_request.get_time_and_space_subset(),
     )
-    username, password = get_username_password(
+    username, password = get_and_check_username_password(
         load_request.username,
         load_request.password,
         load_request.credentials_file,
     )
+    if (
+        retrieval_service.service.service_format
+        == CopernicusMarineServiceFormat.SQLITE
+    ) and command_type == CommandType.OPEN_DATASET:
+        raise FormatNotSupported(
+            CopernicusMarineServiceFormat.SQLITE.value,
+            command_type.value[0].value,
+            CommandType.READ_DATAFRAME.value[0].value,
+        )
+    elif (
+        retrieval_service.service.service_format
+        == CopernicusMarineServiceFormat.SQLITE
+    ) and command_type == CommandType.READ_DATAFRAME:
+        return read_dataframe_sparse(
+            username=username,
+            subset_request=load_request.to_subset_request(),
+            metadata_url=retrieval_service.metadata_url,
+            service=retrieval_service.service,
+            disable_progress_bar=load_request.disable_progress_bar,
+        )
+
     load_request.dataset_url = retrieval_service.uri
     check_dataset_subset_bounds(
-        username=username,
-        password=password,
-        dataset_url=load_request.dataset_url,
-        service_name=retrieval_service.service_name,
+        service=retrieval_service.service,
+        part=retrieval_service.dataset_part,
         dataset_subset=load_request.get_time_and_space_subset(),
         coordinates_selection_method=load_request.coordinates_selection_method,
-        dataset_valid_date=retrieval_service.dataset_valid_start_date,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
     load_request.update_attributes(

@@ -37,6 +37,74 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
 
 Using log level DEBUG, a summary of the dataset subset is displayed. It is by default displayed when using the ``--dry-run`` option.
 
+Sparse data subsetting
+-----------------------
+
+One the one hand, some of the datasets available on the Copernicus Marine are gridded datasets and benefits all the features of the Copernicus Marine Toolbox.
+On the other hand, some datasets are sparse or INSITU datasets. They are treated and formatted differently when it comes to the ARCO data. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ here for example.
+
+Sparse dataset can be subsetted using the ``subset`` command. The command will return the data in a tabular format i.e a pandas DataFrame, some parquet files or a CSV file.
+
+**Example:**
+
+.. code-block:: bash
+
+  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2050-11-26T03:00:00" --dataset-part history -o todelete --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO --output-directory "some_place" --output-filename "my_subset"
+
+Then it can be opened with pandas:
+
+.. code-block:: python
+
+  import pandas as pd
+
+  df = pd.read_parquet("some_place/my_subset.parquet")
+
+It's also possible to directly load the pandas DataFrame with the :func:`~copernicusmarine.read_dataframe` function:
+
+.. code-block:: python
+
+  import copernicusmarine
+
+  df = copernicusmarine.read_dataframe(
+      dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+      minimum_latitude=45,
+      maximum_latitude=90,
+      minimum_longitude=-146.99,
+      maximum_longitude=180,
+      minimum_depth=0,
+      maximum_depth=10,
+      start_datetime="2023-11-25T00:00:00",
+      end_datetime="2050-11-26T03:00:00",
+      dataset_part="history",
+      platform_ids=["B-Sulafjorden___MO", "F-Vartdalsfjorden___MO"],
+  )
+
+The output will contain the following columns:
+
+- ``platform_id``: The platform ID.
+- ``platform_type``: The platform type.
+- ``time``: The timestamp of the measurement in seconds
+- ``longitude``: The longitude of the measurement in degrees.
+- ``latitude``: The latitude of the measurement in degrees.
+- ``is_approx_elevation``: TBD.
+- ``value``: The value of the measurement.
+- ``value_qc``: The quality control of the value.
+- ``variable``: The variable name.
+- ``depth`` or ``elevation``: The depth of the measurement in meters. Or 'elevation' if selected with the ``vertical-axis`` option.
+
+
+These datasets have specific options and outputs:
+
+- The ``--file-format`` option can be used to ask for 'parquet' or 'csv'. The default is 'parquet'.
+- Added ``--platform-id`` option to filter the data by platform ID.
+
+There are also some options that will not behave the same or are not available for sparse datasets:
+
+- Format 'netcdf' and 'zarr' are not available for sparse datasets.
+- Forcing a use of a service is not possible. The toolbox will automatically select the preferred service.
+- :class:`copernicusmarine.ResponseSubset` object will not have coordinate extent, file size and data transfer size information.
+- :ref:`coordinate-selection-method <coordinates-selection-method>` option only the 'inside' and 'strict-inside' values are relevant.
+
 Additional options
 ------------------
 

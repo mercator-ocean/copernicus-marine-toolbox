@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 import pandas as pd
 import xarray
 
-from copernicusmarine.catalogue_parser.request_structure import LoadRequest
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
@@ -16,7 +15,9 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
-from copernicusmarine.download_functions.download_arco_series import (
+from copernicusmarine.core_functions.request_structure import LoadRequest
+from copernicusmarine.core_functions.services_utils import CommandType
+from copernicusmarine.download_functions.download_zarr import (
     open_dataset_from_arco_series,
 )
 from copernicusmarine.download_functions.subset_parameters import (
@@ -106,7 +107,7 @@ def open_dataset(
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     service : str, optional
-        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco'].
+        Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     chunk_size_limit : int, default 100
@@ -168,5 +169,6 @@ def open_dataset(
         load_request,
         open_dataset_from_arco_series,
         chunks_factor_size_limit=chunk_size_limit,
+        command_type=CommandType.OPEN_DATASET,
     )
     return dataset

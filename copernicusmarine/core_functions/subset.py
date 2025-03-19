@@ -9,10 +9,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.catalogue_parser.request_structure import (
-    SubsetRequest,
-    convert_motu_api_request_to_structure,
-)
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
@@ -22,16 +18,19 @@ from copernicusmarine.core_functions.models import (
     ResponseSubset,
     VerticalAxis,
 )
+from copernicusmarine.core_functions.request_structure import (
+    SubsetRequest,
+    convert_motu_api_request_to_structure,
+)
 from copernicusmarine.core_functions.services_utils import (
     CommandType,
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import get_unique_filename
+from copernicusmarine.core_functions.utils import get_unique_filepath
 from copernicusmarine.core_functions.versions_verifier import VersionVerifier
-from copernicusmarine.download_functions.download_arco_series import (
-    download_zarr,
-)
+from copernicusmarine.download_functions.download_sparse import download_sparse
+from copernicusmarine.download_functions.download_zarr import download_zarr
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
 )
@@ -57,6 +56,7 @@ def subset_function(
     vertical_axis: VerticalAxis,
     start_datetime: Optional[datetime],
     end_datetime: Optional[datetime],
+    platform_ids: Optional[List[str]],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
     file_format: FileFormat,
@@ -113,6 +113,7 @@ def subset_function(
         "vertical_axis": vertical_axis,
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
+        "platform_ids": platform_ids,
         "coordinates_selection_method": coordinates_selection_method,
         "output_filename": output_filename,
         "file_format": file_format,
@@ -131,27 +132,6 @@ def subset_function(
         password,
         credentials_file,
     )
-    if all(
-        e is None
-        for e in [
-            subset_request.variables,
-            subset_request.minimum_longitude,
-            subset_request.maximum_longitude,
-            subset_request.minimum_latitude,
-            subset_request.maximum_latitude,
-            subset_request.minimum_depth,
-            subset_request.maximum_depth,
-            subset_request.start_datetime,
-            subset_request.end_datetime,
-        ]
-    ):
-        logger.info(
-            "To retrieve a complete dataset, please use instead: "
-            f"copernicusmarine get --dataset-id {subset_request.dataset_id}"
-        )
-        raise ValueError(
-            "Missing subset option. Try 'copernicusmarine subset --help'."
-        )
     # Specific treatment for default values:
     # In order to not overload arguments with default values
     if overwrite:
@@ -168,21 +148,21 @@ def subset_function(
         dataset_subset=subset_request.get_time_and_space_subset(),
         staging=staging,
         raise_if_updating=subset_request.raise_if_updating,
+        platform_ids_subset=bool(subset_request.platform_ids),
     )
     subset_request.dataset_url = retrieval_service.uri
+    # TODO: Add check for insitu datasets
     check_dataset_subset_bounds(
-        username=username,
-        password=password,
-        dataset_url=subset_request.dataset_url,
-        service_name=retrieval_service.service_name,
+        service=retrieval_service.service,
+        part=retrieval_service.dataset_part,
         dataset_subset=subset_request.get_time_and_space_subset(),
         coordinates_selection_method=subset_request.coordinates_selection_method,
-        dataset_valid_date=retrieval_service.dataset_valid_start_date,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
     if retrieval_service.service_name in [
         CopernicusMarineServiceNames.GEOSERIES,
         CopernicusMarineServiceNames.TIMESERIES,
+        CopernicusMarineServiceNames.PLATFORMSERIES,
         CopernicusMarineServiceNames.OMI_ARCO,
         CopernicusMarineServiceNames.STATIC_ARCO,
     ]:
@@ -190,6 +170,13 @@ def subset_function(
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.ZARR
         ):
+            raise_when_all_dataset_requested(subset_request, False)
+            if subset_request.file_format not in ["netcdf", "zarr"]:
+                raise ValueError(
+                    f"{subset_request.file_format} is not a valid format "
+                    "for this dataset. "
+                    "Available format for this dataset is 'netcdf' or 'zarr'."
+                )
             response = download_zarr(
                 username,
                 password,
@@ -202,6 +189,34 @@ def subset_function(
                 retrieval_service.axis_coordinate_id_mapping,
                 None if chunk_size_limit == 0 else chunk_size_limit,
             )
+        if (
+            retrieval_service.service_format
+            == CopernicusMarineServiceFormat.SQLITE
+        ):
+            raise_when_all_dataset_requested(subset_request, True)
+            if subset_request.file_format not in ["parquet", "csv"]:
+                logger.info(
+                    "Using 'parquet' format by default. "
+                    "'csv' format can also be set with 'file-format' option."
+                )
+                subset_request.file_format = "parquet"
+            if subset_request.coordinates_selection_method not in [
+                "inside",
+                "strict-inside",
+            ]:
+                logger.warning(
+                    f"coordinates-selection-method "
+                    f"{subset_request.coordinates_selection_method} "
+                    "is not supported for sparse data. "
+                    "Using 'inside' by default."
+                )
+            response = download_sparse(
+                username,
+                subset_request,
+                retrieval_service.metadata_url,
+                retrieval_service.service,
+                disable_progress_bar,
+            )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)
     return response
@@ -210,7 +225,7 @@ def subset_function(
 def create_subset_template() -> None:
     filename = pathlib.Path("subset_template.json")
     if filename.exists():
-        get_unique_filename(
+        get_unique_filepath(
             filepath=filename,
         )
     with open(filename, "w") as output_file:
@@ -237,3 +252,43 @@ def create_subset_template() -> None:
             indent=4,
         )
     logger.info(f"Template created at: {filename}")
+
+
+def raise_when_all_dataset_requested(
+    subset_request: SubsetRequest, sparse_data: bool
+) -> None:
+    """
+    Raise an error if the subset request is not a subsetting request
+    and all the dataset would be downloaded.
+
+    Parameters
+    ----------
+    subset_request: SubsetRequest
+        The subset request.
+    sparse_data: bool
+        If the requested dataset is sparse data.
+        If yes, only subsetting on platform_ids is allowed.
+        Otherwise it should raise.
+    """
+    if all(
+        e is None
+        for e in [
+            subset_request.variables,
+            subset_request.minimum_longitude,
+            subset_request.maximum_longitude,
+            subset_request.minimum_latitude,
+            subset_request.maximum_latitude,
+            subset_request.minimum_depth,
+            subset_request.maximum_depth,
+            subset_request.start_datetime,
+            subset_request.end_datetime,
+            (sparse_data and subset_request.platform_ids) or None,
+        ]
+    ):
+        logger.info(
+            "To retrieve a complete dataset, please use instead: "
+            f"copernicusmarine get --dataset-id {subset_request.dataset_id}"
+        )
+        raise ValueError(
+            "Missing subset option. Try 'copernicusmarine subset --help'."
+        )

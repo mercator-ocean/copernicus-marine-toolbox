@@ -26,13 +26,16 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
+    DatasetUpdating,
     FormatNotSupported,
     MinimumLongitudeGreaterThanMaximumLongitude,
     NetCDFCompressionNotAvailable,
+    NotEnoughPlatformMetadata,
+    PlatformsSubsettingNotAvailable,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
     WrongDatetimeFormat,
-    DatasetUpdating,
+    WrongPlatformID,
 )
 from copernicusmarine.core_functions.fields_query_builder import (
     WrongFieldsError,
@@ -89,7 +92,9 @@ __all__ = [
     "MinimumLongitudeGreaterThanMaximumLongitude",
     "NetCDFCompressionNotAvailable",
     "NoServiceAvailable",
+    "NotEnoughPlatformMetadata",
     "OtherOptionsPassedWithCreateTemplate",
+    "PlatformsSubsettingNotAvailable",
     "ResponseGet",
     "ResponseSubset",
     "ServiceDoesNotExistForCommand",
@@ -104,6 +109,7 @@ __all__ = [
     "WrongDatetimeFormat",
     "DatasetUpdating",
     "WrongFieldsError",
+    "WrongPlatformID",
     "__version__",
     "describe",
     "get",

@@ -2,7 +2,7 @@ import pathlib
 from pathlib import Path
 from typing import Optional
 
-from copernicusmarine.core_functions.utils import get_unique_filename
+from copernicusmarine.core_functions.utils import get_unique_filepath
 from tests.test_utils import execute_in_terminal
 
 
@@ -222,7 +222,7 @@ class TestOverwriteOutputData:
             relative_folder, filename + file_extension
         )
         Path(relative_filepath).touch()
-        unique_filepath = get_unique_filename(
+        unique_filepath = get_unique_filepath(
             filepath=relative_filepath,
         )
         assert unique_filepath == pathlib.Path(
