@@ -91,7 +91,7 @@ Subtypes
 .. autoclass:: copernicusmarine.CopernicusMarineService()
     :members:
     :undoc-members:
-    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item
+    :exclude-members: model_computed_fields, model_config, model_fields, from_metadata_item, get_axis_coordinate_id_mapping
     :member-order: bysource
 
 .. autoclass:: copernicusmarine.CopernicusMarineVariable()

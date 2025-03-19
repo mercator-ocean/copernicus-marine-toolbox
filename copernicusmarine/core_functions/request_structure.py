@@ -54,10 +54,10 @@ class SubsetRequest:
     force_dataset_version: Optional[str] = None
     force_dataset_part: Optional[str] = None
     variables: Optional[List[str]] = None
-    minimum_longitude: Optional[float] = None
-    maximum_longitude: Optional[float] = None
-    minimum_latitude: Optional[float] = None
-    maximum_latitude: Optional[float] = None
+    minimum_x: Optional[float] = None
+    maximum_x: Optional[float] = None
+    minimum_y: Optional[float] = None
+    maximum_y: Optional[float] = None
     minimum_depth: Optional[float] = None
     maximum_depth: Optional[float] = None
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
@@ -123,10 +123,10 @@ class SubsetRequest:
         self,
     ) -> DatasetTimeAndSpaceSubset:
         return DatasetTimeAndSpaceSubset(
-            minimum_x=self.minimum_longitude,
-            maximum_x=self.maximum_longitude,
-            minimum_y=self.minimum_latitude,
-            maximum_y=self.maximum_latitude,
+            minimum_x=self.minimum_x,
+            maximum_x=self.maximum_x,
+            minimum_y=self.minimum_y,
+            maximum_y=self.maximum_y,
             minimum_depth=self.minimum_depth,
             maximum_depth=self.maximum_depth,
             start_datetime=self.start_datetime,
@@ -179,6 +179,7 @@ def convert_motu_api_request_to_structure(
         output_filename=None,
         force_service=None,
     )
+    # TODO: I think i will need to change this to maximum_x and so
     conversion_dict = {
         "product-id": "dataset_id",
         "latitude-min": "minimum_latitude",
@@ -330,10 +331,10 @@ class LoadRequest:
             force_dataset_part=self.force_dataset_part,
             variables=self.variables,
             platform_ids=self.platform_ids,
-            minimum_longitude=self.geographical_parameters.x_axis_parameters.minimum_x,
-            maximum_longitude=self.geographical_parameters.x_axis_parameters.maximum_x,
-            minimum_latitude=self.geographical_parameters.y_axis_parameters.minimum_y,
-            maximum_latitude=self.geographical_parameters.y_axis_parameters.maximum_y,
+            minimum_x=self.geographical_parameters.x_axis_parameters.minimum_x,
+            maximum_x=self.geographical_parameters.x_axis_parameters.maximum_x,
+            minimum_y=self.geographical_parameters.y_axis_parameters.minimum_y,
+            maximum_y=self.geographical_parameters.y_axis_parameters.maximum_y,
             minimum_depth=self.depth_parameters.minimum_depth,
             maximum_depth=self.depth_parameters.maximum_depth,
             vertical_axis=self.depth_parameters.vertical_axis,

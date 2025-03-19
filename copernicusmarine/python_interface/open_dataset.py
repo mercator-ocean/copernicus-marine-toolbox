@@ -17,6 +17,7 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import CommandType
+from copernicusmarine.core_functions.utils import original_grid_check
 from copernicusmarine.download_functions.download_zarr import (
     open_dataset_from_arco_series,
 )
@@ -165,6 +166,19 @@ def open_dataset(
         force_service=service,
         credentials_file=credentials_file,
     )
+
+    original_grid_check(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+
     dataset = load_data_object_from_load_request(
         load_request,
         open_dataset_from_arco_series,
