@@ -13,3 +13,4 @@ Usage and technical details
     errors
     environment-variables
     subset_using_polygons
+    stereo_subset

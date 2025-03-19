@@ -10,6 +10,30 @@ from tests.test_utils import execute_in_terminal
 dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
 variable = "po4"
 datasets_w_originalGrid = [
+    [
+        "DMI-ARC-SEAICE_BERG_MOSAIC-L4-NRT-OBS",
+        "2024",
+        "220000",
+        "2150000",
+        "215000",
+        "215000",
+    ],
+    [
+        "cmems_obs-wind_arc_phy_my_l3-s1a-sar-asc-0.01deg_P1D-i",
+        "2024",
+        "215972.0",
+        "234972.0",
+        "-2799378.0",
+        "-2150378.0",
+    ],
+    [
+        "cmems_obs-wind_arc_phy_my_l3-s1a-sar-desc-0.01deg_P1D-i",
+        "2024",
+        "215972.0",
+        "234972.0",
+        "-2799378.0",
+        "-2150378.0",
+    ],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1D-m", "2020"],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1M-m", "2020"],
     ["cmems_mod_arc_phy_anfc_6km_detided_PT1H-i", "2022"],
@@ -102,10 +126,32 @@ class TestOriginalGridDatasets:
         assert (
             b"Lon lat subset not available in original grid datasets: "
             b"You cannot specify longitude and latitude when using the"
-            b" 'originalGrid' dataset part yet. Try using ``--minimum-x``"
+            b" 'originalGrid' dataset part. Try using ``--minimum-x``"
             b", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
             in self.output.stderr
         )
+
+    def test_originalGrid_error_with_open_dataset(self):
+        try:
+            _ = open_dataset(
+                dataset_id="cmems_mod_arc_phy_my_topaz4_P1Y",
+                dataset_part="originalGrid",
+                maximum_longitude=8,
+                minimum_x=6,
+                maximum_y=10,
+                minimum_y=5,
+                start_datetime="2020",
+                end_datetime="2020",
+                coordinates_selection_method="outside",
+            )
+            assert 1 == 0
+        except Exception as e:
+            assert str(e) == (
+                "You cannot specify longitude and latitude when using the "
+                "'originalGrid' dataset part. Try using "
+                "``--minimum-x``, ``--maximum-x``, ``--minimum-y`` "
+                "and ``--maximum-y``."
+            )
 
     def test_originalGrid_alias_work(self):
         command = [
@@ -191,10 +237,10 @@ class TestOriginalGridDatasets:
     def run_one_dataset(self, dataset_info):
         dataset_name = dataset_info[0]
         dataset_year = dataset_info[1]
-        max_x = dataset_info[3] if len(dataset_info) > 2 else "8"
-        min_x = dataset_info[2] if len(dataset_info) > 3 else "6"
-        max_y = dataset_info[5] if len(dataset_info) > 4 else "10"
-        min_y = dataset_info[4] if len(dataset_info) > 5 else "5"
+        min_x = dataset_info[2] if len(dataset_info) > 2 else "6"
+        max_x = dataset_info[3] if len(dataset_info) > 3 else "8"
+        min_y = dataset_info[4] if len(dataset_info) > 4 else "5"
+        max_y = dataset_info[5] if len(dataset_info) > 5 else "10"
         command = [
             "copernicusmarine",
             "subset",
@@ -227,7 +273,6 @@ class TestOriginalGridDatasets:
         assert coordinates[0]["coordinate_id"] == "y"
         assert coordinates[0]["maximum"] == float(max_y)
         assert coordinates[0]["minimum"] == float(min_y)
-        print(coordinates)
         assert coordinates[1]["coordinate_id"] == "x"
         assert coordinates[1]["maximum"] == float(max_x)
         assert coordinates[1]["minimum"] == float(min_x)
@@ -361,3 +406,15 @@ class TestOriginalGridDatasets:
         assert dataframe["so"] is not None
         assert dataframe["latitude"] is not None
         assert dataframe["longitude"] is not None
+
+    def test_y_axis_negative_step(self):
+        dataset = open_dataset(
+            "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
+            dataset_part="originalGrid",
+            maximum_y=235000,
+            minimum_y=215000,
+        )
+
+        assert dataset is not None
+        assert dataset.y.max() >= 235000
+        assert dataset.y.min() >= 215000

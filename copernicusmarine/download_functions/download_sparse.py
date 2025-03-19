@@ -94,10 +94,10 @@ def download_sparse(
 
     kwargs = {
         "url_metadata": metadata_url,
-        "minimum_latitude": subset_request.minimum_latitude,
-        "maximum_latitude": subset_request.maximum_latitude,
-        "minimum_longitude": subset_request.minimum_longitude,
-        "maximum_longitude": subset_request.maximum_longitude,
+        "minimum_latitude": subset_request.minimum_y,
+        "maximum_latitude": subset_request.maximum_y,
+        "minimum_longitude": subset_request.minimum_x,
+        "maximum_longitude": subset_request.maximum_x,
         "maximum_elevation": (
             -subset_request.minimum_depth
             if subset_request.minimum_depth is not None
@@ -152,10 +152,10 @@ def read_dataframe_sparse(
         variable.short_name for variable in service.variables
     ]
     return subset_and_return_dataframe(
-        minimum_latitude=subset_request.minimum_latitude,
-        maximum_latitude=subset_request.maximum_latitude,
-        minimum_longitude=subset_request.minimum_longitude,
-        maximum_longitude=subset_request.maximum_longitude,
+        minimum_latitude=subset_request.minimum_y,
+        maximum_latitude=subset_request.maximum_y,
+        minimum_longitude=subset_request.minimum_x,
+        maximum_longitude=subset_request.maximum_x,
         minimum_elevation=(
             -subset_request.minimum_depth
             if subset_request.minimum_depth

@@ -9,7 +9,7 @@ repos:
       - id: check-ast
       - id: fix-byte-order-marker
       - id: check-added-large-files
-        exclude: ^(?!doc/usage/)
+        exclude: ^(doc/usage/)
       - id: check-case-conflict
       - id: check-docstring-first
       - id: check-executables-have-shebangs
@@ -29,7 +29,7 @@ repos:
         args: [--pytest-test-first]
         exclude: ^(tests/resources/|tests/scripts)
       - id: pretty-format-json
-        exclude: ^(doc/usage/quickoverview.ipynb|doc/usage/subset_using_polygons.ipynb)
+        exclude: ^(doc/usage/quickoverview.ipynb|doc/usage/subset_using_polygons.ipynb|doc/usage/stereo_subset.ipynb)
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
