@@ -154,6 +154,14 @@ def _dataset_custom_sel(
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     if coordinate_label in dataset.sizes:
+        if isinstance(coord_selection, slice):
+            if (
+                dataset[coordinate_label].values[0]
+                > dataset[coordinate_label].values[1]
+            ) and coord_selection.start < coord_selection.stop:
+                coord_selection = slice(
+                    coord_selection.stop, coord_selection.start
+                )
         if coordinates_selection_method == "outside":
             if (
                 isinstance(coord_selection, slice)
@@ -275,14 +283,6 @@ def _y_axis_subset(
             if minimum_y == maximum_y
             else slice(minimum_y, maximum_y)
         )
-        if y_parameters.coordinate_id in dataset.sizes and isinstance(
-            y_selection, slice
-        ):
-            if (
-                dataset[y_parameters.coordinate_id].values[0]
-                > dataset[y_parameters.coordinate_id].values[1]
-            ):  # check first step, a lot of supositions
-                y_selection = slice(y_selection.stop, y_selection.start)
         return _dataset_custom_sel(
             dataset,
             y_parameters.coordinate_id,
