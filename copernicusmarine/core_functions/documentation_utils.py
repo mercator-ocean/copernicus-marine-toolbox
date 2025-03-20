@@ -31,7 +31,7 @@ SHARED: dict[str, str] = {
     "DRY_RUN_HELP": "If True, runs query without downloading data.",
     "RESPONSE_FIELDS_HELP": (
         "List of fields to include in the query metadata. "
-        "The fields are separated by a comma."
+        "The fields are separated by a comma. "
         "To return all fields, use 'all'."
     ),
     "OUTPUT_DIRECTORY_HELP": (
