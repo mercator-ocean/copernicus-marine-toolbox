@@ -49,7 +49,7 @@ def download_sparse(
     user_configuration = _get_user_configuration(username)
     if subset_request.platform_ids:
         platform_ids = _get_plaform_ids_to_subset(
-            subset_request.platform_ids or [],
+            subset_request.platform_ids,
             metadata_url,
             service,
             user_configuration,
