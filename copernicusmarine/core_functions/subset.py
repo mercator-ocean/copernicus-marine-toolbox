@@ -197,7 +197,7 @@ def subset_function(
             if subset_request.file_format not in ["parquet", "csv"]:
                 logger.debug(
                     "Using 'csv' format by default. "
-                    "'parquer' format can also be set with 'file-format' option."
+                    "'parquet' format can also be set with 'file-format' option."
                 )
                 subset_request.file_format = "csv"
             if subset_request.coordinates_selection_method not in [

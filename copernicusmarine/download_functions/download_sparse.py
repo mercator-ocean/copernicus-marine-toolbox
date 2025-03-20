@@ -56,9 +56,7 @@ def download_sparse(
         )
     else:
         platform_ids = []
-    extension_file = get_file_extension(
-        subset_request.file_format or "parquet"
-    )
+    extension_file = get_file_extension(subset_request.file_format)
     filename = pathlib.Path(
         subset_request.output_filename
         or f"{subset_request.dataset_id}_subset{extension_file}"
