@@ -222,7 +222,7 @@ SUBSET: dict[str, str] = {
     "FILE_FORMAT_HELP": "Format of the downloaded dataset. Default to NetCDF '.nc'.",
     "MOTU_API_REQUEST_HELP": (
         "Option to pass a complete MOTU API request as a string. Caution, user has to "
-        "replace double quotes “ with single quotes ' in the request."
+        """replace double quotes " with single quotes ' in the request."""
     ),
     "NETCDF_COMPRESSION_LEVEL_HELP": (
         "Specify a compression level to apply on the NetCDF output file. A value of 0 "

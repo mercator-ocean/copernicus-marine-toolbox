@@ -127,7 +127,7 @@ def subset(
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     motu_api_request : str, optional
-        Option to pass a complete MOTU API request as a string. Caution, user has to replace double quotes “ with single quotes ' in the request.
+        Option to pass a complete MOTU API request as a string. Caution, user has to replace double quotes " with single quotes ' in the request.
     dry_run : bool, optional
         If True, runs query without downloading data.
     netcdf_compression_level : int, optional
