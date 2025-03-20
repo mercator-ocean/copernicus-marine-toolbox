@@ -195,11 +195,11 @@ def subset_function(
         ):
             raise_when_all_dataset_requested(subset_request, True)
             if subset_request.file_format not in ["parquet", "csv"]:
-                logger.info(
-                    "Using 'parquet' format by default. "
-                    "'csv' format can also be set with 'file-format' option."
+                logger.debug(
+                    "Using 'csv' format by default. "
+                    "'parquet' format can also be set with 'file-format' option."
                 )
-                subset_request.file_format = "parquet"
+                subset_request.file_format = "csv"
             if subset_request.coordinates_selection_method not in [
                 "inside",
                 "strict-inside",

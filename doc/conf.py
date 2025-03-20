@@ -78,6 +78,10 @@ StandaloneHTMLBuilder.supported_image_types = [
 
 nb_execution_mode = "off"
 
+# -- Custom RST epilog --------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-rst_epilog
+# Allows us to have the version dynamically updated in the documentation
+
 rst_epilog = """
 .. |download_macos_arm64| replace:: `copernicusmarine_macos-arm64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-arm64.cli>`__
 .. |download_macos_x86| replace:: `copernicusmarine_macos-x86_64 <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_macos-x86_64.cli>`__

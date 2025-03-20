@@ -1,5 +1,7 @@
 import logging
 import pathlib
+import shutil
+from collections import defaultdict
 
 import pandas as pd
 from arcosparse import (
@@ -45,15 +47,16 @@ def download_sparse(
     disable_progress_bar: bool,
 ) -> ResponseSubset:
     user_configuration = _get_user_configuration(username)
-    _check_plaform_ids(
-        subset_request.platform_ids or [],
-        metadata_url,
-        service,
-        user_configuration,
-    )
-    extension_file = get_file_extension(
-        subset_request.file_format or "parquet"
-    )
+    if subset_request.platform_ids:
+        platform_ids = _get_plaform_ids_to_subset(
+            subset_request.platform_ids,
+            metadata_url,
+            service,
+            user_configuration,
+        )
+    else:
+        platform_ids = []
+    extension_file = get_file_extension(subset_request.file_format)
     filename = pathlib.Path(
         subset_request.output_filename
         or f"{subset_request.dataset_id}_subset{extension_file}"
@@ -91,6 +94,12 @@ def download_sparse(
     elif subset_request.skip_existing and output_path.exists():
         response.file_status = FileStatus.IGNORED
         return response
+    elif (
+        subset_request.overwrite
+        and output_path.exists()
+        and output_path.is_dir()
+    ):
+        shutil.rmtree(output_path)
 
     kwargs = {
         "url_metadata": metadata_url,
@@ -119,7 +128,7 @@ def download_sparse(
             else None
         ),
         "variables": variables,
-        "entities": subset_request.platform_ids or [],
+        "entities": platform_ids,
         "vertical_axis": subset_request.vertical_axis,
         "user_configuration": user_configuration,
         "disable_progress_bar": disable_progress_bar,
@@ -142,12 +151,15 @@ def read_dataframe_sparse(
     disable_progress_bar: bool,
 ) -> pd.DataFrame:
     user_configuration = _get_user_configuration(username)
-    _check_plaform_ids(
-        subset_request.platform_ids or [],
-        metadata_url,
-        service,
-        user_configuration,
-    )
+    if subset_request.platform_ids:
+        platform_ids = _get_plaform_ids_to_subset(
+            subset_request.platform_ids or [],
+            metadata_url,
+            service,
+            user_configuration,
+        )
+    else:
+        platform_ids = []
     variables = subset_request.variables or [
         variable.short_name for variable in service.variables
     ]
@@ -177,7 +189,7 @@ def read_dataframe_sparse(
             else None
         ),
         variables=variables,
-        entities=subset_request.platform_ids or [],
+        entities=platform_ids,
         vertical_axis=subset_request.vertical_axis,
         url_metadata=metadata_url,
         user_configuration=user_configuration,
@@ -197,18 +209,34 @@ def _get_user_configuration(username: str) -> UserConfiguration:
     )
 
 
-def _check_plaform_ids(
+def _get_plaform_ids_to_subset(
     platform_ids: list[str],
     metadata_url: str,
     retrieval_service: CopernicusMarineService,
     user_configuration: UserConfiguration,
-) -> None:
+) -> list[str]:
+    platforms_to_subset = []
     if platform_ids:
         platforms_names = get_platforms_names(metadata_url, user_configuration)
         if not platforms_names:
             raise NotEnoughPlatformMetadata()
+        platforms_names_with_types: set[str] = set()
+        platforms_without_types_mapping: dict[str, list] = defaultdict(list)
+        for platform_name in platforms_names:
+            platform_name_without_type = platform_name.split("___")[0]
+            platforms_without_types_mapping[platform_name_without_type].append(
+                platform_name
+            )
+            platforms_names_with_types.add(platform_name)
         for platform_id in platform_ids:
-            if platform_id not in platforms_names:
-                raise WrongPlatformID(
-                    platform_id, retrieval_service.platforms_metadata
+            if platform_id in platforms_names_with_types:
+                platforms_to_subset.append(platform_id)
+            if platform_id in platforms_without_types_mapping:
+                platforms_to_subset.extend(
+                    platforms_without_types_mapping[platform_id]
                 )
+    if not platforms_to_subset:
+        raise WrongPlatformID(
+            platform_ids, retrieval_service.platforms_metadata
+        )
+    return platforms_to_subset
