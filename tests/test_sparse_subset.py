@@ -57,10 +57,10 @@ class TestSparseSubset:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        filename = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_subset.parquet"
+        filename = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_subset.csv"
         assert (tmp_path / filename).exists()
 
-    def test_I_can_subset_on_platform_ids(self, tmp_path):
+    def test_I_can_subset_on_platform_ids_in_parquet(self, tmp_path):
         command = BASIC_COMMAND + [
             "--platform-id",
             "B-Sulafjorden___MO",
@@ -70,6 +70,8 @@ class TestSparseSubset:
             tmp_path,
             "--output-filename",
             "sparse_data",
+            "--file-format",
+            "parquet",
         ]
         expected_files = [
             "B-Sulafjorden___MO_PSAL_6672.0.0.0.parquet",
@@ -92,7 +94,7 @@ class TestSparseSubset:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (tmp_path / "sparse_data.parquet").exists()
+        assert (tmp_path / "sparse_data.csv").exists()
 
         command_skip_existing = command + ["--skip-existing"]
         self.output = execute_in_terminal(command_skip_existing)
@@ -111,7 +113,7 @@ class TestSparseSubset:
         command_default = command
         self.output = execute_in_terminal(command_default)
         assert self.output.returncode == 0
-        assert (tmp_path / "sparse_data_(1).parquet").exists()
+        assert (tmp_path / "sparse_data_(1).csv").exists()
 
     def test_can_download_in_csv_format(self, tmp_path):
         command = BASIC_COMMAND + [

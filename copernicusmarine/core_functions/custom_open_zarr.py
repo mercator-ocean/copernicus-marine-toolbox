@@ -7,7 +7,6 @@ import botocore.config
 import botocore.exceptions
 import botocore.session
 import xarray
-import zarr
 
 from copernicusmarine.core_functions.sessions import (
     PROXIES,
@@ -151,7 +150,6 @@ def open_zarr(
         bucket,
         root_path,
     ) = parse_access_dataset_url(dataset_url)
-    logger.info(f"Opening Zarr dataset from {zarr.__version__}")
     store = CustomS3Store(
         endpoint=endpoint,
         bucket=bucket,

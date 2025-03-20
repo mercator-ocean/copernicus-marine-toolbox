@@ -196,15 +196,15 @@ class PlatformsSubsettingNotAvailable(Exception):
 
 class WrongPlatformID(Exception):
     """
-    Exception raised when the platform id is not in the list of platforms.
+    Exception raised when the requested platform ids are not in the list of platforms.
 
     Please make sure the platform id is in the list of platforms.
     Check the describe output and the "platformseries" service for more information.
-    """
+    """  # noqa
 
-    def __init__(self, platform_id, platforms_metadata_url):
+    def __init__(self, platform_ids, platforms_metadata_url):
         super().__init__(
-            f"The platform id '{platform_id}' is not in the list of platforms."
+            f"None of the platform ids '{platform_ids}' are in the list of platforms."
             f" Please check the describe output and the platforms metadata at"
             f" '{platforms_metadata_url}' for more information."
         )
