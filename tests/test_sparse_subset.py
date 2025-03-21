@@ -54,10 +54,13 @@ class TestSparseSubset:
         command = BASIC_COMMAND + [
             "--output-directory",
             tmp_path,
+            "-r",
+            "all",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        filename = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_subset.csv"
+        response = loads(self.output.stdout)
+        filename = response["filename"]
         assert (tmp_path / filename).exists()
 
     def test_I_can_subset_on_platform_ids_in_parquet(self, tmp_path):

@@ -215,6 +215,7 @@ def subset_function(
                 subset_request,
                 retrieval_service.metadata_url,
                 retrieval_service.service,
+                retrieval_service.axis_coordinate_id_mapping,
                 disable_progress_bar,
             )
     else:

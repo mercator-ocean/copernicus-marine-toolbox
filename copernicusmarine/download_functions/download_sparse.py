@@ -32,7 +32,10 @@ from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
     get_unique_filepath,
 )
-from copernicusmarine.download_functions.utils import get_file_extension
+from copernicusmarine.download_functions.utils import (
+    build_filename_from_request,
+    get_file_extension,
+)
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -44,6 +47,7 @@ def download_sparse(
     subset_request: SubsetRequest,
     metadata_url: str,
     service: CopernicusMarineService,
+    axis_coordinate_id_mapping: dict[str, str],
     disable_progress_bar: bool,
 ) -> ResponseSubset:
     user_configuration = _get_user_configuration(username)
@@ -56,10 +60,19 @@ def download_sparse(
         )
     else:
         platform_ids = []
+    variables = subset_request.variables or [
+        variable.short_name for variable in service.variables
+    ]
+
     extension_file = get_file_extension(subset_request.file_format)
     filename = pathlib.Path(
         subset_request.output_filename
-        or f"{subset_request.dataset_id}_subset{extension_file}"
+        or build_filename_from_request(
+            subset_request,
+            variables,
+            platform_ids,
+            axis_coordinate_id_mapping,
+        )
     )
 
     if filename.suffix != extension_file:
@@ -70,9 +83,7 @@ def download_sparse(
     )
     if not subset_request.overwrite and not subset_request.skip_existing:
         output_path = get_unique_filepath(output_path)
-    variables = subset_request.variables or [
-        variable.short_name for variable in service.variables
-    ]
+
     response = ResponseSubset(
         file_path=output_path,
         output_directory=subset_request.output_directory,
@@ -138,6 +149,8 @@ def download_sparse(
         subset_and_save(**kwargs)
     else:
         df = subset_and_return_dataframe(**kwargs)
+        if subset_request.output_directory:
+            subset_request.output_directory.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path, index=False)
 
     return response
