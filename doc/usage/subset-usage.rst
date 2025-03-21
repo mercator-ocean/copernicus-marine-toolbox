@@ -104,6 +104,8 @@ There are also some options that will not behave the same or are not available f
 - Forcing a use of a service is not possible. The toolbox will automatically select the preferred service.
 - :class:`copernicusmarine.ResponseSubset` object will not have coordinate extent, file size and data transfer size information.
 - :ref:`coordinate-selection-method <coordinates-selection-method>` option only the 'inside' and 'strict-inside' values are relevant.
+- Default naming of the result is slightly different. In the case of sparse datasets, the values in the name of the file will be
+  the requested extents and not the actual extents of the result of the subset.
 
 Additional options
 ------------------
