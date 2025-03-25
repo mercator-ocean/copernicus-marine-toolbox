@@ -17,6 +17,7 @@ from copernicusmarine.core_functions.models import (
     GeographicalExtent,
     TimeExtent,
 )
+from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )
@@ -72,6 +73,7 @@ def _build_filename_from_dataset(
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
         else dataset_variables
     )
+    longitudes = None
     if "x" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["x"] == "longitude":
             longitudes = _format_longitudes(
@@ -84,8 +86,8 @@ def _build_filename_from_dataset(
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
                 axis_coordinate_id_mapping["x"],
             )
-    else:
-        longitudes = ""
+
+    latitudes = None
     if "y" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["y"] == "latitude":
             latitudes = _format_latitudes(
@@ -98,19 +100,16 @@ def _build_filename_from_dataset(
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["y"]),
                 axis_coordinate_id_mapping["y"],
             )
-    else:
-        latitudes = ""
+
+    depths = None
     if "z" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["z"] == "depth":
             depths = _format_depths(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
             )
-        else:
-            depths = ""
-    else:
-        depths = ""
 
+    datetimes = None
     if "t" in axis_coordinate_id_mapping:
         min_time_coordinate = _get_min_coordinate(
             dataset, axis_coordinate_id_mapping["t"]
@@ -130,8 +129,6 @@ def _build_filename_from_dataset(
                 else None
             ),
         )
-    else:
-        datetimes = ""
     filename = "_".join(
         filter(
             None,
@@ -141,6 +138,79 @@ def _build_filename_from_dataset(
     filename = filename if len(filename) < 250 else filename[250:]
 
     return filename + get_file_extension(file_format)
+
+
+def build_filename_from_request(
+    request: SubsetRequest,
+    variables: list[str],
+    platform_ids: list[str],
+    axis_coordinate_id_mapping: dict[str, str],
+) -> str:
+    """
+    In the sparse dataset case we don't have the dataset to build the filename from.
+    """  # noqa
+
+    dataset_variables = "-".join(variables)
+    dataset_variables = (
+        "multi-vars" if len(variables) > 15 else dataset_variables
+    )
+    platform_ids_text = "-".join(platform_ids)
+    platform_ids_text = (
+        "multi-platforms" if len(platform_ids) > 15 else platform_ids_text
+    )
+    longitudes = None
+    if "x" in axis_coordinate_id_mapping:
+        if axis_coordinate_id_mapping["x"] == "longitude":
+            longitudes = _format_longitudes(
+                request.minimum_x, request.maximum_x
+            )
+        if axis_coordinate_id_mapping["x"] == "x":
+            longitudes = _format_xy_axis(
+                request.minimum_x,
+                request.maximum_x,
+                axis_coordinate_id_mapping["x"],
+            )
+
+    latitudes = None
+    if "y" in axis_coordinate_id_mapping:
+        if axis_coordinate_id_mapping["y"] == "latitude":
+            latitudes = _format_latitudes(request.minimum_y, request.maximum_y)
+        if axis_coordinate_id_mapping["y"] == "y":
+            latitudes = _format_xy_axis(
+                request.minimum_y,
+                request.maximum_y,
+                axis_coordinate_id_mapping["y"],
+            )
+
+    depths = None
+    if "z" in axis_coordinate_id_mapping:
+        if axis_coordinate_id_mapping["z"] == "depth":
+            depths = _format_depths(
+                request.minimum_depth, request.maximum_depth
+            )
+
+    datetimes = None
+    if "t" in axis_coordinate_id_mapping:
+        datetimes = _format_datetimes(
+            request.start_datetime, request.end_datetime
+        )
+    filename = "_".join(
+        filter(
+            None,
+            [
+                request.dataset_id,
+                dataset_variables,
+                platform_ids_text,
+                longitudes,
+                latitudes,
+                depths,
+                datetimes,
+            ],
+        )
+    )
+    filename = filename if len(filename) < 250 else filename[250:]
+
+    return filename + get_file_extension(request.file_format)
 
 
 def get_coordinate_ids_from_parameters(
