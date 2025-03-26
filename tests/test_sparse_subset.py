@@ -1,5 +1,7 @@
 from json import loads
 
+import pandas as pd
+
 from copernicusmarine import read_dataframe
 from tests.test_utils import execute_in_terminal
 
@@ -48,6 +50,19 @@ BASIC_COMMAND_DICT = {
     "end_datetime": "2023-11-26T03:00:00",
 }
 
+EXPECTED_COLUMNS = [
+    "platform_id",
+    "platform_type",
+    "time",
+    "longitude",
+    "latitude",
+    "depth",
+    "is_approx_elevation",
+    "value",
+    "value_qc",
+    "variable",
+]
+
 
 class TestSparseSubset:
     def test_I_can_subset_sparse_data(self, tmp_path):
@@ -62,6 +77,9 @@ class TestSparseSubset:
         response = loads(self.output.stdout)
         filename = response["filename"]
         assert (tmp_path / filename).exists()
+        df = pd.read_csv(tmp_path / filename)
+        assert not df.empty
+        assert all(column in df.columns for column in EXPECTED_COLUMNS)
 
     def test_I_can_subset_on_platform_ids_in_parquet(self, tmp_path):
         command = BASIC_COMMAND + [

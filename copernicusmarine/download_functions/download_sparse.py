@@ -6,7 +6,7 @@ from collections import defaultdict
 import pandas as pd
 from arcosparse import (
     UserConfiguration,
-    get_platforms_names,
+    get_entities_ids,
     subset_and_return_dataframe,
     subset_and_save,
 )
@@ -143,6 +143,10 @@ def download_sparse(
         "vertical_axis": subset_request.vertical_axis,
         "user_configuration": user_configuration,
         "disable_progress_bar": disable_progress_bar,
+        "columns_rename": {
+            "entity_id": "platform_id",
+            "entity_type": "platform_type",
+        },
     }
     if subset_request.file_format == "parquet":
         kwargs["output_path"] = output_path
@@ -207,6 +211,10 @@ def read_dataframe_sparse(
         url_metadata=metadata_url,
         user_configuration=user_configuration,
         disable_progress_bar=disable_progress_bar,
+        columns_rename={
+            "entity_id": "platform_id",
+            "entity_type": "platform_type",
+        },
     )
 
 
@@ -230,7 +238,7 @@ def _get_plaform_ids_to_subset(
 ) -> list[str]:
     platforms_to_subset = []
     if platform_ids:
-        platforms_names = get_platforms_names(metadata_url, user_configuration)
+        platforms_names = get_entities_ids(metadata_url, user_configuration)
         if not platforms_names:
             raise NotEnoughPlatformMetadata()
         platforms_names_with_types: set[str] = set()

@@ -88,11 +88,11 @@ The output will contain the following columns:
 - ``time``: The timestamp of the measurement in seconds
 - ``longitude``: The longitude of the measurement in degrees.
 - ``latitude``: The latitude of the measurement in degrees.
+- ``depth`` or ``elevation``: The depth of the measurement in meters. Or 'elevation' if selected with the ``vertical-axis`` option.
 - ``is_approx_elevation``: TBD.
 - ``value``: The value of the measurement.
 - ``value_qc``: The quality control of the value.
 - ``variable``: The variable name.
-- ``depth`` or ``elevation``: The depth of the measurement in meters. Or 'elevation' if selected with the ``vertical-axis`` option.
 
 
 These datasets have specific options and outputs:
