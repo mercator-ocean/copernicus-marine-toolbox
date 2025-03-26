@@ -8,7 +8,6 @@ from arcosparse import (
     UserConfiguration,
     get_entities_ids,
     subset_and_return_dataframe,
-    subset_and_save,
 )
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineService
@@ -39,6 +38,11 @@ from copernicusmarine.download_functions.utils import (
 
 logger = logging.getLogger("copernicusmarine")
 
+COLUMNS_RENAME = {
+    "entity_id": "platform_id",
+    "entity_type": "platform_type",
+}
+
 
 # TODO: should we support necdf?
 # https://stackoverflow.com/questions/46476920/xarray-writing-to-netcdf-from-pandas-dimension-issue # noqa
@@ -50,59 +54,41 @@ def download_sparse(
     axis_coordinate_id_mapping: dict[str, str],
     disable_progress_bar: bool,
 ) -> ResponseSubset:
-    user_configuration = _get_user_configuration(username)
-    if subset_request.platform_ids:
-        platform_ids = _get_plaform_ids_to_subset(
-            subset_request.platform_ids,
+
+    if subset_request.dry_run:
+        _, variables, platform_ids = _read_dataframe_sparse(
+            username,
+            subset_request,
             metadata_url,
             service,
-            user_configuration,
+            disable_progress_bar,
+            dry_run=True,
         )
-    else:
-        platform_ids = []
-    variables = subset_request.variables or [
-        variable.short_name for variable in service.variables
-    ]
-
-    extension_file = get_file_extension(subset_request.file_format)
-    filename = pathlib.Path(
-        subset_request.output_filename
-        or build_filename_from_request(
+        response = _get_response_subset(
             subset_request,
             variables,
             platform_ids,
             axis_coordinate_id_mapping,
         )
-    )
-
-    if filename.suffix != extension_file:
-        filename = pathlib.Path(f"{filename}{extension_file}")
-    output_path = pathlib.Path(
-        subset_request.output_directory,
-        filename,
-    )
-    if not subset_request.overwrite and not subset_request.skip_existing:
-        output_path = get_unique_filepath(output_path)
-
-    response = ResponseSubset(
-        file_path=output_path,
-        output_directory=subset_request.output_directory,
-        filename=str(filename),
-        file_size=None,
-        data_transfer_size=None,
-        variables=variables,
-        # TODO: handle thoses extents maybe opening the dataframe
-        coordinates_extent=[],
-        status=StatusCode.SUCCESS,
-        message=StatusMessage.SUCCESS,
-        file_status=FileStatus.DOWNLOADED,
-    )
-
-    if subset_request.dry_run:
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
         return response
-    elif subset_request.skip_existing and output_path.exists():
+
+    df, variables, platform_ids = _read_dataframe_sparse(
+        username,
+        subset_request,
+        metadata_url,
+        service,
+        disable_progress_bar,
+    )
+    response = _get_response_subset(
+        subset_request,
+        variables,
+        platform_ids,
+        axis_coordinate_id_mapping,
+    )
+    output_path = response.file_path
+    if subset_request.skip_existing and output_path.exists():
         response.file_status = FileStatus.IGNORED
         return response
     elif (
@@ -112,49 +98,11 @@ def download_sparse(
     ):
         shutil.rmtree(output_path)
 
-    kwargs = {
-        "url_metadata": metadata_url,
-        "minimum_latitude": subset_request.minimum_y,
-        "maximum_latitude": subset_request.maximum_y,
-        "minimum_longitude": subset_request.minimum_x,
-        "maximum_longitude": subset_request.maximum_x,
-        "maximum_elevation": (
-            -subset_request.minimum_depth
-            if subset_request.minimum_depth is not None
-            else None
-        ),
-        "minimum_elevation": (
-            -subset_request.maximum_depth
-            if subset_request.maximum_depth is not None
-            else None
-        ),
-        "minimum_time": (
-            subset_request.start_datetime.timestamp()
-            if subset_request.start_datetime is not None
-            else None
-        ),
-        "maximum_time": (
-            subset_request.end_datetime.timestamp()
-            if subset_request.end_datetime is not None
-            else None
-        ),
-        "variables": variables,
-        "entities": platform_ids,
-        "vertical_axis": subset_request.vertical_axis,
-        "user_configuration": user_configuration,
-        "disable_progress_bar": disable_progress_bar,
-        "columns_rename": {
-            "entity_id": "platform_id",
-            "entity_type": "platform_type",
-        },
-    }
+    if subset_request.output_directory:
+        subset_request.output_directory.mkdir(parents=True, exist_ok=True)
     if subset_request.file_format == "parquet":
-        kwargs["output_path"] = output_path
-        subset_and_save(**kwargs)
+        df.to_parquet(output_path, index=False)
     else:
-        df = subset_and_return_dataframe(**kwargs)
-        if subset_request.output_directory:
-            subset_request.output_directory.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path, index=False)
 
     return response
@@ -167,6 +115,29 @@ def read_dataframe_sparse(
     service: CopernicusMarineService,
     disable_progress_bar: bool,
 ) -> pd.DataFrame:
+    df, _, _ = _read_dataframe_sparse(
+        username,
+        subset_request,
+        metadata_url,
+        service,
+        disable_progress_bar,
+    )
+    return df
+
+
+def _read_dataframe_sparse(
+    username: str,
+    subset_request: SubsetRequest,
+    metadata_url: str,
+    service: CopernicusMarineService,
+    disable_progress_bar: bool,
+    dry_run: bool = False,
+) -> tuple[pd.DataFrame, list[str], list[str]]:
+    """
+    Shared function for subset and read dataframe
+
+    Returns also the variables and the platform_ids
+    """
     user_configuration = _get_user_configuration(username)
     if subset_request.platform_ids:
         platform_ids = _get_plaform_ids_to_subset(
@@ -180,41 +151,44 @@ def read_dataframe_sparse(
     variables = subset_request.variables or [
         variable.short_name for variable in service.variables
     ]
-    return subset_and_return_dataframe(
-        minimum_latitude=subset_request.minimum_y,
-        maximum_latitude=subset_request.maximum_y,
-        minimum_longitude=subset_request.minimum_x,
-        maximum_longitude=subset_request.maximum_x,
-        minimum_elevation=(
-            -subset_request.minimum_depth
-            if subset_request.minimum_depth
-            else None
+    if dry_run:
+        return pd.DataFrame(), variables, platform_ids
+    return (
+        subset_and_return_dataframe(
+            minimum_latitude=subset_request.minimum_y,
+            maximum_latitude=subset_request.maximum_y,
+            minimum_longitude=subset_request.minimum_x,
+            maximum_longitude=subset_request.maximum_x,
+            minimum_elevation=(
+                -subset_request.maximum_depth
+                if subset_request.maximum_depth is not None
+                else None
+            ),
+            maximum_elevation=(
+                -subset_request.minimum_depth
+                if subset_request.minimum_depth is not None
+                else None
+            ),
+            minimum_time=(
+                subset_request.start_datetime.timestamp()
+                if subset_request.start_datetime is not None
+                else None
+            ),
+            maximum_time=(
+                subset_request.end_datetime.timestamp()
+                if subset_request.end_datetime is not None
+                else None
+            ),
+            variables=variables,
+            entities=platform_ids,
+            vertical_axis=subset_request.vertical_axis,
+            url_metadata=metadata_url,
+            user_configuration=user_configuration,
+            disable_progress_bar=disable_progress_bar,
+            columns_rename=COLUMNS_RENAME,
         ),
-        maximum_elevation=(
-            -subset_request.maximum_depth
-            if subset_request.maximum_depth
-            else None
-        ),
-        minimum_time=(
-            subset_request.start_datetime.timestamp()
-            if subset_request.start_datetime
-            else None
-        ),
-        maximum_time=(
-            subset_request.end_datetime.timestamp()
-            if subset_request.end_datetime
-            else None
-        ),
-        variables=variables,
-        entities=platform_ids,
-        vertical_axis=subset_request.vertical_axis,
-        url_metadata=metadata_url,
-        user_configuration=user_configuration,
-        disable_progress_bar=disable_progress_bar,
-        columns_rename={
-            "entity_id": "platform_id",
-            "entity_type": "platform_type",
-        },
+        variables,
+        platform_ids,
     )
 
 
@@ -261,3 +235,58 @@ def _get_plaform_ids_to_subset(
             platform_ids, retrieval_service.platforms_metadata
         )
     return platforms_to_subset
+
+
+def _build_filename_and_output_path(
+    subset_request: SubsetRequest,
+    variables: list[str],
+    platform_ids: list[str],
+    axis_coordinate_id_mapping: dict[str, str],
+) -> tuple[pathlib.Path, pathlib.Path]:
+    extension_file = get_file_extension(subset_request.file_format)
+    filename = pathlib.Path(
+        subset_request.output_filename
+        or build_filename_from_request(
+            subset_request,
+            variables,
+            platform_ids,
+            axis_coordinate_id_mapping,
+        )
+    )
+
+    if filename.suffix != extension_file:
+        filename = pathlib.Path(f"{filename}{extension_file}")
+    output_path = pathlib.Path(
+        subset_request.output_directory,
+        filename,
+    )
+    if not subset_request.overwrite and not subset_request.skip_existing:
+        output_path = get_unique_filepath(output_path)
+    return filename, output_path
+
+
+def _get_response_subset(
+    subset_request: SubsetRequest,
+    variables: list[str],
+    platform_ids: list[str],
+    axis_coordinate_id_mapping: dict[str, str],
+) -> ResponseSubset:
+    filename, output_path = _build_filename_and_output_path(
+        subset_request,
+        variables,
+        platform_ids,
+        axis_coordinate_id_mapping,
+    )
+    return ResponseSubset(
+        file_path=output_path,
+        output_directory=subset_request.output_directory,
+        filename=str(filename),
+        file_size=None,
+        data_transfer_size=None,
+        variables=[],
+        # TODO: handle thoses extents maybe opening the dataframe
+        coordinates_extent=[],
+        status=StatusCode.SUCCESS,
+        message=StatusMessage.SUCCESS,
+        file_status=FileStatus.DOWNLOADED,
+    )
