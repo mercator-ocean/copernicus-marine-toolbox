@@ -496,6 +496,7 @@ class CopernicusMarinePart(BaseModel):
         """
         Get the coordinates of the part as a dict.
         The dict has the coordinate ids as keys and the values are tuples of:
+
         - the coordinate
         - variable_ids: list of variable the coordinate is associated with
         - service_names: list of service names the coordinate is associated with

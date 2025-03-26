@@ -217,3 +217,20 @@ The output will be something like this:
 The ``describe`` command will show you only one version of a dataset, prioritising the most recent version and the ones that are not planned to be retired.
 If you want to see all versions, you can use the ``--show-all-versions`` option.
 It allows in some cases to access the metadata of datasets that are to be released or datasets that will be retired soon.
+
+``arco_updating_start_date`` and ``arco_updated_date`` fields
+---------------------------------------------------------------
+
+These fields on the :class:`copernicusmarine.CopernicusMarinePart` can help to know if when the requested data has been updated and if it is still being updated.
+It only concerns the ARCO services i.e. all services for the subsetting. It is not meant to indicate when the original data has been updated.
+
+``arco_updated_date`` is the date when the ARCO data has been updated for the last time.
+For example, if ``arco_updated_date=="2025-03-26T08:50:15.873Z"`` it means that the last update of the dataset was on the 26th of March 2025.
+
+``arco_updating_start_date`` is the time point of the dataset from which the data is being updated.
+For example, if ``arco_updating_start_date=="1990-05-16T08:50:15.873Z"`` it means that the dataset is being updated from the time point: 16th of May 1990.
+See `the raise-if-updating <raise-if-updating>`_ option to be sure your requested data is up-to-date.
+
+.. warning::
+
+    ``arco_updating_start_date`` is a date that designate a value in the dataset contrary to ``arco_updated_date`` which is a "real life" date.
