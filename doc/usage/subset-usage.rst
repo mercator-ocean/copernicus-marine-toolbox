@@ -247,3 +247,20 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
   except copernicusmarine.DatasetUpdating as e:
       # add retries here if needed
       logging.error(e)
+
+.. _stereo_subset:
+
+Options for Arco with original-grid
+""""""""""""""""""""""""""""""""""""""""""
+
+For ARCO services in original-grid part datasets, the following options are available to subset the area:
+- ``--minimum-x``: The minimum x-axis coordinate.
+- ``--maximum-x``: The maximum x-axis coordinate.
+- ``--minimum-y``: The minimum y-axis coordinate.
+- ``--maximum-y``: The maximum y-axis coordinate.
+
+For more information check :ref:`stereographic-subsetting <original-grid notebook>`.
+
+.. note:
+
+  When using these options, the dataset part should be set to originalGrid: ``--dataset-part originalGrid``.
