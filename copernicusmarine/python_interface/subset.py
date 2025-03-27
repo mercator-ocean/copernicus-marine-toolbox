@@ -159,6 +159,11 @@ def subset(
         pathlib.Path(credentials_file) if credentials_file else None
     )
 
+    if variables is not None:
+        _check_type(variables, list, "variables")
+    if platform_ids is not None:
+        _check_type(platform_ids, list, "platform_ids")
+
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
 
@@ -209,3 +214,8 @@ def subset(
         chunk_size_limit,
         raise_if_updating,
     )
+
+
+def _check_type(value, expected_type: type, name: str):
+    if not isinstance(value, expected_type):
+        raise TypeError(f"{name} must be of type {expected_type.__name__}")

@@ -37,6 +37,8 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
 
 Using log level DEBUG, a summary of the dataset subset is displayed. It is by default displayed when using the ``--dry-run`` option.
 
+.. _sparse-subset:
+
 Sparse data subsetting
 -----------------------
 
@@ -217,6 +219,8 @@ To sum up, the ``--chunk-size-limit`` option allows you to play with the chunk s
 The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the ressources needed.
 If the chunk size is too small, many tasks are being created and handled by dask which means a consequent dask graph need to be handled.
 The latter can lead to huge overhead and slow down the process.
+
+.. _raise-if-updating:
 
 Option ``--raise-if-updating``
 """"""""""""""""""""""""""""""""""""""""""
