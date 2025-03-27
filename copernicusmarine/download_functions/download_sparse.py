@@ -283,7 +283,7 @@ def _get_response_subset(
         filename=str(filename),
         file_size=None,
         data_transfer_size=None,
-        variables=[],
+        variables=variables,
         # TODO: handle thoses extents maybe opening the dataframe
         coordinates_extent=[],
         status=StatusCode.SUCCESS,
