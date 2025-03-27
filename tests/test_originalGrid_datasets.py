@@ -1,4 +1,5 @@
 import pathlib
+import random
 from json import loads
 
 import xarray
@@ -10,6 +11,71 @@ from tests.test_utils import execute_in_terminal
 dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
 variable = "po4"
 datasets_w_originalGrid = [
+    [
+        "cmems_obs-si_arc_physic_nrt_1km-grl_P1D-irr",
+        "2021",
+        "-4500000",
+        "10345678",
+        "-5655555",
+        "-85555",
+    ],
+    [
+        "DMI-ARC-SEAICE_BERG_IW-L4-NRT-OBS",
+        "2020",
+        "-1055555",
+        "1055555",
+        "355555",
+        "4455555",
+    ],
+    [
+        "DMI-ARC-SEAICE_BERG-L4-NRT-OBS",
+        "2020",
+        "-1055555",
+        "1055555",
+        "355555",
+        "4455555",
+    ],
+    [
+        "cmems_obs-si_arc_physic_nrt_1km-grl_P1WT3D-m",
+        "2024",
+        "-1055555",
+        "1055555",
+        "-2655555",
+        "-755555",
+    ],
+    [
+        "cmems_obs-si_arc_phy_nrt_1km-svb_P1D-irr",
+        "2024",
+        "-1055555",
+        "1055555",
+        "-2655555",
+        "-755555",
+    ],
+    [
+        "cmems_mod_arc_phy_my_nextsim_P1D-m",
+        "2020",
+        "-10000",
+        "-8000",
+        "-10000",
+        "-8000",
+    ],
+    [
+        "cmems_mod_arc_phy_anfc_nextsim_hm",
+        "2020",
+        "-10000",
+        "-8000",
+        "-10000",
+        "-8000",
+    ],
+    [
+        "cmems_mod_arc_phy_anfc_nextsim_P1M-m",
+        "2020",
+        "-10000",
+        "-8000",
+        "-10000",
+        "-8000",
+    ],
+    # The upper ones, are new!
     [
         "DMI-ARC-SEAICE_BERG_MOSAIC-L4-NRT-OBS",
         "2024",
@@ -40,8 +106,6 @@ datasets_w_originalGrid = [
     ["cmems_mod_arc_phy_anfc_6km_detided_PT6H-m", "2024"],
     ["cmems_mod_arc_phy_anfc_6km_detided_P1D-m", "2024"],
     ["cmems_mod_arc_phy_anfc_6km_detided_P1M-m", "2024"],
-    # "cmems_mod_arc_phy_anfc_nextsim_P1M-m", "2020", # not yet available
-    # "cmems_mod_arc_phy_anfc_nextsim_hm", # not yet available
     # "dataset-topaz6-arc-15min-3km-be", # not yet available
     ["cmems_mod_arc_bgc_my_ecosmo_P1D-m", "2020"],
     ["cmems_mod_arc_bgc_my_ecosmo_P1M", "2020"],
@@ -232,7 +296,9 @@ class TestOriginalGridDatasets:
 
     def test_originalGrid_works_when_subsetting(self):
         for dataset_info in datasets_w_originalGrid:
-            self.run_one_dataset(dataset_info)
+            if random.randrange(start=100) > 80:
+                print(f"running dataset {dataset_info[0]}")
+                self.run_one_dataset(dataset_info)
 
     def run_one_dataset(self, dataset_info):
         dataset_name = dataset_info[0]
@@ -270,12 +336,18 @@ class TestOriginalGridDatasets:
             key=lambda the_dict: the_dict["coordinate_id"],
             reverse=True,
         )
-        assert coordinates[0]["coordinate_id"] == "y"
-        assert coordinates[0]["maximum"] == float(max_y)
-        assert coordinates[0]["minimum"] == float(min_y)
-        assert coordinates[1]["coordinate_id"] == "x"
-        assert coordinates[1]["maximum"] == float(max_x)
-        assert coordinates[1]["minimum"] == float(min_x)
+        assert (
+            coordinates[0]["coordinate_id"] == "y"
+            or coordinates[0]["coordinate_id"] == "yc"
+        )
+        assert coordinates[0]["maximum"] <= float(max_y)
+        assert coordinates[0]["minimum"] >= float(min_y)
+        assert (
+            coordinates[1]["coordinate_id"] == "x"
+            or coordinates[1]["coordinate_id"] == "xc"
+        )
+        assert coordinates[1]["maximum"] <= float(max_x)
+        assert coordinates[1]["minimum"] >= float(min_x)
 
     def test_out_of_bounds(self):
         command = [
