@@ -95,6 +95,14 @@ def open_dataset(
         Minimum latitude for the subset. Requires a float from -90 degrees to +90.
     maximum_latitude : float, optional
         Maximum latitude for the subset. Requires a float from -90 degrees to +90.
+    minimum_x : float, optional
+        Minimum x-axis value for the subset. The units are considered in length (m, 100km...).
+    maximum_x : float, optional
+        Maximum x-axis value for the subset. The units are considered in length (m, 100km...).
+    minimum_y : float, optional
+        Minimum y-axis value for the subset. The units are considered in length (m, 100km...).
+    maximum_y : float, optional
+        Maximum y-axis value for the subset. The units are considered in length (m, 100km...).
     minimum_depth : float, optional
         Minimum depth for the subset. Requires a positive float (or 0).
     maximum_depth : float, optional
