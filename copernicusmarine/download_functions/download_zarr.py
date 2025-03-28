@@ -137,6 +137,7 @@ def download_dataset(
         dataset_id,
         file_format,
         axis_coordinate_id_mapping,
+        geographical_parameters,
     )
     output_path = pathlib.Path(output_directory, filename)
     final_result_size_estimation = get_approximation_size_final_result(

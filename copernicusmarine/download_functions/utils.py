@@ -47,6 +47,7 @@ def get_filename(
     dataset_id: str,
     file_format: FileFormat,
     axis_coordinate_id_mapping: dict[str, str],
+    geographical_parameters: GeographicalParameters,
 ) -> str:
     if filename:
         if pathlib.Path(filename).suffix in DEFAULT_FILE_EXTENSIONS:
@@ -55,7 +56,11 @@ def get_filename(
             return filename + get_file_extension(file_format)
     else:
         return _build_filename_from_dataset(
-            dataset, dataset_id, file_format, axis_coordinate_id_mapping
+            dataset,
+            dataset_id,
+            file_format,
+            axis_coordinate_id_mapping,
+            geographical_parameters,
         )
 
 
@@ -64,6 +69,7 @@ def _build_filename_from_dataset(
     dataset_id: str,
     file_format: FileFormat,
     axis_coordinate_id_mapping: dict[str, str],
+    geographical_parameters: GeographicalParameters,
 ) -> str:
     dataset_variables = "-".join(
         [str(variable_name) for variable_name in dataset.data_vars]
@@ -75,39 +81,39 @@ def _build_filename_from_dataset(
     )
     longitudes = None
     if "x" in axis_coordinate_id_mapping:
-        if axis_coordinate_id_mapping["x"] == "longitude":
+        if geographical_parameters.projection == "lonlat":
             longitudes = _format_longitudes(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
             )
-        if axis_coordinate_id_mapping["x"] == "x":
+        if geographical_parameters.projection == "originalGrid":
             longitudes = _format_xy_axis(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
-                axis_coordinate_id_mapping["x"],
+                "x",
             )
 
     latitudes = None
     if "y" in axis_coordinate_id_mapping:
-        if axis_coordinate_id_mapping["y"] == "latitude":
+        if geographical_parameters.projection == "lonlat":
             latitudes = _format_latitudes(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["y"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["y"]),
             )
-        if axis_coordinate_id_mapping["y"] == "y":
+        if geographical_parameters.projection == "originalGrid":
             latitudes = _format_xy_axis(
                 _get_min_coordinate(dataset, axis_coordinate_id_mapping["y"]),
                 _get_max_coordinate(dataset, axis_coordinate_id_mapping["y"]),
-                axis_coordinate_id_mapping["y"],
+                "y",
             )
 
     depths = None
+    logger.info(axis_coordinate_id_mapping["z"])
     if "z" in axis_coordinate_id_mapping:
-        if axis_coordinate_id_mapping["z"] == "depth":
-            depths = _format_depths(
-                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
-                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
-            )
+        depths = _format_depths(
+            _get_min_coordinate(dataset, axis_coordinate_id_mapping["z"]),
+            _get_max_coordinate(dataset, axis_coordinate_id_mapping["z"]),
+        )
 
     datetimes = None
     if "t" in axis_coordinate_id_mapping:
@@ -314,9 +320,11 @@ def _format_depths(
         return ""
     else:
         if minimum_depth == maximum_depth:
-            depth = f"{abs(minimum_depth):.2f}m"
+            depth = f"{(minimum_depth):.2f}m"
+        elif minimum_depth > 0:
+            depth = f"{(minimum_depth):.2f}_{(maximum_depth):.2f}m"
         else:
-            depth = f"{abs(minimum_depth):.2f}-{abs(maximum_depth):.2f}m"
+            depth = f"{(maximum_depth):.2f}_{(minimum_depth):.2f}m"
         return depth
 
 
