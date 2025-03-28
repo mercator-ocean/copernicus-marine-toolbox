@@ -62,7 +62,13 @@ class CustomS3StoreZarrV3(Store):
                 res = resp["Body"].read()
                 return prototype.buffer.from_bytes(res)
             except botocore.exceptions.ClientError as e:
-                raise KeyError(key) from e
+                https_status_code: int = e.response["ResponseMetadata"][
+                    "HTTPStatusCode"
+                ]
+                if https_status_code == 404 or https_status_code == 403:
+                    return None
+                else:
+                    raise KeyError(key) from e
 
         return self.with_retries(fn)
 
