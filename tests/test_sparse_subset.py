@@ -1,4 +1,7 @@
+import pathlib
 from json import loads
+
+import pandas as pd
 
 from copernicusmarine import read_dataframe
 from tests.test_utils import execute_in_terminal
@@ -48,6 +51,20 @@ BASIC_COMMAND_DICT = {
     "end_datetime": "2023-11-26T03:00:00",
 }
 
+EXPECTED_COLUMNS = [
+    "platform_id",
+    "platform_type",
+    "time",
+    "longitude",
+    "latitude",
+    "depth",
+    "is_approx_elevation",
+    # "pressure", is removed cause full of NaN in the example # noqa
+    "value",
+    "value_qc",
+    "variable",
+]
+
 
 class TestSparseSubset:
     def test_I_can_subset_sparse_data(self, tmp_path):
@@ -62,6 +79,9 @@ class TestSparseSubset:
         response = loads(self.output.stdout)
         filename = response["filename"]
         assert (tmp_path / filename).exists()
+        df = pd.read_csv(tmp_path / filename)
+        assert not df.empty
+        assert list(df.columns) == EXPECTED_COLUMNS
 
     def test_I_can_subset_on_platform_ids_in_parquet(self, tmp_path):
         command = BASIC_COMMAND + [
@@ -75,18 +95,18 @@ class TestSparseSubset:
             "sparse_data",
             "--file-format",
             "parquet",
-        ]
-        expected_files = [
-            "B-Sulafjorden___MO_PSAL_6672.0.0.0.parquet",
-            "B-Sulafjorden___MO_TEMP_6672.0.0.0.parquet",
-            "F-Vartdalsfjorden___MO_PSAL_6672.0.0.0.parquet",
-            "F-Vartdalsfjorden___MO_TEMP_6672.0.0.0.parquet",
+            "-r",
+            "all",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (tmp_path / "sparse_data.parquet").exists()
-        for file_ in expected_files:
-            assert (tmp_path / "sparse_data.parquet" / file_).exists()
+        response = loads(self.output.stdout)
+        assert response["filename"] == "sparse_data.parquet"
+        output_path = pathlib.Path(response["file_path"])
+        assert (
+            output_path == tmp_path / "sparse_data.parquet"
+            and output_path.exists()
+        )
 
     def test_skip_existing_overwrite_default(self, tmp_path):
         command = BASIC_COMMAND + [
@@ -135,4 +155,4 @@ class TestSparseSubset:
         df = read_dataframe(**BASIC_COMMAND_DICT)
         assert not df.empty
         assert "value" in df.columns
-        assert len(df.columns) == 11
+        assert list(df.columns) == EXPECTED_COLUMNS
