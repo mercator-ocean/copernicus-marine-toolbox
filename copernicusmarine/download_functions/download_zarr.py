@@ -10,8 +10,12 @@ import zarr
 
 if zarr.__version__.startswith("2"):
     from zarr.storage import DirectoryStore
+
+    ZARR_FORMAT = None
 else:
     from zarr.storage import LocalStore as DirectoryStore
+
+    ZARR_FORMAT = 2
 
 from tqdm.dask import TqdmCallback
 
@@ -540,7 +544,10 @@ def _download_dataset_as_zarr(
 ):
     logger.debug("Writing dataset to Zarr")
     store = DirectoryStore(output_path)
-    return dataset.to_zarr(store=store, mode="w")
+    if ZARR_FORMAT is None:
+        return dataset.to_zarr(store=store, mode="w")
+    else:
+        return dataset.to_zarr(store=store, mode="w", zarr_format=ZARR_FORMAT)
 
 
 def _download_dataset_as_netcdf(
