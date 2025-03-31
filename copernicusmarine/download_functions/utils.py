@@ -108,7 +108,6 @@ def _build_filename_from_dataset(
             )
 
     depths = None
-    logger.info(axis_coordinate_id_mapping["z"])
     if "z" in axis_coordinate_id_mapping:
         depths = _format_depths(
             _get_min_coordinate(dataset, axis_coordinate_id_mapping["z"]),
