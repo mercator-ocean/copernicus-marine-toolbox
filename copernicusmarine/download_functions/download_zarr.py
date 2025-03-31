@@ -7,6 +7,20 @@ from typing import Hashable, Iterable, Literal, Optional, Union
 import pandas as pd
 import xarray
 import zarr
+
+if zarr.__version__.startswith("2"):
+    from zarr.storage import DirectoryStore
+
+    # If zarr client is version 2 there are no
+    # `zarr_format` argument
+    ZARR_FORMAT = None
+else:
+    from zarr.storage import LocalStore as DirectoryStore
+
+    # for client zarr>2 we need to specify the format
+    # otherwise it uses zarr format 3 by default
+    ZARR_FORMAT = 2
+
 from tqdm.dask import TqdmCallback
 
 from copernicusmarine.catalogue_parser.models import (
@@ -533,8 +547,11 @@ def _download_dataset_as_zarr(
     dataset: xarray.Dataset, output_path: pathlib.Path
 ):
     logger.debug("Writing dataset to Zarr")
-    store = zarr.DirectoryStore(output_path)
-    return dataset.to_zarr(store=store, mode="w")
+    store = DirectoryStore(output_path)
+    if ZARR_FORMAT is None:
+        return dataset.to_zarr(store=store, mode="w")
+    else:
+        return dataset.to_zarr(store=store, mode="w", zarr_format=ZARR_FORMAT)
 
 
 def _download_dataset_as_netcdf(
