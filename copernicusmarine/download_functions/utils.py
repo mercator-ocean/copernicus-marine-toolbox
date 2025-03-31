@@ -111,8 +111,8 @@ def _build_filename_from_dataset(
     if "z" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["z"] == "depth":
             depths = _format_depths(
-                _get_min_coordinate(dataset, axis_coordinate_id_mapping["x"]),
-                _get_max_coordinate(dataset, axis_coordinate_id_mapping["x"]),
+                _get_min_coordinate(dataset, axis_coordinate_id_mapping["z"]),
+                _get_max_coordinate(dataset, axis_coordinate_id_mapping["z"]),
             )
 
     datetimes = None
