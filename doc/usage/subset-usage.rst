@@ -248,7 +248,7 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
       # add retries here if needed
       logging.error(e)
 
-.. _stereo_subset:
+.. _stereo-subset:
 
 Options for Arco with original-grid
 """"""""""""""""""""""""""""""""""""""""""

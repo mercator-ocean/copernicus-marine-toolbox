@@ -1,0 +1,44 @@
+Beta Release 2.1.0b0
+======================
+
+.. warning::
+
+    This is a pre-release version of the Copernicus Marine Toolbox. It is only intended for testing and should not be used in production.
+
+
+General
+''''''''
+
+New features
+------------------
+
+- Added :ref:`"Polygons-based data selection" <polygons-based-data-selection>` page in the docs (usage section) with examples to detail how you can download data with polygons as input area.
+- Removed Linux binary with ``glibc==2.31`` since Github Actions does not support it anymore.
+- Added a new one with ``glibc==2.39``.
+- Added ``arcosparse`` as new dependency.
+- Released constraint on ``zarr`` allowing ``zarr>=3.0.0``.
+
+Fixes
+------------------
+
+- Clearer error message when ``netcdf4`` is not installed and should be installed for the user request.
+- Fixed an issue that would cause the help of the command line interface to fail for binaries.
+
+Subset
+''''''''
+
+New features
+------------------
+
+- Added stereographic subsetting. Please read more in the :ref:`subset usage page <stereo-subset>` or :ref:`this page <stereo-subset-page>` for more complete examples.
+- Added subsetting for sparse datasets (including INSITU datasets). See the :ref:`documentation about sparse subsetting <sparse-subset>` for more information.
+- Added option ``raise-if-updating`` to raise an error if the dataset is updating. See the :ref:`documentation about this flag <raise-if-updating>` for more information.
+
+Describe
+''''''''
+
+New features
+------------------
+
+- Added ``arco_updating_start_date`` and ``arco_updated_date`` fields in the metadata. Please see :ref:`this section <arco-updat-date>` for more information.
+- Added method ``get_coordinates`` on :class:`copernicusmarine.CopernicusMarinePart` to get the coordinates of the dataset at the part level.
