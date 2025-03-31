@@ -11,10 +11,14 @@ import zarr
 if zarr.__version__.startswith("2"):
     from zarr.storage import DirectoryStore
 
+    # If zarr client is version 2 there are no
+    # `zarr_format` argument
     ZARR_FORMAT = None
 else:
     from zarr.storage import LocalStore as DirectoryStore
 
+    # for client zarr>2 we need to specify the format
+    # otherwise it uses zarr format 3 by default
     ZARR_FORMAT = 2
 
 from tqdm.dask import TqdmCallback

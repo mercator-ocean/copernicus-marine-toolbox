@@ -66,9 +66,10 @@ class CustomS3StoreZarrV3(Store):
                     "HTTPStatusCode"
                 ]
                 if https_status_code == 404 or https_status_code == 403:
+                    # means the object does not exist
                     return None
                 else:
-                    raise KeyError(key) from e
+                    raise e
 
         return self.with_retries(fn)
 
@@ -145,11 +146,6 @@ class CustomS3StoreZarrV3(Store):
         for index_try in range(self.number_of_retries):
             try:
                 return fn()
-            # KeyError is a normal error that we want to propagate
-            # (e.g. if we try to get a chunk and it doesn't exist,
-            # we want the caller to know this has happened -- and not retry!)
-            except KeyError:
-                raise
             except Exception as e:
                 if index_try == self.number_of_retries - 1:
                     raise e
