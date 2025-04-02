@@ -42,16 +42,16 @@ Using log level DEBUG, a summary of the dataset subset is displayed. It is by de
 Sparse data subsetting
 -----------------------
 
-One the one hand, some of the datasets available on the Copernicus Marine are gridded datasets and benefits all the features of the Copernicus Marine Toolbox.
-On the other hand, some datasets are sparse or INSITU datasets. They are treated and formatted differently when it comes to the ARCO data. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ here for example.
+On the one hand, some of the datasets available on Copernicus Marine are gridded datasets, benefiting from all the features of the Copernicus Marine Toolbox.
+On the other hand, certain datasets are sparse or INSITU datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ for example.
 
-Sparse dataset can be subsetted using the ``subset`` command. The command will return the data in a tabular format i.e a pandas DataFrame, a CSV file or a Parquet database.
+Sparse datasets can be subset using the ``subset`` command, which returns the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
 
 **Example:**
 
 .. code-block:: bash
 
-  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2050-11-26T03:00:00" --dataset-part history -o todelete --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO --output-directory "some_place" --output-filename "my_subset"
+  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2050-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
 
 Then it can be opened with pandas:
 
@@ -59,9 +59,11 @@ Then it can be opened with pandas:
 
   import pandas as pd
 
-  df = pd.read_csv("some_place/my_subset.csv")
+  df = pd.read_csv(
+      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_multi-vars_B-Sulafjorden___MO-F-Vartdalsfjorden___MO_146.99W-180.00E_45.00N-90.00N_0.00-10.00m_2023-11-25-2050-11-26.csv"
+  )
 
-It's also possible to directly load the pandas DataFrame with the :func:`~copernicusmarine.read_dataframe` function:
+It is also possible to load the Pandas DataFrame directly using the :func:`~copernicusmarine.read_dataframe` function:
 
 .. code-block:: python
 
@@ -85,32 +87,30 @@ The output will contain the following columns:
 
 - ``platform_id``: The platform ID.
 - ``platform_type``: The platform type.
-- ``time``: The timestamp of the measurement in seconds
+- ``time``: The timestamp of the measurement in seconds.
 - ``longitude``: The longitude of the measurement in degrees.
 - ``latitude``: The latitude of the measurement in degrees.
-- ``depth`` or ``elevation``: The depth of the measurement in meters. Or 'elevation' if selected with the ``vertical-axis`` option.
-- ``is_approx_elevation``: TBD.
-- ``pressure``: TBD.
-- ``value``: The value of the measurement.
-- ``value_qc``: The quality control of the value.
+- ``depth`` or ``elevation``: The depth of the measurement in meters, or 'elevation' if selected with the ``vertical-axis`` option.
+- ``is_approx_elevation``: Indicates whether the pressure value was used to calculate elevation/depth.
+- ``pressure``: The measurement pressure in decibars (not always available).
+- ``value``: The measurement value.
+- ``value_qc``: The quality control indicator of the value.
 - ``variable``: The variable name.
 
-If one of the columns would be all NaN, it will be removed from the output.
-
+If any column consists entirely of ``NaN`` values, it will be removed from the output.
 
 These datasets have specific options and outputs:
 
-- The ``--file-format`` option can be used to ask for 'parquet' or 'csv'. The default is 'csv'.
-- Added ``--platform-id`` option to filter the data by platform ID.
+- The ``--file-format`` option can be used to specify 'parquet' or 'csv'. The default format is 'csv'.
+- The ``--platform-id`` option enables filtering data by platform ID.
 
-There are also some options that will not behave the same or are not available for sparse datasets:
+There are also some options that behave differently or are not available for sparse datasets:
 
-- Format 'netcdf' and 'zarr' are not available for sparse datasets.
-- Forcing a use of a service is not possible. The toolbox will automatically select the preferred service.
-- :class:`copernicusmarine.ResponseSubset` object will not have coordinate extent, file size and data transfer size information.
-- :ref:`coordinate-selection-method <coordinates-selection-method>` option only the 'inside' and 'strict-inside' values are relevant.
-- Default naming of the result is slightly different. In the case of sparse datasets, the values in the name of the file will be
-  the requested extents and not the actual extents of the result of the subset.
+- The 'netcdf' and 'zarr' formats are not available for sparse datasets.
+- Manually forcing the use of a specific service is not possible; the toolbox will automatically select the preferred service.
+- The :class:`copernicusmarine.ResponseSubset` object does not include coordinate extents, file size, or data transfer size information.
+- For the :ref:`coordinate-selection-method <coordinates-selection-method>` option, only the 'inside' and 'strict-inside' values are relevant.
+- The default naming convention for output files differs slightly. For sparse datasets, the file name will reflect the requested extents rather than the actual extents of the resulting subset.
 
 Additional options
 ------------------
@@ -248,7 +248,7 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
       # add retries here if needed
       logging.error(e)
 
-.. _stereo_subset:
+.. _stereographic-subset-usage:
 
 Options for Arco with original-grid
 """"""""""""""""""""""""""""""""""""""""""
@@ -259,7 +259,7 @@ For ARCO services in original-grid part datasets, the following options are avai
 - ``--minimum-y``: The minimum y-axis coordinate.
 - ``--maximum-y``: The maximum y-axis coordinate.
 
-For more information check :ref:`stereographic-subsetting <original-grid notebook>`.
+For more context and examples, check the  :ref:`original-grid page <stereographic-subsetting-page>`.
 
 .. note:
 
