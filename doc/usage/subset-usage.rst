@@ -51,7 +51,7 @@ Sparse datasets can be subset using the ``subset`` command, which returns the da
 
 .. code-block:: bash
 
-  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2050-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
+  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2024-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
 
 Then it can be opened with pandas:
 
@@ -60,7 +60,7 @@ Then it can be opened with pandas:
   import pandas as pd
 
   df = pd.read_csv(
-      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_multi-vars_B-Sulafjorden___MO-F-Vartdalsfjorden___MO_146.99W-180.00E_45.00N-90.00N_0.00-10.00m_2023-11-25-2050-11-26.csv"
+      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_multi-vars_B-Sulafjorden___MO-F-Vartdalsfjorden___MO_146.99W-180.00E_45.00N-90.00N_0.00-10.00m_2023-11-25-2024-11-26.csv"
   )
 
 It is also possible to load the Pandas DataFrame directly using the :func:`~copernicusmarine.read_dataframe` function:
@@ -78,7 +78,7 @@ It is also possible to load the Pandas DataFrame directly using the :func:`~cope
       minimum_depth=0,
       maximum_depth=10,
       start_datetime="2023-11-25T00:00:00",
-      end_datetime="2050-11-26T03:00:00",
+      end_datetime="2024-11-26T03:00:00",
       dataset_part="history",
       platform_ids=["B-Sulafjorden", "F-Vartdalsfjorden"],
   )
