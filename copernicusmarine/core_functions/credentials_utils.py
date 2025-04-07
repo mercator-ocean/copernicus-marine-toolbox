@@ -392,7 +392,7 @@ def create_copernicusmarine_configuration_file(
 def _check_credentials_with_old_cas(
     username: str, password: str
 ) -> Union[str, None]:
-    logger.debug("Checking user credentials...")
+    logger.debug("Checking user credentials with old cas...")
     service = "copernicus-marine-client"
     cmems_cas_login_url = (
         f"{COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_URL}?service={service}"
