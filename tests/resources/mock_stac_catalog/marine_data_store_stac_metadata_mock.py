@@ -56,8 +56,6 @@ def mocked_stac_requests_get(*args, **kwargs):
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
 
-    print(args[0])
-
     if args[0] == f"{BASE_URL}/catalog.stac.json":
         return MockResponse(MOCK_STAC_CATALOG, 200)
     elif (
@@ -113,7 +111,7 @@ def mocked_stac_requests_get(*args, **kwargs):
         return MockResponse(MOCK_MDS_VERSION, 200)
 
     elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
-        return MockResponse(None, 200)
+        return MockResponse({"preferred_username": "copernicususer"}, 200)
 
     elif (
         args[0]
