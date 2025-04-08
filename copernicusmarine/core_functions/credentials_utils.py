@@ -286,7 +286,7 @@ def copernicusmarine_configuration_file_exists(
     return configuration_filename.exists()
 
 
-def copernicusmarine_validate_ang_get_user(
+def copernicusmarine_validate_and_get_user(
     configuration_file: Optional[pathlib.Path],
     username: Optional[str],
     password: Optional[str],
