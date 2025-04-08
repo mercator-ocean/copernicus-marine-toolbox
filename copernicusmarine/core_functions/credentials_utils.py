@@ -286,13 +286,13 @@ def copernicusmarine_configuration_file_exists(
     return configuration_filename.exists()
 
 
-def copernicusmarine_get_user(
+def copernicusmarine_validate_ang_get_user(
     configuration_file: Optional[pathlib.Path],
     username: Optional[str],
     password: Optional[str],
 ) -> Union[str, None]:
     if username and password:
-        if user := _get_user(username, password):
+        if user := _validate_and_get_user(username, password):
             logger.info("Valid credentials from input username and password.")
             return user
         else:
@@ -304,7 +304,7 @@ def copernicusmarine_get_user(
     elif (
         COPERNICUSMARINE_SERVICE_USERNAME and COPERNICUSMARINE_SERVICE_PASSWORD
     ):
-        if user := _get_user(
+        if user := _validate_and_get_user(
             COPERNICUSMARINE_SERVICE_USERNAME,
             COPERNICUSMARINE_SERVICE_PASSWORD,
         ):
@@ -331,7 +331,7 @@ def copernicusmarine_get_user(
             "password", configuration_file
         )
     ):
-        if user := _get_user(username, password):
+        if user := _validate_and_get_user(username, password):
             logger.info("Valid credentials from configuration file.")
             return user
         else:
@@ -476,7 +476,7 @@ def _are_copernicus_marine_credentials_valid_old_system(
     raise CouldNotConnectToAuthenticationSystem()
 
 
-def _get_user(username: str, password: str) -> Union[str, None]:
+def _validate_and_get_user(username: str, password: str) -> Union[str, None]:
     try:
         result = _get_user_new_system(username, password)
         return result
@@ -540,7 +540,7 @@ def get_and_check_username_password(
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
     )
-    user = _get_user(
+    user = _validate_and_get_user(
         username,
         password,
     )
@@ -610,7 +610,9 @@ def credentials_file_builder(
     password = _get_credential_from_environment_variable_or_prompt(
         password, "password", True
     )
-    copernicus_marine_credentials_are_valid = _get_user(username, password)
+    copernicus_marine_credentials_are_valid = _validate_and_get_user(
+        username, password
+    )
     if copernicus_marine_credentials_are_valid:
         (
             configuration_file,

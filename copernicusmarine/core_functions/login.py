@@ -4,7 +4,7 @@ from typing import Optional
 
 from copernicusmarine.core_functions.credentials_utils import (
     RECOVER_YOUR_CREDENTIALS_MESSAGE,
-    copernicusmarine_get_user,
+    copernicusmarine_validate_ang_get_user,
     credentials_file_builder,
 )
 
@@ -21,7 +21,9 @@ def login_function(
 ) -> bool:
     if check_credentials_valid:
         logger.info("Checking if credentials are valid.")
-        if copernicusmarine_get_user(configuration_file, username, password):
+        if copernicusmarine_validate_ang_get_user(
+            configuration_file, username, password
+        ):
             return True
         else:
             return False
