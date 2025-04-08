@@ -463,20 +463,17 @@ def _are_copernicus_marine_credentials_valid_old_system(
     username: str, password: str
 ) -> Union[str, None]:
     number_of_retry = 3
-    user_is_active = None
     while number_of_retry > 0:
         try:
-            user_is_active = _check_credentials_with_old_cas(
+            user = _check_credentials_with_old_cas(
                 username=username, password=password
             )
-            break
+            return user
         except requests.exceptions.ConnectTimeout:
             number_of_retry -= 1
         except requests.exceptions.ConnectionError:
             number_of_retry -= 1
-    if user_is_active is None:
-        raise CouldNotConnectToAuthenticationSystem()
-    return user_is_active
+    raise CouldNotConnectToAuthenticationSystem()
 
 
 def _get_user(username: str, password: str) -> Union[str, None]:
@@ -496,19 +493,17 @@ def _get_user(username: str, password: str) -> Union[str, None]:
 
 def _get_user_new_system(username: str, password: str) -> Union[str, None]:
     number_of_retry = 3
-    user = None
-    while (user is None) and number_of_retry > 0:
+    while number_of_retry > 0:
         try:
             user = _check_credentials_with_cas(
                 username=username, password=password
             )
+            return user
         except requests.exceptions.ConnectTimeout:
             number_of_retry -= 1
         except requests.exceptions.ConnectionError:
             number_of_retry -= 1
-    if user is None:
-        raise CouldNotConnectToAuthenticationSystem()
-    return user
+    raise CouldNotConnectToAuthenticationSystem()
 
 
 def get_credential(
