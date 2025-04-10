@@ -4,7 +4,7 @@ import logging
 import pathlib
 from netrc import netrc
 from platform import system
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 import click
 import lxml.html
@@ -286,25 +286,25 @@ def copernicusmarine_configuration_file_exists(
     return configuration_filename.exists()
 
 
-def copernicusmarine_credentials_are_valid(
+def copernicusmarine_validate_and_get_user(
     configuration_file: Optional[pathlib.Path],
     username: Optional[str],
     password: Optional[str],
-):
+) -> Union[str, None]:
     if username and password:
-        if _are_copernicus_marine_credentials_valid(username, password):
+        if user := _validate_and_get_user(username, password):
             logger.info("Valid credentials from input username and password.")
-            return True
+            return user
         else:
             logger.error(
                 "Invalid credentials from input username and password."
             )
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
-            return False
+            return None
     elif (
         COPERNICUSMARINE_SERVICE_USERNAME and COPERNICUSMARINE_SERVICE_PASSWORD
     ):
-        if _are_copernicus_marine_credentials_valid(
+        if user := _validate_and_get_user(
             COPERNICUSMARINE_SERVICE_USERNAME,
             COPERNICUSMARINE_SERVICE_PASSWORD,
         ):
@@ -313,7 +313,7 @@ def copernicusmarine_credentials_are_valid(
                 "COPERNICUSMARINE_SERVICE_USERNAME and "
                 "COPERNICUSMARINE_SERVICE_PASSWORD."
             )
-            return True
+            return user
         else:
             logger.error(
                 "Invalid credentials from environment variables: "
@@ -321,7 +321,7 @@ def copernicusmarine_credentials_are_valid(
                 "COPERNICUSMARINE_SERVICE_PASSWORD."
             )
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
-            return False
+            return None
     elif (
         username := _retrieve_credential_from_configuration_files(
             "username", configuration_file
@@ -331,12 +331,13 @@ def copernicusmarine_credentials_are_valid(
             "password", configuration_file
         )
     ):
-        if _are_copernicus_marine_credentials_valid(username, password):
+        if user := _validate_and_get_user(username, password):
             logger.info("Valid credentials from configuration file.")
-            return True
+            return user
         else:
             logger.error("Invalid credentials from configuration file.")
             logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+            return None
     elif configuration_file:
         logger.info(
             f"No credentials found in configuration file {configuration_file}."
@@ -346,14 +347,14 @@ def copernicusmarine_credentials_are_valid(
             "it exists and the format is correct (especially in "
             "the case of netrc or motuclient file)."
         )
-        return False
+        return None
     else:
         logger.info("No credentials found.")
         logger.info(
             "Please provide credentials as arguments or environment "
             "variables, or use the 'login' command to create a credentials file."
         )
-    return False
+    return None
 
 
 def create_copernicusmarine_configuration_file(
@@ -388,8 +389,10 @@ def create_copernicusmarine_configuration_file(
     return configuration_filename, False
 
 
-def _check_credentials_with_old_cas(username: str, password: str) -> bool:
-    logger.debug("Checking user credentials...")
+def _check_credentials_with_old_cas(
+    username: str, password: str
+) -> Union[str, None]:
+    logger.debug("Checking user credentials with old cas...")
     service = "copernicus-marine-client"
     cmems_cas_login_url = (
         f"{COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_URL}?service={service}"
@@ -404,23 +407,25 @@ def _check_credentials_with_old_cas(username: str, password: str) -> bool:
     hidden_elements_from_html = login_from_html.xpath(
         '//form//input[@type="hidden"]'
     )
-    playload = {
+    payload = {
         he.attrib["name"]: he.attrib["value"]
         for he in hidden_elements_from_html
     }
-    playload["username"] = username
-    playload["password"] = password
+    payload["username"] = username
+    payload["password"] = password
     logger.debug(f"POSTing credentials to {cmems_cas_login_url}...")
     login_response = conn_session.post(
-        cmems_cas_login_url, data=playload, proxies=conn_session.proxies
+        cmems_cas_login_url, data=payload, proxies=conn_session.proxies
     )
     login_response.raise_for_status()
     login_success = 'class="success"' in login_response.text
     logger.debug("User credentials checked")
-    return login_success
+    return username if login_success else None
 
 
-def _check_credentials_with_cas(username: str, password: str) -> bool:
+def _check_credentials_with_cas(
+    username: str, password: str
+) -> Union[str, None]:
     keycloak_url = COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT
     client_id = "toolbox"
     scope = "openid profile email"
@@ -449,39 +454,31 @@ def _check_credentials_with_cas(username: str, password: str) -> bool:
         )
         response.raise_for_status()
         if response.status_code == 200:
-            return True
-        else:
-            return False
-    else:
-        return False
+            response_json = response.json()
+            return response_json["preferred_username"]
+    return None
 
 
 def _are_copernicus_marine_credentials_valid_old_system(
     username: str, password: str
-) -> bool:
+) -> Union[str, None]:
     number_of_retry = 3
-    user_is_active = None
-    while (user_is_active not in [True, False]) and number_of_retry > 0:
+    while number_of_retry > 0:
         try:
-            user_is_active = _check_credentials_with_old_cas(
+            user = _check_credentials_with_old_cas(
                 username=username, password=password
             )
+            return user
         except requests.exceptions.ConnectTimeout:
             number_of_retry -= 1
         except requests.exceptions.ConnectionError:
             number_of_retry -= 1
-    if user_is_active is None:
-        raise CouldNotConnectToAuthenticationSystem()
-    return user_is_active
+    raise CouldNotConnectToAuthenticationSystem()
 
 
-def _are_copernicus_marine_credentials_valid(
-    username: str, password: str
-) -> bool:
+def _validate_and_get_user(username: str, password: str) -> Union[str, None]:
     try:
-        result = _are_copernicus_marine_credentials_valid_new_system(
-            username, password
-        )
+        result = _get_user_new_system(username, password)
         return result
 
     except Exception as e:
@@ -494,23 +491,19 @@ def _are_copernicus_marine_credentials_valid(
         )
 
 
-def _are_copernicus_marine_credentials_valid_new_system(
-    username: str, password: str
-) -> bool:
+def _get_user_new_system(username: str, password: str) -> Union[str, None]:
     number_of_retry = 3
-    user_is_active = None
-    while (user_is_active not in [True, False]) and number_of_retry > 0:
+    while number_of_retry > 0:
         try:
-            user_is_active = _check_credentials_with_cas(
+            user = _check_credentials_with_cas(
                 username=username, password=password
             )
+            return user
         except requests.exceptions.ConnectTimeout:
             number_of_retry -= 1
         except requests.exceptions.ConnectionError:
             number_of_retry -= 1
-    if user_is_active is None:
-        raise CouldNotConnectToAuthenticationSystem()
-    return user_is_active
+    raise CouldNotConnectToAuthenticationSystem()
 
 
 def get_credential(
@@ -547,19 +540,17 @@ def get_and_check_username_password(
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
     )
-    copernicus_marine_credentials_are_valid = (
-        _are_copernicus_marine_credentials_valid(
-            username,
-            password,
-        )
+    user = _validate_and_get_user(
+        username,
+        password,
     )
-    if not copernicus_marine_credentials_are_valid:
+    if not user:
         raise InvalidUsernameOrPassword(
             "Learn how to recover your credentials at: "
             "https://help.marine.copernicus.eu/en/articles/"
             "4444552-i-forgot-my-username-or-my-password-what-should-i-do"
         )
-    return (username, password)
+    return (user, password)
 
 
 def get_username_password(
@@ -619,8 +610,8 @@ def credentials_file_builder(
     password = _get_credential_from_environment_variable_or_prompt(
         password, "password", True
     )
-    copernicus_marine_credentials_are_valid = (
-        _are_copernicus_marine_credentials_valid(username, password)
+    copernicus_marine_credentials_are_valid = _validate_and_get_user(
+        username, password
     )
     if copernicus_marine_credentials_are_valid:
         (
