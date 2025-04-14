@@ -136,9 +136,9 @@ def download_dataset(
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
             coordinates_selection_method=coordinates_selection_method,
-            chunks=optimum_dask_chunking,  # type: ignore
+            chunks=None,  # type: ignore
         )
-    )
+    ).chunk(chunks=optimum_dask_chunking)
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
 
@@ -311,8 +311,9 @@ def open_dataset_from_arco_series(
 ) -> xarray.Dataset:
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
+        chunks=chunks,
         copernicus_marine_username=username,
-    ).chunk(chunks=chunks)
+    )
     dataset = subset(
         dataset=dataset,
         variables=variables,
@@ -344,8 +345,8 @@ def read_dataframe_from_arco_series(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=coordinates_selection_method,
-        chunks=chunks,  # type: ignore
-    )
+        chunks=None,  # type: ignore
+    ).chunk(chunks=chunks)
     return dataset.to_dataframe()
 
 
