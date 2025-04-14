@@ -123,7 +123,12 @@ def load_data_object_from_load_request(
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
             coordinates_selection_method=load_request.coordinates_selection_method,
-            chunks=optimum_dask_chunking,
+            chunks=None,
+        ).chunk(
+            optimum_dask_chunking
+            if retrieval_service.service.service_format
+            == CopernicusMarineServiceFormat.ZARR
+            else None
         )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)
