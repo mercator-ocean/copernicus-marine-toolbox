@@ -44,7 +44,7 @@ class TestBasicCommandsBinaries:
             "zarr",
         ]
         # 25 minute download?
-        self.output = execute_in_terminal(command, timeout_second=25 * 60)
+        self.output = execute_in_terminal(command, timeout_second=12 * 60)
         assert self.output.returncode == 0
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(
