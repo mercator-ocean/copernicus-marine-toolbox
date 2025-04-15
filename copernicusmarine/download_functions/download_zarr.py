@@ -313,7 +313,7 @@ def open_dataset_from_arco_series(
         opening_chunks = "auto"
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
-        chunks=opening_chunks,
+        chunks=None,
         copernicus_marine_username=username,
     )
     dataset = subset(
