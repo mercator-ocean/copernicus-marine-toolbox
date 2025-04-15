@@ -1,7 +1,15 @@
 name: Test big downloads
 
 on:
-  workflow_dispatch:
+    workflow_dispatch:
+    pull_request_target:
+      branches:
+        - "main"
+      paths:
+        - 'pyproject.toml'
+        - 'conda_environment_test.yaml'
+        - 'tests_extra/test_*.py'
+        - 'Makefile'
 
 jobs:
   tests:
@@ -11,6 +19,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: mamba-org/setup-micromamba@v1
         with:
