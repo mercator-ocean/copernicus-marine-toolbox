@@ -1,0 +1,30 @@
+name: Test big downloads
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: self-hosted
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment_test.yaml
+          environment-name: copernicusmarine_test
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Test big downloads
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        run: make run-big-downloads
+        shell: micromamba-shell {0}

@@ -80,6 +80,13 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
 
+# Big downloads tests:
+run-big-downloads: SELECTED_ENVIRONMENT_NAME = ${TEST_ENVIRONMENT_NAME}
+run-big-downloads:
+	${ACTIVATE_ENVIRONMENT}
+	pip install --editable .
+	pytest tests_extra/test_big_downloads.py --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+
 
 ##  Binaries creation:
 # Prepare the environment
@@ -123,7 +130,7 @@ run-using-pyinstaller-ubuntu-24.04: run-using-pyinstaller-linux
 
 # Tests for the binaries
 run-tests-binaries:
-	pytest tests_binaries/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	pytest tests_extra/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_extra/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 change-name-binary:
 	mv dist/copernicusmari* ./copernicusmarine.cli
