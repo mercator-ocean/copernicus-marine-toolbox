@@ -250,14 +250,15 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
 
 .. _stereographic-subset-usage:
 
-Options for Arco with original-grid
+Options for Arco with Original-grid
 """"""""""""""""""""""""""""""""""""""""""
 
-For ARCO services in original-grid part datasets, the following options are available to subset the area:
-- ``--minimum-x``: The minimum x-axis coordinate.
-- ``--maximum-x``: The maximum x-axis coordinate.
-- ``--minimum-y``: The minimum y-axis coordinate.
-- ``--maximum-y``: The maximum y-axis coordinate.
+For ARCO services in Original-grid part datasets, the following options are available to bound the subsetted area:
+
+  - ``--minimum-x`` or ``-x`` : The minimum x-axis coordinate.
+  - ``--maximum-x``or ``-X`` : The maximum x-axis coordinate.
+  - ``--minimum-y`` or ``-y`` : The minimum y-axis coordinate.
+  - ``--maximum-y`` or ``-Y`` : The maximum y-axis coordinate.
 
 For more context and examples, check the  :ref:`original-grid page <stereographic-subsetting-page>`.
 
