@@ -232,7 +232,7 @@ Option ``--raise-if-updating``
   This option only applies to ARCO services (``arco-geo-series`` and ``arco-time-series``) and not native files (``original-files`` service).
 
 When a dataset is being updated, data after a certain date may become unreliable. If this flag is set, the toolbox will raise an error if the requested subset interval extends beyond the updating start date.
- By default, the flag is not set and the toolbox will only emit a warning. See ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
+ By default, the flag is not set and the toolbox will only emit a warning. See ``arco_updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
 
 .. code-block:: python
 
@@ -259,7 +259,7 @@ For ARCO services in Original-grid part datasets, the following options are avai
   - ``--minimum-y`` or ``-y`` : The minimum y-axis coordinate.
   - ``--maximum-y`` or ``-Y`` : The maximum y-axis coordinate.
 
-For more context and examples, check the  :ref:`original-grid page <stereographic-subsetting-page>`.
+For more context and examples, check the  :ref:`Original-grid page <stereographic-subsetting-page>`.
 
 .. note:
 
