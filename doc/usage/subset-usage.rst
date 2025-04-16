@@ -43,9 +43,9 @@ Sparse data subsetting
 -----------------------
 
 On the one hand, some of the datasets available on Copernicus Marine are gridded datasets, benefiting from all the features of the Copernicus Marine Toolbox.
-On the other hand, certain datasets are sparse or INSITU datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ for example.
+On the other hand, certain datasets are time series for a given platform; these are called sparse or in-situ datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ for example.
 
-Sparse datasets can be subset using the ``subset`` command, which returns the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
+We can download all the time series of a given geographical area via the ``subset`` command. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
 
 **Example:**
 
@@ -53,7 +53,7 @@ Sparse datasets can be subset using the ``subset`` command, which returns the da
 
   copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2024-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
 
-Then it can be opened with pandas:
+This dataset can be opened with pandas:
 
 .. code-block:: python
 
