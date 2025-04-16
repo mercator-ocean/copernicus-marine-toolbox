@@ -138,7 +138,7 @@ def download_dataset(
             coordinates_selection_method=coordinates_selection_method,
             opening_chunks=optimum_dask_chunking,
         )
-    ).chunk(chunks=optimum_dask_chunking)
+    )  # .chunk(chunks=optimum_dask_chunking)
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
 
@@ -310,10 +310,10 @@ def open_dataset_from_arco_series(
     opening_chunks: Union[dict[str, Union[int, float]], str, None] = None,
 ) -> xarray.Dataset:
     if opening_chunks is not None:
-        opening_chunks = "auto"
+        opening_parameter = None
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
-        chunks=opening_chunks,
+        chunks=opening_parameter,
         copernicus_marine_username=username,
     )
     dataset = subset(
