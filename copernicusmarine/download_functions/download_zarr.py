@@ -309,11 +309,9 @@ def open_dataset_from_arco_series(
     coordinates_selection_method: CoordinatesSelectionMethod,
     opening_chunks: Union[dict[str, Union[int, float]], str, None] = None,
 ) -> xarray.Dataset:
-    if opening_chunks is not None:
-        opening_parameter = None
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
-        chunks=opening_parameter,
+        chunks=None,
         copernicus_marine_username=username,
     )
     dataset = subset(
