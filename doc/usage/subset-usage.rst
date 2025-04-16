@@ -45,7 +45,7 @@ Sparse data subsetting
 On the one hand, some of the datasets available on Copernicus Marine are gridded datasets, benefiting from all the features of the Copernicus Marine Toolbox.
 On the other hand, certain datasets are time series for a given platform; these are called sparse or in-situ datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `in-situ datasets <https://data.marine.copernicus.eu/products?facets=sources%7EIn-situ+observations>`_ for example.
 
-We can download all the time series of a given geographical area via the ``subset`` command. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
+We can download all the time series of a given geographical area and time period via the ``subset``. Options can also be used to choose the platforms, variables or depth ranges we are interested in. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
 
 **Example:**
 
