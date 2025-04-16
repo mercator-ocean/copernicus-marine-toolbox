@@ -494,21 +494,21 @@ class CopernicusMarinePart(BaseModel):
         ],
     ]:
         """
-        Get the coordinates of the part as a dict.
-        The dict has the coordinate ids as keys and the values are tuples of:
+        Get the coordinates of the part as a dictionary.
+        The dictionary has the coordinate IDs as keys and the values are tuples of:
 
         - the coordinate
-        - variable_ids: list of variable the coordinate is associated with
+        - variable_ids: list of variables the coordinate is associated with
         - service_names: list of service names the coordinate is associated with
 
         Parameters
         ----------
-        service : CopernicusMarinePart
-            The service to get the coordinates
+        service (optional) : CopernicusMarinePart
+            The service whose coordinates we want to retrieve
 
         Returns
         -------
-        dict
+        dictionary
             The coordinates of the part and the associated variables and services
         """
         coordinates = {}
