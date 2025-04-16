@@ -310,7 +310,7 @@ def open_dataset_from_arco_series(
     opening_chunks: Union[dict[str, Union[int, float]], str, None] = None,
 ) -> xarray.Dataset:
     if opening_chunks is not None:
-        opening_chunks = {}
+        opening_chunks = "auto"
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
         chunks=opening_chunks,
