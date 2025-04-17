@@ -51,3 +51,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create v${{ steps.set-version.outputs.VERSION }} --generate-notes --prerelease
+
+  create-binaries:
+    if: ${{ success() || failure() }}
+    needs: [pre-release]
+    uses: ./.github/workflows/binaries.yml
+
+  create-windows-binary:
+    if: ${{ success() || failure() }}
+    needs: [pre-release]
+    uses: ./.github/workflows/binary-windows.yml
