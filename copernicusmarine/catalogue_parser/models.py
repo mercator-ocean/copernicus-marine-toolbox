@@ -73,7 +73,7 @@ def _service_type_from_web_api_string(
         OMI_ARCO = "omi"
         STATIC_ARCO = "static"
 
-    web_api_mapping: dict[WebApi, CopernicusMarineServiceNames] = {
+    web_api_mapping: t[WebApi, CopernicusMarineServiceNames] = {
         WebApi.GEOSERIES: CopernicusMarineServiceNames.GEOSERIES,
         WebApi.TIMESERIES: CopernicusMarineServiceNames.TIMESERIES,
         WebApi.PLATFORMSERIES: CopernicusMarineServiceNames.PLATFORMSERIES,
@@ -152,10 +152,10 @@ class CopernicusMarineCoordinate(BaseModel):
         cls: Type[Coordinate],
         variable_id: str,
         dimension: str,
-        dimension_metadata: dict,
+        dimension_metadata: t,
         arco_data_metadata_producer_valid_start_date: Optional[str],
         arco_data_metadata_producer_valid_start_index: Optional[int],
-        cube_dimensions: dict,
+        cube_dimensions: t,
     ) -> Coordinate:
         coordinates_info = dimension_metadata.get("coords", {})
         minimum_value = None
@@ -501,13 +501,9 @@ class CopernicusMarinePart(BaseModel):
         - variable_ids: list of variables the coordinate is associated with
         - service_names: list of service names the coordinate is associated with
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        dictionary
+        dict
             The coordinates of the part and the associated variables and services
         """
         coordinates = {}
