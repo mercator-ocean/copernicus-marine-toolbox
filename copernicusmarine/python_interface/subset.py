@@ -21,7 +21,7 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.subset import subset_function
-from copernicusmarine.core_functions.utils import original_grid_check
+from copernicusmarine.core_functions.utils import get_geographical_inputs
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -175,7 +175,12 @@ def subset(
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
 
-    original_grid_check(
+    (
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
+    ) = get_geographical_inputs(
         minimum_longitude,
         maximum_longitude,
         minimum_latitude,
@@ -194,10 +199,10 @@ def subset(
         username,
         password,
         variables,
-        minimum_longitude or minimum_x,
-        maximum_longitude or maximum_x,
-        minimum_latitude or minimum_y,
-        maximum_latitude or maximum_y,
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
         minimum_depth,
         maximum_depth,
         vertical_axis,
