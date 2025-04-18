@@ -6,13 +6,13 @@ import geopandas as gpd
 from copernicusmarine import open_dataset
 
 
-def load_gdf_and_bbox(path_to_vector):
+def load_gdf_and_bbox(polygon_file):
     """
     Loads a vector file and returns a GeoDataFrame and its bounding box (bbox_upload).
 
     Parameters
     ----------
-    path_to_vector : str
+    polygon_file : str
         Path to a supported vector file (GeoJSON, SHP, ZIP, GPKG, etc.)
 
     Returns
@@ -32,14 +32,14 @@ def load_gdf_and_bbox(path_to_vector):
         If the file cannot be read by GeoPandas.
     """
 
-    if not os.path.isfile(path_to_vector):
-        raise FileNotFoundError(f"File not found: {path_to_vector}")
+    if not os.path.isfile(polygon_file):
+        raise FileNotFoundError(f"File not found: {polygon_file}")
 
     try:
-        gdf = gpd.read_file(path_to_vector)
+        gdf = gpd.read_file(polygon_file)
     except Exception as e:
         raise ValueError(
-            f"Unable to read the file '{path_to_vector}'. "
+            f"Unable to read the file '{polygon_file}'. "
             "Make sure the file format is supported (e.g. GeoJSON, Shapefile, GPKG). "
             f"Underlying error: {e}"
         )
@@ -205,7 +205,7 @@ def encoding(dataset_clipped, output_file=None):
 
 
 def extract_clipped_dataset(
-    path_to_vector: str,
+    polygon_file: str,
     dataset_id: str,
     start_date: str,
     end_date: str,
@@ -220,7 +220,7 @@ def extract_clipped_dataset(
 
     Parameters
     ----------
-    path_to_vector : str
+    polygon_file : str
         Path to the GeoJSON/SHP/ZIP polygon file.
 
     dataset_id : str
@@ -251,7 +251,7 @@ def extract_clipped_dataset(
     """
 
     # Step 1: Load polygon and get bounding box
-    gdf, bbox = load_gdf_and_bbox(path_to_vector)
+    gdf, bbox = load_gdf_and_bbox(polygon_file)
 
     # Step 2: Extract and clip dataset using polygon
     raster_clipped = subset_and_clip_dataset(
