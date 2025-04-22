@@ -2,6 +2,10 @@ name: Create Binaries MacOS and Linux
 
 on:
   workflow_call:
+  pull_request:
+    branches:
+      - main
+      - 'v*'
 
 jobs:
   build:
@@ -52,4 +56,5 @@ jobs:
         elif [ "${{ matrix.os }}" == "ubuntu-24.04" ]; then
           ARCH="linux-glibc-2.39"
         fi
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
+          echo ${{steps.set-version.outputs.VERSION}}
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicumarine_${ARCH}.cli#copernicusmarine-binary-${ARCH}-for-v${{steps.set-version.outputs.VERSION}}
