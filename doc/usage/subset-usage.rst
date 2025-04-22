@@ -43,9 +43,9 @@ Sparse data subsetting
 -----------------------
 
 On the one hand, some of the datasets available on Copernicus Marine are gridded datasets, benefiting from all the features of the Copernicus Marine Toolbox.
-On the other hand, certain datasets are sparse or INSITU datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ for example.
+On the other hand, certain datasets are time series for a given platform; these are called sparse or in-situ datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `in-situ datasets <https://data.marine.copernicus.eu/products?facets=sources%7EIn-situ+observations>`_ for example.
 
-Sparse datasets can be subset using the ``subset`` command, which returns the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
+We can download all the time series of a given geographical area and time period via the ``subset``. Options can also be used to choose the platforms, variables or depth ranges we are interested in. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
 
 **Example:**
 
@@ -53,7 +53,7 @@ Sparse datasets can be subset using the ``subset`` command, which returns the da
 
   copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2024-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
 
-Then it can be opened with pandas:
+This dataset can be opened with pandas:
 
 .. code-block:: python
 
@@ -231,9 +231,8 @@ Option ``--raise-if-updating``
 .. note::
   This option only applies to ARCO services (``arco-geo-series`` and ``arco-time-series``) and not native files (``original-files`` service).
 
-When a dataset is being updated, it can happen that data after a certain date becomes unreliable. When setting this flag,
-the toolbox will raise an error if the subset requested interval overpasses the updating start date. By default, the flag is not set
-and the toolbox will only emit a warning. See ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
+When a dataset is being updated, data after a certain date may become unreliable. If this flag is set, the toolbox will raise an error if the requested subset interval extends beyond the updating start date.
+ By default, the flag is not set and the toolbox will only emit a warning. See ``arco_updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
 
 .. code-block:: python
 
@@ -250,16 +249,17 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
 
 .. _stereographic-subset-usage:
 
-Options for Arco with original-grid
+Options for Arco with Original-grid
 """"""""""""""""""""""""""""""""""""""""""
 
-For ARCO services in original-grid part datasets, the following options are available to subset the area:
-- ``--minimum-x``: The minimum x-axis coordinate.
-- ``--maximum-x``: The maximum x-axis coordinate.
-- ``--minimum-y``: The minimum y-axis coordinate.
-- ``--maximum-y``: The maximum y-axis coordinate.
+For ARCO services in Original-grid part datasets, the following options are available to bound the subsetted area:
 
-For more context and examples, check the  :ref:`original-grid page <stereographic-subsetting-page>`.
+  - ``--minimum-x`` or ``-x`` : The minimum x-axis coordinate.
+  - ``--maximum-x``or ``-X`` : The maximum x-axis coordinate.
+  - ``--minimum-y`` or ``-y`` : The minimum y-axis coordinate.
+  - ``--maximum-y`` or ``-Y`` : The maximum y-axis coordinate.
+
+For more context and examples, check the  :ref:`Original-grid page <stereographic-subsetting-page>`.
 
 .. note:
 
