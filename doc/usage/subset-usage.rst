@@ -85,17 +85,17 @@ It is also possible to load the Pandas DataFrame directly using the :func:`~cope
 
 The output will contain the following columns:
 
+- ``variable``: The variable name.
 - ``platform_id``: The platform ID.
 - ``platform_type``: The platform type.
 - ``time``: The timestamp of the measurement in seconds.
 - ``longitude``: The longitude of the measurement in degrees.
 - ``latitude``: The latitude of the measurement in degrees.
 - ``depth`` or ``elevation``: The depth of the measurement in meters, or 'elevation' if selected with the ``vertical-axis`` option.
-- ``is_approx_elevation``: Indicates whether the pressure value was used to calculate elevation/depth.
 - ``pressure``: The measurement pressure in decibars (not always available).
+- ``is_approx_elevation``: Indicates whether the pressure value was used to calculate elevation/depth.
 - ``value``: The measurement value.
 - ``value_qc``: The quality control indicator of the value.
-- ``variable``: The variable name.
 
 If any column consists entirely of ``NaN`` values, it will be removed from the output.
 

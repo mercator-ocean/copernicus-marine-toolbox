@@ -29,7 +29,9 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
+    datetime_to_isoformat,
     get_unique_filepath,
+    timestamp_parser,
 )
 from copernicusmarine.download_functions.utils import (
     build_filename_from_request,
@@ -41,6 +43,27 @@ logger = logging.getLogger("copernicusmarine")
 COLUMNS_RENAME = {
     "entity_id": "platform_id",
     "entity_type": "platform_type",
+}
+
+COLUMN_ORDER = [
+    "variable",
+    "platform_id",
+    "platform_type",
+    "time",
+    "longitude",
+    "latitude",
+    "depth",
+    "pressure",
+    "is_approx_elevation",
+    "value",
+    "value_qc",
+]
+
+SORTING = {
+    "variable": True,
+    "platform_id": True,
+    "platform_type": True,
+    "time": True,
 }
 
 
@@ -153,40 +176,53 @@ def _read_dataframe_sparse(
     ]
     if dry_run:
         return pd.DataFrame(), variables, platform_ids
-    return (
-        subset_and_return_dataframe(
-            minimum_latitude=subset_request.minimum_y,
-            maximum_latitude=subset_request.maximum_y,
-            minimum_longitude=subset_request.minimum_x,
-            maximum_longitude=subset_request.maximum_x,
-            minimum_elevation=(
-                -subset_request.maximum_depth
-                if subset_request.maximum_depth is not None
-                else None
-            ),
-            maximum_elevation=(
-                -subset_request.minimum_depth
-                if subset_request.minimum_depth is not None
-                else None
-            ),
-            minimum_time=(
-                subset_request.start_datetime.timestamp()
-                if subset_request.start_datetime is not None
-                else None
-            ),
-            maximum_time=(
-                subset_request.end_datetime.timestamp()
-                if subset_request.end_datetime is not None
-                else None
-            ),
-            variables=variables,
-            entities=platform_ids,
-            vertical_axis=subset_request.vertical_axis,
-            url_metadata=metadata_url,
-            user_configuration=user_configuration,
-            disable_progress_bar=disable_progress_bar,
-            columns_rename=COLUMNS_RENAME,
+    df = subset_and_return_dataframe(
+        minimum_latitude=subset_request.minimum_y,
+        maximum_latitude=subset_request.maximum_y,
+        minimum_longitude=subset_request.minimum_x,
+        maximum_longitude=subset_request.maximum_x,
+        minimum_elevation=(
+            -subset_request.maximum_depth
+            if subset_request.maximum_depth is not None
+            else None
         ),
+        maximum_elevation=(
+            -subset_request.minimum_depth
+            if subset_request.minimum_depth is not None
+            else None
+        ),
+        minimum_time=(
+            subset_request.start_datetime.timestamp()
+            if subset_request.start_datetime is not None
+            else None
+        ),
+        maximum_time=(
+            subset_request.end_datetime.timestamp()
+            if subset_request.end_datetime is not None
+            else None
+        ),
+        variables=variables,
+        entities=platform_ids,
+        vertical_axis=subset_request.vertical_axis,
+        url_metadata=metadata_url,
+        user_configuration=user_configuration,
+        disable_progress_bar=disable_progress_bar,
+        columns_rename=COLUMNS_RENAME,
+    )
+    COLUMN_ORDER[COLUMN_ORDER.index("depth")] = subset_request.vertical_axis
+    df["platform_id"] = df["platform_id"].str.split("___").str[0]
+    df["time"] = df["time"].apply(
+        lambda x: datetime_to_isoformat(timestamp_parser(x, unit="s"))
+    )
+    df = df[COLUMN_ORDER]
+    df.sort_values(
+        by=list(SORTING.keys()),
+        ascending=list(SORTING.values()),
+        inplace=True,
+    )
+    df.reset_index(drop=True, inplace=True)
+    return (
+        df,
         variables,
         platform_ids,
     )

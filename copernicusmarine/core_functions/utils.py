@@ -2,7 +2,7 @@ import concurrent.futures
 import logging
 import pathlib
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import (
     Any,
     Callable,
@@ -84,9 +84,6 @@ def datetime_parser(date: Union[str, numpy.datetime64]) -> datetime:
         parsed_datetime = parser.parse(
             date, default=datetime(1978, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
         )
-        # # add timezone info if not present
-        # if parsed_datetime.tzinfo is None:
-        #     parsed_datetime = parsed_datetime.replace(tzinfo=timezone.utc)
         return parsed_datetime
     except ParserError:
         pass
@@ -100,20 +97,34 @@ def timestamp_parser(
     Convert a timestamp in milliseconds to a datetime object.
     The unit can be changed to seconds by passing "s".
     """
-    conversion_factor = 1 if unit == "s" else 1e3
-
-    return datetime.fromtimestamp(
-        timestamp / conversion_factor, tz=timezone.utc
+    delta = (
+        timedelta(seconds=timestamp)
+        if unit == "s"
+        else timedelta(milliseconds=timestamp)
     )
+    return datetime(1970, 1, 1, tzinfo=timezone.utc) + delta
 
 
 def timestamp_or_datestring_to_datetime(
-    date: Union[str, int, float, numpy.datetime64]
+    date: Union[str, int, float, numpy.datetime64],
 ) -> datetime:
     if isinstance(date, int) or isinstance(date, float):
         return timestamp_parser(date)
     else:
         return datetime_parser(date)
+
+
+def datetime_to_isoformat(
+    date: datetime,
+) -> str:
+    """
+    Convert a datetime object to ISO 8601 format.
+    For consistency we want to return a timezone-aware datetime.
+
+    Example: 2023-11-25T00:00:00+00:00
+    or 2023-11-25T00:00:00Z (we prefer the latter)
+    """
+    return date.isoformat().replace("+00:00", "Z")
 
 
 def add_copernicusmarine_version_in_dataset_attributes(

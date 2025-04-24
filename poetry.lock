@@ -28,15 +28,15 @@ files = [
 
 [[package]]
 name = "arcosparse"
-version = "0.3.2"
+version = "0.3.5"
 description = "Helper to download and subset sparse data that has been Arcoified and are available through STAC and sqlite formated data"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "arcosparse-0.3.2-py3-none-any.whl", hash = "sha256:0b44e9d4b07c57e182621152adfe34365414f011820503ed96eb61283936c947"},
-    {file = "arcosparse-0.3.2.tar.gz", hash = "sha256:7edb162219e82e8a7b8c006838edca51e2926e785802e0740bbda4a65fc8ee44"},
+    {file = "arcosparse-0.3.5-py3-none-any.whl", hash = "sha256:046bfc93c9567739d9ce4aef390f23000934f44c60b15b9af86ea677f96f89a6"},
+    {file = "arcosparse-0.3.5.tar.gz", hash = "sha256:e04f093763a72eb045491d749c3a76cea5aa72d7a9bd5cc76c574e2975b5e74b"},
 ]
 
 [package.dependencies]
@@ -2480,4 +2480,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "0734199acfe9a3218610b65c615702c590971f3d87ed4f48f96f904dacaf86c3"
+content-hash = "304fb38d3fd6e46644e75654f798b04dfbf56f95dc6224da710318b152bd68a8"
