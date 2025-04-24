@@ -70,7 +70,7 @@ logger = logging.getLogger("copernicusmarine")
 
 def _rechunk(
     dataset: xarray.Dataset,
-    optimum_dask_chuking: Union[dict[str, int], None],
+    optimum_dask_chuking: Optional[dict[str, int]],
 ) -> xarray.Dataset:
     preferred_chunks = {}
     for variable in dataset:
@@ -97,7 +97,7 @@ def _rechunk(
 
 
 def _filter_dimensions(
-    rechunks: Union[dict[str, int]],
+    rechunks: dict[str, int],
     dimensions: Iterable[Hashable],
 ) -> dict[str, int]:
     return {k: v for k, v in rechunks.items() if k in dimensions}
