@@ -123,7 +123,6 @@ def load_data_object_from_load_request(
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
             coordinates_selection_method=load_request.coordinates_selection_method,
-            opening_chunks=optimum_dask_chunking,
         )
         if isinstance(dataset, xarray.Dataset):
             dataset = dataset.chunk(optimum_dask_chunking)
