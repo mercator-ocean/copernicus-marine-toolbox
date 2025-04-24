@@ -199,7 +199,7 @@ def read_dataframe(
     dataset = load_data_object_from_load_request(
         load_request,
         read_dataframe_from_arco_series,
-        chunks_factor_size_limit=100,
+        chunks_factor_size_limit=0,
         command_type=CommandType.READ_DATAFRAME,
     )
     return dataset

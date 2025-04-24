@@ -77,19 +77,23 @@ def _rechunk(
         preferred_chunks = dataset[variable].encoding["preferred_chunks"]
         del dataset[variable].encoding["chunks"]
 
-    # if "depth" in preferred_chunks:
-    #     preferred_chunks["elevation"] = preferred_chunks["depth"]
-    # elif "elevation" in preferred_chunks:
-    #     preferred_chunks["depth"] = preferred_chunks["elevation"]
-
     if optimum_dask_chuking:
+        if "depth" in optimum_dask_chuking:
+            optimum_dask_chuking["elevation"] = optimum_dask_chuking["depth"]
+        elif "elevation" in optimum_dask_chuking:
+            optimum_dask_chuking["depth"] = optimum_dask_chuking["elevation"]
         return dataset.chunk(
             _filter_dimensions(optimum_dask_chuking, dataset.sizes.keys())
         )
-    else:
-        return dataset.chunk(
-            _filter_dimensions(preferred_chunks, dataset.sizes.keys())
-        )
+
+    if "depth" in preferred_chunks:
+        preferred_chunks["elevation"] = preferred_chunks["depth"]
+    elif "elevation" in preferred_chunks:
+        preferred_chunks["depth"] = preferred_chunks["elevation"]
+
+    return dataset.chunk(
+        _filter_dimensions(preferred_chunks, dataset.sizes.keys())
+    )
 
 
 def _filter_dimensions(
