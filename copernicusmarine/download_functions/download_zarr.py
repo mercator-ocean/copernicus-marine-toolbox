@@ -145,7 +145,6 @@ def download_dataset(
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
             coordinates_selection_method=coordinates_selection_method,
-            opening_chunks=optimum_dask_chunking,
         ),
         optimum_dask_chuking=optimum_dask_chunking,
     )
@@ -317,13 +316,10 @@ def open_dataset_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_chunks: Union[dict[str, int], None] = None,
 ) -> xarray.Dataset:
-    if opening_chunks is not None:
-        opening_chunks = None
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
-        chunks=opening_chunks,
+        chunks=None,
         copernicus_marine_username=username,
     )
     dataset = subset(
@@ -346,7 +342,6 @@ def read_dataframe_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_chunks: Optional[dict[str, int]] = None,
 ) -> pd.DataFrame:
     dataset = open_dataset_from_arco_series(
         username=username,
@@ -357,7 +352,6 @@ def read_dataframe_from_arco_series(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=coordinates_selection_method,
-        opening_chunks=opening_chunks,
     )
     return dataset.to_dataframe()
 
