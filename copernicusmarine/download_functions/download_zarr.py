@@ -68,24 +68,33 @@ from copernicusmarine.download_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 
 
-def _rechunk(dataset: xarray.Dataset) -> xarray.Dataset:
+def _rechunk(
+    dataset: xarray.Dataset,
+    optimum_dask_chuking: Union[dict[str, int], None],
+) -> xarray.Dataset:
     preferred_chunks = {}
     for variable in dataset:
         preferred_chunks = dataset[variable].encoding["preferred_chunks"]
         del dataset[variable].encoding["chunks"]
 
-    if "depth" in preferred_chunks:
-        preferred_chunks["elevation"] = preferred_chunks["depth"]
-    elif "elevation" in preferred_chunks:
-        preferred_chunks["depth"] = preferred_chunks["elevation"]
+    # if "depth" in preferred_chunks:
+    #     preferred_chunks["elevation"] = preferred_chunks["depth"]
+    # elif "elevation" in preferred_chunks:
+    #     preferred_chunks["depth"] = preferred_chunks["elevation"]
 
-    return dataset.chunk(
-        _filter_dimensions(preferred_chunks, dataset.sizes.keys())
-    )
+    if optimum_dask_chuking:
+        return dataset.chunk(
+            _filter_dimensions(optimum_dask_chuking, dataset.sizes.keys())
+        )
+    else:
+        return dataset.chunk(
+            _filter_dimensions(preferred_chunks, dataset.sizes.keys())
+        )
 
 
 def _filter_dimensions(
-    rechunks: dict[str, int], dimensions: Iterable[Hashable]
+    rechunks: Union[dict[str, int]],
+    dimensions: Iterable[Hashable],
 ) -> dict[str, int]:
     return {k: v for k, v in rechunks.items() if k in dimensions}
 
@@ -137,8 +146,9 @@ def download_dataset(
             depth_parameters=depth_parameters,
             coordinates_selection_method=coordinates_selection_method,
             opening_chunks=optimum_dask_chunking,
-        )
-    )  # .chunk(chunks=optimum_dask_chunking)
+        ),
+        optimum_dask_chuking=optimum_dask_chunking,
+    )
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
 
@@ -307,11 +317,13 @@ def open_dataset_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_chunks: Union[dict[str, Union[int, float]], str, None] = None,
+    opening_chunks: Union[dict[str, int], None] = None,
 ) -> xarray.Dataset:
+    if opening_chunks is not None:
+        opening_chunks = None
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
-        chunks=None,
+        chunks=opening_chunks,
         copernicus_marine_username=username,
     )
     dataset = subset(
@@ -334,7 +346,7 @@ def read_dataframe_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_chunks: Optional[dict[str, Union[int, float]]] = None,
+    opening_chunks: Optional[dict[str, int]] = None,
 ) -> pd.DataFrame:
     dataset = open_dataset_from_arco_series(
         username=username,
@@ -358,7 +370,7 @@ def get_optimum_dask_chunking(
     variables: Optional[list[str]],
     chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
-) -> Optional[dict[str, Union[int, float]]]:
+) -> Optional[dict[str, int]]:  # Union[int, float]
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
     and memory usage. We are trying to find the optimum chunking for dask arrays.
@@ -394,7 +406,7 @@ def get_optimum_dask_chunking(
         chunking_length = coordinate.chunking_length
         if chunking_length is None:
             continue
-        coordinate_zarr_chunk_length[coordinate_id] = chunking_length
+        coordinate_zarr_chunk_length[coordinate_id] = int(chunking_length)
         requested_minimum, requested_maximum = _extract_requested_min_max(
             coordinate_id,
             geographical_parameters,
