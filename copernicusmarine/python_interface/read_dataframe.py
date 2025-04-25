@@ -16,7 +16,7 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import CommandType
-from copernicusmarine.core_functions.utils import original_grid_check
+from copernicusmarine.core_functions.utils import get_geographical_inputs
 from copernicusmarine.download_functions.download_zarr import (
     read_dataframe_from_arco_series,
 )
@@ -134,27 +134,44 @@ def read_dataframe(
     credentials_file = (
         pathlib.Path(credentials_file) if credentials_file else None
     )
-    if dataset_part == "originalGrid":
-        geographicalparameters = GeographicalParameters(
-            y_axis_parameters=YParameters(
-                minimum_y=minimum_y, maximum_y=maximum_y, coordinate_id="y"
+
+    (
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
+    ) = get_geographical_inputs(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+
+    geographicalparameters = GeographicalParameters(
+        y_axis_parameters=YParameters(
+            minimum_y=minimum_y_axis,
+            maximum_y=maximum_y_axis,
+            coordinate_id=(
+                "y" if dataset_part == "originalGrid" else "latitude"
             ),
-            x_axis_parameters=XParameters(
-                minimum_x=minimum_x, maximum_x=maximum_x, coordinate_id="x"
+        ),
+        x_axis_parameters=XParameters(
+            minimum_x=minimum_x_axis,
+            maximum_x=maximum_x_axis,
+            coordinate_id=(
+                "x" if dataset_part == "originalGrid" else "longitude"
             ),
-            projection="originalGrid",
-        )
-    else:
-        geographicalparameters = GeographicalParameters(
-            y_axis_parameters=YParameters(
-                minimum_y=minimum_latitude,
-                maximum_y=maximum_latitude,
-            ),
-            x_axis_parameters=XParameters(
-                minimum_x=minimum_longitude,
-                maximum_x=maximum_longitude,
-            ),
-        )
+        ),
+        projection=(
+            "originalGrid" if dataset_part == "originalGrid" else "lonlat"
+        ),
+    )
+
     load_request = LoadRequest(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
@@ -177,18 +194,6 @@ def read_dataframe(
         force_service=service,
         credentials_file=credentials_file,
         disable_progress_bar=disable_progress_bar,
-    )
-
-    original_grid_check(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
     )
 
     dataset = load_data_object_from_load_request(

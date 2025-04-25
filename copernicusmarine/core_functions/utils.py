@@ -199,7 +199,7 @@ def create_custom_query_function(username: Optional[str]) -> Callable:
     return _add_custom_query_param
 
 
-def original_grid_check(
+def get_geographical_inputs(
     minimum_longitude: Optional[float],
     maximum_longitude: Optional[float],
     minimum_latitude: Optional[float],
@@ -209,7 +209,45 @@ def original_grid_check(
     minimum_y: Optional[float],
     maximum_y: Optional[float],
     dataset_part: Optional[str],
-) -> None:
+) -> tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+    """
+    Returns the geographical selection of the user.
+
+    Parameters
+    ----------
+    minimum_longitude : float
+        Minimum longitude of the area of interest. For lat/lon datasets.
+    maximum_longitude : float
+        Maximum longitude of the area of interest. For lat/lon datasets.
+    minimum_latitude : float
+        Minimum latitude of the area of interest. For lat/lon datasets.
+    maximum_latitude : float
+        Maximum latitude of the area of interest. For lat/lon datasets.
+    minimum_x : float
+        Minimum x coordinate of the area of interest. For "originalGrid" datasets.
+    maximum_x : float
+        Maximum x coordinate of the area of interest. For "originalGrid" datasets.
+    minimum_y : float
+        Minimum y coordinate of the area of interest. For "originalGrid" datasets.
+    maximum_y : float
+        Maximum y coordinate of the area of interest. For "originalGrid" datasets.
+    dataset_part : str
+        The part of the dataset to be used. If "originalGrid", the x and y coordinates
+        should be the inputs.
+
+    Returns
+    -------
+    tuple[Optional[float], Optional[float], Optional[float], Optional[float]]
+        The geographical selection of the user. (minimum_x_axis, maximum_x_axis, minimum_y_axis, maximum_y_axis).
+
+    Raises
+    ------
+
+    LonLatSubsetNotAvailableInOriginalGridDatasets
+        If the dataset is "originalGrid" and the user tries to use lat/lon coordinates.
+    XYNotAvailableInNonOriginalGridDatasets
+        If the dataset is not "originalGrid" and the user tries to use x/y coordinates.
+    """  # noqa: E501
     if dataset_part == "originalGrid":
         if (
             minimum_longitude is not None
@@ -218,6 +256,13 @@ def original_grid_check(
             or maximum_latitude is not None
         ):
             raise LonLatSubsetNotAvailableInOriginalGridDatasets
+        else:
+            return (
+                minimum_x,
+                maximum_x,
+                minimum_y,
+                maximum_y,
+            )
     else:
         if (
             minimum_x is not None
@@ -226,4 +271,10 @@ def original_grid_check(
             or maximum_y is not None
         ):
             raise XYNotAvailableInNonOriginalGridDatasets
-    return
+        else:
+            return (
+                minimum_longitude,
+                maximum_longitude,
+                minimum_latitude,
+                maximum_latitude,
+            )
