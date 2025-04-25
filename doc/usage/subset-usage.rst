@@ -93,7 +93,7 @@ The output will contain the following columns:
 - ``latitude``: The latitude of the measurement in degrees.
 - ``depth`` or ``elevation``: The depth of the measurement in meters, or 'elevation' if selected with the ``vertical-axis`` option.
 - ``pressure``: The measurement pressure in decibars (not always available).
-- ``is_approx_elevation``: Indicates whether the pressure value was used to calculate elevation/depth.
+- ``is_depth_from_producer``: Indicates whether the pressure value was used to calculate elevation/depth when converting the data to a format that can be subsetted. The conversion used is ``pressure in decibar = depth in m``.
 - ``value``: The measurement value.
 - ``value_qc``: The quality control indicator of the value.
 
@@ -102,7 +102,7 @@ If any column consists entirely of ``NaN`` values, it will be removed from the o
 These datasets have specific options and outputs:
 
 - The ``--file-format`` option can be used to specify 'parquet' or 'csv'. The default format is 'csv'.
-- The ``--platform-id`` option enables filtering data by platform ID.
+- The ``--platform-id`` option enables filtering data by platform ID. Note, that you can also add the type of platform by adding "___" (e.g., ``--platform-id B-Sulafjorden___MO`` will select platform ID "B-Sulafjorden" and type "MO" for this platform). Otherwise, all the platform types available will be selected.
 
 There are also some options that behave differently or are not available for sparse datasets:
 

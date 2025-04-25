@@ -2,6 +2,7 @@ import logging
 import pathlib
 import shutil
 from collections import defaultdict
+from copy import deepcopy
 
 import pandas as pd
 from arcosparse import (
@@ -24,6 +25,7 @@ from copernicusmarine.core_functions.models import (  # TimeExtent,
     ResponseSubset,
     StatusCode,
     StatusMessage,
+    VerticalAxis,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
@@ -45,7 +47,7 @@ COLUMNS_RENAME = {
     "entity_type": "platform_type",
 }
 
-COLUMN_ORDER = [
+COLUMNS_ORDER_DEPTH = [
     "variable",
     "platform_id",
     "platform_type",
@@ -54,10 +56,13 @@ COLUMN_ORDER = [
     "latitude",
     "depth",
     "pressure",
-    "is_approx_elevation",
+    "is_depth_from_producer",
     "value",
     "value_qc",
 ]
+
+COLUMNS_ORDER_ELEVATION = deepcopy(COLUMNS_ORDER_DEPTH)
+COLUMNS_ORDER_ELEVATION[COLUMNS_ORDER_ELEVATION.index("depth")] = "elevation"
 
 SORTING = {
     "variable": True,
@@ -176,6 +181,7 @@ def _read_dataframe_sparse(
     ]
     if dry_run:
         return pd.DataFrame(), variables, platform_ids
+    columns_rename = deepcopy(COLUMNS_RENAME)
     df = subset_and_return_dataframe(
         minimum_latitude=subset_request.minimum_y,
         maximum_latitude=subset_request.maximum_y,
@@ -207,20 +213,11 @@ def _read_dataframe_sparse(
         url_metadata=metadata_url,
         user_configuration=user_configuration,
         disable_progress_bar=disable_progress_bar,
-        columns_rename=COLUMNS_RENAME,
+        columns_rename=columns_rename,
     )
-    COLUMN_ORDER[COLUMN_ORDER.index("depth")] = subset_request.vertical_axis
-    df["platform_id"] = df["platform_id"].str.split("___").str[0]
-    df["time"] = df["time"].apply(
-        lambda x: datetime_to_isoformat(timestamp_parser(x, unit="s"))
-    )
-    df = df[COLUMN_ORDER]
-    df.sort_values(
-        by=list(SORTING.keys()),
-        ascending=list(SORTING.values()),
-        inplace=True,
-    )
-    df.reset_index(drop=True, inplace=True)
+
+    df = _transform_dataframe(df, subset_request.vertical_axis)
+
     return (
         df,
         variables,
@@ -326,3 +323,43 @@ def _get_response_subset(
         message=StatusMessage.SUCCESS,
         file_status=FileStatus.DOWNLOADED,
     )
+
+
+def _transform_dataframe(
+    df: pd.DataFrame,
+    vertical_axis: VerticalAxis,
+) -> pd.DataFrame:
+    """
+    Transform the dataframe to match the expected format to be consistent with MyOceanPro
+    and Copernicus Marine Services.
+    """  # noqa
+
+    # From "platform___type" to "platform" since the type is in
+    # column platform_type
+    df["platform_id"] = df["platform_id"].str.split("___").str[0]
+
+    df["time"] = df["time"].apply(
+        lambda x: datetime_to_isoformat(timestamp_parser(x, unit="s"))
+    )
+
+    # Some depth values comes from the arcoification of the data
+    # and are calculated from the pressure some others come
+    # directly from the producer (ie native/original data)
+    df["is_depth_from_producer"] = df["is_approx_elevation"].apply(
+        lambda x: 0 if x else 1
+    )
+    df.drop(columns=["is_approx_elevation"], inplace=True)
+
+    if vertical_axis == "elevation":
+        df = df[COLUMNS_ORDER_ELEVATION]
+    else:
+        df = df[COLUMNS_ORDER_DEPTH]
+
+    df.sort_values(
+        by=list(SORTING.keys()),
+        ascending=list(SORTING.values()),
+        inplace=True,
+    )
+
+    df.reset_index(drop=True, inplace=True)
+    return df
