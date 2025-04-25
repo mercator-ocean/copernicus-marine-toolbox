@@ -96,8 +96,8 @@ The output will contain the following columns:
 - ``is_depth_from_producer``: Indicates whether the pressure value was used to calculate elevation/depth when converting the data to a format that can be subsetted. The conversion used is ``pressure in decibar = depth in m``.
 - ``value``: The measurement value.
 - ``value_qc``: The quality control indicator of the value.
-
-If any column consists entirely of ``NaN`` values, it will be removed from the output.
+- ``institution``: The institution that produced the data and is affiliated with the platform.
+- ``doi``: The DOI of the data.
 
 These datasets have specific options and outputs:
 

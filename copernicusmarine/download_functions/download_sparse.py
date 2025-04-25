@@ -1,13 +1,15 @@
 import logging
 import pathlib
 import shutil
+import warnings
 from collections import defaultdict
 from copy import deepcopy
 
 import pandas as pd
 from arcosparse import (
+    Entity,
     UserConfiguration,
-    get_entities_ids,
+    get_entities,
     subset_and_return_dataframe,
 )
 
@@ -59,6 +61,8 @@ COLUMNS_ORDER_DEPTH = [
     "is_depth_from_producer",
     "value",
     "value_qc",
+    "institution",
+    "doi",
 ]
 
 COLUMNS_ORDER_ELEVATION = deepcopy(COLUMNS_ORDER_DEPTH)
@@ -167,12 +171,15 @@ def _read_dataframe_sparse(
     Returns also the variables and the platform_ids
     """
     user_configuration = _get_user_configuration(username)
+    platforms_metadata = {
+        entity.entity_id: entity
+        for entity in get_entities(metadata_url, user_configuration)
+    }
     if subset_request.platform_ids:
         platform_ids = _get_plaform_ids_to_subset(
             subset_request.platform_ids or [],
-            metadata_url,
+            set(platforms_metadata.keys()),
             service,
-            user_configuration,
         )
     else:
         platform_ids = []
@@ -181,42 +188,46 @@ def _read_dataframe_sparse(
     ]
     if dry_run:
         return pd.DataFrame(), variables, platform_ids
-    columns_rename = deepcopy(COLUMNS_RENAME)
-    df = subset_and_return_dataframe(
-        minimum_latitude=subset_request.minimum_y,
-        maximum_latitude=subset_request.maximum_y,
-        minimum_longitude=subset_request.minimum_x,
-        maximum_longitude=subset_request.maximum_x,
-        minimum_elevation=(
-            -subset_request.maximum_depth
-            if subset_request.maximum_depth is not None
-            else None
-        ),
-        maximum_elevation=(
-            -subset_request.minimum_depth
-            if subset_request.minimum_depth is not None
-            else None
-        ),
-        minimum_time=(
-            subset_request.start_datetime.timestamp()
-            if subset_request.start_datetime is not None
-            else None
-        ),
-        maximum_time=(
-            subset_request.end_datetime.timestamp()
-            if subset_request.end_datetime is not None
-            else None
-        ),
-        variables=variables,
-        entities=platform_ids,
-        vertical_axis=subset_request.vertical_axis,
-        url_metadata=metadata_url,
-        user_configuration=user_configuration,
-        disable_progress_bar=disable_progress_bar,
-        columns_rename=columns_rename,
-    )
+    # see https://github.com/pandas-dev/pandas/issues/55928
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        df = subset_and_return_dataframe(
+            minimum_latitude=subset_request.minimum_y,
+            maximum_latitude=subset_request.maximum_y,
+            minimum_longitude=subset_request.minimum_x,
+            maximum_longitude=subset_request.maximum_x,
+            minimum_elevation=(
+                -subset_request.maximum_depth
+                if subset_request.maximum_depth is not None
+                else None
+            ),
+            maximum_elevation=(
+                -subset_request.minimum_depth
+                if subset_request.minimum_depth is not None
+                else None
+            ),
+            minimum_time=(
+                subset_request.start_datetime.timestamp()
+                if subset_request.start_datetime is not None
+                else None
+            ),
+            maximum_time=(
+                subset_request.end_datetime.timestamp()
+                if subset_request.end_datetime is not None
+                else None
+            ),
+            variables=variables,
+            entities=platform_ids,
+            vertical_axis=subset_request.vertical_axis,
+            url_metadata=metadata_url,
+            user_configuration=user_configuration,
+            disable_progress_bar=disable_progress_bar,
+            columns_rename=COLUMNS_RENAME,
+        )
 
-    df = _transform_dataframe(df, subset_request.vertical_axis)
+        df = _transform_dataframe(
+            df, subset_request.vertical_axis, platforms_metadata
+        )
 
     return (
         df,
@@ -239,30 +250,27 @@ def _get_user_configuration(username: str) -> UserConfiguration:
 
 def _get_plaform_ids_to_subset(
     platform_ids: list[str],
-    metadata_url: str,
+    platforms_metadata_names: set[str],
     retrieval_service: CopernicusMarineService,
-    user_configuration: UserConfiguration,
 ) -> list[str]:
     platforms_to_subset = []
-    if platform_ids:
-        platforms_names = get_entities_ids(metadata_url, user_configuration)
-        if not platforms_names:
-            raise NotEnoughPlatformMetadata()
-        platforms_names_with_types: set[str] = set()
-        platforms_without_types_mapping: dict[str, list] = defaultdict(list)
-        for platform_name in platforms_names:
-            platform_name_without_type = platform_name.split("___")[0]
-            platforms_without_types_mapping[platform_name_without_type].append(
-                platform_name
+    if not platforms_metadata_names:
+        raise NotEnoughPlatformMetadata()
+    platforms_names_with_types: set[str] = set()
+    platforms_without_types_mapping: dict[str, list] = defaultdict(list)
+    for platform_name in platforms_metadata_names:
+        platform_name_without_type = platform_name.split("___")[0]
+        platforms_without_types_mapping[platform_name_without_type].append(
+            platform_name
+        )
+        platforms_names_with_types.add(platform_name)
+    for platform_id in platform_ids:
+        if platform_id in platforms_names_with_types:
+            platforms_to_subset.append(platform_id)
+        if platform_id in platforms_without_types_mapping:
+            platforms_to_subset.extend(
+                platforms_without_types_mapping[platform_id]
             )
-            platforms_names_with_types.add(platform_name)
-        for platform_id in platform_ids:
-            if platform_id in platforms_names_with_types:
-                platforms_to_subset.append(platform_id)
-            if platform_id in platforms_without_types_mapping:
-                platforms_to_subset.extend(
-                    platforms_without_types_mapping[platform_id]
-                )
     if not platforms_to_subset:
         raise WrongPlatformID(
             platform_ids, retrieval_service.platforms_metadata
@@ -328,11 +336,29 @@ def _get_response_subset(
 def _transform_dataframe(
     df: pd.DataFrame,
     vertical_axis: VerticalAxis,
+    platforms_metadata: dict[str, Entity],
 ) -> pd.DataFrame:
     """
     Transform the dataframe to match the expected format to be consistent with MyOceanPro
     and Copernicus Marine Services.
     """  # noqa
+    # Needs to be done before striping the type to the platform_id
+    df["institution"] = df["platform_id"].apply(
+        lambda x: (
+            (
+                platforms_metadata[x].institution
+                if x in platforms_metadata
+                else pd.NA
+            )
+            or pd.NA
+        )
+    )
+    df["doi"] = df["platform_id"].apply(
+        lambda x: (
+            (platforms_metadata[x].doi if x in platforms_metadata else pd.NA)
+            or pd.NA
+        )
+    )
 
     # From "platform___type" to "platform" since the type is in
     # column platform_type
