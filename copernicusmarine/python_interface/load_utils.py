@@ -25,6 +25,7 @@ from copernicusmarine.download_functions.download_sparse import (
 )
 from copernicusmarine.download_functions.download_zarr import (
     get_optimum_dask_chunking,
+    rechunk,
 )
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
@@ -126,7 +127,7 @@ def load_data_object_from_load_request(
             opening_dask_chunks=optimum_dask_chunking,
         )
         if isinstance(dataset, xarray.Dataset):
-            dataset = dataset.chunk(optimum_dask_chunking)
+            dataset = rechunk(dataset, optimum_dask_chunking)
     else:
         raise ServiceNotSupported(retrieval_service.service_name)
     return dataset

@@ -68,22 +68,22 @@ from copernicusmarine.download_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 
 
-def _rechunk(
+def rechunk(
     dataset: xarray.Dataset,
-    optimum_dask_chuking: Optional[dict[str, int]],
+    optimum_dask_chunking: Optional[dict[str, int]],
 ) -> xarray.Dataset:
     preferred_chunks = {}
     for variable in dataset:
         preferred_chunks = dataset[variable].encoding["preferred_chunks"]
         del dataset[variable].encoding["chunks"]
 
-    if optimum_dask_chuking:
-        if "depth" in optimum_dask_chuking:
-            optimum_dask_chuking["elevation"] = optimum_dask_chuking["depth"]
-        elif "elevation" in optimum_dask_chuking:
-            optimum_dask_chuking["depth"] = optimum_dask_chuking["elevation"]
+    if optimum_dask_chunking:
+        if "depth" in optimum_dask_chunking:
+            optimum_dask_chunking["elevation"] = optimum_dask_chunking["depth"]
+        elif "elevation" in optimum_dask_chunking:
+            optimum_dask_chunking["depth"] = optimum_dask_chunking["elevation"]
         return dataset.chunk(
-            _filter_dimensions(optimum_dask_chuking, dataset.sizes.keys())
+            _filter_dimensions(optimum_dask_chunking, dataset.sizes.keys())
         )
 
     if "depth" in preferred_chunks:
@@ -151,7 +151,7 @@ def download_dataset(
     else:
         optimum_dask_chunking = None
     logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
-    dataset = _rechunk(
+    dataset = rechunk(
         open_dataset_from_arco_series(
             username=username,
             password=password,
@@ -163,7 +163,7 @@ def download_dataset(
             coordinates_selection_method=coordinates_selection_method,
             opening_dask_chunks=opening_chunks,
         ),
-        optimum_dask_chuking=optimum_dask_chunking,
+        optimum_dask_chunking=optimum_dask_chunking,
     )
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
@@ -433,7 +433,7 @@ def get_optimum_dask_chunking(
     variables: Optional[list[str]],
     chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
-) -> Optional[dict[str, int]]:  # Union[int, float]
+) -> Optional[dict[str, int]]:
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
     and memory usage. We are trying to find the optimum chunking for dask arrays.

@@ -1,4 +1,4 @@
-name: Test big downloads
+name: Test large downloads
 
 on:
     workflow_dispatch:
@@ -8,7 +8,7 @@ on:
       paths:
         - 'pyproject.toml'
         - 'conda_environment_test.yaml'
-        - 'tests_extra/test_*.py'
+        - 'tests_extra/test_large_downloads.py'
         - 'Makefile'
 
 jobs:
@@ -32,9 +32,9 @@ jobs:
           cache-environment: true
           post-cleanup: 'all'
 
-      - name: Test big downloads
+      - name: Test large downloads
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        run: make run-big-downloads
+        run: make run-large-downloads
         shell: micromamba-shell {0}

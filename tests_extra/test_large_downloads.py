@@ -6,8 +6,8 @@ from tests.test_utils import (
 )
 
 
-class TestBasicCommandsBinaries:
-    def test_big_subset(self, tmp_path):
+class TestLargeDownloads:
+    def test_large_subset(self, tmp_path):
         """
         This command can take several minutes or even end up in a memory issue
         because of the dask graph
