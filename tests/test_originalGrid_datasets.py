@@ -164,7 +164,6 @@ datasets_w_originalGrid = [
 ]
 
 
-# a coment
 class TestOriginalGridDatasets:
     def test_originalGrid_error_when_geospatial(self):
         command = [
