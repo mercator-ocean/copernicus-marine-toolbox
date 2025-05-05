@@ -1,4 +1,4 @@
-name: Test large downloads
+name: Test large downloads windows
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   tests:
-    runs-on: self-hosted
+    runs-on: windows-latest
     timeout-minutes: 30
 
     steps:
