@@ -131,6 +131,7 @@ def load_data_object_from_load_request(
                 optimum_dask_chunking = chunks_factor_size_limit
         else:
             opening_chunks = None
+            optimum_dask_chunking = 0
         dataset = arco_series_load_function(
             username=username,
             password=password,
