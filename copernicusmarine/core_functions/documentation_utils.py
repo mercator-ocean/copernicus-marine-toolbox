@@ -239,8 +239,8 @@ SUBSET: dict[str, str] = {
     ),
     "CHUNK_SIZE_LIMIT_HELP": (
         "Limit the size of the chunks in the dask array. Default is set to -1 which "
-        " behaves similarly to 'chunks=auto' from ``xarray``.  Positive integer values and '-1' are accepted."
-        "This is an experimental feature."
+        " behaves similarly to 'chunks=auto' from ``xarray``. Positive integer"
+        " values and '-1' are accepted. This is an experimental feature."
     ),
     "RAISE_IF_UPDATING_HELP": (
         "If set, raises a :class:`copernicusmarine.DatasetUpdating` "
