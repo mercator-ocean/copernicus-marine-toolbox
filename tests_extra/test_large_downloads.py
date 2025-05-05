@@ -44,7 +44,7 @@ class TestLargeDownloads:
             "zarr",
         ]
         # around 11-12 min on github machines
-        self.output = execute_in_terminal(command, timeout_second=14 * 60)
+        self.output = execute_in_terminal(command, timeout_second=18 * 60)
         assert self.output.returncode == 0
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(
