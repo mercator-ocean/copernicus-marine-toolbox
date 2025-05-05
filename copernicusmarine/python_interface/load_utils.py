@@ -116,7 +116,7 @@ def load_data_object_from_load_request(
             if is_dataset_small and chunks_factor_size_limit != 0:
                 opening_chunks = "auto"
 
-            optimum_dask_chunking: Union[dict[str, int], int]
+            optimum_dask_chunking: Union[dict[str, int], str, None]
             if chunks_factor_size_limit > 0:
                 optimum_dask_chunking = get_optimum_dask_chunking(
                     retrieval_service.service,
@@ -128,10 +128,10 @@ def load_data_object_from_load_request(
                     retrieval_service.axis_coordinate_id_mapping,
                 )
             else:
-                optimum_dask_chunking = chunks_factor_size_limit
+                optimum_dask_chunking = "Auto"
         else:
             opening_chunks = None
-            optimum_dask_chunking = 0
+            optimum_dask_chunking = None
         dataset = arco_series_load_function(
             username=username,
             password=password,
@@ -144,7 +144,9 @@ def load_data_object_from_load_request(
             opening_dask_chunks=opening_chunks,
         )
         if isinstance(dataset, xarray.Dataset):
-            dataset = rechunk(dataset, optimum_dask_chunking)
+            dataset = rechunk(
+                dataset, optimum_dask_chunking, chunks_factor_size_limit
+            )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)
     return dataset

@@ -70,23 +70,27 @@ logger = logging.getLogger("copernicusmarine")
 
 def rechunk(
     dataset: xarray.Dataset,
-    optimum_dask_chunking: Union[dict[str, int], int],
+    optimum_dask_chunking: Union[dict[str, int], str, None],
+    chunk_size_limit: int,
 ) -> xarray.Dataset:
-    preferred_chunks = {}
-    for variable in dataset:
-        preferred_chunks = dataset[variable].encoding["preferred_chunks"]
-        del dataset[variable].encoding["chunks"]
-
-    if isinstance(optimum_dask_chunking, int):
-        if optimum_dask_chunking == 0:
-            return dataset
-    else:
+    if chunk_size_limit == 0:
+        return dataset
+    elif isinstance(optimum_dask_chunking, dict) and chunk_size_limit > 0:
         preferred_chunks = optimum_dask_chunking
-
-    if "depth" in preferred_chunks:
-        preferred_chunks["elevation"] = preferred_chunks["depth"]
-    elif "elevation" in preferred_chunks:
-        preferred_chunks["depth"] = preferred_chunks["elevation"]
+    elif chunk_size_limit == -1:
+        preferred_chunks = {}
+        for variable in dataset:
+            preferred_chunks = dataset[variable].encoding["preferred_chunks"]
+            del dataset[variable].encoding["chunks"]
+    else:
+        logger.warning(
+            "The toolbox could not compute the optimum chunking. ",
+            "Using the default instead.",
+        )
+        preferred_chunks = {}
+        for variable in dataset:
+            preferred_chunks = dataset[variable].encoding["preferred_chunks"]
+            del dataset[variable].encoding["chunks"]
 
     return dataset.chunk(
         _filter_dimensions(preferred_chunks, dataset.sizes.keys())
@@ -135,7 +139,7 @@ def download_dataset(
     if is_dataset_small and chunk_size_limit != 0:
         opening_chunks = "auto"
 
-    optimum_dask_chunking: Union[dict[str, int], int]
+    optimum_dask_chunking: Union[dict[str, int], str, None]
     if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
@@ -146,8 +150,10 @@ def download_dataset(
             chunk_size_limit,
             axis_coordinate_id_mapping,
         )
+    elif chunk_size_limit == -1:
+        optimum_dask_chunking = "Auto"
     else:
-        optimum_dask_chunking = chunk_size_limit
+        optimum_dask_chunking = None
     logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     dataset = rechunk(
         open_dataset_from_arco_series(
@@ -162,6 +168,7 @@ def download_dataset(
             opening_dask_chunks=opening_chunks,
         ),
         optimum_dask_chunking=optimum_dask_chunking,
+        chunk_size_limit=chunk_size_limit,
     )
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
