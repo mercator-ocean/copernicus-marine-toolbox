@@ -67,7 +67,7 @@ def subset(
     staging: bool = False,
     netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
-    chunk_size_limit: int = 0,
+    chunk_size_limit: int = -1,
     raise_if_updating: bool = False,
     platform_ids: Optional[List[str]] = None,
 ) -> ResponseSubset:

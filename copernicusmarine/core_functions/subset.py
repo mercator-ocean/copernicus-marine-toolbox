@@ -187,7 +187,7 @@ def subset_function(
                 retrieval_service.service,
                 retrieval_service.is_original_grid,
                 retrieval_service.axis_coordinate_id_mapping,
-                None if chunk_size_limit == 0 else chunk_size_limit,
+                chunk_size_limit,
             )
         if (
             retrieval_service.service_format

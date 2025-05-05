@@ -24,6 +24,7 @@ from copernicusmarine.download_functions.download_sparse import (
     read_dataframe_sparse,
 )
 from copernicusmarine.download_functions.download_zarr import (
+    get_opening_dask_chunks,
     get_optimum_dask_chunking,
     rechunk,
 )
@@ -102,19 +103,34 @@ def load_data_object_from_load_request(
                 load_request.temporal_parameters.start_datetime = (
                     parsed_start_datetime
                 )
-        optimum_dask_chunking = (
-            get_optimum_dask_chunking(
+        if chunks_factor_size_limit:
+            _, _, is_dataset_small = get_opening_dask_chunks(
                 retrieval_service.service,
                 load_request.geographical_parameters,
                 load_request.temporal_parameters,
                 load_request.depth_parameters,
                 load_request.variables,
-                chunks_factor_size_limit,
-                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+                retrieval_service.axis_coordinate_id_mapping,
             )
-            if chunks_factor_size_limit
-            else None
-        )
+            opening_chunks = None
+            if is_dataset_small and chunks_factor_size_limit != 0:
+                opening_chunks = "auto"
+
+            optimum_dask_chunking: Union[dict[str, int], int]
+            if chunks_factor_size_limit > 0:
+                optimum_dask_chunking = get_optimum_dask_chunking(
+                    retrieval_service.service,
+                    load_request.geographical_parameters,
+                    load_request.temporal_parameters,
+                    load_request.depth_parameters,
+                    load_request.variables,
+                    chunks_factor_size_limit,
+                    retrieval_service.axis_coordinate_id_mapping,
+                )
+            else:
+                optimum_dask_chunking = chunks_factor_size_limit
+        else:
+            opening_chunks = None
         dataset = arco_series_load_function(
             username=username,
             password=password,
@@ -124,7 +140,7 @@ def load_data_object_from_load_request(
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
             coordinates_selection_method=load_request.coordinates_selection_method,
-            opening_dask_chunks=optimum_dask_chunking,
+            opening_dask_chunks=opening_chunks,
         )
         if isinstance(dataset, xarray.Dataset):
             dataset = rechunk(dataset, optimum_dask_chunking)

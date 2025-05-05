@@ -70,14 +70,17 @@ logger = logging.getLogger("copernicusmarine")
 
 def rechunk(
     dataset: xarray.Dataset,
-    optimum_dask_chunking: Optional[dict[str, int]],
+    optimum_dask_chunking: Union[dict[str, int], int],
 ) -> xarray.Dataset:
     preferred_chunks = {}
     for variable in dataset:
         preferred_chunks = dataset[variable].encoding["preferred_chunks"]
         del dataset[variable].encoding["chunks"]
 
-    if optimum_dask_chunking:
+    if isinstance(optimum_dask_chunking, int):
+        if optimum_dask_chunking == 0:
+            return dataset
+    else:
         preferred_chunks = optimum_dask_chunking
 
     if "depth" in preferred_chunks:
@@ -117,10 +120,10 @@ def download_dataset(
     service: CopernicusMarineService,
     dry_run: bool,
     overwrite: bool,
-    chunk_size_limit: Optional[int],
+    chunk_size_limit: int,
     skip_existing: bool,
 ) -> ResponseSubset:
-    _, _, opening_dask_chunks = get_opening_dask_chunks(
+    _, _, is_dataset_small = get_opening_dask_chunks(
         service,
         geographical_parameters,
         temporal_parameters,
@@ -129,10 +132,11 @@ def download_dataset(
         axis_coordinate_id_mapping,
     )
     opening_chunks = None
-    if opening_dask_chunks:
+    if is_dataset_small and chunk_size_limit != 0:
         opening_chunks = "auto"
 
-    if chunk_size_limit:
+    optimum_dask_chunking: Union[dict[str, int], int]
+    if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,
@@ -143,7 +147,7 @@ def download_dataset(
             axis_coordinate_id_mapping,
         )
     else:
-        optimum_dask_chunking = None
+        optimum_dask_chunking = chunk_size_limit
     logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     dataset = rechunk(
         open_dataset_from_arco_series(
@@ -247,7 +251,7 @@ def download_zarr(
     service: CopernicusMarineService,
     is_original_grid: bool,
     axis_coordinate_id_mapping: dict[str, str],
-    chunk_size_limit: Optional[int],
+    chunk_size_limit: int,
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
         y_axis_parameters=YParameters(
@@ -427,7 +431,7 @@ def get_optimum_dask_chunking(
     variables: Optional[list[str]],
     chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
-) -> Optional[dict[str, int]]:
+) -> dict[str, int]:
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
     and memory usage. We are trying to find the optimum chunking for dask arrays.

@@ -64,7 +64,7 @@ def open_dataset(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-    chunk_size_limit: int = 0,
+    chunk_size_limit: int = -1,
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using 'lazy-loading' mode from a Copernicus Marine data source.
