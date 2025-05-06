@@ -79,7 +79,10 @@ def rechunk(
         preferred_chunks = optimum_dask_chunking
     else:
         if chunk_size_limit > 0 and not optimum_dask_chunking:
-            logger.debug("Dataset too small to be chunked by the Toolbox.")
+            logger.debug(
+                "Optimum chunking set to None whereas chunk_size_limit",
+                f" has been set to {chunk_size_limit}.",
+            )
         preferred_chunks = {}
         for variable in dataset:
             preferred_chunks = dataset[variable].encoding["preferred_chunks"]
