@@ -20,7 +20,7 @@ Fixes
 
 - Improved error message when ``netcdf4`` is not installed and required for the user's request.
 - Fixed an issue that caused the command-line interface help to fail for binaries.
-- Fixed an issue where we would send users emails in headers for monitoring, instead of the Copernicus Marine username.
+- Fixed an issue where users emails were sent in headers for monitoring, instead of the Copernicus Marine username.
 
 Subset
 ''''''''
