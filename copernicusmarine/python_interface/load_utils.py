@@ -25,6 +25,7 @@ from copernicusmarine.download_functions.download_sparse import (
 )
 from copernicusmarine.download_functions.download_zarr import (
     get_optimum_dask_chunking,
+    rechunk,
 )
 from copernicusmarine.download_functions.subset_xarray import (
     check_dataset_subset_bounds,
@@ -101,19 +102,18 @@ def load_data_object_from_load_request(
                 load_request.temporal_parameters.start_datetime = (
                     parsed_start_datetime
                 )
-        optimum_dask_chunking = (
-            get_optimum_dask_chunking(
+        if chunks_factor_size_limit > 0:
+            optimum_dask_chunking = get_optimum_dask_chunking(
                 retrieval_service.service,
                 load_request.geographical_parameters,
                 load_request.temporal_parameters,
                 load_request.depth_parameters,
                 load_request.variables,
                 chunks_factor_size_limit,
-                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+                retrieval_service.axis_coordinate_id_mapping,
             )
-            if chunks_factor_size_limit
-            else None
-        )
+        else:
+            optimum_dask_chunking = None
         dataset = arco_series_load_function(
             username=username,
             password=password,
@@ -123,8 +123,12 @@ def load_data_object_from_load_request(
             temporal_parameters=load_request.temporal_parameters,
             depth_parameters=load_request.depth_parameters,
             coordinates_selection_method=load_request.coordinates_selection_method,
-            chunks=optimum_dask_chunking,
+            opening_dask_chunks=optimum_dask_chunking,
         )
+        if isinstance(dataset, xarray.Dataset):
+            dataset = rechunk(
+                dataset, optimum_dask_chunking, chunks_factor_size_limit
+            )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)
     return dataset

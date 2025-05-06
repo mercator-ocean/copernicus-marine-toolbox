@@ -319,8 +319,8 @@ def cli_subset() -> None:
 )
 @click.option(
     "--chunk-size-limit",
-    type=click.IntRange(min=0),
-    default=100,
+    type=click.IntRange(min=-1),
+    default=-1,
     help=documentation_utils.SUBSET["CHUNK_SIZE_LIMIT_HELP"],
 )
 @click.option(
