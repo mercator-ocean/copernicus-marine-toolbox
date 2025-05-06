@@ -43,7 +43,7 @@ from copernicusmarine.core_functions.subset import (
 )
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
-    original_grid_check,
+    get_geographical_inputs,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -319,8 +319,8 @@ def cli_subset() -> None:
 )
 @click.option(
     "--chunk-size-limit",
-    type=click.IntRange(min=0),
-    default=100,
+    type=click.IntRange(min=-1),
+    default=-1,
     help=documentation_utils.SUBSET["CHUNK_SIZE_LIMIT_HELP"],
 )
 @click.option(
@@ -409,7 +409,12 @@ def subset(
         create_subset_template()
         return
 
-    original_grid_check(
+    (
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
+    ) = get_geographical_inputs(
         minimum_longitude,
         maximum_longitude,
         minimum_latitude,
@@ -439,33 +444,17 @@ def subset(
         username=username,
         password=password,
         variables=variables,
-        minimum_longitude=(
-            minimum_longitude
-            if minimum_longitude is not None
-            else minimum_x
-            if minimum_x is not None
-            else alias_min_x
+        minimum_x=(
+            minimum_x_axis if minimum_x_axis is not None else alias_min_x
         ),
-        maximum_longitude=(
-            maximum_longitude
-            if maximum_longitude is not None
-            else maximum_x
-            if maximum_x is not None
-            else alias_max_x
+        maximum_x=(
+            maximum_x_axis if maximum_x_axis is not None else alias_max_x
         ),
-        minimum_latitude=(
-            minimum_latitude
-            if minimum_latitude is not None
-            else minimum_y
-            if minimum_y is not None
-            else alias_min_y
+        minimum_y=(
+            minimum_y_axis if minimum_y_axis is not None else alias_min_y
         ),
-        maximum_latitude=(
-            maximum_latitude
-            if maximum_latitude is not None
-            else maximum_y
-            if maximum_y is not None
-            else alias_max_y
+        maximum_y=(
+            maximum_y_axis if maximum_y_axis is not None else alias_max_y
         ),
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,

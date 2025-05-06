@@ -43,9 +43,9 @@ Sparse data subsetting
 -----------------------
 
 On the one hand, some of the datasets available on Copernicus Marine are gridded datasets, benefiting from all the features of the Copernicus Marine Toolbox.
-On the other hand, certain datasets are sparse or INSITU datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `INSITU datasets <https://data.marine.copernicus.eu/products?q=insitu>`_ for example.
+On the other hand, certain datasets are time series for a given platform; these are called sparse or in-situ datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `in-situ datasets <https://data.marine.copernicus.eu/products?facets=sources%7EIn-situ+observations>`_ for example.
 
-Sparse datasets can be subset using the ``subset`` command, which returns the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
+We can download all the time series of a given geographical area and time period via the ``subset``. Options can also be used to choose the platforms, variables or depth ranges we are interested in. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
 
 **Example:**
 
@@ -53,7 +53,7 @@ Sparse datasets can be subset using the ``subset`` command, which returns the da
 
   copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2024-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
 
-Then it can be opened with pandas:
+This dataset can be opened with pandas:
 
 .. code-block:: python
 
@@ -85,24 +85,24 @@ It is also possible to load the Pandas DataFrame directly using the :func:`~cope
 
 The output will contain the following columns:
 
+- ``variable``: The variable name.
 - ``platform_id``: The platform ID.
 - ``platform_type``: The platform type.
 - ``time``: The timestamp of the measurement in seconds.
 - ``longitude``: The longitude of the measurement in degrees.
 - ``latitude``: The latitude of the measurement in degrees.
 - ``depth`` or ``elevation``: The depth of the measurement in meters, or 'elevation' if selected with the ``vertical-axis`` option.
-- ``is_approx_elevation``: Indicates whether the pressure value was used to calculate elevation/depth.
 - ``pressure``: The measurement pressure in decibars (not always available).
+- ``is_depth_from_producer``: Indicates whether the pressure value was used to calculate elevation/depth when converting the data to a format that can be subsetted. The conversion used is ``pressure in decibar = depth in m``.
 - ``value``: The measurement value.
 - ``value_qc``: The quality control indicator of the value.
-- ``variable``: The variable name.
-
-If any column consists entirely of ``NaN`` values, it will be removed from the output.
+- ``institution``: The institution that produced the data and is affiliated with the platform.
+- ``doi``: The DOI of the data.
 
 These datasets have specific options and outputs:
 
 - The ``--file-format`` option can be used to specify 'parquet' or 'csv'. The default format is 'csv'.
-- The ``--platform-id`` option enables filtering data by platform ID.
+- The ``--platform-id`` option enables filtering data by platform ID. Note, that you can also add the type of platform by adding "___" (e.g., ``--platform-id B-Sulafjorden___MO`` will select platform ID "B-Sulafjorden" and type "MO" for this platform). Otherwise, all the platform types available will be selected.
 
 There are also some options that behave differently or are not available for sparse datasets:
 
@@ -204,13 +204,13 @@ the Copernicus Marine ARCO datasets are organised in chunks of around 1MB.
 This might create a lot of overhead if you are working with a lot of small chunks and ``dask``.
 Please see the `dask documentation <https://docs.dask.org/en/stable/best-practices.html#avoid-very-large-graphs>`_ for the details.
 
-Hence, by default the Copernicus Marine Toolbox will try to optimise the chunk size and
-will use a chunk size of 100 times the original chunk size. So approximately 100MB.
-If the subset is small enough it won't even use ``dask`` at all.
+The default is ``-1``, which behaves similarly to ``chunks=auto`` from `xarray.open_dataset <https://docs.xarray.dev/en/stable/generated/xarray.open_dataset.html>`_ function.
 
 In some cases, you might want to change this behaviour. For example, if you have a really large dataset
 to download and you have great computing power you might want to increase the chunk size.
-You can also not use ``dask`` at all by setting the chunk size to 0.
+
+If you prefer not using dask, for small datasets you can set the chunk size to 0.
+
 For now, it does not seem like there is a one-size-fits-all solution and you might have to experiment a bit.
 
 .. note::
@@ -231,9 +231,8 @@ Option ``--raise-if-updating``
 .. note::
   This option only applies to ARCO services (``arco-geo-series`` and ``arco-time-series``) and not native files (``original-files`` service).
 
-When a dataset is being updated, it can happen that data after a certain date becomes unreliable. When setting this flag,
-the toolbox will raise an error if the subset requested interval overpasses the updating start date. By default, the flag is not set
-and the toolbox will only emit a warning. See ``updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
+When a dataset is being updated, data after a certain date may become unreliable. If this flag is set, the toolbox will raise an error if the requested subset interval extends beyond the updating start date.
+ By default, the flag is not set and the toolbox will only emit a warning. See ``arco_updating_start_date`` in class :class:`copernicusmarine.CopernicusMarinePart` and custom exception :class:`copernicusmarine.DatasetUpdating`.
 
 .. code-block:: python
 
@@ -250,16 +249,17 @@ and the toolbox will only emit a warning. See ``updating_start_date`` in class :
 
 .. _stereographic-subset-usage:
 
-Options for Arco with original-grid
+Options for Arco with Original-grid
 """"""""""""""""""""""""""""""""""""""""""
 
-For ARCO services in original-grid part datasets, the following options are available to subset the area:
-- ``--minimum-x``: The minimum x-axis coordinate.
-- ``--maximum-x``: The maximum x-axis coordinate.
-- ``--minimum-y``: The minimum y-axis coordinate.
-- ``--maximum-y``: The maximum y-axis coordinate.
+For ARCO services in Original-grid part datasets, the following options are available to bound the subsetted area:
 
-For more context and examples, check the  :ref:`original-grid page <stereographic-subsetting-page>`.
+  - ``--minimum-x`` or ``-x`` : The minimum x-axis coordinate.
+  - ``--maximum-x``or ``-X`` : The maximum x-axis coordinate.
+  - ``--minimum-y`` or ``-y`` : The minimum y-axis coordinate.
+  - ``--maximum-y`` or ``-Y`` : The maximum y-axis coordinate.
+
+For more context and examples, check the  :ref:`Original-grid page <stereographic-subsetting-page>`.
 
 .. note:
 

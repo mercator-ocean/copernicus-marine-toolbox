@@ -2,7 +2,7 @@ import logging
 import os
 import pathlib
 from datetime import datetime
-from typing import Hashable, Iterable, Literal, Optional, Union
+from typing import Hashable, Iterable, Optional, Tuple, Union
 
 import pandas as pd
 import xarray
@@ -68,16 +68,25 @@ from copernicusmarine.download_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 
 
-def _rechunk(dataset: xarray.Dataset) -> xarray.Dataset:
-    preferred_chunks = {}
-    for variable in dataset:
-        preferred_chunks = dataset[variable].encoding["preferred_chunks"]
-        del dataset[variable].encoding["chunks"]
-
-    if "depth" in preferred_chunks:
-        preferred_chunks["elevation"] = preferred_chunks["depth"]
-    elif "elevation" in preferred_chunks:
-        preferred_chunks["depth"] = preferred_chunks["elevation"]
+def rechunk(
+    dataset: xarray.Dataset,
+    optimum_dask_chunking: Optional[dict[str, int]],
+    chunk_size_limit: int,
+) -> xarray.Dataset:
+    if chunk_size_limit == 0:
+        return dataset
+    elif chunk_size_limit > 0 and optimum_dask_chunking:
+        preferred_chunks = optimum_dask_chunking
+    else:
+        if chunk_size_limit > 0 and not optimum_dask_chunking:
+            logger.debug(
+                "Optimum chunking set to None whereas chunk_size_limit",
+                f" has been set to {chunk_size_limit}.",
+            )
+        preferred_chunks = {}
+        for variable in dataset:
+            preferred_chunks = dataset[variable].encoding["preferred_chunks"]
+            del dataset[variable].encoding["chunks"]
 
     return dataset.chunk(
         _filter_dimensions(preferred_chunks, dataset.sizes.keys())
@@ -85,7 +94,8 @@ def _rechunk(dataset: xarray.Dataset) -> xarray.Dataset:
 
 
 def _filter_dimensions(
-    rechunks: dict[str, int], dimensions: Iterable[Hashable]
+    rechunks: dict[str, int],
+    dimensions: Iterable[Hashable],
 ) -> dict[str, int]:
     return {k: v for k, v in rechunks.items() if k in dimensions}
 
@@ -110,10 +120,10 @@ def download_dataset(
     service: CopernicusMarineService,
     dry_run: bool,
     overwrite: bool,
-    chunk_size_limit: Optional[int],
+    chunk_size_limit: int,
     skip_existing: bool,
 ) -> ResponseSubset:
-    if chunk_size_limit:
+    if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
             geographical_parameters,
@@ -123,10 +133,16 @@ def download_dataset(
             chunk_size_limit,
             axis_coordinate_id_mapping,
         )
+        logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     else:
         optimum_dask_chunking = None
-    logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
-    dataset = _rechunk(
+        if chunk_size_limit == -1:
+            # TODO: check the performance opening with None large datasets
+            # and then rechunking
+            logger.debug("Dask chunking selected 'auto'.")
+        else:
+            logger.debug("Dask chunking disabled.")
+    dataset = rechunk(
         open_dataset_from_arco_series(
             username=username,
             password=password,
@@ -136,8 +152,10 @@ def download_dataset(
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
             coordinates_selection_method=coordinates_selection_method,
-            chunks=optimum_dask_chunking,  # type: ignore
-        )
+            opening_dask_chunks=optimum_dask_chunking,
+        ),
+        optimum_dask_chunking=optimum_dask_chunking,
+        chunk_size_limit=chunk_size_limit,
     )
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
@@ -227,7 +245,7 @@ def download_zarr(
     service: CopernicusMarineService,
     is_original_grid: bool,
     axis_coordinate_id_mapping: dict[str, str],
-    chunk_size_limit: Optional[int],
+    chunk_size_limit: int,
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
         y_axis_parameters=YParameters(
@@ -307,11 +325,11 @@ def open_dataset_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    chunks: Optional[Literal["auto"]],
+    opening_dask_chunks: Optional[dict[str, int]],
 ) -> xarray.Dataset:
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
-        chunks=chunks,
+        chunks=opening_dask_chunks,
         copernicus_marine_username=username,
     )
     dataset = subset(
@@ -334,7 +352,7 @@ def read_dataframe_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    chunks: Optional[Literal["auto"]],
+    opening_dask_chunks: Optional[dict[str, int]],
 ) -> pd.DataFrame:
     dataset = open_dataset_from_arco_series(
         username=username,
@@ -345,36 +363,19 @@ def read_dataframe_from_arco_series(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=coordinates_selection_method,
-        chunks=chunks,  # type: ignore
+        opening_dask_chunks=opening_dask_chunks,
     )
     return dataset.to_dataframe()
 
 
-def get_optimum_dask_chunking(
+def get_opening_dask_chunks(
     service: CopernicusMarineService,
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     variables: Optional[list[str]],
-    chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
-) -> Optional[dict[str, Union[int, float]]]:
-    """
-    We have some problems with overly big dask graphs (we think) that introduces huge overheads
-    and memory usage. We are trying to find the optimum chunking for dask arrays.
-
-    By default, the chunking is the zarr chunking ie 1MB for each tile.
-    The rule of thumb for dask chunking is to have chunks of size 100MB.
-
-    To avoid downloading too much data we should also be careful not to
-    increase the size of the chunks more than the size of the data we are interested in.
-    Eg: you want 1 time point, increasing size of the chunk on time dimension by x
-    will lead to downloading x times more data than needed.
-
-    Knowing that, we should cap the size of the chunk to 100MB and use multiples of the zarr chunking.
-
-    If the factors sum up to less than 100, no chunking is needed.
-    """  # noqa
+) -> Tuple[dict, dict, bool]:
     set_variables = set(variables) if variables else set()
     coordinate_for_subset: dict[str, CopernicusMarineCoordinate] = {}
     for variable in service.variables:
@@ -394,7 +395,7 @@ def get_optimum_dask_chunking(
         chunking_length = coordinate.chunking_length
         if chunking_length is None:
             continue
-        coordinate_zarr_chunk_length[coordinate_id] = chunking_length
+        coordinate_zarr_chunk_length[coordinate_id] = int(chunking_length)
         requested_minimum, requested_maximum = _extract_requested_min_max(
             coordinate_id,
             geographical_parameters,
@@ -412,6 +413,48 @@ def get_optimum_dask_chunking(
             continue
         max_dask_chunk_factor[coordinate_id] = number_of_zarr_chunks_needed
     if _product(max_dask_chunk_factor.values()) < 100:
+        return max_dask_chunk_factor, coordinate_zarr_chunk_length, False
+    return max_dask_chunk_factor, coordinate_zarr_chunk_length, True
+
+
+def get_optimum_dask_chunking(
+    service: CopernicusMarineService,
+    geographical_parameters: GeographicalParameters,
+    temporal_parameters: TemporalParameters,
+    depth_parameters: DepthParameters,
+    variables: Optional[list[str]],
+    chunk_size_limit: int,
+    axis_coordinate_id_mapping: dict[str, str],
+) -> Optional[dict[str, int]]:
+    """
+    We have some problems with overly big dask graphs (we think) that introduces huge overheads
+    and memory usage. We are trying to find the optimum chunking for dask arrays.
+
+    By default, the chunking is the zarr chunking ie 1MB for each tile.
+    The rule of thumb for dask chunking is to have chunks of size 100MB.
+
+    To avoid downloading too much data we should also be careful not to
+    increase the size of the chunks more than the size of the data we are interested in.
+    Eg: you want 1 time point, increasing size of the chunk on time dimension by x
+    will lead to downloading x times more data than needed.
+
+    Knowing that, we should cap the size of the chunk to 100MB and use multiples of the zarr chunking.
+
+    If the factors sum up to less than 100, no chunking is needed.
+    """  # noqa
+    (
+        max_dask_chunk_factor,
+        coordinate_zarr_chunk_length,
+        is_large_dataset,
+    ) = get_opening_dask_chunks(
+        service,
+        geographical_parameters,
+        temporal_parameters,
+        depth_parameters,
+        variables,
+        axis_coordinate_id_mapping,
+    )
+    if not is_large_dataset:
         return None
     logger.debug(f"Zarr chunking: {coordinate_zarr_chunk_length}")
     logger.debug(f"Max dask chunk factor: {max_dask_chunk_factor}")

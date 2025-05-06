@@ -80,9 +80,6 @@ build-and-publish-dockerhub-image:
 	docker push copernicusmarine/copernicusmarine:$${VERSION}
 	docker push copernicusmarine/copernicusmarine:latest
 
-
-##  Binaries creation:
-# Prepare the environment
 build-and-prepare-for-binary:
 	python -m pip install --upgrade pip
 	pip install pyinstaller
@@ -90,7 +87,7 @@ build-and-prepare-for-binary:
 	pip install poetry
 	pip install distributed
 	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
-# Build with macos windows and linux
+
 run-using-pyinstaller-windows-latest:
 	pip install -e .
 	python -m PyInstaller --hiddenimport deprecated --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine.exe --collect-data dask --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile --copy-metadata zarr
@@ -121,9 +118,8 @@ run-using-pyinstaller-ubuntu-22.04: run-using-pyinstaller-linux
 run-using-pyinstaller-ubuntu-24.04: DISTRIBUTION = linux-glibc-2.39
 run-using-pyinstaller-ubuntu-24.04: run-using-pyinstaller-linux
 
-# Tests for the binaries
 run-tests-binaries:
-	pytest tests_binaries/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_binaries/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	pytest tests_extra/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_extra/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 change-name-binary:
 	mv dist/copernicusmari* ./copernicusmarine.cli

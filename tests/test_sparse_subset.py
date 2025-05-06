@@ -4,6 +4,10 @@ from json import loads
 import pandas as pd
 
 from copernicusmarine import read_dataframe
+from copernicusmarine.download_functions.download_sparse import (
+    COLUMNS_ORDER_DEPTH,
+    COLUMNS_ORDER_ELEVATION,
+)
 from tests.test_utils import execute_in_terminal
 
 BASIC_COMMAND = [
@@ -51,20 +55,6 @@ BASIC_COMMAND_DICT = {
     "end_datetime": "2023-11-26T03:00:00",
 }
 
-EXPECTED_COLUMNS = [
-    "platform_id",
-    "platform_type",
-    "time",
-    "longitude",
-    "latitude",
-    "depth",
-    "is_approx_elevation",
-    # "pressure", is removed cause full of NaN in the example # noqa
-    "value",
-    "value_qc",
-    "variable",
-]
-
 
 class TestSparseSubset:
     def test_I_can_subset_sparse_data(self, tmp_path):
@@ -81,7 +71,7 @@ class TestSparseSubset:
         assert (tmp_path / filename).exists()
         df = pd.read_csv(tmp_path / filename)
         assert not df.empty
-        assert list(df.columns) == EXPECTED_COLUMNS
+        assert list(df.columns) == COLUMNS_ORDER_DEPTH
 
     def test_I_can_subset_on_platform_ids_in_parquet(self, tmp_path):
         command = BASIC_COMMAND + [
@@ -155,4 +145,13 @@ class TestSparseSubset:
         df = read_dataframe(**BASIC_COMMAND_DICT)
         assert not df.empty
         assert "value" in df.columns
-        assert list(df.columns) == EXPECTED_COLUMNS
+        assert list(df.columns) == COLUMNS_ORDER_DEPTH
+
+    def test_can_download_with_elevation(self):
+        df = read_dataframe(
+            vertical_axis="elevation",
+            **BASIC_COMMAND_DICT,
+        )
+        assert not df.empty
+        assert "value" in df.columns
+        assert list(df.columns) == COLUMNS_ORDER_ELEVATION

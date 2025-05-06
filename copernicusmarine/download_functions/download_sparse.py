@@ -1,12 +1,15 @@
 import logging
 import pathlib
 import shutil
+import warnings
 from collections import defaultdict
+from copy import deepcopy
 
 import pandas as pd
 from arcosparse import (
+    Entity,
     UserConfiguration,
-    get_entities_ids,
+    get_entities,
     subset_and_return_dataframe,
 )
 
@@ -24,12 +27,15 @@ from copernicusmarine.core_functions.models import (  # TimeExtent,
     ResponseSubset,
     StatusCode,
     StatusMessage,
+    VerticalAxis,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
+    datetime_to_isoformat,
     get_unique_filepath,
+    timestamp_parser,
 )
 from copernicusmarine.download_functions.utils import (
     build_filename_from_request,
@@ -41,6 +47,32 @@ logger = logging.getLogger("copernicusmarine")
 COLUMNS_RENAME = {
     "entity_id": "platform_id",
     "entity_type": "platform_type",
+}
+
+COLUMNS_ORDER_DEPTH = [
+    "variable",
+    "platform_id",
+    "platform_type",
+    "time",
+    "longitude",
+    "latitude",
+    "depth",
+    "pressure",
+    "is_depth_from_producer",
+    "value",
+    "value_qc",
+    "institution",
+    "doi",
+]
+
+COLUMNS_ORDER_ELEVATION = deepcopy(COLUMNS_ORDER_DEPTH)
+COLUMNS_ORDER_ELEVATION[COLUMNS_ORDER_ELEVATION.index("depth")] = "elevation"
+
+SORTING = {
+    "variable": True,
+    "platform_id": True,
+    "platform_type": True,
+    "time": True,
 }
 
 
@@ -139,12 +171,15 @@ def _read_dataframe_sparse(
     Returns also the variables and the platform_ids
     """
     user_configuration = _get_user_configuration(username)
+    platforms_metadata = {
+        entity.entity_id: entity
+        for entity in get_entities(metadata_url, user_configuration)
+    }
     if subset_request.platform_ids:
         platform_ids = _get_plaform_ids_to_subset(
             subset_request.platform_ids or [],
-            metadata_url,
+            set(platforms_metadata.keys()),
             service,
-            user_configuration,
         )
     else:
         platform_ids = []
@@ -153,8 +188,10 @@ def _read_dataframe_sparse(
     ]
     if dry_run:
         return pd.DataFrame(), variables, platform_ids
-    return (
-        subset_and_return_dataframe(
+    # see https://github.com/pandas-dev/pandas/issues/55928
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        df = subset_and_return_dataframe(
             minimum_latitude=subset_request.minimum_y,
             maximum_latitude=subset_request.maximum_y,
             minimum_longitude=subset_request.minimum_x,
@@ -186,7 +223,14 @@ def _read_dataframe_sparse(
             user_configuration=user_configuration,
             disable_progress_bar=disable_progress_bar,
             columns_rename=COLUMNS_RENAME,
-        ),
+        )
+
+        df = _transform_dataframe(
+            df, subset_request.vertical_axis, platforms_metadata
+        )
+
+    return (
+        df,
         variables,
         platform_ids,
     )
@@ -206,30 +250,27 @@ def _get_user_configuration(username: str) -> UserConfiguration:
 
 def _get_plaform_ids_to_subset(
     platform_ids: list[str],
-    metadata_url: str,
+    platforms_metadata_names: set[str],
     retrieval_service: CopernicusMarineService,
-    user_configuration: UserConfiguration,
 ) -> list[str]:
     platforms_to_subset = []
-    if platform_ids:
-        platforms_names = get_entities_ids(metadata_url, user_configuration)
-        if not platforms_names:
-            raise NotEnoughPlatformMetadata()
-        platforms_names_with_types: set[str] = set()
-        platforms_without_types_mapping: dict[str, list] = defaultdict(list)
-        for platform_name in platforms_names:
-            platform_name_without_type = platform_name.split("___")[0]
-            platforms_without_types_mapping[platform_name_without_type].append(
-                platform_name
+    if not platforms_metadata_names:
+        raise NotEnoughPlatformMetadata()
+    platforms_names_with_types: set[str] = set()
+    platforms_without_types_mapping: dict[str, list] = defaultdict(list)
+    for platform_name in platforms_metadata_names:
+        platform_name_without_type = platform_name.split("___")[0]
+        platforms_without_types_mapping[platform_name_without_type].append(
+            platform_name
+        )
+        platforms_names_with_types.add(platform_name)
+    for platform_id in platform_ids:
+        if platform_id in platforms_names_with_types:
+            platforms_to_subset.append(platform_id)
+        if platform_id in platforms_without_types_mapping:
+            platforms_to_subset.extend(
+                platforms_without_types_mapping[platform_id]
             )
-            platforms_names_with_types.add(platform_name)
-        for platform_id in platform_ids:
-            if platform_id in platforms_names_with_types:
-                platforms_to_subset.append(platform_id)
-            if platform_id in platforms_without_types_mapping:
-                platforms_to_subset.extend(
-                    platforms_without_types_mapping[platform_id]
-                )
     if not platforms_to_subset:
         raise WrongPlatformID(
             platform_ids, retrieval_service.platforms_metadata
@@ -290,3 +331,61 @@ def _get_response_subset(
         message=StatusMessage.SUCCESS,
         file_status=FileStatus.DOWNLOADED,
     )
+
+
+def _transform_dataframe(
+    df: pd.DataFrame,
+    vertical_axis: VerticalAxis,
+    platforms_metadata: dict[str, Entity],
+) -> pd.DataFrame:
+    """
+    Transform the dataframe to match the expected format to be consistent with MyOceanPro
+    and Copernicus Marine Services.
+    """  # noqa
+    # Needs to be done before striping the type to the platform_id
+    df["institution"] = df["platform_id"].apply(
+        lambda x: (
+            (
+                platforms_metadata[x].institution
+                if x in platforms_metadata
+                else pd.NA
+            )
+            or pd.NA
+        )
+    )
+    df["doi"] = df["platform_id"].apply(
+        lambda x: (
+            (platforms_metadata[x].doi if x in platforms_metadata else pd.NA)
+            or pd.NA
+        )
+    )
+
+    # From "platform___type" to "platform" since the type is in
+    # column platform_type
+    df["platform_id"] = df["platform_id"].str.split("___").str[0]
+
+    df["time"] = df["time"].apply(
+        lambda x: datetime_to_isoformat(timestamp_parser(x, unit="s"))
+    )
+
+    # Some depth values comes from the arcoification of the data
+    # and are calculated from the pressure some others come
+    # directly from the producer (ie native/original data)
+    df["is_depth_from_producer"] = df["is_approx_elevation"].apply(
+        lambda x: 0 if x else 1
+    )
+    df.drop(columns=["is_approx_elevation"], inplace=True)
+
+    if vertical_axis == "elevation":
+        df = df[COLUMNS_ORDER_ELEVATION]
+    else:
+        df = df[COLUMNS_ORDER_DEPTH]
+
+    df.sort_values(
+        by=list(SORTING.keys()),
+        ascending=list(SORTING.values()),
+        inplace=True,
+    )
+
+    df.reset_index(drop=True, inplace=True)
+    return df
