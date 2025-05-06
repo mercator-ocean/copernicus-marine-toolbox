@@ -127,18 +127,6 @@ def download_dataset(
     chunk_size_limit: int,
     skip_existing: bool,
 ) -> ResponseSubset:
-    _, _, is_dataset_small = get_opening_dask_chunks(
-        service,
-        geographical_parameters,
-        temporal_parameters,
-        depth_parameters,
-        variables,
-        axis_coordinate_id_mapping,
-    )
-    opening_chunks = None
-    if is_dataset_small and chunk_size_limit != 0:
-        opening_chunks = "auto"
-
     optimum_dask_chunking: Union[dict[str, int], str, None]
     if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
@@ -165,7 +153,7 @@ def download_dataset(
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
             coordinates_selection_method=coordinates_selection_method,
-            opening_dask_chunks=opening_chunks,
+            opening_dask_chunks=None,
         ),
         optimum_dask_chunking=optimum_dask_chunking,
         chunk_size_limit=chunk_size_limit,
