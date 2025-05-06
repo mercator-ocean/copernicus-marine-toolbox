@@ -2,7 +2,7 @@ import logging
 import os
 import pathlib
 from datetime import datetime
-from typing import Hashable, Iterable, Literal, Optional, Tuple, Union
+from typing import Hashable, Iterable, Optional, Tuple, Union
 
 import pandas as pd
 import xarray
@@ -70,23 +70,19 @@ logger = logging.getLogger("copernicusmarine")
 
 def rechunk(
     dataset: xarray.Dataset,
-    optimum_dask_chunking: Union[dict[str, int], str, None],
+    optimum_dask_chunking: Optional[dict[str, int]],
     chunk_size_limit: int,
 ) -> xarray.Dataset:
     if chunk_size_limit == 0:
         return dataset
-    elif isinstance(optimum_dask_chunking, dict) and chunk_size_limit > 0:
+    elif chunk_size_limit > 0 and isinstance(optimum_dask_chunking, dict):
         preferred_chunks = optimum_dask_chunking
-    elif chunk_size_limit == -1:
-        preferred_chunks = {}
-        for variable in dataset:
-            preferred_chunks = dataset[variable].encoding["preferred_chunks"]
-            del dataset[variable].encoding["chunks"]
-    else:
-        logger.warning(
-            "The toolbox could not compute the optimum chunking. ",
-            "Using the default instead.",
+    elif chunk_size_limit > 0 and not isinstance(optimum_dask_chunking, dict):
+        raise ValueError(
+            "The chunk size limit is set to a positive value, "
+            "but the optimum dask chunking is not a dictionary."
         )
+    else:
         preferred_chunks = {}
         for variable in dataset:
             preferred_chunks = dataset[variable].encoding["preferred_chunks"]
@@ -127,7 +123,7 @@ def download_dataset(
     chunk_size_limit: int,
     skip_existing: bool,
 ) -> ResponseSubset:
-    optimum_dask_chunking: Union[dict[str, int], str, None]
+    optimum_dask_chunking: Optional[dict[str, int]]
     if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
@@ -138,11 +134,15 @@ def download_dataset(
             chunk_size_limit,
             axis_coordinate_id_mapping,
         )
-    elif chunk_size_limit == -1:
-        optimum_dask_chunking = "Auto"
+        logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     else:
         optimum_dask_chunking = None
-    logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
+        if chunk_size_limit == -1:
+            # TODO: check the performance opening with None large datasets
+            # and then rechunking
+            logger.debug("Dask chunking selected 'auto'.")
+        else:
+            logger.debug("Dask chunking disabled.")
     dataset = rechunk(
         open_dataset_from_arco_series(
             username=username,
@@ -153,7 +153,7 @@ def download_dataset(
             temporal_parameters=temporal_parameters,
             depth_parameters=depth_parameters,
             coordinates_selection_method=coordinates_selection_method,
-            opening_dask_chunks=None,
+            opening_dask_chunks=optimum_dask_chunking,
         ),
         optimum_dask_chunking=optimum_dask_chunking,
         chunk_size_limit=chunk_size_limit,
@@ -326,7 +326,7 @@ def open_dataset_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_dask_chunks: Union[Literal["auto"], dict[str, int], str, None],
+    opening_dask_chunks: Optional[dict[str, int]],
 ) -> xarray.Dataset:
     dataset = custom_open_zarr.open_zarr(
         dataset_url,
@@ -353,7 +353,7 @@ def read_dataframe_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_dask_chunks: Optional[Literal["auto"]],
+    opening_dask_chunks: Optional[dict[str, int]],
 ) -> pd.DataFrame:
     dataset = open_dataset_from_arco_series(
         username=username,
