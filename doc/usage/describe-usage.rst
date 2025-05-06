@@ -218,6 +218,8 @@ The ``describe`` command will show you only one version of a dataset, prioritisi
 If you want to see all versions, you can use the ``--show-all-versions`` option.
 It allows in some cases to access the metadata of datasets that are to be released or datasets that will be retired soon.
 
+.. _arco-updat-date:
+
 ``arco_updating_start_date`` and ``arco_updated_date`` fields
 ---------------------------------------------------------------
 

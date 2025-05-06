@@ -1,0 +1,47 @@
+Release 2.1.0
+======================
+
+This release introduces two new features: the ability to subset datasets using a stereographic projection, and the ability to subset sparse datasets (including in-situ datasets).
+
+General
+''''''''
+
+New features
+------------------
+
+- Added :ref:`"Polygons-based data selection" <polygons-based-data-selection>` page in the docs (usage section), with examples showing how to download data using polygons as the input area.
+- Removed Linux binary with ``glibc==2.31`` since GitHub Actions no longer supports it.
+- Added a new binary with ``glibc==2.39``.
+- Added ``arcosparse`` as a new dependency.
+- Relaxed constraint on ``zarr``, now allowing ``zarr>=3.0.0``.
+
+Fixes
+------------------
+
+- Improved error message when ``netcdf4`` is not installed and required for the user's request.
+- Fixed an issue that caused the command-line interface help to fail for binaries.
+- Fixed an issue where users emails were sent in headers for monitoring, instead of the Copernicus Marine username.
+
+Subset
+''''''''
+
+New features
+------------------
+
+- Added stereographic subsetting. See the :ref:`subset usage page <stereographic-subset-usage>` or :ref:`this page <stereographic-subsetting-page>` for detailed examples.
+- Added subsetting for sparse datasets (including in-situ datasets). See the :ref:`documentation about sparse subsetting <sparse-subset>` for more information.
+- Added the ``raise-if-updating`` option to raise an error if the dataset is currently updating. See the :ref:`documentation about this flag <raise-if-updating>` for more information.
+
+Fixes
+------------------
+
+- Fixed a bug where the ``chunk-size-limit`` option did not behave as expected. The default value has been changed to "-1", which should have no impact on user experience. Setting a value ">=0" should now work as intended. See the :ref:`documentation about chunk size limit <chunk-size-limit>` for more information.
+
+Describe
+''''''''
+
+New features
+------------------
+
+- Added ``arco_updating_start_date`` and ``arco_updated_date`` fields to the metadata. See :ref:`this section <arco-updat-date>` for more information.
+- Added method ``get_coordinates`` to :class:`copernicusmarine.CopernicusMarinePart` to retrieve dataset coordinates at the part level.
