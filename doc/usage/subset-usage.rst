@@ -204,11 +204,10 @@ the Copernicus Marine ARCO datasets are organised in chunks of around 1MB.
 This might create a lot of overhead if you are working with a lot of small chunks and ``dask``.
 Please see the `dask documentation <https://docs.dask.org/en/stable/best-practices.html#avoid-very-large-graphs>`_ for the details.
 
-Hence, by default is set to -1 which behaves similarly to 'chunks=auto' from `xarray <https://docs.xarray.dev/en/stable/generated/xarray.open_dataset.html>`_.
+The default is ``-1``, which behaves similarly to ``chunks=auto`` from `xarray.open_dataset <https://docs.xarray.dev/en/stable/generated/xarray.open_dataset.html>`_ function.
 
 In some cases, you might want to change this behaviour. For example, if you have a really large dataset
 to download and you have great computing power you might want to increase the chunk size.
-You can also get back to the default chunking by setting the chunk size to -1.
 
 If you prefer not using dask, for small datasets you can set the chunk size to 0.
 
