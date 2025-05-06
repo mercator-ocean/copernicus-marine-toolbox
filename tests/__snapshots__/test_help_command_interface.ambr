@@ -415,7 +415,7 @@
     '                                  compatible format.',
     '  --chunk-size-limit INTEGER RANGE',
     '                                  Limit the size of the chunks in the dask',
-    '                                  array. Default is set to -1 which  behaves',
+    '                                  array. Default is set to -1 which behaves',
     "                                  similarly to \\'chunks=auto\\' from ``xarray``.",
     "                                  Positive integer values and \\'-1\\' are",
     '                                  accepted. This is an experimental feature.',

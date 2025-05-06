@@ -75,14 +75,11 @@ def rechunk(
 ) -> xarray.Dataset:
     if chunk_size_limit == 0:
         return dataset
-    elif chunk_size_limit > 0 and isinstance(optimum_dask_chunking, dict):
+    elif chunk_size_limit > 0 and optimum_dask_chunking:
         preferred_chunks = optimum_dask_chunking
-    elif chunk_size_limit > 0 and not isinstance(optimum_dask_chunking, dict):
-        raise ValueError(
-            "The chunk size limit is set to a positive value, "
-            "but the optimum dask chunking is not a dictionary."
-        )
     else:
+        if chunk_size_limit > 0 and not optimum_dask_chunking:
+            logger.debug("Dataset too small to be chunked by the Toolbox.")
         preferred_chunks = {}
         for variable in dataset:
             preferred_chunks = dataset[variable].encoding["preferred_chunks"]
@@ -123,7 +120,6 @@ def download_dataset(
     chunk_size_limit: int,
     skip_existing: bool,
 ) -> ResponseSubset:
-    optimum_dask_chunking: Optional[dict[str, int]]
     if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service,
@@ -426,7 +422,7 @@ def get_optimum_dask_chunking(
     variables: Optional[list[str]],
     chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
-) -> dict[str, int]:
+) -> Optional[dict[str, int]]:
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
     and memory usage. We are trying to find the optimum chunking for dask arrays.
@@ -446,7 +442,7 @@ def get_optimum_dask_chunking(
     (
         max_dask_chunk_factor,
         coordinate_zarr_chunk_length,
-        _,
+        is_large_dataset,
     ) = get_opening_dask_chunks(
         service,
         geographical_parameters,
@@ -455,6 +451,8 @@ def get_optimum_dask_chunking(
         variables,
         axis_coordinate_id_mapping,
     )
+    if not is_large_dataset:
+        return None
     logger.debug(f"Zarr chunking: {coordinate_zarr_chunk_length}")
     logger.debug(f"Max dask chunk factor: {max_dask_chunk_factor}")
     optimum_dask_factors = _get_optimum_factors(
