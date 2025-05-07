@@ -319,9 +319,11 @@ def _format_depths(
         return ""
     else:
         if minimum_depth == maximum_depth:
-            depth = f"{abs(minimum_depth):.2f}m"
+            depth = f"{(minimum_depth):.2f}m"
+        elif minimum_depth > 0:
+            depth = f"{(minimum_depth):.2f}_{(maximum_depth):.2f}m"
         else:
-            depth = f"{abs(minimum_depth):.2f}-{abs(maximum_depth):.2f}m"
+            depth = f"{(maximum_depth):.2f}_{(minimum_depth):.2f}m"
         return depth
 
 
