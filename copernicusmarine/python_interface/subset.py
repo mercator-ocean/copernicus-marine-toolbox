@@ -142,7 +142,7 @@ def subset(
         Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
     netcdf3_compatible : bool, optional
         Enable downloading the dataset in a netCDF3 compatible format.
-    chunk_size_limit : int, default 100
+    chunk_size_limit : int, default -1
         Limit the size of the chunks in the dask array. Default is set to -1 which behaves similarly to 'chunks=auto' from ``xarray``. Positive integer values and '-1' are accepted. This is an experimental feature.
     raise_if_updating : bool, default False
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
