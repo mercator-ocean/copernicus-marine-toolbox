@@ -63,13 +63,18 @@ def get_dataset_metadata(
         ).get(dataset_id)
         if not product_ids:
             raise DatasetNotFound(dataset_id)
-        url_dataset_jsons_mapping: dict[str, dict] = {}
+        url_dataset_jsons_mapping: dict[str, tuple[dict, Optional[str]]] = {}
         for product_id in product_ids.split(","):
             url = f"{stac_url}/{product_id}/product.stac.json"
             product_json = connection.get_json_file(url)
             product_collection = pystac.Collection.from_dict(product_json)
             product_datasets_metadata_links = (
                 product_collection.get_item_links()
+            )
+            digital_object_identifier = (
+                product_collection.extra_fields.get("sci:doi", None)
+                if product_collection.extra_fields
+                else None
             )
             datasets_metadata_links = [
                 dataset_metadata_link
@@ -80,25 +85,31 @@ def get_dataset_metadata(
                 continue
             url_dataset_jsons_mapping.update(
                 {
-                    f"{stac_url}/{product_id}/{link.href}": connection.get_json_file(
-                        f"{stac_url}/{product_id}/{link.href}"
+                    f"{stac_url}/{product_id}/{link.href}": (
+                        connection.get_json_file(
+                            f"{stac_url}/{product_id}/{link.href}"
+                        ),
+                        digital_object_identifier,
                     )
                     for link in datasets_metadata_links
                 }
             )
-
-        url_dataset_items_mapping = {
-            url: dataset_item
-            for url, dataset_json in url_dataset_jsons_mapping.items()
+        product_doi = None
+        url_dataset_items_mapping: dict[str, pystac.Item] = {}
+        for url, (dataset_json, doi) in url_dataset_jsons_mapping.items():
             if (
                 dataset_item := _parse_dataset_json_to_pystac_item(
                     dataset_json
                 )
-            )
-            and get_version_and_part_from_full_dataset_id(dataset_item.id)[0]
-            == dataset_id
-        }
-        return _parse_and_sort_dataset_items(url_dataset_items_mapping)
+            ) and get_version_and_part_from_full_dataset_id(dataset_item.id)[
+                0
+            ] == dataset_id:
+                url_dataset_items_mapping[url] = dataset_item
+                product_doi = doi
+
+        return _parse_and_sort_dataset_items(
+            url_dataset_items_mapping, product_doi
+        )
 
 
 def _parse_dataset_json_to_pystac_item(
@@ -131,6 +142,7 @@ def _parse_product_json_to_pystac_collection(
 
 def _parse_and_sort_dataset_items(
     url_dataset_items_mapping: dict[str, pystac.Item],
+    product_doi: Optional[str],
 ) -> Optional[CopernicusMarineDataset]:
     """
     Return all dataset metadata parsed and sorted.
@@ -157,6 +169,7 @@ def _parse_and_sort_dataset_items(
     dataset_part_version_merged = CopernicusMarineDataset(
         dataset_id=dataset_id,
         dataset_name=dataset_title,
+        digital_object_identifier=product_doi,
         versions=[],
     )
     dataset_part_version_merged.parse_dataset_metadata_items(
@@ -180,12 +193,19 @@ def _construct_marine_data_store_product(
         key=lambda x: get_version_and_part_from_full_dataset_id(x[0].id)[0],
     )
 
+    digital_object_identifier = (
+        stac_product.extra_fields.get("sci:doi", None)
+        if stac_product.extra_fields
+        else None
+    )
+
     datasets = [
         dataset_metadata
         for _, dataset_items in dataset_items_by_dataset_id
         if (
             dataset_metadata := _parse_and_sort_dataset_items(
-                {url_item: item for item, url_item in dataset_items}
+                {url_item: item for item, url_item in dataset_items},
+                digital_object_identifier,
             )
         )
     ]
@@ -204,11 +224,6 @@ def _construct_marine_data_store_product(
         if thumbnail:
             thumbnail_url = thumbnail.get_absolute_href()
 
-    digital_object_identifier = (
-        stac_product.extra_fields.get("sci:doi", None)
-        if stac_product.extra_fields
-        else None
-    )
     sources = _get_stac_product_property(stac_product, "sources") or []
     processing_level = _get_stac_product_property(
         stac_product, "processingLevel"

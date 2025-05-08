@@ -216,6 +216,7 @@ def subset_function(
                 retrieval_service.metadata_url,
                 retrieval_service.service,
                 retrieval_service.axis_coordinate_id_mapping,
+                retrieval_service.product_doi,
                 disable_progress_bar,
             )
     else:
