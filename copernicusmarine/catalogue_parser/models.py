@@ -591,6 +591,9 @@ class CopernicusMarineDataset(BaseModel):
     dataset_id: str
     #: The dataset name.
     dataset_name: str
+    #: Digital object identifier or doi from
+    #: the product the dataset belongs to.
+    digital_object_identifier: Optional[str]
     #: List of versions of the dataset.
     versions: list[CopernicusMarineVersion]
 
@@ -676,7 +679,7 @@ class CopernicusMarineProduct(BaseModel):
     thumbnail_url: str
     #: Description of the product.
     description: Optional[str]
-    #: Digital object identifier of the product.
+    #: Digital object identifier or doi of the product.
     digital_object_identifier: Optional[str]
     #: Sources of the product.
     sources: list[str]

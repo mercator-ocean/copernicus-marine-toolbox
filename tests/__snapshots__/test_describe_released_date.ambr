@@ -7,6 +7,7 @@
           dict({
             'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m',
             'dataset_name': 'daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily',
+            'digital_object_identifier': '10.48670/moi-00016',
             'versions': list([
               dict({
                 'label': '202211',
@@ -921,6 +922,7 @@
           dict({
             'dataset_id': 'cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m',
             'dataset_name': 'daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily',
+            'digital_object_identifier': '10.48670/moi-00016',
             'versions': list([
               dict({
                 'label': '202211',
@@ -1171,6 +1173,7 @@
           dict({
             'dataset_id': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
             'dataset_name': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
+            'digital_object_identifier': '10.48670/moi-00016',
             'versions': list([
               dict({
                 'label': '202211',
@@ -1221,6 +1224,7 @@
           dict({
             'dataset_id': 'cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m',
             'dataset_name': 'daily-mean chlorophyll concentration (3D)',
+            'digital_object_identifier': '10.48670/moi-00058',
             'versions': list([
               dict({
                 'label': '202012',
@@ -1419,6 +1423,7 @@
           dict({
             'dataset_id': 'cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m',
             'dataset_name': 'monthly-mean chlorophyll concentration (3D)',
+            'digital_object_identifier': '10.48670/moi-00058',
             'versions': list([
               dict({
                 'label': '202012',
@@ -2371,6 +2376,7 @@
           dict({
             'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m',
             'dataset_name': 'daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily',
+            'digital_object_identifier': '10.48670/moi-00016',
             'versions': list([
               dict({
                 'label': '202211',
@@ -2831,6 +2837,7 @@
           dict({
             'dataset_id': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
             'dataset_name': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
+            'digital_object_identifier': '10.48670/moi-00016',
             'versions': list([
               dict({
                 'label': '202211',
