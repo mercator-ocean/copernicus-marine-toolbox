@@ -155,3 +155,17 @@ class TestSparseSubset:
         assert not df.empty
         assert "value" in df.columns
         assert list(df.columns) == COLUMNS_ORDER_ELEVATION
+
+    def test_if_ask_for_empty_dataframe_it_works(self):
+        df = read_dataframe(
+            dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
+            variables=["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
+            minimum_latitude=30.1875,
+            maximum_latitude=45.97916793823242,
+            minimum_longitude=36.29166793823242,
+            maximum_longitude=31.9,
+            start_datetime="01-01-2023",
+            end_datetime="02-01-2023",
+        )
+
+        assert df.empty

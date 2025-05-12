@@ -1,0 +1,12 @@
+Release 2.0.1
+=====================
+
+Patch release with bug fixes and improvements.
+
+Subset
+''''''''
+
+Fixes
+------------------
+
+* Fixed a bug where requesting data for sparse datasets where no data was available would result in an ``Key Error`` error.

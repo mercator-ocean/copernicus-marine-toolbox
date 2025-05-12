@@ -342,6 +342,8 @@ def _transform_dataframe(
     Transform the dataframe to match the expected format to be consistent with MyOceanPro
     and Copernicus Marine Services.
     """  # noqa
+    if df.empty:
+        return df
     # Needs to be done before striping the type to the platform_id
     df["institution"] = df["platform_id"].apply(
         lambda x: (
