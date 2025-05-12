@@ -228,7 +228,11 @@ def _read_dataframe_sparse(
         df = _transform_dataframe(
             df, subset_request.vertical_axis, platforms_metadata
         )
-
+    if df.empty:
+        logger.info(
+            "No data found for the given parameters. "
+            "Please check your request and try again."
+        )
     return (
         df,
         variables,

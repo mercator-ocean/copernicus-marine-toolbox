@@ -156,7 +156,7 @@ class TestSparseSubset:
         assert "value" in df.columns
         assert list(df.columns) == COLUMNS_ORDER_ELEVATION
 
-    def test_if_ask_for_empty_dataframe_it_works(self):
+    def test_if_ask_for_empty_dataframe_it_works(self, caplog):
         df = read_dataframe(
             dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
             variables=["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
@@ -169,3 +169,4 @@ class TestSparseSubset:
         )
 
         assert df.empty
+        assert "No data found for the given parameters" in caplog.text
