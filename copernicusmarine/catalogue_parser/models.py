@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, Optional, Type, TypeVar, Union
 
@@ -581,6 +582,24 @@ class CopernicusMarineVersion(BaseModel):
         return self.parts[0].released_date, self.parts[0].retired_date
 
 
+# For internal use only
+@dataclass
+class DatasetItem:
+    """
+    Intermediate class for the dataset item.
+    Used to parse the dataset item from the catalogue.
+    """
+
+    item_id: str
+    parsed_id: str
+    parsed_part: str
+    parsed_version: str
+    url: str
+    stac_item: pystac.Item
+    stac_json: dict
+    product_doi: Optional[str]
+
+
 class CopernicusMarineDataset(BaseModel):
     """
     Dataset of a product.
@@ -633,22 +652,15 @@ class CopernicusMarineDataset(BaseModel):
 
     def parse_dataset_metadata_items(
         self,
-        url_dataset_items_mapping: dict[str, pystac.Item],
+        dataset_items: list[DatasetItem],
     ) -> None:
         all_versions = set()
-        for (
-            url_metadata,
-            metadata_item,
-        ) in url_dataset_items_mapping.items():
-            (
-                _,
-                dataset_version,
-                dataset_part,
-            ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
+        for dataset_item in dataset_items:
+            dataset_version = dataset_item.parsed_version
             part = CopernicusMarinePart.from_metadata_item(
-                metadata_item,
-                dataset_part,
-                url_metadata,
+                dataset_item.stac_item,
+                dataset_item.parsed_part,
+                dataset_item.url,
             )
             if not part:
                 continue
