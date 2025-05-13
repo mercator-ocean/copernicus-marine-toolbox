@@ -97,8 +97,8 @@ The output will contain the following columns:
 - ``value``: The measurement value.
 - ``value_qc``: The quality control indicator of the value.
 - ``institution``: The institution that produced the data and is affiliated with the platform.
-- ``doi``: The DOI of the data, from the data producers.
-- ``product_doi``: The DOI of the product.
+- ``doi``: The DOI of the data, based on the originating institution.
+- ``product_doi``: Product's DOI in the Copernicus Marine Catalog.
 
 These datasets have specific options and outputs:
 
