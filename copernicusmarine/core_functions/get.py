@@ -152,6 +152,9 @@ def _run_get_request(
         get_request.force_dataset_part,
         None,
         CommandType.GET,
+        None,
+        False,
+        None,
         staging=staging,
     )
     get_request.dataset_url = retrieval_service.uri

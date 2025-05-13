@@ -145,18 +145,16 @@ def subset_function(
         subset_request.force_dataset_part,
         subset_request.force_service,
         CommandType.SUBSET,
-        dataset_subset=subset_request.get_time_and_space_subset(),
+        dataset_subset=subset_request,
         staging=staging,
-        raise_if_updating=subset_request.raise_if_updating,
         platform_ids_subset=bool(subset_request.platform_ids),
-        variables=subset_request.variables,
     )
     subset_request.dataset_url = retrieval_service.uri
     # TODO: Add check for insitu datasets
     check_dataset_subset_bounds(
         service=retrieval_service.service,
         part=retrieval_service.dataset_part,
-        dataset_subset=subset_request.get_time_and_space_subset(),
+        dataset_subset=subset_request,
         coordinates_selection_method=subset_request.coordinates_selection_method,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )

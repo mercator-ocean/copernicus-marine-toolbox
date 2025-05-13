@@ -45,7 +45,7 @@ def load_data_object_from_load_request(
         force_dataset_part_label=load_request.force_dataset_part,
         force_service_name_or_short_name=load_request.force_service,
         command_type=command_type,
-        dataset_subset=load_request.get_time_and_space_subset(),
+        dataset_subset=load_request.to_subset_request(),
     )
     username, password = get_and_check_username_password(
         load_request.username,
@@ -82,6 +82,14 @@ def load_data_object_from_load_request(
             disable_progress_bar=load_request.disable_progress_bar,
         )
 
+    load_request.dataset_url = retrieval_service.uri
+    check_dataset_subset_bounds(
+        service=retrieval_service.service,
+        part=retrieval_service.dataset_part,
+        dataset_subset=load_request.to_subset_request(),
+        coordinates_selection_method=load_request.coordinates_selection_method,
+        axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+    )
     load_request.update_attributes(
         retrieval_service.axis_coordinate_id_mapping
     )
