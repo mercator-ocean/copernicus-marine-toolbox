@@ -405,7 +405,10 @@ def get_approximation_size_data_downloaded(
     dataset: xarray.Dataset,
     service: CopernicusMarineService,
     axis_coordinate_id_mapping: dict[str, str],
+    number_of_chunks: int,
 ) -> Optional[float]:
+    if number_of_chunks != 0:
+        return number_of_chunks * 2.5
     temp_dataset = dataset.copy()
     if "elevation" in dataset.sizes:
         temp_dataset["elevation"] = temp_dataset.elevation * (-1)

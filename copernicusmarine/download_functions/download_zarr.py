@@ -122,6 +122,7 @@ def download_dataset(
     overwrite: bool,
     chunk_size_limit: int,
     skip_existing: bool,
+    number_of_chunks: int,
 ) -> ResponseSubset:
     if chunk_size_limit > 0:
         optimum_dask_chunking = get_optimum_dask_chunking(
@@ -176,7 +177,7 @@ def download_dataset(
         dataset, axis_coordinate_id_mapping
     )
     data_needed_approximation = get_approximation_size_data_downloaded(
-        dataset, service, axis_coordinate_id_mapping
+        dataset, service, axis_coordinate_id_mapping, number_of_chunks
     )
 
     if not output_directory.is_dir():
@@ -246,6 +247,7 @@ def download_zarr(
     is_original_grid: bool,
     axis_coordinate_id_mapping: dict[str, str],
     chunk_size_limit: int,
+    number_of_chunks: int,
 ) -> ResponseSubset:
     geographical_parameters = GeographicalParameters(
         y_axis_parameters=YParameters(
@@ -312,6 +314,7 @@ def download_zarr(
         service=service,
         chunk_size_limit=chunk_size_limit,
         skip_existing=subset_request.skip_existing,
+        number_of_chunks=number_of_chunks,
     )
     return response
 

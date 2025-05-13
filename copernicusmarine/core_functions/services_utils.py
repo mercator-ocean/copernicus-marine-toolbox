@@ -201,23 +201,38 @@ def get_chunk_indexes_for_coordinate(
     requested_maximum: Optional[float],
     chunking_length: Union[int, float],
 ):
+    coordinate_maximum_value: Union[int, float]
+    coordinate_minimum_value: Union[int, float]
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
             datetime.timestamp(datetime_parser(coordinate.minimum_value))
         )
+    elif coordinate.minimum_value is not None:
+        coordinate_minimum_value = coordinate.minimum_value
+    elif coordinate.values is not None:
+        coordinate_minimum_value = min(coordinate.values)  # type: ignore
     else:
-        coordinate_minimum_value = coordinate.minimum_value or -180
-    if isinstance(coordinate.maximum_value, str):
-        coordinate_maximum_value = float(
-            datetime.timestamp(datetime_parser(coordinate.maximum_value))
-        )
-    else:
-        coordinate_maximum_value = coordinate.maximum_value or 180
+        logger.debug("Not enough information to get minimum value.")
+        logger.debug("Using default value.")
+        coordinate_maximum_value = -180
     if (
         requested_minimum is None
         or requested_minimum < coordinate_minimum_value
     ):
         requested_minimum = coordinate_minimum_value
+
+    if isinstance(coordinate.maximum_value, str):
+        coordinate_maximum_value = float(
+            datetime.timestamp(datetime_parser(coordinate.maximum_value))
+        )
+    elif coordinate.maximum_value is not None:
+        coordinate_maximum_value = coordinate.maximum_value
+    elif coordinate.values is not None:
+        coordinate_maximum_value = max(coordinate.values)  # type: ignore
+    else:
+        logger.debug("Not enough information to get maximum value.")
+        logger.debug("Using default value.")
+        coordinate_maximum_value = 180
     if (
         requested_maximum is None
         or requested_maximum > coordinate_maximum_value
@@ -318,9 +333,12 @@ def _get_best_arco_service_type(
     dataset_subset: DatasetTimeAndSpaceSubset,
     dataset_version_part: CopernicusMarinePart,
     variables: Optional[list[str]],
-) -> Literal[
-    CopernicusMarineServiceNames.TIMESERIES,
-    CopernicusMarineServiceNames.GEOSERIES,
+) -> tuple[
+    Literal[
+        CopernicusMarineServiceNames.TIMESERIES,
+        CopernicusMarineServiceNames.GEOSERIES,
+    ],
+    int,
 ]:
     number_chunks_geo_series = get_number_chunks(
         dataset_subset,
@@ -336,8 +354,8 @@ def _get_best_arco_service_type(
     )
 
     if number_chunks_time_series * 2 >= number_chunks_geo_series:
-        return CopernicusMarineServiceNames.GEOSERIES
-    return CopernicusMarineServiceNames.TIMESERIES
+        return CopernicusMarineServiceNames.GEOSERIES, number_chunks_geo_series
+    return CopernicusMarineServiceNames.TIMESERIES, number_chunks_time_series
 
 
 def _get_first_available_service_name(
@@ -362,7 +380,7 @@ def _select_service_by_priority(
     username: Optional[str],
     platform_ids_subset: bool,
     variables: Optional[list[str]],
-) -> CopernicusMarineService:
+) -> tuple[CopernicusMarineService, int]:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
     ]
@@ -392,25 +410,31 @@ def _select_service_by_priority(
         ):
             if platform_ids_subset:
                 try:
-                    return dataset_version_part.get_service_by_service_name(
-                        CopernicusMarineServiceNames.PLATFORMSERIES
+                    return (
+                        dataset_version_part.get_service_by_service_name(
+                            CopernicusMarineServiceNames.PLATFORMSERIES
+                        ),
+                        0,
                     )
                 except StopIteration:
                     raise PlatformsSubsettingNotAvailable()
 
-            return first_available_service
-        best_arco_service_type = _get_best_arco_service_type(
+            return first_available_service, 0
+        (
+            best_arco_service_type,
+            number_chunks_used,
+        ) = _get_best_arco_service_type(
             dataset_subset,
             dataset_version_part,
             variables,
-            # first_available_service.uri,
-            # username,
-            # first_available_service.get_axis_coordinate_id_mapping(),
         )
-        return dataset_version_part.get_service_by_service_name(
-            best_arco_service_type
+        return (
+            dataset_version_part.get_service_by_service_name(
+                best_arco_service_type
+            ),
+            number_chunks_used,
         )
-    return first_available_service
+    return first_available_service, 0
 
 
 # TODO: clear this as there is redundancy
@@ -427,6 +451,7 @@ class RetrievalService:
     axis_coordinate_id_mapping: dict[str, str]
     is_original_grid: bool
     product_doi: Optional[str]
+    number_chunks_used: int = 0
 
 
 def get_retrieval_service(
@@ -565,7 +590,7 @@ def _get_retrieval_service_from_dataset_version(
             )
             service = None
     if not service:
-        service = _select_service_by_priority(
+        service, number_chunks_used = _select_service_by_priority(
             dataset_version_part=dataset_part,
             command_type=command_type,
             dataset_subset=dataset_subset,
@@ -595,6 +620,7 @@ def _get_retrieval_service_from_dataset_version(
         axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
         metadata_url=dataset_part.url_metadata,
         is_original_grid=dataset_part.name == "originalGrid",
+        number_chunks_used=number_chunks_used,
         product_doi=product_doi,
     )
 
