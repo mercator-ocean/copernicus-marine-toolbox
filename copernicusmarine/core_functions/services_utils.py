@@ -23,9 +23,7 @@ from copernicusmarine.core_functions.exceptions import (
     PlatformsSubsettingNotAvailable,
 )
 from copernicusmarine.core_functions.models import ChunkType
-from copernicusmarine.core_functions.request_structure import (
-    DatasetTimeAndSpaceSubset,
-)
+from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
@@ -200,8 +198,7 @@ def get_chunk_indexes_for_coordinate(
     requested_minimum: Optional[float],
     requested_maximum: Optional[float],
     chunking_length: Union[int, float],
-):
-    coordinate_maximum_value: Union[int, float]
+) -> tuple[int, int]:
     coordinate_minimum_value: Union[int, float]
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
@@ -214,13 +211,14 @@ def get_chunk_indexes_for_coordinate(
     else:
         logger.debug("Not enough information to get minimum value.")
         logger.debug("Using default value.")
-        coordinate_maximum_value = -180
+        return 0, 0
     if (
         requested_minimum is None
         or requested_minimum < coordinate_minimum_value
     ):
         requested_minimum = coordinate_minimum_value
 
+    coordinate_maximum_value: Union[int, float]
     if isinstance(coordinate.maximum_value, str):
         coordinate_maximum_value = float(
             datetime.timestamp(datetime_parser(coordinate.maximum_value))
@@ -232,7 +230,7 @@ def get_chunk_indexes_for_coordinate(
     else:
         logger.debug("Not enough information to get maximum value.")
         logger.debug("Using default value.")
-        coordinate_maximum_value = 180
+        return 0, 0
     if (
         requested_maximum is None
         or requested_maximum > coordinate_maximum_value
@@ -279,13 +277,12 @@ def get_chunk_indexes_for_coordinate(
 
 
 def get_number_chunks(
-    dataset_subset: DatasetTimeAndSpaceSubset,
+    dataset_subset: SubsetRequest,
     service_name: CopernicusMarineServiceNames,
     dataset_version_part: CopernicusMarinePart,
-    variables: Optional[list[str]],
 ) -> int:
     service = dataset_version_part.get_service_by_service_name(service_name)
-    variables = variables or []
+    variables = dataset_subset.variables or []
     for variable in service.variables:
         if (
             variable.standard_name in variables
@@ -330,9 +327,8 @@ def get_number_chunks(
 
 
 def _get_best_arco_service_type(
-    dataset_subset: DatasetTimeAndSpaceSubset,
+    dataset_subset: SubsetRequest,
     dataset_version_part: CopernicusMarinePart,
-    variables: Optional[list[str]],
 ) -> tuple[
     Literal[
         CopernicusMarineServiceNames.TIMESERIES,
@@ -344,13 +340,11 @@ def _get_best_arco_service_type(
         dataset_subset,
         CopernicusMarineServiceNames.GEOSERIES,
         dataset_version_part,
-        variables,
     )
     number_chunks_time_series = get_number_chunks(
         dataset_subset,
         CopernicusMarineServiceNames.TIMESERIES,
         dataset_version_part,
-        variables,
     )
 
     if number_chunks_time_series * 2 >= number_chunks_geo_series:
@@ -376,10 +370,9 @@ def _get_first_available_service_name(
 def _select_service_by_priority(
     dataset_version_part: CopernicusMarinePart,
     command_type: CommandType,
-    dataset_subset: Optional[DatasetTimeAndSpaceSubset],
+    dataset_subset: Optional[SubsetRequest],
     username: Optional[str],
     platform_ids_subset: bool,
-    variables: Optional[list[str]],
 ) -> tuple[CopernicusMarineService, int]:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
@@ -426,7 +419,6 @@ def _select_service_by_priority(
         ) = _get_best_arco_service_type(
             dataset_subset,
             dataset_version_part,
-            variables,
         )
         return (
             dataset_version_part.get_service_by_service_name(
@@ -460,12 +452,10 @@ def get_retrieval_service(
     force_dataset_part_label: Optional[str],
     force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
-    dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
+    dataset_subset: Optional[SubsetRequest],
     platform_ids_subset: bool = False,
     username: Optional[str] = None,
     staging: bool = False,
-    raise_if_updating: bool = False,
-    variables: Optional[list[str]] = None,
 ) -> RetrievalService:
     dataset_metadata = get_dataset_metadata(dataset_id, staging=staging)
     if not dataset_metadata:
@@ -491,9 +481,7 @@ def get_retrieval_service(
         command_type=command_type,
         dataset_subset=dataset_subset,
         username=username,
-        raise_if_updating=raise_if_updating,
         platform_ids_subset=platform_ids_subset,
-        variables=variables,
         product_doi=product_doi,
     )
 
@@ -504,11 +492,9 @@ def _get_retrieval_service_from_dataset(
     force_dataset_part_label: Optional[str],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
-    dataset_subset: Optional[DatasetTimeAndSpaceSubset],
+    dataset_subset: Optional[SubsetRequest],
     username: Optional[str],
-    raise_if_updating: bool,
     platform_ids_subset: bool,
-    variables: Optional[list[str]] = None,
     product_doi: Optional[str],
 ) -> RetrievalService:
     dataset_version = dataset.get_version(force_dataset_version_label)
@@ -521,9 +507,7 @@ def _get_retrieval_service_from_dataset(
         command_type=command_type,
         dataset_subset=dataset_subset,
         username=username,
-        raise_if_updating=raise_if_updating,
         platform_ids_subset=platform_ids_subset,
-        variables=variables,
         product_doi=product_doi,
     )
 
@@ -534,11 +518,9 @@ def _get_retrieval_service_from_dataset_version(
     force_dataset_part_label: Optional[str],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
-    dataset_subset: Optional[DatasetTimeAndSpaceSubset],
+    dataset_subset: Optional[SubsetRequest],
     username: Optional[str],
-    raise_if_updating: bool,
     platform_ids_subset: bool,
-    variables: Optional[list[str]] = None,
     product_doi: Optional[str],
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
@@ -573,7 +555,7 @@ def _get_retrieval_service_from_dataset_version(
                 dataset_part=dataset_part,
             )
             logger.warning(error_message)
-            if raise_if_updating:
+            if dataset_subset and dataset_subset.raise_if_updating:
                 raise DatasetUpdating(error_message)
 
     service = None
@@ -596,7 +578,6 @@ def _get_retrieval_service_from_dataset_version(
             dataset_subset=dataset_subset,
             username=username,
             platform_ids_subset=platform_ids_subset,
-            variables=variables,
         )
     if (
         command_type
