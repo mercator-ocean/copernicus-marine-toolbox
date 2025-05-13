@@ -149,6 +149,7 @@ def subset_function(
         staging=staging,
         raise_if_updating=subset_request.raise_if_updating,
         platform_ids_subset=bool(subset_request.platform_ids),
+        variables=subset_request.variables,
     )
     subset_request.dataset_url = retrieval_service.uri
     # TODO: Add check for insitu datasets
