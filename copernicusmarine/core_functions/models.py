@@ -28,6 +28,11 @@ GeoSpatialProjection = Literal["lonlat", "originalGrid"]
 DEFAULT_GEOSPATIAL_PROJECTION: GeoSpatialProjection = "lonlat"
 
 
+class ChunkType(str, Enum):
+    ARITHMETIC = "default"
+    GEOMETRIC = "symmetricGeometric"
+
+
 class StatusCode(str, Enum):
     """
     Enumeration of the possible of a request.
