@@ -21,9 +21,7 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
-from copernicusmarine.core_functions.request_structure import (
-    DatasetTimeAndSpaceSubset,
-)
+from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )
@@ -643,7 +641,7 @@ def longitude_modulus_upper_bound(longitude: float) -> float:
 def check_dataset_subset_bounds(
     service: CopernicusMarineService,
     part: CopernicusMarinePart,
-    dataset_subset: DatasetTimeAndSpaceSubset,
+    dataset_subset: SubsetRequest,
     coordinates_selection_method: CoordinatesSelectionMethod,
     axis_coordinate_id_mapping: dict[str, str],
 ) -> None:
