@@ -228,7 +228,11 @@ def _read_dataframe_sparse(
         df = _transform_dataframe(
             df, subset_request.vertical_axis, platforms_metadata
         )
-
+    if df.empty:
+        logger.info(
+            "No data found for the given parameters. "
+            "Please check your request and try again."
+        )
     return (
         df,
         variables,
@@ -342,6 +346,8 @@ def _transform_dataframe(
     Transform the dataframe to match the expected format to be consistent with MyOceanPro
     and Copernicus Marine Services.
     """  # noqa
+    if df.empty:
+        return df
     # Needs to be done before striping the type to the platform_id
     df["institution"] = df["platform_id"].apply(
         lambda x: (

@@ -684,6 +684,15 @@ def check_dataset_subset_bounds(
         coordinate, _, _ = all_coordinates[coordinate_id]
         minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
         if coordinate_id == "longitude":
+            if (
+                dataset_subset.minimum_x is not None
+                and dataset_subset.maximum_x is not None
+                and dataset_subset.minimum_x > dataset_subset.maximum_x
+            ):
+                raise MinimumLongitudeGreaterThanMaximumLongitude(
+                    "--minimum-longitude option must be smaller "
+                    "or equal to --maximum-longitude"
+                )
             user_minimum_coordinate_value = (
                 longitude_modulus(dataset_subset.minimum_x)
                 if dataset_subset.minimum_x is not None
