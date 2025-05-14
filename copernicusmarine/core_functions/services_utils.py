@@ -159,12 +159,14 @@ def _get_chunks_index_arithmetic(
     requested_value: float,
     reference_chunking_step: float,
     chunk_length: Union[int, float],
+    chunk_step: Union[int, float],
 ) -> int:
     """
     Chunk index calculation for arithmetic chunking.
     """
     return math.floor(
-        (requested_value - reference_chunking_step) / chunk_length
+        (requested_value - reference_chunking_step)
+        / (chunk_length * chunk_step)
     )
 
 
@@ -199,6 +201,9 @@ def get_chunk_indexes_for_coordinate(
     requested_maximum: Optional[float],
     chunking_length: Union[int, float],
 ) -> tuple[int, int]:
+    # logger.info(coordinate.coordinate_id)
+    # logger.info(f"requestedmini: {requested_minimum}")
+    # logger.info(f"requestedmaxi: {requested_maximum}")
     coordinate_minimum_value: Union[int, float]
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
@@ -252,7 +257,12 @@ def get_chunk_indexes_for_coordinate(
         or requested_maximum > coordinate_maximum_value
     ):
         requested_maximum = coordinate_maximum_value
-
+    # logger.info(f"chunk refce coord {coordinate.chunk_reference_coordinate}")
+    # logger.info(f"requestedmini: {requested_minimum}")
+    # logger.info(f"requestedmaxi: {requested_maximum}")
+    # logger.info(f"coord min: {coordinate_minimum_value}")
+    # logger.info(f"coord max: {coordinate_maximum_value}")
+    # logger.info(f"chunking length: {chunking_length}")
     index_min = 0
     index_max = 0
     if chunking_length:
@@ -266,12 +276,14 @@ def get_chunk_indexes_for_coordinate(
                 coordinate.chunk_reference_coordinate
                 or coordinate_minimum_value,
                 chunking_length,
+                coordinate.step or 1,
             )
             index_max = _get_chunks_index_arithmetic(
                 requested_maximum,
                 coordinate.chunk_reference_coordinate
                 or coordinate_minimum_value,
                 chunking_length,
+                coordinate.step or 1,
             )
         elif coordinate.chunk_type == ChunkType.GEOMETRIC:
             logger.debug("Geometric chunking")
@@ -289,6 +301,8 @@ def get_chunk_indexes_for_coordinate(
                 chunking_length,
                 coordinate.chunk_geometric_factor,
             )
+    # logger.info(f"index min: {index_min}")
+    # logger.info(f"index max: {index_max}")
     return (index_min, index_max)
 
 
@@ -360,6 +374,8 @@ def _get_best_arco_service_type(
         CopernicusMarineServiceNames.TIMESERIES,
         dataset_version_part,
     )
+    # logger.info(f"number_chunks_geo_series: {number_chunks_geo_series}")
+    # logger.info(f"number_chunks_time_series: {number_chunks_time_series}")
 
     if number_chunks_time_series * 2 >= number_chunks_geo_series:
         return CopernicusMarineServiceNames.GEOSERIES, number_chunks_geo_series
