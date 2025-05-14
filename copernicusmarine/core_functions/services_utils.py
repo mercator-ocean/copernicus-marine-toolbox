@@ -26,6 +26,7 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
+    timestamp_or_datestring_to_datetime,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -198,23 +199,20 @@ def get_chunk_indexes_for_coordinate(
     requested_maximum: Optional[float],
     chunking_length: Union[int, float],
 ) -> tuple[int, int]:
-    logger.info(coordinate.minimum_value)
-    logger.info(requested_minimum)
-    logger.info(coordinate.maximum_value)
     coordinate_minimum_value: Union[int, float]
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
-            datetime_parser(coordinate.minimum_value).timestamp()
+            timestamp_or_datestring_to_datetime(
+                coordinate.minimum_value
+            ).timestamp()
         )
     elif coordinate.minimum_value is not None:
         coordinate_minimum_value = coordinate.minimum_value
     elif coordinate.values is not None:
-        logger.info(min(coordinate.values))
-        logger.info(max(coordinate.values))
         coordinate_minimum_value = min(coordinate.values)  # type: ignore
         if coordinate.coordinate_id == "time":
             coordinate_minimum_value = min(
-                float(datetime_parser(value).timestamp())
+                float(timestamp_or_datestring_to_datetime(value).timestamp())
                 for value in coordinate.values
             )
 
@@ -231,7 +229,9 @@ def get_chunk_indexes_for_coordinate(
     coordinate_maximum_value: Union[int, float]
     if isinstance(coordinate.maximum_value, str):
         coordinate_maximum_value = float(
-            datetime_parser(coordinate.maximum_value).timestamp()
+            timestamp_or_datestring_to_datetime(
+                coordinate.maximum_value
+            ).timestamp()
         )
     elif coordinate.maximum_value is not None:
         coordinate_maximum_value = coordinate.maximum_value
@@ -239,7 +239,7 @@ def get_chunk_indexes_for_coordinate(
         coordinate_maximum_value = max(coordinate.values)  # type: ignore
         if coordinate.coordinate_id == "time":
             coordinate_maximum_value = max(
-                float(datetime_parser(value).timestamp())
+                float(timestamp_or_datestring_to_datetime(value).timestamp())
                 for value in coordinate.values
             )
 
@@ -260,14 +260,7 @@ def get_chunk_indexes_for_coordinate(
             coordinate.chunk_type == ChunkType.ARITHMETIC
             or coordinate.chunk_type is None
         ):
-            logger.info("Arithmetic chunking")
-            logger.info(f"minimum req {requested_minimum}")
-            logger.info(
-                f"chunk ref coord {coordinate.chunk_reference_coordinate}"
-            )
-            logger.info(f"coord min value {coordinate_minimum_value}")
-            logger.info(f"req max {requested_maximum}")
-            logger.info(f"chunklegnth {chunking_length}")
+            logger.debug("Arithmetic chunking")
             index_min = _get_chunks_index_arithmetic(
                 requested_minimum,
                 coordinate.chunk_reference_coordinate
@@ -280,8 +273,6 @@ def get_chunk_indexes_for_coordinate(
                 or coordinate_minimum_value,
                 chunking_length,
             )
-            logger.info(f"index min {index_min}")
-            logger.info(f"index max {index_max}")
         elif coordinate.chunk_type == ChunkType.GEOMETRIC:
             logger.debug("Geometric chunking")
             index_min = _get_chunks_index_geometric(
@@ -316,7 +307,6 @@ def get_number_chunks(
             or not variables
         ):
             for coordinate in variable.coordinates:
-                logger.info(coordinate.coordinate_id)
                 if coordinate.chunking_length:
                     chunking_length = coordinate.chunking_length
                 else:
