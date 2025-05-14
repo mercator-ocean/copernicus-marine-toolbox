@@ -105,21 +105,29 @@ In mac-os or linux:
 
 .. code-block:: bash
 
-    ./copernicusmarine_macos-x86_64.cli describe
+    ./copernicusmarine_macos-x86_64.cli --help
+    # or for example a subset command
+    ./copernicusmarine_macos-x86_64.cli subset --create-template
+    ./copernicusmarine_macos-x86_64.cli subset --request-file subset_template.json
 
 (``describe`` or any other command)
 
-You might have to update the permissions of the binary to be able to execute it with linux:
+.. note::
 
-.. code-block:: bash
+    You might have to update the permissions of the binary to be able to execute it with linux:
 
-    chmod +rwx copernicusmarine_linux-glibc-2.35.cli
+    .. code-block:: bash
+
+        chmod +rwx copernicusmarine_linux-glibc-2.35.cli
 
 And from a Windows os (cmd):
 
 .. code-block:: bash
 
-    copernicusmarine.exe describe
+    copernicusmarine.exe --help
+    # or for example a subset command
+    copernicusmarine.exe subset --create-template
+    copernicusmarine.exe subset --request-file subset_template.json
 
 (``describe`` or any other command)
 
