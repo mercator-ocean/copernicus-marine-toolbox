@@ -159,7 +159,7 @@ class TestSparseSubset:
         assert "value" in df.columns
         assert list(df.columns) == COLUMNS_ORDER_ELEVATION
 
-    def test_if_ask_for_empty_dataframe_it_works(self, caplog):
+    def test_error_raises_for_inverted_longitude(self):
         try:
             _ = read_dataframe(
                 dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
@@ -176,3 +176,17 @@ class TestSparseSubset:
                 "--minimum-longitude option must be smaller "
                 "or equal to --maximum-longitude" in e.__str__()
             )
+
+    def test_if_ask_for_empty_dataframe_it_works(self, caplog):
+        df = read_dataframe(
+            dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
+            variables=["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
+            maximum_latitude=30.1875,
+            minimum_latitude=30.188,
+            maximum_longitude=32,
+            minimum_longitude=31.9,
+            start_datetime="01-01-2023",
+            end_datetime="02-01-2023",
+        )
+        assert df.empty
+        assert "No data found for the given parameters" in caplog.text
