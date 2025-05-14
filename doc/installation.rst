@@ -48,7 +48,7 @@ You can install it using ``mamba`` (or conda) through the ``conda-forge`` channe
 
     mamba install conda-forge::copernicusmarine --yes
 
-To upgrade the toolbox with mamba (or conda):
+To upgrade the Toolbox with mamba (or conda):
 
 .. code-block:: bash
 
@@ -185,8 +185,11 @@ and ``h5netcdf`` library as the backend.
 
 
 
-    The docker image of the toolbox should already have the ``netcdf4`` library installed.
+    The docker image of the Toolbox should already have the ``netcdf4`` library installed.
 
+
+If you use ``subprocess.run`` or similar with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
+Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
 
 Domains required by the Copernicus Marine Toolbox
 ********************************************************
