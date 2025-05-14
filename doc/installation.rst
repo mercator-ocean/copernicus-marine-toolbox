@@ -188,6 +188,9 @@ and ``h5netcdf`` library as the backend.
     The docker image of the toolbox should already have the ``netcdf4`` library installed.
 
 
+Version 8.2.0 of ``click`` is skipped because of this `click issue <https://github.com/pallets/click/issues/2894>`_. It would create a problem where if you use ``subprocess.run``
+the command would not take into account certain flags.
+
 Domains required by the Copernicus Marine Toolbox
 ********************************************************
 To be able to use the Copernicus Marine Services, you need to be able to access those domains:
