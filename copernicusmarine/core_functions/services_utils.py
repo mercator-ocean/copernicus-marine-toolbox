@@ -1,7 +1,6 @@
 import logging
 import math
 from dataclasses import dataclass
-from datetime import datetime
 from enum import Enum
 from typing import List, Literal, Optional, Union
 
@@ -202,12 +201,18 @@ def get_chunk_indexes_for_coordinate(
     coordinate_minimum_value: Union[int, float]
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
-            datetime.timestamp(datetime_parser(coordinate.minimum_value))
+            datetime_parser(coordinate.minimum_value).timestamp()
         )
     elif coordinate.minimum_value is not None:
         coordinate_minimum_value = coordinate.minimum_value
     elif coordinate.values is not None:
         coordinate_minimum_value = min(coordinate.values)  # type: ignore
+        if coordinate.coordinate_id == "time":
+            coordinate_minimum_value = min(
+                float(datetime_parser(value).timestamp())
+                for value in coordinate.values
+            )
+
     else:
         logger.debug("Not enough information to get minimum value.")
         logger.debug("Using default value.")
@@ -221,12 +226,18 @@ def get_chunk_indexes_for_coordinate(
     coordinate_maximum_value: Union[int, float]
     if isinstance(coordinate.maximum_value, str):
         coordinate_maximum_value = float(
-            datetime.timestamp(datetime_parser(coordinate.maximum_value))
+            datetime_parser(coordinate.maximum_value).timestamp()
         )
     elif coordinate.maximum_value is not None:
         coordinate_maximum_value = coordinate.maximum_value
     elif coordinate.values is not None:
         coordinate_maximum_value = max(coordinate.values)  # type: ignore
+        if coordinate.coordinate_id == "time":
+            coordinate_maximum_value = max(
+                float(datetime_parser(value).timestamp())
+                for value in coordinate.values
+            )
+
     else:
         logger.debug("Not enough information to get maximum value.")
         logger.debug("Using default value.")
@@ -297,14 +308,12 @@ def get_number_chunks(
                     continue
                 if coordinate.axis == "t":
                     min_coord = (
-                        float(
-                            datetime.timestamp(dataset_subset.start_datetime)
-                        )
+                        float(dataset_subset.start_datetime.timestamp())
                         if dataset_subset.start_datetime
                         else None
                     )
                     max_coord = (
-                        float(datetime.timestamp(dataset_subset.end_datetime))
+                        float(dataset_subset.end_datetime.timestamp())
                         if dataset_subset.end_datetime
                         else None
                     )
