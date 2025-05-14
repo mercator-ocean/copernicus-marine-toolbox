@@ -32,6 +32,10 @@ MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
     "dataset_version": "force_dataset_version",
     "dataset_part": "force_dataset_part",
     "service": "force_service",
+    "maximum_latitude": "maximum_y",
+    "minimum_latitude": "minimum_y",
+    "maximum_longitude": "maximum_x",
+    "minimum_longitude": "minimum_x",
 }
 
 

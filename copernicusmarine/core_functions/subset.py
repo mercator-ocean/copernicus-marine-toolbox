@@ -243,7 +243,7 @@ def create_subset_template() -> None:
                 "maximum_depth": 10,
                 "variables": ["so", "thetao"],
                 "output_directory": "copernicusmarine_data",
-                "force_service": False,
+                "service": False,
                 "request_file": False,
                 "motu_api_request": False,
                 "overwrite": False,

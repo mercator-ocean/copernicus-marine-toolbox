@@ -1,6 +1,9 @@
 import fnmatch
+import json
 import re
 from pathlib import Path
+
+import xarray
 
 from tests.test_command_line_interface import get_all_files_in_folder_tree
 from tests.test_utils import execute_in_terminal
@@ -21,7 +24,7 @@ def build_command(filepath: Path, command: str):
 
 
 class TestRequestFiles:
-    def test_subset_request_with_request_file(self, tmp_path):
+    def test_subset_request_with_request_file(self, tmp_path, snapshot):
         filepath = get_path_to_request_file(
             "test_subset_request_with_request_file"
         )
@@ -30,11 +33,15 @@ class TestRequestFiles:
         command += [
             "--output-directory",
             f"{tmp_path}",
+            "-r",
+            "all",
         ]
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
+        response = json.loads(self.output.stdout)
         assert b'Selected dataset version: "default"' in self.output.stderr
+        assert str(xarray.open_dataset(response["file_path"])) == snapshot
 
     def test_subset_request_without_subset(self):
         filepath = get_path_to_request_file(

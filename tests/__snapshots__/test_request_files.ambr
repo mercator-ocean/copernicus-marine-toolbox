@@ -1,0 +1,22 @@
+# serializer version: 1
+# name: TestRequestFiles.test_subset_request_with_request_file
+  '''
+  <xarray.Dataset> Size: 96B
+  Dimensions:       (time: 2, latitude: 2, longitude: 2)
+  Coordinates:
+    * latitude      (latitude) float32 8B 0.025 0.075
+    * longitude     (longitude) float32 8B 0.025 0.075
+    * time          (time) datetime64[ns] 16B 2021-01-01 2021-01-02
+  Data variables:
+      analysed_sst  (time, latitude, longitude) float64 64B ...
+  Attributes:
+      comment:                   WARNING Some applications are unable to proper...
+      title:                     Global SST & Sea Ice Analysis, L4 OSTIA, 0.05 ...
+      Conventions:               CF-1.4, ACDD-1.3
+      institution:               UKMO
+      history:                   Created from sst.nc; obs_anal.nc; seaice.nc
+      source:                    AVHRR18_G-NAVO-L2P-V1.0, AVHRR19_G-NAVO-L2P-V1...
+      references:                Good S, Fiedler E, Mao C, Martin MJ, Maycock A...
+      copernicusmarine_version:  2.1.0
+  '''
+# ---
