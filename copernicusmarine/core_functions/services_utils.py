@@ -198,6 +198,9 @@ def get_chunk_indexes_for_coordinate(
     requested_maximum: Optional[float],
     chunking_length: Union[int, float],
 ) -> tuple[int, int]:
+    logger.info(coordinate.minimum_value)
+    logger.info(requested_minimum)
+    logger.info(coordinate.maximum_value)
     coordinate_minimum_value: Union[int, float]
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
@@ -206,6 +209,8 @@ def get_chunk_indexes_for_coordinate(
     elif coordinate.minimum_value is not None:
         coordinate_minimum_value = coordinate.minimum_value
     elif coordinate.values is not None:
+        logger.info(min(coordinate.values))
+        logger.info(max(coordinate.values))
         coordinate_minimum_value = min(coordinate.values)  # type: ignore
         if coordinate.coordinate_id == "time":
             coordinate_minimum_value = min(
@@ -255,7 +260,14 @@ def get_chunk_indexes_for_coordinate(
             coordinate.chunk_type == ChunkType.ARITHMETIC
             or coordinate.chunk_type is None
         ):
-            logger.debug("Arithmetic chunking")
+            logger.info("Arithmetic chunking")
+            logger.info(f"minimum req {requested_minimum}")
+            logger.info(
+                f"chunk ref coord {coordinate.chunk_reference_coordinate}"
+            )
+            logger.info(f"coord min value {coordinate_minimum_value}")
+            logger.info(f"req max {requested_maximum}")
+            logger.info(f"chunklegnth {chunking_length}")
             index_min = _get_chunks_index_arithmetic(
                 requested_minimum,
                 coordinate.chunk_reference_coordinate
@@ -268,6 +280,8 @@ def get_chunk_indexes_for_coordinate(
                 or coordinate_minimum_value,
                 chunking_length,
             )
+            logger.info(f"index min {index_min}")
+            logger.info(f"index max {index_max}")
         elif coordinate.chunk_type == ChunkType.GEOMETRIC:
             logger.debug("Geometric chunking")
             index_min = _get_chunks_index_geometric(
@@ -294,14 +308,15 @@ def get_number_chunks(
 ) -> int:
     service = dataset_version_part.get_service_by_service_name(service_name)
     variables = dataset_subset.variables or []
+    number_of_chunks = 1
     for variable in service.variables:
         if (
             variable.standard_name in variables
             or variable.short_name in variables
             or not variables
         ):
-            number_of_chunks = 1
             for coordinate in variable.coordinates:
+                logger.info(coordinate.coordinate_id)
                 if coordinate.chunking_length:
                     chunking_length = coordinate.chunking_length
                 else:
@@ -534,6 +549,7 @@ def _get_retrieval_service_from_dataset_version(
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
+    number_chunks_used = 0
     if dataset_part.retired_date:
         _warning_dataset_will_be_deprecated(
             dataset_id, dataset_version, dataset_part
