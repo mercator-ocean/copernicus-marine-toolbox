@@ -130,3 +130,4 @@ update-tests-snapshots:
 	pytest --snapshot-update tests/test_describe_released_date.py
 	pytest --snapshot-update tests/test_help_command_interface.py
 	pytest --snapshot-update tests/test_query_builder.py::TestQueryBuilder::test_return_available_fields
+	pytest --snapshot-update tests/test_request_files.py::TestRequestFiles::test_subset_request_with_request_file
