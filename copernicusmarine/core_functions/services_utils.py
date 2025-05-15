@@ -376,12 +376,9 @@ def get_number_chunks(
 def _get_best_arco_service_type(
     dataset_subset: SubsetRequest,
     dataset_version_part: CopernicusMarinePart,
-) -> tuple[
-    Literal[
-        CopernicusMarineServiceNames.TIMESERIES,
-        CopernicusMarineServiceNames.GEOSERIES,
-    ],
-    int,
+) -> Literal[
+    CopernicusMarineServiceNames.TIMESERIES,
+    CopernicusMarineServiceNames.GEOSERIES,
 ]:
     number_chunks_geo_series = get_number_chunks(
         dataset_subset,
@@ -395,8 +392,8 @@ def _get_best_arco_service_type(
     )
 
     if number_chunks_time_series * 2 >= number_chunks_geo_series:
-        return CopernicusMarineServiceNames.GEOSERIES, number_chunks_geo_series
-    return CopernicusMarineServiceNames.TIMESERIES, number_chunks_time_series
+        return CopernicusMarineServiceNames.GEOSERIES
+    return CopernicusMarineServiceNames.TIMESERIES
 
 
 def _get_first_available_service_name(
@@ -420,7 +417,7 @@ def _select_service_by_priority(
     dataset_subset: Optional[SubsetRequest],
     username: Optional[str],
     platform_ids_subset: bool,
-) -> tuple[CopernicusMarineService, int]:
+) -> CopernicusMarineService:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
     ]
@@ -450,30 +447,21 @@ def _select_service_by_priority(
         ):
             if platform_ids_subset:
                 try:
-                    return (
-                        dataset_version_part.get_service_by_service_name(
-                            CopernicusMarineServiceNames.PLATFORMSERIES
-                        ),
-                        0,
+                    return dataset_version_part.get_service_by_service_name(
+                        CopernicusMarineServiceNames.PLATFORMSERIES
                     )
                 except StopIteration:
                     raise PlatformsSubsettingNotAvailable()
 
-            return first_available_service, 0
-        (
-            best_arco_service_type,
-            number_chunks_used,
-        ) = _get_best_arco_service_type(
+            return first_available_service
+        best_arco_service_type = _get_best_arco_service_type(
             dataset_subset,
             dataset_version_part,
         )
-        return (
-            dataset_version_part.get_service_by_service_name(
-                best_arco_service_type
-            ),
-            number_chunks_used,
+        return dataset_version_part.get_service_by_service_name(
+            best_arco_service_type
         )
-    return first_available_service, 0
+    return first_available_service
 
 
 # TODO: clear this as there is redundancy
@@ -490,7 +478,6 @@ class RetrievalService:
     axis_coordinate_id_mapping: dict[str, str]
     is_original_grid: bool
     product_doi: Optional[str]
-    number_chunks_used: int = 0
 
 
 def get_retrieval_service(
@@ -572,7 +559,6 @@ def _get_retrieval_service_from_dataset_version(
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
-    number_chunks_used = 0
     if dataset_part.retired_date:
         _warning_dataset_will_be_deprecated(
             dataset_id, dataset_version, dataset_part
@@ -620,7 +606,7 @@ def _get_retrieval_service_from_dataset_version(
             )
             service = None
     if not service:
-        service, number_chunks_used = _select_service_by_priority(
+        service = _select_service_by_priority(
             dataset_version_part=dataset_part,
             command_type=command_type,
             dataset_subset=dataset_subset,
@@ -649,7 +635,6 @@ def _get_retrieval_service_from_dataset_version(
         axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
         metadata_url=dataset_part.url_metadata,
         is_original_grid=dataset_part.name == "originalGrid",
-        number_chunks_used=number_chunks_used,
         product_doi=product_doi,
     )
 
