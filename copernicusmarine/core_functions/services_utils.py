@@ -342,9 +342,17 @@ def get_number_chunks(
                     )
                 elif coordinate.axis == "x":
                     if "longitude" == axis_coordinate_mapping["x"]:
-                        min_coord = longitude_modulus(dataset_subset.minimum_x)
-                        max_coord = longitude_modulus_upper_bound(
-                            dataset_subset.maximum_x
+                        min_coord = (
+                            longitude_modulus(dataset_subset.minimum_x)
+                            if dataset_subset.minimum_x
+                            else None
+                        )
+                        max_coord = (
+                            longitude_modulus_upper_bound(
+                                dataset_subset.maximum_x
+                            )
+                            if dataset_subset.maximum_x
+                            else None
                         )
                     else:
                         min_coord = dataset_subset.minimum_x
