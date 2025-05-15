@@ -78,6 +78,7 @@ def load_data_object_from_load_request(
             subset_request=load_request.to_subset_request(),
             metadata_url=retrieval_service.metadata_url,
             service=retrieval_service.service,
+            product_doi=retrieval_service.product_doi,
             disable_progress_bar=load_request.disable_progress_bar,
         )
 

@@ -449,6 +449,7 @@ class TestDescribe:
                     "dataset_id",
                     "versions",
                     "dataset_name",
+                    "digital_object_identifier",
                 }
                 for version in dataset["versions"]:
                     assert set(version.keys()) == {"parts", "label"}
