@@ -3,10 +3,83 @@ import json
 import re
 from pathlib import Path
 
-import xarray
-
 from tests.test_command_line_interface import get_all_files_in_folder_tree
 from tests.test_utils import execute_in_terminal
+
+
+def sort_netcdf_string(netcdf_str):
+    header_match = re.match(r"netcdf\s+([^{]+)\s*\{", netcdf_str)
+    header = f"netcdf {header_match.group(1)} {{\n" if header_match else ""
+
+    dimensions_block = re.search(
+        r"dimensions:\s*((?:.|\n)*?)variables:", netcdf_str
+    )
+    variables_block = re.search(
+        r"variables:\s*((?:.|\n)*?)// global attributes:", netcdf_str
+    )
+    global_attrs_block = re.search(
+        r"// global attributes:\s*((?:.|\n)*?)\}", netcdf_str
+    )
+
+    def sort_lines_block(block_text):
+        lines = [
+            line.strip()
+            for line in block_text.strip().split("\n")
+            if line.strip()
+        ]
+        return sorted(lines)
+
+    def parse_variable_blocks(text):
+        var_blocks = {}
+        lines = text.strip().split("\n")
+        current_var = None
+        current_block = []
+        for line in lines:
+            if re.match(r"^\s*\w+ \w+\([^\)]*\) ;", line.strip()):
+                if current_var:
+                    var_blocks[current_var] = current_block
+                current_var = line.strip().split()[1].split("(")[0]
+                current_block = [line.strip()]
+            else:
+                current_block.append(line.strip())
+        if current_var:
+            var_blocks[current_var] = current_block
+        return dict(sorted(var_blocks.items()))
+
+    def sort_variable_attrs(block_lines):
+        base = block_lines[0]
+        attrs = sorted(block_lines[1:])
+        return [base] + attrs
+
+    sorted_dimensions = (
+        sort_lines_block(dimensions_block.group(1)) if dimensions_block else []
+    )
+    dimensions_str = "  dimensions:\n" + "".join(
+        f"   {line}\n" for line in sorted_dimensions
+    )
+
+    variable_blocks = (
+        parse_variable_blocks(variables_block.group(1))
+        if variables_block
+        else {}
+    )
+    sorted_vars = []
+    for block in variable_blocks.values():
+        sorted_attrs = sort_variable_attrs(block)
+        sorted_vars.extend(f"   {line}" for line in sorted_attrs)
+        sorted_vars.append("")  # blank line between variables
+    variables_str = "  variables:\n" + "\n".join(sorted_vars).rstrip() + "\n"
+
+    global_attrs = (
+        sort_lines_block(global_attrs_block.group(1))
+        if global_attrs_block
+        else []
+    )
+    global_attrs_str = "  // global attributes:\n" + "".join(
+        f"   {line}\n" for line in global_attrs
+    )
+
+    return header + dimensions_str + variables_str + global_attrs_str + "}"
 
 
 def get_path_to_request_file(filename: str):
@@ -41,7 +114,13 @@ class TestRequestFiles:
         assert self.output.returncode == 0
         response = json.loads(self.output.stdout)
         assert b'Selected dataset version: "default"' in self.output.stderr
-        assert str(xarray.open_dataset(response["file_path"])) == snapshot
+        self.dumped_output = execute_in_terminal(
+            ["ncdump", "-h", response["file_path"]]
+        )
+        assert (
+            sort_netcdf_string(self.dumped_output.stdout.decode("utf-8"))
+            == snapshot
+        )
 
     def test_subset_request_without_subset(self):
         filepath = get_path_to_request_file(

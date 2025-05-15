@@ -1,22 +1,51 @@
 # serializer version: 1
 # name: TestRequestFiles.test_subset_request_with_request_file
   '''
-  <xarray.Dataset> Size: 96B
-  Dimensions:       (time: 2, latitude: 2, longitude: 2)
-  Coordinates:
-    * latitude      (latitude) float32 8B 0.025 0.075
-    * longitude     (longitude) float32 8B 0.025 0.075
-    * time          (time) datetime64[ns] 16B 2021-01-01 2021-01-02
-  Data variables:
-      analysed_sst  (time, latitude, longitude) float64 64B ...
-  Attributes:
-      comment:                   WARNING Some applications are unable to proper...
-      title:                     Global SST & Sea Ice Analysis, L4 OSTIA, 0.05 ...
-      Conventions:               CF-1.4, ACDD-1.3
-      institution:               UKMO
-      history:                   Created from sst.nc; obs_anal.nc; seaice.nc
-      source:                    AVHRR18_G-NAVO-L2P-V1.0, AVHRR19_G-NAVO-L2P-V1...
-      references:                Good S, Fiedler E, Mao C, Martin MJ, Maycock A...
-      copernicusmarine_version:  2.1.0
+  netcdf METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2_analysed_sst_0.03E-0.08E_0.03N-0.08N_2021-01-01-2021-01-02  {
+    dimensions:
+     latitude = 2 ;
+     longitude = 2 ;
+     time = 2 ;
+    variables:
+     short analysed_sst(time, latitude, longitude) ;
+     analysed_sst:_FillValue = -32768s ;
+     analysed_sst:add_offset = 273.149993896484 ;
+     analysed_sst:scale_factor = 0.00999999977648258 ;
+     analysed_sst:valid_max = 4500s ;
+     analysed_sst:valid_min = -300s ;
+     string analysed_sst:coordinates = "lon lat" ;
+     string analysed_sst:long_name = "analysed sea surface temperature" ;
+     string analysed_sst:standard_name = "sea_surface_foundation_temperature" ;
+     string analysed_sst:units = "kelvin" ;
+
+     float latitude(latitude) ;
+     string latitude:axis = "Y" ;
+     string latitude:long_name = "latitude" ;
+     string latitude:standard_name = "latitude" ;
+     string latitude:units = "degrees_north" ;
+
+     float longitude(longitude) ;
+     string longitude:axis = "X" ;
+     string longitude:long_name = "longitude" ;
+     string longitude:standard_name = "longitude" ;
+     string longitude:units = "degrees_east" ;
+
+     int time(time) ;
+     string time:axis = "T" ;
+     string time:calendar = "proleptic_gregorian" ;
+     string time:long_name = "Time" ;
+     string time:standard_name = "time" ;
+     string time:unit_long = "Seconds Since 1981-01-01" ;
+     string time:units = "seconds since 1981-01-01" ;
+    // global attributes:
+     string :Conventions = "CF-1.4, ACDD-1.3" ;
+     string :comment = "WARNING Some applications are unable to properly handle signed byte values. If values are encountered > 127, please subtract 256 from this reported value" ;
+     string :copernicusmarine_version = "2.0.1" ;
+     string :history = "Created from sst.nc; obs_anal.nc; seaice.nc" ;
+     string :institution = "UKMO" ;
+     string :references = "Good S, Fiedler E, Mao C, Martin MJ, Maycock A, Reid R, Roberts-Jones J, Searle T, Waters J, While J, Worsfold M. The Current Configuration of the OSTIA System for Operational Production of Foundation Sea Surface Temperature and Ice Concentration Analyses. Remote Sensing. 2020; 12(4):720 https://doi.org/10.3390/rs12040720" ;
+     string :source = "AVHRR18_G-NAVO-L2P-V1.0, AVHRR19_G-NAVO-L2P-V1.0, AVHRR_SST_METOP_B-OSISAF-L2P-V1.0, VIIRS_NPP-OSPO-L2P-V2.3, AMSR2-REMSS-L2P-V07.2, GOES13-OSISAF-L3C-V1.0, SEVIRI_SST-OSISAF-L3C-V1.0, OSISAF_ICE, NCEP_ICE" ;
+     string :title = "Global SST & Sea Ice Analysis, L4 OSTIA, 0.05 deg daily (METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2)" ;
+  }
   '''
 # ---
