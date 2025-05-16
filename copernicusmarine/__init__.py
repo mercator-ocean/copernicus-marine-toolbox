@@ -30,8 +30,11 @@ from copernicusmarine.core_functions.exceptions import (
     FormatNotSupported,
     MinimumLongitudeGreaterThanMaximumLongitude,
     NetCDFCompressionNotAvailable,
+    NoServiceAvailable,
     NotEnoughPlatformMetadata,
     PlatformsSubsettingNotAvailable,
+    ServiceDoesNotExistForCommand,
+    ServiceNotAvailable,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
     WrongDatetimeFormat,
@@ -49,11 +52,6 @@ from copernicusmarine.core_functions.models import (
     StatusCode,
     StatusMessage,
     TimeExtent,
-)
-from copernicusmarine.core_functions.services_utils import (
-    NoServiceAvailable,
-    ServiceDoesNotExistForCommand,
-    ServiceNotAvailable,
 )
 from copernicusmarine.python_interface.describe import describe
 from copernicusmarine.python_interface.get import get

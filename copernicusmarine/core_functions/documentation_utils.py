@@ -1,4 +1,4 @@
-from copernicusmarine.core_functions.services_utils import CommandType
+from copernicusmarine.core_functions.models import CommandType
 
 SHARED: dict[str, str] = {
     "OVERWRITE_HELP": "If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').",  # noqa: E501

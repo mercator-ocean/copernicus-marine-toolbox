@@ -14,6 +14,7 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from copernicusmarine.core_functions.exceptions import ServiceNotSupported
 from copernicusmarine.core_functions.models import (
+    CommandType,
     CoordinatesSelectionMethod,
     ResponseSubset,
     VerticalAxis,
@@ -23,7 +24,6 @@ from copernicusmarine.core_functions.request_structure import (
     convert_motu_api_request_to_structure,
 )
 from copernicusmarine.core_functions.services_utils import (
-    CommandType,
     RetrievalService,
     get_retrieval_service,
 )
@@ -187,6 +187,7 @@ def subset_function(
                 retrieval_service.is_original_grid,
                 retrieval_service.axis_coordinate_id_mapping,
                 chunk_size_limit,
+                retrieval_service.dataset_chunking,
             )
         if (
             retrieval_service.service_format

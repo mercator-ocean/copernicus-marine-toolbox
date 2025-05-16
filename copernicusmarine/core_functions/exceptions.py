@@ -208,3 +208,47 @@ class WrongPlatformID(Exception):
             f" Please check the describe output and the platforms metadata at"
             f" '{platforms_metadata_url}' for more information."
         )
+
+
+class ServiceDoesNotExistForCommand(Exception):
+    """
+    Exception raised when the service does not exist for the command.
+
+    Please make sure the service exists for the command.
+    """  # TODO: list available services per command
+
+    def __init__(
+        self,
+        requested_service_name: str,
+        command_name: str,
+        available_services: list[str],
+    ):
+        super().__init__()
+        self.__setattr__(
+            "custom_exception_message",
+            f"Service {requested_service_name} "
+            f"does not exist for command {command_name}. "
+            f"Possible service{'s' if len(available_services) > 1 else ''}: "
+            f"{available_services}",
+        )
+
+
+class NoServiceAvailable(Exception):
+    """
+    Exception raised when no service is available for the dataset.
+
+    We could not find a service for this dataset.
+    Please make sure there is a service available for the dataset.
+    """
+
+    pass
+
+
+class ServiceNotAvailable(Exception):
+    """
+    Exception raised when the service is not available for the dataset.
+
+    Please make sure the service is available for the specific dataset.
+    """
+
+    pass
