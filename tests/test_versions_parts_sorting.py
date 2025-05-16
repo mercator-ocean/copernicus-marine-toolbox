@@ -172,6 +172,7 @@ old_version = CopernicusMarineVersion(
 example_dataset = CopernicusMarineDataset(
     dataset_id="example_dataset",
     dataset_name="Example Dataset",
+    digital_object_identifier="10.1234/example",
     versions=[
         version_default,
         to_be_released_version,

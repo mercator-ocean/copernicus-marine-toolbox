@@ -182,7 +182,8 @@ class RetrievalService:
     dataset_part: CopernicusMarinePart
     axis_coordinate_id_mapping: dict[str, str]
     dataset_chunking: Optional[DatasetChunking]
-    is_original_grid: bool = False
+    is_original_grid: bool
+    product_doi: Optional[str]
 
 
 def get_retrieval_service(
@@ -210,6 +211,7 @@ def get_retrieval_service(
         if force_service_name_or_short_name
         else None
     )
+    product_doi = dataset_metadata.digital_object_identifier
 
     return _get_retrieval_service_from_dataset(
         dataset=dataset_metadata,
@@ -220,6 +222,7 @@ def get_retrieval_service(
         dataset_subset=dataset_subset,
         username=username,
         platform_ids_subset=platform_ids_subset,
+        product_doi=product_doi,
     )
 
 
@@ -232,6 +235,7 @@ def _get_retrieval_service_from_dataset(
     dataset_subset: Optional[SubsetRequest],
     username: Optional[str],
     platform_ids_subset: bool,
+    product_doi: Optional[str],
 ) -> RetrievalService:
     dataset_version = dataset.get_version(force_dataset_version_label)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
@@ -244,6 +248,7 @@ def _get_retrieval_service_from_dataset(
         dataset_subset=dataset_subset,
         username=username,
         platform_ids_subset=platform_ids_subset,
+        product_doi=product_doi,
     )
 
 
@@ -256,6 +261,7 @@ def _get_retrieval_service_from_dataset_version(
     dataset_subset: Optional[SubsetRequest],
     username: Optional[str],
     platform_ids_subset: bool,
+    product_doi: Optional[str],
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(force_dataset_part_label)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
@@ -336,6 +342,7 @@ def _get_retrieval_service_from_dataset_version(
         metadata_url=dataset_part.url_metadata,
         dataset_chunking=dataset_chunking,
         is_original_grid=dataset_part.name == "originalGrid",
+        product_doi=product_doi,
     )
 
 

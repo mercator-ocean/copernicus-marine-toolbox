@@ -1,0 +1,24 @@
+Release 2.1.1
+=====================
+
+Patch release with bug fixes and improvements.
+
+General
+''''''''''
+
+Fixes
+------------------
+
+* Skipped version 8.2.0 of ``click`` due to a known bug reported `here <https://github.com/pallets/click/issues/2906>`_. If already installed, please uninstall and use a different version.
+
+Subset
+''''''''
+
+Fixes
+------------------
+
+* Fixed a bug where requesting data for sparse datasets with no available data would raise a ``KeyError``.
+* Fixed an issue where using a request file prevented subsetting on longitude and latitude dimensions.
+* Updated the request file template (generated via ``copernicusmarine subset --create-template``) to use ``service`` instead of the deprecated ``force_service``.
+* Documented the default value of ``chunk_size_limit`` as ``-1`` in the Python interface docstrings.
+* Fixed an issue where compressing the NetCDF output file could result in incorrect attributes.

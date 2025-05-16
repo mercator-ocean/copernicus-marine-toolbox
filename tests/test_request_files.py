@@ -22,6 +22,9 @@ def build_command(filepath: Path, command: str):
 
 class TestRequestFiles:
     def test_subset_request_with_request_file(self, tmp_path):
+        # TODO: add a snapshot of the result: ncdump or str(dataset)
+        # problem is that it is difficult to have sorting
+        # and stable snapshots
         filepath = get_path_to_request_file(
             "test_subset_request_with_request_file"
         )
@@ -30,6 +33,8 @@ class TestRequestFiles:
         command += [
             "--output-directory",
             f"{tmp_path}",
+            "-r",
+            "all",
         ]
 
         self.output = execute_in_terminal(command)
