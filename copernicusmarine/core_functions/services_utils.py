@@ -1,14 +1,11 @@
 import logging
-import math
 from dataclasses import dataclass
-from enum import Enum
-from typing import List, Literal, Optional, Union
+from typing import Literal, Optional, Union
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
 )
 from copernicusmarine.catalogue_parser.models import (
-    CopernicusMarineCoordinate,
     CopernicusMarineDataset,
     CopernicusMarinePart,
     CopernicusMarineService,
@@ -19,118 +16,22 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions.exceptions import (
     DatasetUpdating,
+    NoServiceAvailable,
     PlatformsSubsettingNotAvailable,
+    ServiceDoesNotExistForCommand,
+    ServiceNotAvailable,
 )
-from copernicusmarine.core_functions.models import ChunkType
+from copernicusmarine.core_functions.models import CommandType, DatasetChunking
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
-    timestamp_or_datestring_to_datetime,
 )
-from copernicusmarine.download_functions.subset_xarray import (
-    longitude_modulus,
-    longitude_modulus_upper_bound,
+from copernicusmarine.download_functions.chunk_calculator import (
+    get_number_chunks,
 )
 
 logger = logging.getLogger("copernicusmarine")
-
-
-class _Command(Enum):
-    GET = "get"
-    SUBSET = "subset"
-    OPEN_DATASET = "open_dataset"
-    READ_DATAFRAME = "read_dataframe"
-
-
-@dataclass(frozen=True)
-class Command:
-    command_name: _Command
-    service_names_by_priority: List[CopernicusMarineServiceNames]
-
-    def service_names(self) -> List[str]:
-        return [
-            service_name.value
-            for service_name in self.service_names_by_priority
-        ]
-
-    def short_names_services(self) -> List[str]:
-        return [
-            short_name_from_service_name(service_name).value
-            for service_name in self.service_names_by_priority
-        ]
-
-    def get_available_service_for_command(self) -> list[str]:
-        available_services = []
-        for service_name in self.service_names_by_priority:
-            available_services.append(service_name.value)
-            short_name = short_name_from_service_name(service_name)
-            if short_name != service_name:
-                available_services.append(
-                    short_name_from_service_name(service_name).value
-                )
-        return available_services
-
-
-class CommandType(Command, Enum):
-    SUBSET = (
-        _Command.SUBSET,
-        [
-            CopernicusMarineServiceNames.GEOSERIES,
-            CopernicusMarineServiceNames.TIMESERIES,
-            CopernicusMarineServiceNames.OMI_ARCO,
-            CopernicusMarineServiceNames.STATIC_ARCO,
-            CopernicusMarineServiceNames.PLATFORMSERIES,
-        ],
-    )
-    GET = (
-        _Command.GET,
-        [
-            CopernicusMarineServiceNames.FILES,
-        ],
-    )
-    OPEN_DATASET = (
-        _Command.OPEN_DATASET,
-        [
-            CopernicusMarineServiceNames.GEOSERIES,
-            CopernicusMarineServiceNames.TIMESERIES,
-            CopernicusMarineServiceNames.OMI_ARCO,
-            CopernicusMarineServiceNames.STATIC_ARCO,
-        ],
-    )
-    READ_DATAFRAME = (
-        _Command.READ_DATAFRAME,
-        [
-            CopernicusMarineServiceNames.GEOSERIES,
-            CopernicusMarineServiceNames.TIMESERIES,
-            CopernicusMarineServiceNames.OMI_ARCO,
-            CopernicusMarineServiceNames.STATIC_ARCO,
-            CopernicusMarineServiceNames.PLATFORMSERIES,
-        ],
-    )
-
-
-class ServiceDoesNotExistForCommand(Exception):
-    """
-    Exception raised when the service does not exist for the command.
-
-    Please make sure the service exists for the command.
-    """  # TODO: list available services per command
-
-    def __init__(
-        self,
-        requested_service_name: str,
-        command_name: str,
-        available_services: list[str],
-    ):
-        super().__init__()
-        self.__setattr__(
-            "custom_exception_message",
-            f"Service {requested_service_name} "
-            f"does not exist for command {command_name}. "
-            f"Possible service{'s' if len(available_services) > 1 else ''}: "
-            f"{available_services}",
-        )
 
 
 def _service_does_not_exist_for_command(
@@ -159,241 +60,40 @@ def _select_forced_service(
     )
 
 
-def _get_chunks_index_arithmetic(
-    requested_value: float,
-    reference_chunking_step: float,
-    chunk_length: Union[int, float],
-    chunk_step: Union[int, float],
-) -> int:
-    """
-    Chunk index calculation for arithmetic chunking.
-    """
-    return math.floor(
-        (requested_value - reference_chunking_step)
-        / (chunk_length * chunk_step)
-    )
-
-
-def _get_chunks_index_geometric(
-    requested_value: float,
-    reference_chunking_step: float,
-    chunk_length: Union[int, float],
-    factor: Union[int, float, None],
-) -> int:
-    """
-    Chunk index calculation for geometric chunking.
-    """
-    absolute_coordinate = abs(requested_value - reference_chunking_step)
-    if absolute_coordinate < chunk_length:
-        return 0
-    if factor == 1 or factor is None:
-        chunk_index = math.floor(absolute_coordinate / chunk_length)
-    else:
-        chunk_index = math.ceil(
-            math.log(absolute_coordinate / chunk_length) / math.log(factor)
-        )
-    return (
-        -chunk_index
-        if requested_value < reference_chunking_step
-        else chunk_index
-    )
-
-
-def get_chunk_indexes_for_coordinate(
-    coordinate: CopernicusMarineCoordinate,
-    requested_minimum: Optional[float],
-    requested_maximum: Optional[float],
-    chunking_length: Union[int, float],
-) -> tuple[int, int]:
-    coordinate_minimum_value: Union[int, float]
-    if isinstance(coordinate.minimum_value, str):
-        coordinate_minimum_value = float(
-            timestamp_or_datestring_to_datetime(
-                coordinate.minimum_value
-            ).timestamp()
-            * 1e3
-        )
-    elif coordinate.minimum_value is not None:
-        coordinate_minimum_value = coordinate.minimum_value
-    elif coordinate.values is not None:
-        coordinate_minimum_value = min(coordinate.values)  # type: ignore
-        if coordinate.coordinate_id == "time":
-            coordinate_minimum_value = min(
-                float(
-                    timestamp_or_datestring_to_datetime(value).timestamp()
-                    * 1e3
-                )
-                for value in coordinate.values
-            )
-
-    else:
-        logger.debug("Not enough information to get minimum value.")
-        logger.debug("Using default value.")
-        return 0, 0
-    if (
-        requested_minimum is None
-        or requested_minimum < coordinate_minimum_value
-    ):
-        requested_minimum = coordinate_minimum_value
-
-    coordinate_maximum_value: Union[int, float]
-    if isinstance(coordinate.maximum_value, str):
-        coordinate_maximum_value = float(
-            timestamp_or_datestring_to_datetime(
-                coordinate.maximum_value
-            ).timestamp()
-            * 1e3
-        )
-    elif coordinate.maximum_value is not None:
-        coordinate_maximum_value = coordinate.maximum_value
-    elif coordinate.values is not None:
-        coordinate_maximum_value = max(coordinate.values)  # type: ignore
-        if coordinate.coordinate_id == "time":
-            coordinate_maximum_value = max(
-                float(
-                    timestamp_or_datestring_to_datetime(value).timestamp()
-                    * 1e3
-                )
-                for value in coordinate.values
-            )
-
-    else:
-        logger.debug("Not enough information to get maximum value.")
-        logger.debug("Using default value.")
-        return 0, 0
-    if (
-        requested_maximum is None
-        or requested_maximum > coordinate_maximum_value
-    ):
-        requested_maximum = coordinate_maximum_value
-    index_min = 0
-    index_max = 0
-    if chunking_length:
-        if (
-            coordinate.chunk_type == ChunkType.ARITHMETIC
-            or coordinate.chunk_type is None
-        ):
-            logger.debug("Arithmetic chunking")
-            index_min = _get_chunks_index_arithmetic(
-                requested_minimum,
-                coordinate.chunk_reference_coordinate
-                or coordinate_minimum_value,
-                chunking_length,
-                coordinate.step or 1,
-            )
-            index_max = _get_chunks_index_arithmetic(
-                requested_maximum,
-                coordinate.chunk_reference_coordinate
-                or coordinate_minimum_value,
-                chunking_length,
-                coordinate.step or 1,
-            )
-        elif coordinate.chunk_type == ChunkType.GEOMETRIC:
-            logger.debug("Geometric chunking")
-            index_min = _get_chunks_index_geometric(
-                requested_minimum,
-                coordinate.chunk_reference_coordinate
-                or coordinate_minimum_value,
-                chunking_length,
-                coordinate.chunk_geometric_factor,
-            )
-            index_max = _get_chunks_index_geometric(
-                requested_maximum,
-                coordinate.chunk_reference_coordinate
-                or coordinate_minimum_value,
-                chunking_length,
-                coordinate.chunk_geometric_factor,
-            )
-    return (index_min, index_max)
-
-
-def get_number_chunks(
-    dataset_subset: SubsetRequest,
-    service_name: CopernicusMarineServiceNames,
-    dataset_version_part: CopernicusMarinePart,
-) -> int:
-    service = dataset_version_part.get_service_by_service_name(service_name)
-    axis_coordinate_mapping = service.get_axis_coordinate_id_mapping()
-    variables = dataset_subset.variables or []
-    number_of_chunks = 0
-    for variable in service.variables:
-        number_chunk_per_coord = 0
-        if (
-            variable.standard_name in variables
-            or variable.short_name in variables
-            or not variables
-        ):
-            number_chunk_per_coord = 1
-            for coordinate in variable.coordinates:
-                if coordinate.chunking_length:
-                    chunking_length = coordinate.chunking_length
-                else:
-                    continue
-                if coordinate.axis == "t":
-                    min_coord = (
-                        float(dataset_subset.start_datetime.timestamp() * 1e3)
-                        if dataset_subset.start_datetime
-                        else None
-                    )
-                    max_coord = (
-                        float(dataset_subset.end_datetime.timestamp() * 1e3)
-                        if dataset_subset.end_datetime
-                        else None
-                    )
-                elif coordinate.axis == "x":
-                    if "longitude" == axis_coordinate_mapping["x"]:
-                        min_coord = (
-                            longitude_modulus(dataset_subset.minimum_x)
-                            if dataset_subset.minimum_x
-                            else None
-                        )
-                        max_coord = (
-                            longitude_modulus_upper_bound(
-                                dataset_subset.maximum_x
-                            )
-                            if dataset_subset.maximum_x
-                            else None
-                        )
-                    else:
-                        min_coord = dataset_subset.minimum_x
-                        max_coord = dataset_subset.maximum_x
-                elif coordinate.axis == "y":
-                    min_coord = dataset_subset.minimum_y
-                    max_coord = dataset_subset.maximum_y
-                else:
-                    continue
-                chunk_range = get_chunk_indexes_for_coordinate(
-                    coordinate=coordinate,
-                    requested_minimum=min_coord,
-                    requested_maximum=max_coord,
-                    chunking_length=chunking_length,
-                )
-                number_chunk_per_coord *= chunk_range[1] - chunk_range[0] + 1
-        number_of_chunks += number_chunk_per_coord
-    return number_of_chunks
-
-
 def _get_best_arco_service_type(
     dataset_subset: SubsetRequest,
     dataset_version_part: CopernicusMarinePart,
-) -> Literal[
-    CopernicusMarineServiceNames.TIMESERIES,
-    CopernicusMarineServiceNames.GEOSERIES,
+) -> tuple[
+    Literal[
+        CopernicusMarineServiceNames.TIMESERIES,
+        CopernicusMarineServiceNames.GEOSERIES,
+    ],
+    DatasetChunking,
 ]:
-    number_chunks_geo_series = get_number_chunks(
+    dataset_chunking_geoseries = get_number_chunks(
         dataset_subset,
         CopernicusMarineServiceNames.GEOSERIES,
         dataset_version_part,
     )
-    number_chunks_time_series = get_number_chunks(
+    dataset_chunking_timeseries = get_number_chunks(
         dataset_subset,
         CopernicusMarineServiceNames.TIMESERIES,
         dataset_version_part,
     )
-
-    if number_chunks_time_series * 2 >= number_chunks_geo_series:
-        return CopernicusMarineServiceNames.GEOSERIES
-    return CopernicusMarineServiceNames.TIMESERIES
+    logger.debug(
+        f"{dataset_chunking_geoseries.number_chunks} chunks to "
+        f"download for geoseries and "
+        f"{dataset_chunking_timeseries.number_chunks} chunks for timeseries"
+    )
+    if (
+        dataset_chunking_timeseries.number_chunks * 2
+        >= dataset_chunking_geoseries.number_chunks
+    ):
+        return (
+            CopernicusMarineServiceNames.GEOSERIES,
+            dataset_chunking_geoseries,
+        )
+    return CopernicusMarineServiceNames.TIMESERIES, dataset_chunking_timeseries
 
 
 def _get_first_available_service_name(
@@ -415,9 +115,8 @@ def _select_service_by_priority(
     dataset_version_part: CopernicusMarinePart,
     command_type: CommandType,
     dataset_subset: Optional[SubsetRequest],
-    username: Optional[str],
     platform_ids_subset: bool,
-) -> CopernicusMarineService:
+) -> tuple[CopernicusMarineService, Optional[DatasetChunking]]:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
     ]
@@ -447,21 +146,27 @@ def _select_service_by_priority(
         ):
             if platform_ids_subset:
                 try:
-                    return dataset_version_part.get_service_by_service_name(
-                        CopernicusMarineServiceNames.PLATFORMSERIES
+                    return (
+                        dataset_version_part.get_service_by_service_name(
+                            CopernicusMarineServiceNames.PLATFORMSERIES
+                        ),
+                        None,
                     )
                 except StopIteration:
                     raise PlatformsSubsettingNotAvailable()
 
-            return first_available_service
-        best_arco_service_type = _get_best_arco_service_type(
+            return first_available_service, None
+        best_arco_service_type, dataset_chunking = _get_best_arco_service_type(
             dataset_subset,
             dataset_version_part,
         )
-        return dataset_version_part.get_service_by_service_name(
-            best_arco_service_type
+        return (
+            dataset_version_part.get_service_by_service_name(
+                best_arco_service_type
+            ),
+            dataset_chunking,
         )
-    return first_available_service
+    return first_available_service, None
 
 
 # TODO: clear this as there is redundancy
@@ -476,6 +181,7 @@ class RetrievalService:
     service: CopernicusMarineService
     dataset_part: CopernicusMarinePart
     axis_coordinate_id_mapping: dict[str, str]
+    dataset_chunking: Optional[DatasetChunking]
     is_original_grid: bool
     product_doi: Optional[str]
 
@@ -593,6 +299,7 @@ def _get_retrieval_service_from_dataset_version(
                 raise DatasetUpdating(error_message)
 
     service = None
+    dataset_chunking = None
     if force_service_name:
         service = _select_forced_service(
             dataset_version_part=dataset_part,
@@ -606,11 +313,10 @@ def _get_retrieval_service_from_dataset_version(
             )
             service = None
     if not service:
-        service = _select_service_by_priority(
+        service, dataset_chunking = _select_service_by_priority(
             dataset_version_part=dataset_part,
             command_type=command_type,
             dataset_subset=dataset_subset,
-            username=username,
             platform_ids_subset=platform_ids_subset,
         )
     if (
@@ -634,6 +340,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_part=dataset_part,
         axis_coordinate_id_mapping=service.get_axis_coordinate_id_mapping(),
         metadata_url=dataset_part.url_metadata,
+        dataset_chunking=dataset_chunking,
         is_original_grid=dataset_part.name == "originalGrid",
         product_doi=product_doi,
     )
@@ -650,16 +357,6 @@ def _get_dataset_start_date_from_service(
                 if coordinate.values:
                     return min(coordinate.values)
     return None
-
-
-class ServiceNotAvailable(Exception):
-    """
-    Exception raised when the service is not available for the dataset.
-
-    Please make sure the service is available for the specific dataset.
-    """
-
-    pass
 
 
 def _warning_dataset_will_be_deprecated(
@@ -723,17 +420,6 @@ def _service_not_available_error(
         f"Available services for dataset: "
         f"{dataset_available_service_names}"
     )
-
-
-class NoServiceAvailable(Exception):
-    """
-    Exception raised when no service is available for the dataset.
-
-    We could not find a service for this dataset.
-    Please make sure there is a service available for the dataset.
-    """
-
-    pass
 
 
 def _no_service_available_for_command(
