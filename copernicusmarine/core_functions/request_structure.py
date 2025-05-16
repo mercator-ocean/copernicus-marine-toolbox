@@ -23,6 +23,8 @@ from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -132,6 +134,38 @@ class SubsetRequest:
 
         self.__dict__.update(json_with_deprecated_options_replace)
         self.enforce_types()
+
+    def get_temporal_parameters(
+        self, axis_coordinate_id_mapping: dict[str, str]
+    ) -> TemporalParameters:
+        return TemporalParameters(
+            start_datetime=self.start_datetime,
+            end_datetime=self.end_datetime,
+            coordinate_id=axis_coordinate_id_mapping.get("t", "time"),
+        )
+
+    def get_geographical_parameters(
+        self, axis_coordinate_id_mapping: dict[str, str]
+    ) -> GeographicalParameters:
+        return GeographicalParameters(
+            x_axis_parameters=XParameters(
+                minimum_x=self.minimum_x,
+                maximum_x=self.maximum_x,
+                coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
+            ),
+            y_axis_parameters=YParameters(
+                minimum_y=self.minimum_y,
+                maximum_y=self.maximum_y,
+                coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
+            ),
+        )
+
+    def get_depth_parameters(self) -> DepthParameters:
+        return DepthParameters(
+            minimum_depth=self.minimum_depth,
+            maximum_depth=self.maximum_depth,
+            vertical_axis=self.vertical_axis,
+        )
 
 
 def convert_motu_api_request_to_structure(

@@ -14,9 +14,9 @@ from copernicusmarine.core_functions.exceptions import (
     FormatNotSupported,
     ServiceNotSupported,
 )
+from copernicusmarine.core_functions.models import CommandType
 from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import (
-    CommandType,
     RetrievalService,
     get_retrieval_service,
 )
@@ -111,15 +111,13 @@ def load_data_object_from_load_request(
                 load_request.temporal_parameters.start_datetime = (
                     parsed_start_datetime
                 )
-        if chunks_factor_size_limit > 0:
+        if chunks_factor_size_limit > 0 and retrieval_service.dataset_chunking:
             optimum_dask_chunking = get_optimum_dask_chunking(
-                retrieval_service.service,
-                load_request.geographical_parameters,
-                load_request.temporal_parameters,
-                load_request.depth_parameters,
-                load_request.variables,
-                chunks_factor_size_limit,
-                retrieval_service.axis_coordinate_id_mapping,
+                service=retrieval_service.service,
+                variables=load_request.variables,
+                dataset_chunking=retrieval_service.dataset_chunking,
+                chunk_size_limit=chunks_factor_size_limit,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
             )
         else:
             optimum_dask_chunking = None

@@ -7,14 +7,13 @@ from typing import Optional
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
-from copernicusmarine.core_functions.models import ResponseGet
+from copernicusmarine.core_functions.models import CommandType, ResponseGet
 from copernicusmarine.core_functions.request_structure import (
     GetRequest,
     filter_to_regex,
     overload_regex_with_additionnal_filter,
 )
 from copernicusmarine.core_functions.services_utils import (
-    CommandType,
     RetrievalService,
     get_retrieval_service,
 )
