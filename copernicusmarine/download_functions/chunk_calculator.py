@@ -177,7 +177,7 @@ def _get_chunk_indexes_for_coordinate(
     return (index_min, index_max)
 
 
-def get_number_chunks(
+def get_dataset_chunking(
     dataset_subset: SubsetRequest,
     service_name: CopernicusMarineServiceNames,
     dataset_version_part: CopernicusMarinePart,
@@ -187,52 +187,59 @@ def get_number_chunks(
     variables = dataset_subset.variables or []
     number_of_chunks = 0
     variables_chunking: dict[str, VariableChunking] = {}
-    for variable in service.variables:
-        if (
-            variable.standard_name in variables
-            or variable.short_name in variables
-            or not variables
-        ):
-            number_chunks_per_variable = 1
-            number_values_per_variable: Union[float, int] = 1
-            coordinate_chunking: dict[str, CoordinateChunking] = {}
-            for coordinate in variable.coordinates:
-                if coordinate.chunking_length:
-                    chunking_length = coordinate.chunking_length
-                else:
-                    continue
-                (
-                    requested_minimum,
-                    requested_maximum,
-                ) = _extract_requested_min_max(
-                    coordinate.coordinate_id,
-                    dataset_subset,
-                    axis_coordinate_mapping,
-                )
-                chunk_range = _get_chunk_indexes_for_coordinate(
-                    coordinate=coordinate,
-                    requested_minimum=requested_minimum,
-                    requested_maximum=requested_maximum,
-                    chunking_length=chunking_length,
-                )
-                number_chunks_coordinate = chunk_range[1] - chunk_range[0] + 1
-                if coordinate.coordinate_id not in coordinate_chunking:
-                    coordinate_chunking[
-                        coordinate.coordinate_id
-                    ] = CoordinateChunking(
-                        coordinate_id=coordinate.coordinate_id,
-                        chunking_length=chunking_length,
-                        number_of_chunks=number_chunks_coordinate,
-                    )
-                number_chunks_per_variable *= number_chunks_coordinate
-                number_values_per_variable *= (
-                    number_chunks_coordinate * chunking_length
-                )
-            variables_chunking[variable.short_name] = VariableChunking(
-                variable_short_name=variable.short_name,
-                number_values=number_values_per_variable,
-                number_chunks=number_chunks_per_variable,
+    coordinate_chunking: dict[str, CoordinateChunking] = {}
+    variables_to_iterate = (
+        [
+            variable
+            for variable in service.variables
+            if variable.short_name in variables
+            or variable.standard_name in variables
+        ]
+        if variables
+        else service.variables
+    )
+    for variable in variables_to_iterate:
+        number_chunks_per_variable = 1
+        number_values_per_variable: Union[float, int] = 1
+        for coordinate in variable.coordinates:
+            if coordinate.chunking_length:
+                chunking_length = coordinate.chunking_length
+            else:
+                continue
+            (
+                requested_minimum,
+                requested_maximum,
+            ) = _extract_requested_min_max(
+                coordinate.coordinate_id,
+                dataset_subset,
+                axis_coordinate_mapping,
             )
+            chunk_range = _get_chunk_indexes_for_coordinate(
+                coordinate=coordinate,
+                requested_minimum=requested_minimum,
+                requested_maximum=requested_maximum,
+                chunking_length=chunking_length,
+            )
+            number_chunks_coordinate = chunk_range[1] - chunk_range[0] + 1
+            if coordinate.coordinate_id not in coordinate_chunking:
+                coordinate_chunking[
+                    coordinate.coordinate_id
+                ] = CoordinateChunking(
+                    coordinate_id=coordinate.coordinate_id,
+                    chunking_length=chunking_length,
+                    number_of_chunks=number_chunks_coordinate,
+                )
+            number_chunks_per_variable *= number_chunks_coordinate
+            number_values_per_variable *= (
+                number_chunks_coordinate * chunking_length
+            )
+        variables_chunking[variable.short_name] = VariableChunking(
+            variable_short_name=variable.short_name,
+            number_values=number_values_per_variable,
+            number_chunks=number_chunks_per_variable,
+            # default to 2MB as it is what is intended by ARCO producer
+            chunk_size=variable.chunk_size or 2_000_000,
+        )
         number_of_chunks += number_chunks_per_variable
     return DatasetChunking(
         chunking_per_variable=variables_chunking,
