@@ -400,17 +400,18 @@ def get_approximation_size_data_downloaded(
     dataset: xarray.Dataset,
     dataset_chunking: DatasetChunking,
 ) -> Optional[float]:
-    temp_dataset = dataset.copy()
-    if "elevation" in dataset.sizes:
-        temp_dataset["elevation"] = temp_dataset.elevation * (-1)
-        temp_dataset = temp_dataset.rename({"elevation": "depth"})
+    # TODO: Test it not sure how to, maybe ask if the chunk size is correct
+    # temp_dataset = dataset.copy()
+    # if "elevation" in dataset.sizes:
+    #     temp_dataset["elevation"] = temp_dataset.elevation * (-1)
+    #     temp_dataset = temp_dataset.rename({"elevation": "depth"})
 
-    download_estimated_size = 0
-    for variable_name in temp_dataset.data_vars:
-        download_estimated_size += (
-            dataset_chunking.get_number_values_variable(str(variable_name))
-            * temp_dataset[list(temp_dataset.data_vars)[0]].dtype.itemsize
-            / 1048e3
-        )
+    # download_estimated_size = 0
+    # for variable_name in temp_dataset.data_vars:
+    #     download_estimated_size += (
+    #         dataset_chunking.get_number_values_variable(str(variable_name))
+    #         * temp_dataset[list(temp_dataset.data_vars)[0]].dtype.itemsize
+    #         / 1048e3
+    #     )
 
-    return download_estimated_size
+    return dataset_chunking.get_download_size() / 1048e3
