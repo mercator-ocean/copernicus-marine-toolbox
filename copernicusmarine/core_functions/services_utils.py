@@ -28,7 +28,7 @@ from copernicusmarine.core_functions.utils import (
     next_or_raise_exception,
 )
 from copernicusmarine.download_functions.chunk_calculator import (
-    get_number_chunks,
+    get_dataset_chunking,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -70,12 +70,12 @@ def _get_best_arco_service_type(
     ],
     DatasetChunking,
 ]:
-    dataset_chunking_geoseries = get_number_chunks(
+    dataset_chunking_geoseries = get_dataset_chunking(
         dataset_subset,
         CopernicusMarineServiceNames.GEOSERIES,
         dataset_version_part,
     )
-    dataset_chunking_timeseries = get_number_chunks(
+    dataset_chunking_timeseries = get_dataset_chunking(
         dataset_subset,
         CopernicusMarineServiceNames.TIMESERIES,
         dataset_version_part,
@@ -86,8 +86,8 @@ def _get_best_arco_service_type(
         f"{dataset_chunking_timeseries.number_chunks} chunks for timeseries"
     )
     if (
-        dataset_chunking_timeseries.number_chunks * 2
-        >= dataset_chunking_geoseries.number_chunks
+        dataset_chunking_timeseries.get_download_size()
+        >= dataset_chunking_geoseries.get_download_size()
     ):
         return (
             CopernicusMarineServiceNames.GEOSERIES,
