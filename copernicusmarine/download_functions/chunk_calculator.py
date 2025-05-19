@@ -73,66 +73,17 @@ def _get_chunk_indexes_for_coordinate(
     requested_maximum: Optional[float],
     chunking_length: Union[int, float],
 ) -> tuple[int, int]:
-    coordinate_minimum_value: Union[int, float]
-    if isinstance(coordinate.minimum_value, str):
-        coordinate_minimum_value = float(
-            timestamp_or_datestring_to_datetime(
-                coordinate.minimum_value
-            ).timestamp()
-            * 1e3
-        )
-    elif coordinate.minimum_value is not None:
-        coordinate_minimum_value = coordinate.minimum_value
-    elif coordinate.values is not None:
-        coordinate_minimum_value = min(coordinate.values)  # type: ignore
-        if coordinate.coordinate_id == "time":
-            coordinate_minimum_value = min(
-                float(
-                    timestamp_or_datestring_to_datetime(value).timestamp()
-                    * 1e3
-                )
-                for value in coordinate.values
-            )
-
-    else:
-        logger.debug(
-            f"Not enough information to get chunking information"
-            f"for {coordinate.coordinate_id}."
-        )
+    (
+        coordinate_minimum_value,
+        coordinate_maximum_value,
+    ) = _get_coordinate_extreme(coordinate)
+    if coordinate_minimum_value is None or coordinate_maximum_value is None:
         return 0, 0
     if (
         requested_minimum is None
         or requested_minimum < coordinate_minimum_value
     ):
         requested_minimum = coordinate_minimum_value
-
-    coordinate_maximum_value: Union[int, float]
-    if isinstance(coordinate.maximum_value, str):
-        coordinate_maximum_value = float(
-            timestamp_or_datestring_to_datetime(
-                coordinate.maximum_value
-            ).timestamp()
-            * 1e3
-        )
-    elif coordinate.maximum_value is not None:
-        coordinate_maximum_value = coordinate.maximum_value
-    elif coordinate.values is not None:
-        coordinate_maximum_value = max(coordinate.values)  # type: ignore
-        if coordinate.coordinate_id == "time":
-            coordinate_maximum_value = max(
-                float(
-                    timestamp_or_datestring_to_datetime(value).timestamp()
-                    * 1e3
-                )
-                for value in coordinate.values
-            )
-
-    else:
-        logger.debug(
-            f"Not enough information to get chunking information"
-            f"for {coordinate.coordinate_id}."
-        )
-        return 0, 0
     if (
         requested_maximum is None
         or requested_maximum > coordinate_maximum_value
@@ -140,6 +91,11 @@ def _get_chunk_indexes_for_coordinate(
         requested_maximum = coordinate_maximum_value
     index_min = 0
     index_max = 0
+    logger.info(coordinate.coordinate_id)
+    logger.info(requested_minimum)
+    logger.info(requested_maximum)
+    logger.info(coordinate_minimum_value)
+    logger.info(coordinate_maximum_value)
     if chunking_length:
         if (
             coordinate.chunk_type == ChunkType.ARITHMETIC
@@ -174,6 +130,10 @@ def _get_chunk_indexes_for_coordinate(
                 chunking_length,
                 coordinate.chunk_geometric_factor,
             )
+    logger.info(index_min)
+    logger.info(index_max)
+    if index_max < index_min:
+        raise ValueError("custom message for the tests!")
     return (index_min, index_max)
 
 
@@ -293,3 +253,69 @@ def _extract_requested_min_max(
     if coordinate_id in axis_coordinate_id_mapping.get("z", ""):
         return subset_request.minimum_depth, subset_request.maximum_depth
     return None, None
+
+
+def _get_coordinate_extreme(
+    coordinate: CopernicusMarineCoordinate,
+) -> tuple[Union[int, float, None], Union[int, float, None]]:
+    """
+    Get the extreme value of a coordinate.
+    """
+    coordinate_minimum_value: Union[int, float]
+    coordinate_maximum_value: Union[int, float]
+    if isinstance(coordinate.minimum_value, str):
+        coordinate_minimum_value = float(
+            timestamp_or_datestring_to_datetime(
+                coordinate.minimum_value
+            ).timestamp()
+            * 1e3
+        )
+    elif coordinate.minimum_value is not None:
+        coordinate_minimum_value = coordinate.minimum_value
+    elif coordinate.values is not None:
+        coordinate_minimum_value = min(coordinate.values)  # type: ignore
+        if coordinate.coordinate_id == "time":
+            coordinate_minimum_value = min(
+                float(
+                    timestamp_or_datestring_to_datetime(value).timestamp()
+                    * 1e3
+                )
+                for value in coordinate.values
+            )
+
+    else:
+        logger.debug(
+            f"Not enough information to get chunking information"
+            f"for {coordinate.coordinate_id}."
+        )
+        return None, None
+    if isinstance(coordinate.maximum_value, str):
+        coordinate_maximum_value = float(
+            timestamp_or_datestring_to_datetime(
+                coordinate.maximum_value
+            ).timestamp()
+            * 1e3
+        )
+    elif coordinate.maximum_value is not None:
+        coordinate_maximum_value = coordinate.maximum_value
+    elif coordinate.values is not None:
+        coordinate_maximum_value = max(coordinate.values)  # type: ignore
+        if coordinate.coordinate_id == "time":
+            coordinate_maximum_value = max(
+                float(
+                    timestamp_or_datestring_to_datetime(value).timestamp()
+                    * 1e3
+                )
+                for value in coordinate.values
+            )
+
+    else:
+        logger.debug(
+            f"Not enough information to get chunking information"
+            f"for {coordinate.coordinate_id}."
+        )
+        return None, None
+    return (
+        coordinate_minimum_value,
+        coordinate_maximum_value,
+    )
