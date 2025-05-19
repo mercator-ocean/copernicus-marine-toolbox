@@ -315,7 +315,7 @@ def x_axis_selection(
                 return slice(-180, 180), shift_window
             else:
                 minimum_x = longitude_modulus(minimum_x)
-                maximum_x = longitude_modulus(maximum_x)
+                maximum_x = longitude_modulus_upper_bound(maximum_x)
 
             if maximum_x and minimum_x and maximum_x < minimum_x:
                 maximum_x += 360
