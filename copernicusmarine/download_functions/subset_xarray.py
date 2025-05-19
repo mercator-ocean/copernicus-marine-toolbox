@@ -301,7 +301,6 @@ def x_axis_selection(
     shift_window = False
     minimum_x = longitude_parameters.minimum_x
     maximum_x = longitude_parameters.maximum_x
-
     if minimum_x is not None and maximum_x is not None:
         if longitude_parameters.coordinate_id == "longitude":
             if minimum_x > maximum_x:
@@ -315,9 +314,9 @@ def x_axis_selection(
                 return slice(-180, 180), shift_window
             else:
                 minimum_x = longitude_modulus(minimum_x)
-                maximum_x = longitude_modulus_upper_bound(maximum_x)
+                maximum_x = longitude_modulus(maximum_x)
 
-            if maximum_x and minimum_x and maximum_x < minimum_x:
+            if maximum_x and minimum_x is not None and maximum_x < minimum_x:
                 maximum_x += 360
                 shift_window = True
 

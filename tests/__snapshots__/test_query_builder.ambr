@@ -77,6 +77,7 @@
     'bbox',
     'chunk_geometric_factor',
     'chunk_reference_coordinate',
+    'chunk_size',
     'chunk_type',
     'chunking_length',
     'coordinate_id',
