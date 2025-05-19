@@ -91,11 +91,6 @@ def _get_chunk_indexes_for_coordinate(
         requested_maximum = coordinate_maximum_value
     index_min = 0
     index_max = 0
-    logger.info(coordinate.coordinate_id)
-    logger.info(requested_minimum)
-    logger.info(requested_maximum)
-    logger.info(coordinate_minimum_value)
-    logger.info(coordinate_maximum_value)
     if chunking_length:
         if (
             coordinate.chunk_type == ChunkType.ARITHMETIC
@@ -130,10 +125,6 @@ def _get_chunk_indexes_for_coordinate(
                 chunking_length,
                 coordinate.chunk_geometric_factor,
             )
-    logger.info(index_min)
-    logger.info(index_max)
-    if index_max < index_min:
-        raise ValueError("custom message for the tests!")
     return (index_min, index_max)
 
 

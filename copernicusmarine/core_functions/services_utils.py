@@ -329,7 +329,7 @@ def _get_retrieval_service_from_dataset_version(
         and service.service_format != CopernicusMarineServiceFormat.SQLITE
     ):
         logger.debug(f'Selected service: "{service.service_name}"')
-        if dataset_subset:
+        if dataset_subset and not dataset_chunking:
             dataset_chunking = get_dataset_chunking(
                 dataset_subset,
                 service.service_name,
