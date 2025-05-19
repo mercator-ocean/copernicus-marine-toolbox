@@ -334,4 +334,4 @@ def test_close_call_between_services():
     ]
     output = execute_in_terminal(command)
     assert output.returncode == 0
-    assert b'Selected service: "arco-time-series"' in output.stderr
+    assert b'Selected service: "arco-geo-series"' in output.stderr
