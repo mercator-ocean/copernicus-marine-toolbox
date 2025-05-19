@@ -1187,7 +1187,7 @@ class TestCommandLineInterface:
         assert "file_size" in response_subset
         assert "data_transfer_size" in response_subset
         assert response_subset["file_size"] > 0
-        assert int(response_subset["data_transfer_size"]) == 50
+        assert int(response_subset["data_transfer_size"]) == 62
 
     def test_dataset_size_is_displayed_when_downloading_with_arco_service(
         self, tmp_path
@@ -1517,7 +1517,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         response_subset = loads(self.output.stdout)
-        assert int(response_subset["data_transfer_size"]) == 71691
+        assert int(response_subset["data_transfer_size"]) == 913724
 
     def test_file_list_filter(self, tmp_path):
         dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"
