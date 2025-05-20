@@ -22,6 +22,9 @@ from copernicusmarine.core_functions.exceptions import (
     DatasetUpdating,
     PlatformsSubsettingNotAvailable,
 )
+from copernicusmarine.core_functions.marine_datastore_config import (
+    MarineDataStoreConfig,
+)
 from copernicusmarine.core_functions.request_structure import (
     DatasetTimeAndSpaceSubset,
 )
@@ -317,13 +320,15 @@ def get_retrieval_service(
     force_dataset_part_label: Optional[str],
     force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
+    marine_datastore_config: MarineDataStoreConfig,
     dataset_subset: Optional[DatasetTimeAndSpaceSubset] = None,
     platform_ids_subset: bool = False,
     username: Optional[str] = None,
-    staging: bool = False,
     raise_if_updating: bool = False,
 ) -> RetrievalService:
-    dataset_metadata = get_dataset_metadata(dataset_id, staging=staging)
+    dataset_metadata = get_dataset_metadata(
+        dataset_id, marine_datastore_config
+    )
     if not dataset_metadata:
         raise KeyError(
             f"The requested dataset '{dataset_id}' was not found in the catalogue,"
