@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from itertools import groupby
-from typing import Any, Optional, Union
+from typing import Any, Optional, TypeVar, Union
 
 import pystac
 from pydantic import BaseModel
@@ -17,103 +17,89 @@ from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     get_version_and_part_from_full_dataset_id,
 )
+from copernicusmarine.core_functions.marine_datastore_config import (
+    CatalogueConfig,
+    MarineDataStoreConfig,
+)
 from copernicusmarine.core_functions.sessions import JsonParserConnection
 from copernicusmarine.core_functions.utils import run_concurrently
 
 logger = logging.getLogger("copernicusmarine")
 
-MARINE_DATA_STORE_ROOT_METADATA_URL = (
-    "https://s3.waw3-1.cloudferro.com/mdl-metadata"
-)
-
-MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING = (
-    "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta"
-)
-
-MARINE_DATA_STORE_STAC_URL = f"{MARINE_DATA_STORE_ROOT_METADATA_URL}/metadata"
-MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL = (
-    MARINE_DATA_STORE_STAC_URL + "/catalog.stac.json"
-)
-MARINE_DATA_STORE_STAC_URL_STAGING = (
-    f"{MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING}/metadata"
-)
-MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING = (
-    MARINE_DATA_STORE_STAC_URL_STAGING + "/catalog.stac.json"
-)
-
 
 def get_dataset_metadata(
-    dataset_id: str, staging: bool
+    dataset_id: str, marine_datastore_config: MarineDataStoreConfig
 ) -> Optional[CopernicusMarineDataset]:
-    with JsonParserConnection() as connection:
-        stac_url = (
-            MARINE_DATA_STORE_STAC_URL
-            if not staging
-            else MARINE_DATA_STORE_STAC_URL_STAGING
-        )
-        root_url = (
-            MARINE_DATA_STORE_ROOT_METADATA_URL
-            if not staging
-            else MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING
-        )
-        dataset_product_mapping_url = (
-            f"{root_url}/dataset_product_id_mapping.json"
-        )
-        product_ids = connection.get_json_file(
-            dataset_product_mapping_url
-        ).get(dataset_id)
-        if not product_ids:
-            raise DatasetNotFound(dataset_id)
-        dataset_items: list[DatasetItem] = []
-        for product_id in product_ids.split(","):
-            url = f"{stac_url}/{product_id}/product.stac.json"
-            product_json = connection.get_json_file(url)
-            product_collection = pystac.Collection.from_dict(product_json)
-            product_datasets_metadata_links = (
-                product_collection.get_item_links()
-            )
-            digital_object_identifier = (
-                product_collection.extra_fields.get("sci:doi", None)
-                if product_collection.extra_fields
-                else None
-            )
-            datasets_metadata_links = [
-                dataset_metadata_link
-                for dataset_metadata_link in product_datasets_metadata_links
-                if dataset_id in dataset_metadata_link.href
-            ]
-            for link in datasets_metadata_links:
-                url = f"{stac_url}/{product_id}/{link.href}"
-                dataset_json = connection.get_json_file(url)
-                dataset_item = _parse_dataset_json_to_pystac_item(dataset_json)
-                if dataset_item:
-                    (
-                        parsed_id,
-                        parsed_version,
-                        parsed_part,
-                    ) = get_version_and_part_from_full_dataset_id(
-                        dataset_item.id
-                    )
-                    dataset_items.append(
-                        DatasetItem(
-                            url=url,
-                            stac_json=dataset_json,
-                            stac_item=dataset_item,
-                            item_id=dataset_item.id,
-                            parsed_id=parsed_id,
-                            parsed_version=parsed_version,
-                            parsed_part=parsed_part,
-                            product_doi=digital_object_identifier,
-                        )
-                    )
+    seen_dataset_links = set()
+    dataset_items: list[DatasetItem] = []
+    for catalogue in marine_datastore_config.catalogues:
+        with JsonParserConnection() as connection:
+            stac_url = catalogue.root_metadata_url
+            dataset_product_mapping_url = catalogue.dataset_product_mapping_url
+            product_ids = connection.get_json_file(
+                dataset_product_mapping_url
+            ).get(dataset_id)
+            if not product_ids:
+                continue
+            for product_id in product_ids.split(","):
+                url = f"{stac_url}/{product_id}/product.stac.json"
+                product_json = connection.get_json_file(url)
+                product_collection = pystac.Collection.from_dict(product_json)
+                product_datasets_metadata_links = (
+                    product_collection.get_item_links()
+                )
+                digital_object_identifier = (
+                    product_collection.extra_fields.get("sci:doi", None)
+                    if product_collection.extra_fields
+                    else None
+                )
+                datasets_metadata_links = []
+                for dataset_metadata_link in product_datasets_metadata_links:
+                    if (
+                        dataset_id in dataset_metadata_link.href
+                        and dataset_metadata_link.href
+                        not in seen_dataset_links
+                    ):
+                        datasets_metadata_links.append(dataset_metadata_link)
+                        seen_dataset_links.add(dataset_metadata_link.href)
 
-        return _parse_and_sort_dataset_items(
-            [
-                dataset_item
-                for dataset_item in dataset_items
-                if dataset_item.parsed_id == dataset_id
-            ]
-        )
+                for link in datasets_metadata_links:
+                    url = f"{stac_url}/{product_id}/{link.href}"
+                    dataset_json = connection.get_json_file(url)
+                    dataset_item = _parse_dataset_json_to_pystac_item(
+                        dataset_json
+                    )
+                    if dataset_item:
+                        (
+                            parsed_id,
+                            parsed_version,
+                            parsed_part,
+                        ) = get_version_and_part_from_full_dataset_id(
+                            dataset_item.id
+                        )
+                        dataset_items.append(
+                            DatasetItem(
+                                url=url,
+                                stac_json=dataset_json,
+                                stac_item=dataset_item,
+                                item_id=dataset_item.id,
+                                parsed_id=parsed_id,
+                                parsed_version=parsed_version,
+                                parsed_part=parsed_part,
+                                product_doi=digital_object_identifier,
+                            )
+                        )
+
+    if not dataset_items:
+        raise DatasetNotFound(dataset_id)
+
+    return _parse_and_sort_dataset_items(
+        [
+            dataset_item
+            for dataset_item in dataset_items
+            if dataset_item.parsed_id == dataset_id
+        ]
+    )
 
 
 def _parse_dataset_json_to_pystac_item(
@@ -355,23 +341,15 @@ def fetch_all_products_items(
     force_product_id: Optional[str],
     force_dataset_id: Optional[str],
     max_concurrent_requests: int,
-    staging: bool,
+    catalogue_config: CatalogueConfig,
     disable_progress_bar: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
-    catalog_root_url = (
-        MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL
-        if not staging
-        else MARINE_DATA_STORE_STAC_ROOT_CATALOG_URL_STAGING
-    )
+    catalog_root_url = catalogue_config.stac_catalogue_url
     json_catalog = connection.get_json_file(catalog_root_url)
     catalog = pystac.Catalog.from_dict(json_catalog)
     catalog.set_self_href(catalog_root_url)
     child_links = catalog.get_child_links()
-    root_url = (
-        MARINE_DATA_STORE_STAC_URL
-        if not staging
-        else (MARINE_DATA_STORE_STAC_URL_STAGING)
-    )
+    root_url = catalogue_config.root_metadata_url
     childs = fetch_product_items(
         root_url,
         connection,
@@ -389,22 +367,15 @@ def parse_catalogue(
     force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
-    staging: bool = False,
+    catalogue_config: CatalogueConfig,
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
         total=2, desc="Fetching catalogue", disable=disable_progress_bar
     )
+    dataset_product_mapping_url = catalogue_config.dataset_product_mapping_url
     with JsonParserConnection() as connection:
         if force_dataset_id:
-            root_url = (
-                MARINE_DATA_STORE_ROOT_METADATA_URL
-                if not staging
-                else MARINE_DATA_STORE_ROOT_METADATA_URL_STAGING
-            )
-            dataset_product_mapping_url = (
-                f"{root_url}/dataset_product_id_mapping.json"
-            )
             product_id_from_mapping = connection.get_json_file(
                 dataset_product_mapping_url
             ).get(force_dataset_id)
@@ -423,7 +394,7 @@ def parse_catalogue(
             force_product_id=force_product_id,
             force_dataset_id=force_dataset_id,
             max_concurrent_requests=max_concurrent_requests,
-            staging=staging,
+            catalogue_config=catalogue_config,
             disable_progress_bar=disable_progress_bar,
         )
     progress_bar.update()
@@ -520,3 +491,57 @@ def filter_catalogue_with_strings(
         if filtered_model:
             filtered_models.append(filtered_model)
     return CopernicusMarineCatalogue(products=filtered_models)
+
+
+def merge_catalogues(
+    catalogues: list[CopernicusMarineCatalogue],
+) -> CopernicusMarineCatalogue:
+    T = TypeVar("T")
+
+    def next_object(iterable: list[T], key: str, value: str) -> T:
+        return next(item for item in iterable if getattr(item, key) == value)
+
+    merged_catalogue = CopernicusMarineCatalogue(products=[])
+    seen_products = set()
+    seen_datasets = set()
+    for catalogue in catalogues:
+        for product in catalogue.products:
+            if product.product_id not in seen_products:
+                merged_catalogue.products.append(product)
+                seen_products.add(product.product_id)
+            else:
+                for dataset in product.datasets:
+                    merge_product = next_object(
+                        merged_catalogue.products,
+                        "product_id",
+                        product.product_id,
+                    )
+                    if dataset.dataset_id not in seen_datasets:
+                        merge_product.datasets.append(dataset)
+                        seen_datasets.add(dataset.dataset_id)
+                    else:
+                        for version in dataset.versions:
+                            merge_dataset = next_object(
+                                merge_product.datasets,
+                                "dataset_id",
+                                dataset.dataset_id,
+                            )
+                            if version.label not in {
+                                version.label
+                                for version in merge_dataset.versions
+                            }:
+                                merge_dataset.versions.append(version)
+                            else:
+                                for part in version.parts:
+                                    merge_version = next_object(
+                                        merge_dataset.versions,
+                                        "label",
+                                        version.label,
+                                    )
+                                    if part.name not in {
+                                        part.name
+                                        for part in merge_version.parts
+                                    }:
+                                        merge_version.parts.append(part)
+
+    return merged_catalogue
