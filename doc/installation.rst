@@ -204,6 +204,8 @@ To be able to use the Copernicus Marine Services, you need to be able to access 
 - ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.
 - ``https://s3.waw3-1.cloudferro.com``: for the data.
+- ``https://s3.waw4-1.cloudferro.com``: for the data.
+- ``https://stac.marine.copernicus.eu``: for the metadata.
 
 To check if you are able to access ``https://s3.waw3-1.cloudferro.com`` the way the toolbox is doing it you can do the following steps.
 

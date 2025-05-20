@@ -59,7 +59,7 @@ def get_configured_boto3_session(
     return_ressources: bool = False,
 ) -> tuple[Any, Any]:
     config_boto3 = botocore.config.Config(
-        s3={"addressing_style": "virtual"},
+        # s3={"addressing_style": "virtual"},
         signature_version=botocore.UNSIGNED,
         retries={"max_attempts": 10, "mode": "standard"},
     )
