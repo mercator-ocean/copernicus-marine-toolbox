@@ -14,6 +14,9 @@ from copernicusmarine.core_functions.exceptions import (
     FormatNotSupported,
     ServiceNotSupported,
 )
+from copernicusmarine.core_functions.marine_datastore_config import (
+    get_config_and_check_version_subset,
+)
 from copernicusmarine.core_functions.models import CommandType
 from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import (
@@ -39,6 +42,9 @@ def load_data_object_from_load_request(
     chunks_factor_size_limit: int,
     command_type: CommandType,
 ) -> Union[xarray.Dataset, pd.DataFrame]:
+    marine_datastore_config = get_config_and_check_version_subset(
+        staging=False,
+    )
     retrieval_service: RetrievalService = get_retrieval_service(
         dataset_id=load_request.dataset_id,
         force_dataset_version_label=load_request.force_dataset_version,
@@ -46,6 +52,7 @@ def load_data_object_from_load_request(
         force_service_name_or_short_name=load_request.force_service,
         command_type=command_type,
         dataset_subset=load_request.to_subset_request(),
+        marine_datastore_config=marine_datastore_config,
     )
     username, password = get_and_check_username_password(
         load_request.username,
