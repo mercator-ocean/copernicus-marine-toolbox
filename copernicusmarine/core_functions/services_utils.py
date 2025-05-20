@@ -86,8 +86,8 @@ def _get_best_arco_service_type(
         f"{dataset_chunking_timeseries.number_chunks} chunks for timeseries"
     )
     if (
-        dataset_chunking_timeseries.get_download_size()
-        >= dataset_chunking_geoseries.get_download_size()
+        dataset_chunking_timeseries.number_chunks
+        >= dataset_chunking_geoseries.number_chunks
     ):
         return (
             CopernicusMarineServiceNames.GEOSERIES,
