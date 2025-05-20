@@ -47,8 +47,6 @@ from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
     TemporalParameters,
-    XParameters,
-    YParameters,
 )
 from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
@@ -245,20 +243,9 @@ def download_zarr(
     chunk_size_limit: int,
     dataset_chunking: Optional[DatasetChunking],
 ) -> ResponseSubset:
-    geographical_parameters = GeographicalParameters(
-        y_axis_parameters=YParameters(
-            minimum_y=subset_request.minimum_y,
-            maximum_y=subset_request.maximum_y,
-            coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
-        ),
-        x_axis_parameters=XParameters(
-            minimum_x=subset_request.minimum_x,
-            maximum_x=subset_request.maximum_x,
-            coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
-        ),
-        projection="originalGrid" if is_original_grid else "lonlat",
+    geographical_parameters = subset_request.get_geographical_parameters(
+        axis_coordinate_id_mapping, is_original_grid
     )
-    start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
         minimum_start_date = timestamp_or_datestring_to_datetime(
             dataset_valid_start_date
@@ -267,18 +254,13 @@ def download_zarr(
             not subset_request.start_datetime
             or subset_request.start_datetime < minimum_start_date
         ):
-            start_datetime = minimum_start_date
+            subset_request.start_datetime = minimum_start_date
 
-    temporal_parameters = TemporalParameters(
-        start_datetime=start_datetime,
-        end_datetime=subset_request.end_datetime,
-        coordinate_id=axis_coordinate_id_mapping.get("t", "time"),
+    temporal_parameters = subset_request.get_temporal_parameters(
+        axis_coordinate_id_mapping
     )
-    depth_parameters = DepthParameters(
-        minimum_depth=subset_request.minimum_depth,
-        maximum_depth=subset_request.maximum_depth,
-        vertical_axis=subset_request.vertical_axis,
-        coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
+    depth_parameters = subset_request.get_depth_parameters(
+        axis_coordinate_id_mapping
     )
     dataset_url = str(subset_request.dataset_url)
     output_directory = (

@@ -145,7 +145,9 @@ class SubsetRequest:
         )
 
     def get_geographical_parameters(
-        self, axis_coordinate_id_mapping: dict[str, str]
+        self,
+        axis_coordinate_id_mapping: dict[str, str],
+        is_original_grid: bool = False,
     ) -> GeographicalParameters:
         return GeographicalParameters(
             x_axis_parameters=XParameters(
@@ -158,13 +160,17 @@ class SubsetRequest:
                 maximum_y=self.maximum_y,
                 coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
             ),
+            projection="originalGrid" if is_original_grid else "lonlat",
         )
 
-    def get_depth_parameters(self) -> DepthParameters:
+    def get_depth_parameters(
+        self, axis_coordinate_id_mapping: dict[str, str]
+    ) -> DepthParameters:
         return DepthParameters(
             minimum_depth=self.minimum_depth,
             maximum_depth=self.maximum_depth,
             vertical_axis=self.vertical_axis,
+            coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
         )
 
 
