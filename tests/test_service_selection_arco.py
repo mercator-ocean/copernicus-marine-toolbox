@@ -289,49 +289,48 @@ class TestArcoServiceSelection:
         assert self.output.returncode == 0
         assert b'Selected service: "arco-geo-series"' in self.output.stderr
 
-
-def test_close_call_between_services():
-    """
-    This test is to check the close call between the geo series and time series services.
-    The old code was selecting the geo series service instead of the (correct) time series.
-    """  # noqa
-    command = [
-        "copernicusmarine",
-        "subset",
-        "-i",
-        "cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
-        "-v",
-        "thetao_oras",
-        "-v",
-        "uo_oras",
-        "-v",
-        "vo_oras",
-        "-v",
-        "so_oras",
-        "-v",
-        "zos_oras",
-        "--minimum-longitude",
-        "50",
-        "--maximum-longitude",
-        "110",
-        "--minimum-latitude",
-        "-10",
-        "--maximum-latitude",
-        "30",
-        "--start-datetime",
-        "2010-03-01T00:00:00",
-        "--end-datetime",
-        "2010-06-30T00:00:00",
-        "--minimum-depth",
-        "0.5057600140571594",
-        "--maximum-depth",
-        "500",
-        "--output-filename",
-        "ocean_subsurface_2010_0_500.nc",
-        "--dry-run",
-        "--log-level",
-        "DEBUG",
-    ]
-    output = execute_in_terminal(command)
-    assert output.returncode == 0
-    assert b'Selected service: "arco-geo-series"' in output.stderr
+    def test_close_call_between_services(self):
+        """
+        This test is to check the close call between the geo series and time series services.
+        The old code was selecting the geo series service instead of the (correct) time series.
+        """  # noqa
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+            "-v",
+            "thetao_oras",
+            "-v",
+            "uo_oras",
+            "-v",
+            "vo_oras",
+            "-v",
+            "so_oras",
+            "-v",
+            "zos_oras",
+            "--minimum-longitude",
+            "50",
+            "--maximum-longitude",
+            "110",
+            "--minimum-latitude",
+            "-10",
+            "--maximum-latitude",
+            "30",
+            "--start-datetime",
+            "2010-03-01T00:00:00",
+            "--end-datetime",
+            "2010-06-30T00:00:00",
+            "--minimum-depth",
+            "0.5057600140571594",
+            "--maximum-depth",
+            "500",
+            "--output-filename",
+            "ocean_subsurface_2010_0_500.nc",
+            "--dry-run",
+            "--log-level",
+            "DEBUG",
+        ]
+        output = execute_in_terminal(command)
+        assert output.returncode == 0
+        assert b'Selected service: "arco-time-series"' in output.stderr
