@@ -68,7 +68,7 @@ def _get_best_arco_service_type(
         CopernicusMarineServiceNames.TIMESERIES,
         CopernicusMarineServiceNames.GEOSERIES,
     ],
-    DatasetChunking,
+    Optional[DatasetChunking],
 ]:
     dataset_chunking_geoseries = get_dataset_chunking(
         dataset_subset,
@@ -80,6 +80,25 @@ def _get_best_arco_service_type(
         CopernicusMarineServiceNames.TIMESERIES,
         dataset_version_part,
     )
+    if (
+        dataset_chunking_geoseries.number_chunks < 0
+        and dataset_chunking_timeseries.number_chunks < 0
+    ):
+        logger.debug("We were not able to compute the optimum service.")
+        return (
+            CopernicusMarineServiceNames.GEOSERIES,
+            None,
+        )
+    if dataset_chunking_geoseries.number_chunks < 0:
+        return (
+            CopernicusMarineServiceNames.TIMESERIES,
+            dataset_chunking_timeseries,
+        )
+    if dataset_chunking_timeseries.number_chunks < 0:
+        return (
+            CopernicusMarineServiceNames.GEOSERIES,
+            dataset_chunking_geoseries,
+        )
     logger.debug(
         f"{dataset_chunking_geoseries.number_chunks} chunks to "
         f"download for geoseries and "
