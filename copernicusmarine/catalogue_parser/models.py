@@ -255,8 +255,6 @@ class CopernicusMarineVariable(BaseModel):
     units: Optional[str]
     #: Bounding box of the variable.
     bbox: Optional[list[float]]
-    #: Size of a chunk in Bytes.
-    chunk_size: Optional[float]
     #: List of coordinates of the variable.
     coordinates: list[CopernicusMarineCoordinate]
 
@@ -273,13 +271,11 @@ class CopernicusMarineVariable(BaseModel):
         cube_dimensions = metadata_item.properties["cube:dimensions"]
         extra_fields_asset = asset.extra_fields
         dimensions = extra_fields_asset.get("viewDims") or {}
-        variables = extra_fields_asset.get("viewVariables") or {}
         return cls(
             short_name=variable_id,
             standard_name=cube_variable["standardName"],
             units=cube_variable.get("unit") or "",
             bbox=bbox,
-            chunk_size=variables.get(variable_id, {}).get("chunkSize"),
             coordinates=[
                 CopernicusMarineCoordinate.from_metadata_item(
                     variable_id,

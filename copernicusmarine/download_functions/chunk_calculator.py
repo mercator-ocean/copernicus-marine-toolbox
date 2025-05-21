@@ -189,7 +189,7 @@ def get_dataset_chunking(
             number_values=number_values_per_variable,
             number_chunks=number_chunks_per_variable,
             # default to 2MB as it is what is intended by ARCO producer
-            chunk_size=variable.chunk_size or 2_000_000,
+            chunk_size=2_000_000,
         )
         number_of_chunks += number_chunks_per_variable
     return DatasetChunking(

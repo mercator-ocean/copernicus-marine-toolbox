@@ -414,6 +414,4 @@ def get_approximation_size_data_downloaded(
             / 1048e3
         )
 
-    # TODO: Check viability:
-    # logger.info(dataset_chunking.get_download_size() / 1048e3)
     return download_estimated_size

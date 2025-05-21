@@ -250,12 +250,6 @@ class DatasetChunking:
             return self.chunking_per_coordinate[coordinate_id].number_of_chunks
         return None
 
-    def get_download_size(self) -> float:
-        total_size = 0.0
-        for variable in self.chunking_per_variable.values():
-            total_size += variable.number_chunks * variable.chunk_size
-        return total_size
-
 
 class _Command(Enum):
     GET = "get"
