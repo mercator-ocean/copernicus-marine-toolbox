@@ -17,6 +17,7 @@ from copernicusmarine import (
 from copernicusmarine.download_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )
+from tests.test_utils import execute_in_terminal
 
 
 class TestPythonInterface:
@@ -325,6 +326,22 @@ class TestPythonInterface:
         diff.to_netcdf(tmp_path / "diff.nc")
         diff = xarray.open_dataset(tmp_path / "diff.nc")
         assert diff.thetao.mean().values == 0.0
+        output_uncompressed = execute_in_terminal(
+            [
+                "ncdump",
+                "-h",
+                str(tmp_path / "uncompressed_data.nc"),
+            ]
+        )
+        output_compressed = execute_in_terminal(
+            [
+                "ncdump",
+                "-h",
+                str(tmp_path / "compressed_data.nc"),
+            ]
+        )
+        # we skip the first line that contains the title
+        assert output_compressed.stdout[23:] == output_uncompressed.stdout[25:]
 
     def test_lonlat_attributes_when_not_in_arco(self, tmp_path):
         dataset_response = subset(

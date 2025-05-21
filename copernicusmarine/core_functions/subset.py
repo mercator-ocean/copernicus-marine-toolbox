@@ -216,6 +216,7 @@ def subset_function(
                 retrieval_service.metadata_url,
                 retrieval_service.service,
                 retrieval_service.axis_coordinate_id_mapping,
+                retrieval_service.product_doi,
                 disable_progress_bar,
             )
     else:
@@ -233,8 +234,8 @@ def create_subset_template() -> None:
         json.dump(
             {
                 "dataset_id": "cmems_mod_glo_phy_myint_0.083deg_P1M-m",
-                "start_datetime": "2023-10-07",
-                "end_datetime": "2023-10-12",
+                "start_datetime": "2023-10-01",
+                "end_datetime": "2023-11-01",
                 "minimum_longitude": -85,
                 "maximum_longitude": -10,
                 "minimum_latitude": 35,
@@ -243,7 +244,7 @@ def create_subset_template() -> None:
                 "maximum_depth": 10,
                 "variables": ["so", "thetao"],
                 "output_directory": "copernicusmarine_data",
-                "force_service": False,
+                "service": False,
                 "request_file": False,
                 "motu_api_request": False,
                 "overwrite": False,

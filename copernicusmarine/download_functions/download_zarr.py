@@ -616,7 +616,13 @@ def _download_dataset_as_netcdf(
             contiguous=False,
             shuffle=True,
         )
-        keys_to_keep = {"scale_factor", "add_offset", "dtype", "_FillValue"}
+        keys_to_keep = {
+            "scale_factor",
+            "add_offset",
+            "dtype",
+            "_FillValue",
+            "units",
+        }
         encoding = {
             name: {
                 **{

@@ -52,6 +52,14 @@ def load_data_object_from_load_request(
         load_request.password,
         load_request.credentials_file,
     )
+    load_request.dataset_url = retrieval_service.uri
+    check_dataset_subset_bounds(
+        service=retrieval_service.service,
+        part=retrieval_service.dataset_part,
+        dataset_subset=load_request.get_time_and_space_subset(),
+        coordinates_selection_method=load_request.coordinates_selection_method,
+        axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+    )
     if (
         retrieval_service.service.service_format
         == CopernicusMarineServiceFormat.SQLITE
@@ -70,17 +78,10 @@ def load_data_object_from_load_request(
             subset_request=load_request.to_subset_request(),
             metadata_url=retrieval_service.metadata_url,
             service=retrieval_service.service,
+            product_doi=retrieval_service.product_doi,
             disable_progress_bar=load_request.disable_progress_bar,
         )
 
-    load_request.dataset_url = retrieval_service.uri
-    check_dataset_subset_bounds(
-        service=retrieval_service.service,
-        part=retrieval_service.dataset_part,
-        dataset_subset=load_request.get_time_and_space_subset(),
-        coordinates_selection_method=load_request.coordinates_selection_method,
-        axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
-    )
     load_request.update_attributes(
         retrieval_service.axis_coordinate_id_mapping
     )
