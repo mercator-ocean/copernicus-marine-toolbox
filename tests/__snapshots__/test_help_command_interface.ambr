@@ -399,7 +399,7 @@
     '  --motu-api-request TEXT         Option to pass a complete MOTU API request',
     '                                  as a string. Caution, user has to replace',
     '                                  double quotes " with single quotes \\\' in the',
-    '                                  request.',
+    '                                  request.(DEPRECATED)',
     '  --dry-run                       If True, runs query without downloading',
     '                                  data.',
     '  -r, --response-fields TEXT      List of fields to include in the query',
