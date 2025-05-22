@@ -1,8 +1,14 @@
 import pathlib
+from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, Optional, Union, get_args
 
 from pydantic import BaseModel, ConfigDict
+
+from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineServiceNames,
+    short_name_from_service_name,
+)
 
 FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
@@ -26,6 +32,11 @@ DEFAULT_VERTICAL_AXES = list(get_args(VerticalAxis))
 
 GeoSpatialProjection = Literal["lonlat", "originalGrid"]
 DEFAULT_GEOSPATIAL_PROJECTION: GeoSpatialProjection = "lonlat"
+
+
+class ChunkType(str, Enum):
+    ARITHMETIC = "default"
+    GEOMETRIC = "symmetricGeometric"
 
 
 class StatusCode(str, Enum):
@@ -201,3 +212,114 @@ class ResponseSubset(BaseModel):
     message: StatusMessage
     #: Status of the files.
     file_status: FileStatus
+
+
+# Internal use only
+@dataclass
+class VariableChunking:
+    variable_short_name: str
+    number_values: float
+    number_chunks: int
+    chunk_size: float
+
+
+@dataclass
+class CoordinateChunking:
+    coordinate_id: str
+    chunking_length: float
+    number_of_chunks: int
+
+
+@dataclass
+class DatasetChunking:
+    number_chunks: int
+    chunking_per_variable: dict[str, VariableChunking]
+    chunking_per_coordinate: dict[str, CoordinateChunking]
+
+    def get_number_values_variable(self, variable_short_name: str) -> float:
+        if variable_short_name in self.chunking_per_variable:
+            return self.chunking_per_variable[
+                variable_short_name
+            ].number_values
+        return 0
+
+    def get_number_chunks_coordinate(
+        self, coordinate_id: str
+    ) -> Optional[float]:
+        if coordinate_id in self.chunking_per_coordinate:
+            return self.chunking_per_coordinate[coordinate_id].number_of_chunks
+        return None
+
+
+class _Command(Enum):
+    GET = "get"
+    SUBSET = "subset"
+    OPEN_DATASET = "open_dataset"
+    READ_DATAFRAME = "read_dataframe"
+
+
+@dataclass(frozen=True)
+class Command:
+    command_name: _Command
+    service_names_by_priority: list[CopernicusMarineServiceNames]
+
+    def service_names(self) -> list[str]:
+        return [
+            service_name.value
+            for service_name in self.service_names_by_priority
+        ]
+
+    def short_names_services(self) -> list[str]:
+        return [
+            short_name_from_service_name(service_name).value
+            for service_name in self.service_names_by_priority
+        ]
+
+    def get_available_service_for_command(self) -> list[str]:
+        available_services = []
+        for service_name in self.service_names_by_priority:
+            available_services.append(service_name.value)
+            short_name = short_name_from_service_name(service_name)
+            if short_name != service_name:
+                available_services.append(
+                    short_name_from_service_name(service_name).value
+                )
+        return available_services
+
+
+class CommandType(Command, Enum):
+    SUBSET = (
+        _Command.SUBSET,
+        [
+            CopernicusMarineServiceNames.GEOSERIES,
+            CopernicusMarineServiceNames.TIMESERIES,
+            CopernicusMarineServiceNames.OMI_ARCO,
+            CopernicusMarineServiceNames.STATIC_ARCO,
+            CopernicusMarineServiceNames.PLATFORMSERIES,
+        ],
+    )
+    GET = (
+        _Command.GET,
+        [
+            CopernicusMarineServiceNames.FILES,
+        ],
+    )
+    OPEN_DATASET = (
+        _Command.OPEN_DATASET,
+        [
+            CopernicusMarineServiceNames.GEOSERIES,
+            CopernicusMarineServiceNames.TIMESERIES,
+            CopernicusMarineServiceNames.OMI_ARCO,
+            CopernicusMarineServiceNames.STATIC_ARCO,
+        ],
+    )
+    READ_DATAFRAME = (
+        _Command.READ_DATAFRAME,
+        [
+            CopernicusMarineServiceNames.GEOSERIES,
+            CopernicusMarineServiceNames.TIMESERIES,
+            CopernicusMarineServiceNames.OMI_ARCO,
+            CopernicusMarineServiceNames.STATIC_ARCO,
+            CopernicusMarineServiceNames.PLATFORMSERIES,
+        ],
+    )

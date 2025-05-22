@@ -11,11 +11,11 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_AXIS,
+    CommandType,
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
 from copernicusmarine.core_functions.request_structure import LoadRequest
-from copernicusmarine.core_functions.services_utils import CommandType
 from copernicusmarine.core_functions.utils import get_geographical_inputs
 from copernicusmarine.download_functions.download_zarr import (
     read_dataframe_from_arco_series,

@@ -269,7 +269,6 @@ class CopernicusMarineVariable(BaseModel):
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]
         cube_dimensions = metadata_item.properties["cube:dimensions"]
-
         extra_fields_asset = asset.extra_fields
         dimensions = extra_fields_asset.get("viewDims") or {}
         return cls(
