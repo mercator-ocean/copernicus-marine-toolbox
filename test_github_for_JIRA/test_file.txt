@@ -2,3 +2,4 @@ This is a test file²
 And a second one
 And a third one
 And a fourth one
+And a fifth one
