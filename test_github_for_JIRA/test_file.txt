@@ -1,1 +1,2 @@
 This is a test file²
+And a second one
