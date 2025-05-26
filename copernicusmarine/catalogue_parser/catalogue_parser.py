@@ -509,6 +509,8 @@ def merge_catalogues(
             if product.product_id not in seen_products:
                 merged_catalogue.products.append(product)
                 seen_products.add(product.product_id)
+                for dataset in product.datasets:
+                    seen_datasets.add(dataset.dataset_id)
             else:
                 for dataset in product.datasets:
                     merge_product = next_object(
