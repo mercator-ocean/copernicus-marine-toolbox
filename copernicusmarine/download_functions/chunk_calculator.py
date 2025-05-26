@@ -98,7 +98,7 @@ def _get_chunk_indexes_for_coordinate(
             and coordinate.values
         ):
             sorted_values = sorted(coordinate.values)
-            cnt = (
+            index_max = int(
                 len(
                     [
                         i
@@ -108,8 +108,8 @@ def _get_chunk_indexes_for_coordinate(
                 )
                 / chunking_length
             )
+            # index max is actually number of chunks
             index_min = 0
-            index_max = int(cnt)
         elif (
             coordinate.chunk_type == ChunkType.ARITHMETIC
             or coordinate.chunk_type is None
