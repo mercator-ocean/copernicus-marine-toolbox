@@ -20,3 +20,4 @@ The toolbox follows the `Semantic Versioning <https://semver.org/>`_ scheme.
     v201
     v210
     v211
+    v212
