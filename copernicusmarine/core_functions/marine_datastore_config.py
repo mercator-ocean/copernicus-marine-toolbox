@@ -103,18 +103,20 @@ def _get_required_versions_and_config(
     logger.debug(f"Getting required versions from {url_mds_versions}")
     mds_config: dict = {}
     try:
-        # TODO: pass retries not to retry much
-        with JsonParserConnection() as connection:
-            mds_config = connection.get_json_file(
+        with JsonParserConnection(
+            timeout=2, retries=0
+        ) as connection_without_retries:
+            mds_config = connection_without_retries.get_json_file(
                 url_mds_versions,
             )
     except Exception as e:
         if staging:
             raise e
         else:
-            mds_config = connection.get_json_file(
-                MARINE_DATASTORE_CONFIG_URL_CDN,
-            )
+            with JsonParserConnection() as connection:
+                mds_config = connection.get_json_file(
+                    MARINE_DATASTORE_CONFIG_URL_CDN,
+                )
     if not mds_config:
         raise ValueError(
             "Please check your internet connection. "
