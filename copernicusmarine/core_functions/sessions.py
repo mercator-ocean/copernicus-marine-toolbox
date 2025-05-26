@@ -90,7 +90,13 @@ def get_configured_boto3_session(
 # example: with https://httpbin.org/delay/10 or
 # https://medium.com/@mpuig/testing-robust-requests-with-python-a06537d97771
 class ConfiguredRequestsSession(requests.Session):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        timeout: float = HTTPS_TIMEOUT,
+        retries: int = HTTPS_RETRIES,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.trust_env = TRUST_ENV
         if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
@@ -100,25 +106,28 @@ class ConfiguredRequestsSession(requests.Session):
                 COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
             )
         self.proxies = PROXIES
-        if HTTPS_RETRIES:
+        if retries:
             self.mount(
                 "https://",
                 HTTPAdapter(
                     max_retries=Retry(
-                        total=HTTPS_RETRIES,
+                        total=retries,
                         backoff_factor=1,
                         status_forcelist=[408, 429, 500, 502, 503, 504],
                     )
                 ),
             )
+        self.timeout = timeout
 
     def request(self, *args, **kwargs):
-        kwargs.setdefault("timeout", HTTPS_TIMEOUT)
+        kwargs.setdefault("timeout", self.timeout)
         return super().request(*args, **kwargs)
 
 
-def get_configured_requests_session() -> requests.Session:
-    return ConfiguredRequestsSession()
+def get_configured_requests_session(
+    timeout: float = HTTPS_TIMEOUT, retries: int = HTTPS_RETRIES
+) -> requests.Session:
+    return ConfiguredRequestsSession(timeout=timeout, retries=retries)
 
 
 # from https://stackoverflow.com/questions/29931671/making-an-api-call-in-python-with-an-api-that-requires-a-bearer-token # noqa
@@ -139,8 +148,10 @@ class BearerAuth(requests.auth.AuthBase):
 
 
 class JsonParserConnection:
-    def __init__(self) -> None:
-        self.session = get_configured_requests_session()
+    def __init__(
+        self, timeout: float = HTTPS_TIMEOUT, retries: int = HTTPS_RETRIES
+    ) -> None:
+        self.session = get_configured_requests_session(timeout, retries)
 
     def get_json_file(self, url: str) -> dict[str, Any]:
         logger.debug(f"Fetching json file at this url: {url}")
