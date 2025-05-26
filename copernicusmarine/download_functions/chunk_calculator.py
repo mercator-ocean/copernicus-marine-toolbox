@@ -93,6 +93,21 @@ def _get_chunk_indexes_for_coordinate(
     index_max = 0
     if chunking_length:
         if (
+            coordinate.chunk_type is None
+            and coordinate.step is None
+            and coordinate.values
+        ):
+            sorted_values = sorted(coordinate.values)
+            cnt = len(
+                [
+                    i
+                    for i in sorted_values
+                    if requested_minimum <= i <= requested_maximum  # type: ignore
+                ]
+            )
+            index_min = 1
+            index_max = cnt
+        elif (
             coordinate.chunk_type == ChunkType.ARITHMETIC
             or coordinate.chunk_type is None
         ):

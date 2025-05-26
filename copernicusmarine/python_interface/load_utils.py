@@ -56,7 +56,7 @@ def load_data_object_from_load_request(
     check_dataset_subset_bounds(
         service=retrieval_service.service,
         part=retrieval_service.dataset_part,
-        dataset_subset=load_request.get_time_and_space_subset(),
+        dataset_subset=load_request.to_subset_request(),
         coordinates_selection_method=load_request.coordinates_selection_method,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
