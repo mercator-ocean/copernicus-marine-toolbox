@@ -108,7 +108,7 @@ def _get_chunk_indexes_for_coordinate(
                 )
                 / chunking_length
             )
-            # index max is actually number of chunks
+            # index max is actually number of chunks -1
             index_min = 0
         elif (
             coordinate.chunk_type == ChunkType.ARITHMETIC
