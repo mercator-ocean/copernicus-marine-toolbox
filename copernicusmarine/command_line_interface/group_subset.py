@@ -285,7 +285,7 @@ def cli_subset() -> None:
     type=str,
     help=documentation_utils.SUBSET["MOTU_API_REQUEST_HELP"],
     cls=CustomDeprecatedClickOption,
-    deprecated=["--motu-api-request"],
+    custom_deprecated=["--motu-api-request"],
 )
 @click.option(
     "--dry-run",

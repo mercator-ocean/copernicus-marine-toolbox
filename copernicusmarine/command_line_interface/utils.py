@@ -98,5 +98,5 @@ force_download_option = click.option(
     default=False,
     hidden=True,
     cls=CustomDeprecatedClickOption,
-    deprecated=["--force-download"],
+    custom_deprecated=["--force-download"],
 )

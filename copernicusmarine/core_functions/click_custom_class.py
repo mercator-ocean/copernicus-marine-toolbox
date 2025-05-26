@@ -12,7 +12,7 @@ logger = logging.getLogger("copernicusmarine")
 
 class CustomDeprecatedClickOption(click.Option):
     def __init__(self, *args, **kwargs):
-        self.deprecated = kwargs.pop("custom_deprecated", ())
+        self.custom_deprecated = kwargs.pop("custom_deprecated", ())
         self.preferred = kwargs.pop("preferred", None)
         super().__init__(*args, **kwargs)
 
@@ -31,7 +31,9 @@ class CustomClickOptionsCommand(click.Command):
 
             def make_process(an_option):
                 orig_process = an_option.process
-                custom_deprecated = getattr(an_option.obj, "deprecated", None)
+                custom_deprecated = getattr(
+                    an_option.obj, "custom_deprecated", None
+                )
                 preferred = getattr(an_option.obj, "preferred", None)
                 msg = "Expected `deprecated` value for `{}`"
                 assert custom_deprecated is not None, msg.format(
