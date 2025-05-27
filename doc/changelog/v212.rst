@@ -1,0 +1,21 @@
+Release 2.1.2
+=============
+
+Patch release with bug fixes and improvements.
+
+General
+-------
+
+Fixes
+^^^^^
+
+* Fixed an issue introduced by ``click==8.2.1`` where using deprecated options raised an error instead of a warning.
+* Added a paragraph on vector rotation in the notebook about :ref:`stereographic projection <stereographic-subsetting-page>`.
+
+Subset
+------
+
+Fixes
+^^^^^
+
+* Added a new column to the ``pandas.DataFrame`` returned by the ``subset`` method when working with sparse data to indicate the dataset's product DOI. See the :ref:`documentation about sparse subsetting <sparse-subset>` for more details.
