@@ -1,7 +1,7 @@
 name: Run tests
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - "main"
       - "release/**"
@@ -45,4 +45,3 @@ jobs:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: make run-tests
-        shell: micromamba-shell {0}
