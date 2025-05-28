@@ -11,10 +11,10 @@ on:
     branches:
       - "main"
     paths:
-      - 'pyproject.toml'
+      # - 'pyproject.toml'
       - 'conda_environment_binary.yaml'
       - 'tests_extra/test_basic_commands_binaries.py'
-      - 'Makefile'
+      # - 'Makefile'
 
 
 
