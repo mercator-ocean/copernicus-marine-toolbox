@@ -24,24 +24,17 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-            python-version: '3.13'
+            python-version: '3.12'
       - name: Install and configure Poetry
-        run: |
-          python3.13 -m pip install poetry
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v4
+        uses: snok/install-poetry@v1
         with:
-          path: ~/.cache
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+          virtualenvs-path: .venv
+          installer-parallel: true
       - name: Install dependencies
-        run: |
-          sudo apt install build-essential -y
-          python3.13 -m poetry install --no-interaction --no-root
-      - name: Install ncdump dependency
-        run: sudo apt-get install netcdf-bin
-      - name: Install library
-        run: python3.13 -m poetry install --no-interaction --with dev
+        run: poetry install --no-interaction --no-root
       - name: Run tests
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
