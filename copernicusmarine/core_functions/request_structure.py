@@ -23,6 +23,8 @@ from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
     TemporalParameters,
+    XParameters,
+    YParameters,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -37,18 +39,6 @@ MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
     "maximum_longitude": "maximum_x",
     "minimum_longitude": "minimum_x",
 }
-
-
-@dataclass
-class DatasetTimeAndSpaceSubset:
-    minimum_x: Optional[float] = None
-    maximum_x: Optional[float] = None
-    minimum_y: Optional[float] = None
-    maximum_y: Optional[float] = None
-    minimum_depth: Optional[float] = None
-    maximum_depth: Optional[float] = None
-    start_datetime: Optional[datetime] = None
-    end_datetime: Optional[datetime] = None
 
 
 @dataclass
@@ -124,20 +114,6 @@ class SubsetRequest:
             type_enforced_dict[key] = new_value
         self.__dict__.update(type_enforced_dict)
 
-    def get_time_and_space_subset(
-        self,
-    ) -> DatasetTimeAndSpaceSubset:
-        return DatasetTimeAndSpaceSubset(
-            minimum_x=self.minimum_x,
-            maximum_x=self.maximum_x,
-            minimum_y=self.minimum_y,
-            maximum_y=self.maximum_y,
-            minimum_depth=self.minimum_depth,
-            maximum_depth=self.maximum_depth,
-            start_datetime=self.start_datetime,
-            end_datetime=self.end_datetime,
-        )
-
     def from_file(self, filepath: pathlib.Path):
         json_file = open(filepath)
         json_content = load(json_file)
@@ -158,6 +134,44 @@ class SubsetRequest:
 
         self.__dict__.update(json_with_deprecated_options_replace)
         self.enforce_types()
+
+    def get_temporal_parameters(
+        self, axis_coordinate_id_mapping: dict[str, str]
+    ) -> TemporalParameters:
+        return TemporalParameters(
+            start_datetime=self.start_datetime,
+            end_datetime=self.end_datetime,
+            coordinate_id=axis_coordinate_id_mapping.get("t", "time"),
+        )
+
+    def get_geographical_parameters(
+        self,
+        axis_coordinate_id_mapping: dict[str, str],
+        is_original_grid: bool = False,
+    ) -> GeographicalParameters:
+        return GeographicalParameters(
+            x_axis_parameters=XParameters(
+                minimum_x=self.minimum_x,
+                maximum_x=self.maximum_x,
+                coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
+            ),
+            y_axis_parameters=YParameters(
+                minimum_y=self.minimum_y,
+                maximum_y=self.maximum_y,
+                coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
+            ),
+            projection="originalGrid" if is_original_grid else "lonlat",
+        )
+
+    def get_depth_parameters(
+        self, axis_coordinate_id_mapping: dict[str, str]
+    ) -> DepthParameters:
+        return DepthParameters(
+            minimum_depth=self.minimum_depth,
+            maximum_depth=self.maximum_depth,
+            vertical_axis=self.vertical_axis,
+            coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
+        )
 
 
 def convert_motu_api_request_to_structure(
@@ -299,20 +313,6 @@ class LoadRequest:
     force_service: Optional[str] = None
     credentials_file: Optional[pathlib.Path] = None
     disable_progress_bar: bool = False
-
-    def get_time_and_space_subset(
-        self,
-    ) -> DatasetTimeAndSpaceSubset:
-        return DatasetTimeAndSpaceSubset(
-            minimum_x=self.geographical_parameters.x_axis_parameters.minimum_x,
-            maximum_x=self.geographical_parameters.x_axis_parameters.maximum_x,
-            minimum_y=self.geographical_parameters.y_axis_parameters.minimum_y,
-            maximum_y=self.geographical_parameters.y_axis_parameters.maximum_y,
-            minimum_depth=self.depth_parameters.minimum_depth,
-            maximum_depth=self.depth_parameters.maximum_depth,
-            start_datetime=self.temporal_parameters.start_datetime,
-            end_datetime=self.temporal_parameters.end_datetime,
-        )
 
     def update_attributes(self, axis_coordinate_id_mapping: dict):
         self.geographical_parameters.x_axis_parameters.coordinate_id = (

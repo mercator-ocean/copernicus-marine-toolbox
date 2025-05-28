@@ -1,3 +1,4 @@
+import calendar
 import concurrent.futures
 import logging
 import pathlib
@@ -103,6 +104,15 @@ def timestamp_parser(
         else timedelta(milliseconds=timestamp)
     )
     return datetime(1970, 1, 1, tzinfo=timezone.utc) + delta
+
+
+def datetime_to_timestamp(
+    date: datetime, unit: Literal["s", "ms"] = "ms"
+) -> Union[int, float]:
+    """
+    Should be Windows compatible for datetime before 1970
+    """
+    return calendar.timegm(date.timetuple()) * (1000 if unit == "ms" else 1)
 
 
 def timestamp_or_datestring_to_datetime(
