@@ -43,6 +43,11 @@ syrupy = "^4.8.1"
 numpydoc = "^1.8.0"
 netcdf4 = "^1.7.2"
 
+
+[tool.poetry.group.test.dependencies]
+pytest-xdist = "^3.7.0"
+compliance-checker = { version = "^4.0.0", python = ">3.10" }
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
