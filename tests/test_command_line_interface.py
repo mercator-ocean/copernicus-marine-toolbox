@@ -10,6 +10,7 @@ from json import loads
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
+import pytest
 import xarray
 
 from tests.test_utils import (
@@ -1103,6 +1104,7 @@ class TestCommandLineInterface:
             tmp_path / output_filename, response
         )
 
+    @pytest.mark.xdist_group(name="sequential")
     def test_arco_subset_is_fast(self, tmp_path):
         command = [
             "copernicusmarine",
