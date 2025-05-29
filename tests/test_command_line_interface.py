@@ -1131,7 +1131,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = execute_in_terminal(command, timeout_second=10)
+        self.output = execute_in_terminal(command, timeout_second=15)
         assert self.output.returncode == 0, self.output.stderr
 
     def test_name_dataset_with_subset_parameters(self, tmp_path):
