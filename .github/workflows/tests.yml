@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --no-root
       - name: Install ncdump dependency
-        run: sudo apt-get install netcdf-bin
+        run: sudo apt-get install netcdf-bin -y
       - name: Install library
         run: poetry install --no-interaction --with test
       - name: Run tests
