@@ -1,0 +1,50 @@
+name: Add Warning for Pre-Release PRs
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches:
+      - main
+      - release/**
+
+jobs:
+  check-pr-title:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add release warning markdown if title matches
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const body = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+
+            const additionLines = [
+              "### Release PR",
+              "",
+              "Please be aware that merging this PR will trigger the release process. Please check the following elements:",
+              "",
+              "- [ ] Version correctly updated in the Pyproject",
+              "- [ ] Changelog updated with the new version",
+              "- [ ] Target a branch with name 'main' or 'release/**'",
+              "",
+              "If not, please update 'main' branch or this PR if you are not targeting the 'main' branch.",
+            ];
+            const addition = additionLines.join('\n');
+
+            const containsTarget = title.toLowerCase().includes("Copernicus Marine Toolbox Release".toLowerCase());
+
+            if (containsTarget && !body.includes(additionLines[0])) {
+              const updatedBody = `${body}\n\n${addition}`;
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                body: updatedBody
+              });
+              core.info("Release warning markdown added to PR.");
+            } else {
+              core.info("Title is not 'Copernicus Marine Toolbox Release' or markdown already exists.");
+            }

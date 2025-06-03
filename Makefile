@@ -5,6 +5,9 @@ ENVIRONMENT_FILE_NAME = conda_environment.yaml
 TEST_ENVIRONMENT_NAME = ${PROJECT_NAME}_test
 TEST_ENVIRONMENT_FILE_NAME = conda_environment_test.yaml
 
+RELEASE_COMMIT_MESSAGE = Copernicus Marine Toolbox Release
+RELEASE_COMMIT_MESSAGE_PRE = Copernicus Marine Toolbox Pre-Release
+
 .ONESHELL:
 .SHELLFLAGS = -ec
 SHELL := /bin/bash
@@ -43,36 +46,51 @@ run-tests:
 	pip install --editable .
 	pytest tests --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
-release: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
-release:
-	${ACTIVATE_ENVIRONMENT}
-	BUMP_TYPE=${BUMP_TYPE} ./release.sh
+release-bump-patch:
+	poetry version patch
 
-release-patch: BUMP_TYPE = patch
-release-patch: release
+release-bump-minor:
+	poetry version minor
 
-release-minor: BUMP_TYPE = minor
-release-minor: release
+release-bump-major:
+	poetry version major
 
-release-major: BUMP_TYPE = major
-release-major: release
+pre-release-bump-patch:
+	poetry version prepatch
 
-pre-release:
-	${ACTIVATE_ENVIRONMENT}
-	BUMP_TYPE=${BUMP_TYPE} ./pre-release.sh
+pre-release-bump-minor:
+	poetry version preminor
 
-pre-release-patch: BUMP_TYPE = prepatch
-pre-release-patch: pre-release
+pre-release-bump-major:
+	poetry version premajor
 
-pre-release-minor: BUMP_TYPE = preminor
-pre-release-minor: pre-release
+add-commit-for-release:
+	@echo "Adding commit for release"
+	@VERSION=$$(poetry version --short)
+	git commit -am $${RELEASE_COMMIT_MESSAGE} $${VERSION}
 
-pre-release-major: BUMP_TYPE = premajor
-pre-release-major: pre-release
+add-commit-for-pre-release:
+	@echo "Adding commit for pre-release"
+	@VERSION=$$(poetry version --short)
+	git commit -am $${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}
 
-pre-release-bump-release: BUMP_TYPE = prerelease
-pre-release-bump-release: pre-release
+# add-commit-pr-for-release:
+# 	@echo "Adding commit for pre-release"
+# 	@VERSION=$$(poetry version --short)
+# 	git commit -am $${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}
+# 	@CURRENT_BRANCH=$$(git rev-parse --abbrev-ref HEAD)
+# 	git push origin $${CURRENT_BRANCH}
+# 	@PR_LINK=$$(gh pr create --title "$${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}" --body "This is a pre-release commit for version $${VERSION}. Please review and merge." --base main --head $${CURRENT_BRANCH} --json url -q '.url')
+# 	@echo "Pull request created: $${PR_LINK}"
 
+# add-commit-pr-for-pre-release:
+# 	@echo "Adding commit for pre-release"
+# 	@VERSION=$$(poetry version --short)
+# 	git commit -am $${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}
+# 	@CURRENT_BRANCH=$$(git rev-parse --abbrev-ref HEAD)
+# 	git push origin $${CURRENT_BRANCH}
+# 	@PR_LINK=$$(gh pr create --title "$${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}" --body "This is a pre-release commit for version $${VERSION}. Please review and merge." --base main --head $${CURRENT_BRANCH} --json url -q '.url')
+# 	@echo "Pull request created: $${PR_LINK}"
 
 build-and-publish-dockerhub-image:
 	docker login --username $${DOCKER_HUB_USERNAME} --password $${DOCKER_HUB_PUSH_TOKEN}
