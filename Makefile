@@ -6,7 +6,7 @@ TEST_ENVIRONMENT_NAME = ${PROJECT_NAME}_test
 TEST_ENVIRONMENT_FILE_NAME = conda_environment_test.yaml
 
 RELEASE_COMMIT_MESSAGE = Copernicus Marine Toolbox Release
-RELEASE_COMMIT_MESSAGE_PRE = Copernicus Marine Toolbox Pre-Release
+PRERELEASE_COMMIT_MESSAGE = Copernicus Marine Toolbox Pre-Release
 
 .ONESHELL:
 .SHELLFLAGS = -ec
@@ -66,31 +66,16 @@ pre-release-bump-major:
 
 add-commit-for-release:
 	@echo "Adding commit for release"
-	@VERSION=$$(poetry version --short)
-	git commit -am $${RELEASE_COMMIT_MESSAGE} $${VERSION}
+	git add .
+	@VERSION=$$(poetry version --short); \
+	git commit -m "${RELEASE_COMMIT_MESSAGE} v$$VERSION"
 
 add-commit-for-pre-release:
 	@echo "Adding commit for pre-release"
-	@VERSION=$$(poetry version --short)
-	git commit -am $${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}
+	git add .
+	@VERSION=$$(poetry version --short); \
+	git commit -m "${PRERELEASE_COMMIT_MESSAGE} v$$VERSION"
 
-# add-commit-pr-for-release:
-# 	@echo "Adding commit for pre-release"
-# 	@VERSION=$$(poetry version --short)
-# 	git commit -am $${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}
-# 	@CURRENT_BRANCH=$$(git rev-parse --abbrev-ref HEAD)
-# 	git push origin $${CURRENT_BRANCH}
-# 	@PR_LINK=$$(gh pr create --title "$${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}" --body "This is a pre-release commit for version $${VERSION}. Please review and merge." --base main --head $${CURRENT_BRANCH} --json url -q '.url')
-# 	@echo "Pull request created: $${PR_LINK}"
-
-# add-commit-pr-for-pre-release:
-# 	@echo "Adding commit for pre-release"
-# 	@VERSION=$$(poetry version --short)
-# 	git commit -am $${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}
-# 	@CURRENT_BRANCH=$$(git rev-parse --abbrev-ref HEAD)
-# 	git push origin $${CURRENT_BRANCH}
-# 	@PR_LINK=$$(gh pr create --title "$${RELEASE_COMMIT_MESSAGE_PRE} $${VERSION}" --body "This is a pre-release commit for version $${VERSION}. Please review and merge." --base main --head $${CURRENT_BRANCH} --json url -q '.url')
-# 	@echo "Pull request created: $${PR_LINK}"
 
 build-and-publish-dockerhub-image:
 	docker login --username $${DOCKER_HUB_USERNAME} --password $${DOCKER_HUB_PUSH_TOKEN}
