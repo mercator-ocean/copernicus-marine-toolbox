@@ -1,13 +1,18 @@
 name: Push Docker Image on DockerHub
 
-on: workflow_dispatch
+on:
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
     push-docker-image:
         runs-on: self-hosted
-        timeout-minutes: 10
+        timeout-minutes: 15
 
         steps:
+            - name: Wait 300sec for the new version to be in pip
+              run: sleep 300s
+              shell: bash
             - name: Check out code
               uses: actions/checkout@v4
 

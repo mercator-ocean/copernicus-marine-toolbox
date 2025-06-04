@@ -2,11 +2,12 @@ name: Pre Release
 
 on:
   push:
-    branches: 'pre-releases/**'
+    branches:
+      - 'pre-release/**'
 
 jobs:
   pre-release:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Pre-Release')
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Toolbox Pre-Release')
     runs-on: self-hosted
     timeout-minutes: 20
 
