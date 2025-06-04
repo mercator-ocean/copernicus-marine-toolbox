@@ -1,4 +1,4 @@
-name: Add Warning for Release PRs
+name: Add Warning for Pre-Release PRs
 
 on:
   pull_request:
@@ -30,7 +30,7 @@ jobs:
               "- [ ] Changelog updated with the new version",
               "- [ ] Target a branch with name 'pre-release/**'",
               "",
-              "Please do not targer 'main' as the changelog will not be kept for the release.",
+              "Please do not target 'main' as the changelog will not be kept for the release.",
             ];
             const addition = additionLines.join('\n');
 

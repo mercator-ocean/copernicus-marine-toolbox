@@ -100,18 +100,18 @@ This case the steps are really similar except that you will need to create a bra
 
 #### Patch: Step 1
 
-Create a new branch from the `release/*` branch from a release tag.
+Create a new branch from the `release/vX.Y` branch from a release tag.
 
 ``` sh
 git fetch origin
-git checkout -b release/vX.Y.Z vX.Y.Z
-git push origin release/vX.Y.Z
+git checkout -b release/vX.Y vX.Y.Z-1
+git push origin release/vX.Y
 ```
 
-Then same as before, create your branch but your base is `release/vX.Y.Z`.
+Then same as before, create your branch but your base is `release/vX.Y`.
 
 ``` sh
-git checkout release/vX.Y.Z
+git checkout release/vX.Y
 git checkout -b copernicusmarine-release
 ```
 
@@ -126,7 +126,7 @@ make release-bump-patch
 #### Patch: Step 3
 
 > [!IMPORTANT]
-> Here, in most cases, you want to cherry-pick the commits from `main` that are relevant for the patch release. You can do this by using the `git cherry-pick` command. However, in other situations, you might just fix the bug for this specific version here. The `release/vX.Y.Z` branch now differs from `main`.
+> Here, in most cases, you want to cherry-pick the commits from `main` that are relevant for the patch release. You can do this by using the `git cherry-pick` command. However, in other situations, you might just fix the bug for this specific version here. The `release/vX.Y` branch now differs from `main`.
 
 And then we commit.
 
@@ -137,15 +137,15 @@ git push origin main
 
 #### Patch: Step 4
 
-Create a pull request to merge the `copernicusmarine-release` branch into the `release/vX.Y.Z` branch.
+Create a pull request to merge the `copernicusmarine-release` branch into the `release/vX.Y` branch.
 
-Name it `Copernicus Marine Toolbox vX.Y.Z` where `X.Y.Z` is the version you want to be released.
+Name it `Copernicus Marine Toolbox vX.Y.Z+1` where `X.Y.Z+1` is the version you want to be released.
 
 Step 5 and step 6 are the same as before.
 
 ### Pre-releases
 
-If you want to create a pre-release the flow is very similary as the patch releases above. Instead of creating a `release/*` branch from a tag, we create a `pre-release/*` branch from main.
+If you want to create a pre-release the flow is very similarly as the patch releases above. Instead of creating a `release/vX.Y` branch from a tag, we create a `pre-release/VX.Y.Z` branch from main and then create releases from this branch (e.g. `vX.Y.Za0` or  `vX.Y.Zb1`).
 
 > [!NOTE]
 > Pre-Releases are not released to conda forge
