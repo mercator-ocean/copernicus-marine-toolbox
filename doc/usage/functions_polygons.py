@@ -105,11 +105,11 @@ def subset_and_clip_dataset(
     """
 
     # Conditional construction of the depth_filter
-    depth_filter = (
-        {"minimum_depth": min_depth, "maximum_depth": max_depth}
-        if min_depth is not None and max_depth is not None
-        else {}
-    )
+    depth_filter = {}
+    if min_depth is not None:
+        depth_filter["minimum_depth"] = min_depth
+    if max_depth is not None:
+        depth_filter["maximum_depth"] = max_depth
 
     # Open the dataset
     DS_subset = open_dataset(
