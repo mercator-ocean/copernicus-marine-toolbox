@@ -1,7 +1,6 @@
 import logging
 import os
 import pathlib
-from datetime import datetime
 from typing import Hashable, Iterable, Optional, Tuple, Union
 
 import pandas as pd
@@ -33,6 +32,7 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
+    DatasetChunking,
     FileStatus,
     ResponseSubset,
     StatusCode,
@@ -47,21 +47,14 @@ from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
     TemporalParameters,
-    XParameters,
-    YParameters,
 )
-from copernicusmarine.download_functions.subset_xarray import (
-    subset,
-    t_axis_selection,
-    x_axis_selection,
-)
+from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
     FileFormat,
     get_approximation_size_data_downloaded,
     get_approximation_size_final_result,
     get_dataset_coordinates_extent,
     get_filename,
-    get_number_of_chunks_for_coordinate,
     timestamp_or_datestring_to_datetime,
 )
 
@@ -122,16 +115,15 @@ def download_dataset(
     overwrite: bool,
     chunk_size_limit: int,
     skip_existing: bool,
+    dataset_chunking: Optional[DatasetChunking],
 ) -> ResponseSubset:
-    if chunk_size_limit > 0:
+    if chunk_size_limit > 0 and dataset_chunking:
         optimum_dask_chunking = get_optimum_dask_chunking(
-            service,
-            geographical_parameters,
-            temporal_parameters,
-            depth_parameters,
-            variables,
-            chunk_size_limit,
-            axis_coordinate_id_mapping,
+            service=service,
+            variables=variables,
+            dataset_chunking=dataset_chunking,
+            chunk_size_limit=chunk_size_limit,
+            axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         )
         logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     else:
@@ -175,9 +167,12 @@ def download_dataset(
     final_result_size_estimation = get_approximation_size_final_result(
         dataset, axis_coordinate_id_mapping
     )
-    data_needed_approximation = get_approximation_size_data_downloaded(
-        dataset, service, axis_coordinate_id_mapping
-    )
+    if dataset_chunking:
+        data_needed_approximation = get_approximation_size_data_downloaded(
+            dataset, dataset_chunking
+        )
+    else:
+        data_needed_approximation = None
 
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
@@ -246,21 +241,11 @@ def download_zarr(
     is_original_grid: bool,
     axis_coordinate_id_mapping: dict[str, str],
     chunk_size_limit: int,
+    dataset_chunking: Optional[DatasetChunking],
 ) -> ResponseSubset:
-    geographical_parameters = GeographicalParameters(
-        y_axis_parameters=YParameters(
-            minimum_y=subset_request.minimum_y,
-            maximum_y=subset_request.maximum_y,
-            coordinate_id=axis_coordinate_id_mapping.get("y", "latitude"),
-        ),
-        x_axis_parameters=XParameters(
-            minimum_x=subset_request.minimum_x,
-            maximum_x=subset_request.maximum_x,
-            coordinate_id=axis_coordinate_id_mapping.get("x", "longitude"),
-        ),
-        projection="originalGrid" if is_original_grid else "lonlat",
+    geographical_parameters = subset_request.get_geographical_parameters(
+        axis_coordinate_id_mapping, is_original_grid
     )
-    start_datetime = subset_request.start_datetime
     if dataset_valid_start_date:
         minimum_start_date = timestamp_or_datestring_to_datetime(
             dataset_valid_start_date
@@ -269,18 +254,13 @@ def download_zarr(
             not subset_request.start_datetime
             or subset_request.start_datetime < minimum_start_date
         ):
-            start_datetime = minimum_start_date
+            subset_request.start_datetime = minimum_start_date
 
-    temporal_parameters = TemporalParameters(
-        start_datetime=start_datetime,
-        end_datetime=subset_request.end_datetime,
-        coordinate_id=axis_coordinate_id_mapping.get("t", "time"),
+    temporal_parameters = subset_request.get_temporal_parameters(
+        axis_coordinate_id_mapping
     )
-    depth_parameters = DepthParameters(
-        minimum_depth=subset_request.minimum_depth,
-        maximum_depth=subset_request.maximum_depth,
-        vertical_axis=subset_request.vertical_axis,
-        coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
+    depth_parameters = subset_request.get_depth_parameters(
+        axis_coordinate_id_mapping
     )
     dataset_url = str(subset_request.dataset_url)
     output_directory = (
@@ -312,6 +292,7 @@ def download_zarr(
         service=service,
         chunk_size_limit=chunk_size_limit,
         skip_existing=subset_request.skip_existing,
+        dataset_chunking=dataset_chunking,
     )
     return response
 
@@ -370,11 +351,8 @@ def read_dataframe_from_arco_series(
 
 def get_opening_dask_chunks(
     service: CopernicusMarineService,
-    geographical_parameters: GeographicalParameters,
-    temporal_parameters: TemporalParameters,
-    depth_parameters: DepthParameters,
     variables: Optional[list[str]],
-    axis_coordinate_id_mapping: dict[str, str],
+    dataset_chunking: DatasetChunking,
 ) -> Tuple[dict, dict, bool]:
     set_variables = set(variables) if variables else set()
     coordinate_for_subset: dict[str, CopernicusMarineCoordinate] = {}
@@ -396,18 +374,8 @@ def get_opening_dask_chunks(
         if chunking_length is None:
             continue
         coordinate_zarr_chunk_length[coordinate_id] = int(chunking_length)
-        requested_minimum, requested_maximum = _extract_requested_min_max(
-            coordinate_id,
-            geographical_parameters,
-            temporal_parameters,
-            depth_parameters,
-            axis_coordinate_id_mapping,
-        )
-        number_of_zarr_chunks_needed = get_number_of_chunks_for_coordinate(
-            requested_minimum,
-            requested_maximum,
-            coordinate,
-            chunking_length,
+        number_of_zarr_chunks_needed = (
+            dataset_chunking.get_number_chunks_coordinate(coordinate_id)
         )
         if number_of_zarr_chunks_needed is None:
             continue
@@ -419,10 +387,8 @@ def get_opening_dask_chunks(
 
 def get_optimum_dask_chunking(
     service: CopernicusMarineService,
-    geographical_parameters: GeographicalParameters,
-    temporal_parameters: TemporalParameters,
-    depth_parameters: DepthParameters,
     variables: Optional[list[str]],
+    dataset_chunking: DatasetChunking,
     chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
 ) -> Optional[dict[str, int]]:
@@ -446,14 +412,7 @@ def get_optimum_dask_chunking(
         max_dask_chunk_factor,
         coordinate_zarr_chunk_length,
         is_large_dataset,
-    ) = get_opening_dask_chunks(
-        service,
-        geographical_parameters,
-        temporal_parameters,
-        depth_parameters,
-        variables,
-        axis_coordinate_id_mapping,
-    )
+    ) = get_opening_dask_chunks(service, variables, dataset_chunking)
     if not is_large_dataset:
         return None
     logger.debug(f"Zarr chunking: {coordinate_zarr_chunk_length}")
@@ -478,50 +437,6 @@ def _product(iterable) -> int:
     for i in iterable:
         result *= i
     return result
-
-
-def _extract_requested_min_max(
-    coordinate_id: str,
-    geographical_parameters: GeographicalParameters,
-    temporal_parameters: TemporalParameters,
-    depth_parameters: DepthParameters,
-    axis_coordinate_id_mapping: dict[str, str],
-) -> tuple[Optional[float], Optional[float]]:
-    # TODO: should work the same as the custom_sel we do
-    if coordinate_id in axis_coordinate_id_mapping.get("t", ""):
-        temporal_selection = t_axis_selection(temporal_parameters)
-        min_time = None
-        max_time = None
-        if isinstance(temporal_selection, slice):
-            min_time_datetime = temporal_selection.start
-            max_time_datetime = temporal_selection.stop
-        elif isinstance(temporal_selection, datetime):
-            min_time_datetime = temporal_selection
-            max_time_datetime = temporal_selection
-        else:
-            return None, None
-        if min_time_datetime:
-            min_time = min_time_datetime.timestamp() * 1e3
-        if max_time_datetime:
-            max_time = max_time_datetime.timestamp() * 1e3
-
-        return min_time, max_time
-    if coordinate_id in axis_coordinate_id_mapping.get("y", ""):
-        return (
-            geographical_parameters.y_axis_parameters.minimum_y,
-            geographical_parameters.y_axis_parameters.maximum_y,
-        )
-    if coordinate_id in axis_coordinate_id_mapping.get("x", ""):
-        x_selection, _ = x_axis_selection(
-            geographical_parameters.x_axis_parameters
-        )
-        if isinstance(x_selection, slice):
-            return x_selection.start, x_selection.stop
-        else:
-            return (None, None)
-    if coordinate_id in axis_coordinate_id_mapping.get("z", ""):
-        return depth_parameters.minimum_depth, depth_parameters.maximum_depth
-    return None, None
 
 
 def _get_optimum_factors(
@@ -616,7 +531,13 @@ def _download_dataset_as_netcdf(
             contiguous=False,
             shuffle=True,
         )
-        keys_to_keep = {"scale_factor", "add_offset", "dtype", "_FillValue"}
+        keys_to_keep = {
+            "scale_factor",
+            "add_offset",
+            "dtype",
+            "_FillValue",
+            "units",
+        }
         encoding = {
             name: {
                 **{

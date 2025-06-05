@@ -10,9 +10,9 @@ from copernicusmarine.core_functions.deprecated_options import (
 logger = logging.getLogger("copernicusmarine")
 
 
-class DeprecatedClickOption(click.Option):
+class CustomDeprecatedClickOption(click.Option):
     def __init__(self, *args, **kwargs):
-        self.deprecated = kwargs.pop("deprecated", ())
+        self.custom_deprecated = kwargs.pop("custom_deprecated", ())
         self.preferred = kwargs.pop("preferred", None)
         super().__init__(*args, **kwargs)
 
@@ -26,15 +26,19 @@ class CustomClickOptionsCommand(click.Command):
         options |= set(parser._long_opt.values())
 
         for option in options:
-            if not isinstance(option.obj, DeprecatedClickOption):
+            if not isinstance(option.obj, CustomDeprecatedClickOption):
                 continue
 
             def make_process(an_option):
                 orig_process = an_option.process
-                deprecated = getattr(an_option.obj, "deprecated", None)
+                custom_deprecated = getattr(
+                    an_option.obj, "custom_deprecated", None
+                )
                 preferred = getattr(an_option.obj, "preferred", None)
                 msg = "Expected `deprecated` value for `{}`"
-                assert deprecated is not None, msg.format(an_option.obj.name)
+                assert custom_deprecated is not None, msg.format(
+                    an_option.obj.name
+                )
 
                 def process(value, state):
                     frame = inspect.currentframe()
@@ -44,7 +48,7 @@ class CustomClickOptionsCommand(click.Command):
                     finally:
                         del frame
 
-                    if opt in deprecated:
+                    if opt in custom_deprecated:
                         log_deprecated_message(opt, preferred)
                     return orig_process(value, state)
 

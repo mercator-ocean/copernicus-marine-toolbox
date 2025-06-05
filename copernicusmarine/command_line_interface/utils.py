@@ -6,7 +6,7 @@ from click.core import ParameterSource
 
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
-    DeprecatedClickOption,
+    CustomDeprecatedClickOption,
 )
 
 
@@ -97,6 +97,6 @@ force_download_option = click.option(
     is_flag=True,
     default=False,
     hidden=True,
-    cls=DeprecatedClickOption,
-    deprecated=["--force-download"],
+    cls=CustomDeprecatedClickOption,
+    custom_deprecated=["--force-download"],
 )

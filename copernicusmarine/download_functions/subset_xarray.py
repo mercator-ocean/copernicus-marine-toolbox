@@ -21,9 +21,7 @@ from copernicusmarine.core_functions.exceptions import (
     VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
-from copernicusmarine.core_functions.request_structure import (
-    DatasetTimeAndSpaceSubset,
-)
+from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     timestamp_or_datestring_to_datetime,
 )
@@ -303,7 +301,6 @@ def x_axis_selection(
     shift_window = False
     minimum_x = longitude_parameters.minimum_x
     maximum_x = longitude_parameters.maximum_x
-
     if minimum_x is not None and maximum_x is not None:
         if longitude_parameters.coordinate_id == "longitude":
             if minimum_x > maximum_x:
@@ -319,7 +316,7 @@ def x_axis_selection(
                 minimum_x = longitude_modulus(minimum_x)
                 maximum_x = longitude_modulus(maximum_x)
 
-            if maximum_x and minimum_x and maximum_x < minimum_x:
+            if maximum_x and minimum_x is not None and maximum_x < minimum_x:
                 maximum_x += 360
                 shift_window = True
 
@@ -643,7 +640,7 @@ def longitude_modulus_upper_bound(longitude: float) -> float:
 def check_dataset_subset_bounds(
     service: CopernicusMarineService,
     part: CopernicusMarinePart,
-    dataset_subset: DatasetTimeAndSpaceSubset,
+    dataset_subset: SubsetRequest,
     coordinates_selection_method: CoordinatesSelectionMethod,
     axis_coordinate_id_mapping: dict[str, str],
 ) -> None:
@@ -684,6 +681,15 @@ def check_dataset_subset_bounds(
         coordinate, _, _ = all_coordinates[coordinate_id]
         minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
         if coordinate_id == "longitude":
+            if (
+                dataset_subset.minimum_x is not None
+                and dataset_subset.maximum_x is not None
+                and dataset_subset.minimum_x > dataset_subset.maximum_x
+            ):
+                raise MinimumLongitudeGreaterThanMaximumLongitude(
+                    "--minimum-longitude option must be smaller "
+                    "or equal to --maximum-longitude"
+                )
             user_minimum_coordinate_value = (
                 longitude_modulus(dataset_subset.minimum_x)
                 if dataset_subset.minimum_x is not None

@@ -4,6 +4,7 @@ import shutil
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from typing import Optional
 
 import pandas as pd
 from arcosparse import (
@@ -63,6 +64,7 @@ COLUMNS_ORDER_DEPTH = [
     "value_qc",
     "institution",
     "doi",
+    "product_doi",
 ]
 
 COLUMNS_ORDER_ELEVATION = deepcopy(COLUMNS_ORDER_DEPTH)
@@ -84,6 +86,7 @@ def download_sparse(
     metadata_url: str,
     service: CopernicusMarineService,
     axis_coordinate_id_mapping: dict[str, str],
+    product_doi: Optional[str],
     disable_progress_bar: bool,
 ) -> ResponseSubset:
 
@@ -93,6 +96,7 @@ def download_sparse(
             subset_request,
             metadata_url,
             service,
+            product_doi,
             disable_progress_bar,
             dry_run=True,
         )
@@ -111,6 +115,7 @@ def download_sparse(
         subset_request,
         metadata_url,
         service,
+        product_doi,
         disable_progress_bar,
     )
     response = _get_response_subset(
@@ -145,6 +150,7 @@ def read_dataframe_sparse(
     subset_request: SubsetRequest,
     metadata_url: str,
     service: CopernicusMarineService,
+    product_doi: Optional[str],
     disable_progress_bar: bool,
 ) -> pd.DataFrame:
     df, _, _ = _read_dataframe_sparse(
@@ -152,6 +158,7 @@ def read_dataframe_sparse(
         subset_request,
         metadata_url,
         service,
+        product_doi,
         disable_progress_bar,
     )
     return df
@@ -162,6 +169,7 @@ def _read_dataframe_sparse(
     subset_request: SubsetRequest,
     metadata_url: str,
     service: CopernicusMarineService,
+    product_doi: Optional[str],
     disable_progress_bar: bool,
     dry_run: bool = False,
 ) -> tuple[pd.DataFrame, list[str], list[str]]:
@@ -226,9 +234,16 @@ def _read_dataframe_sparse(
         )
 
         df = _transform_dataframe(
-            df, subset_request.vertical_axis, platforms_metadata
+            df,
+            subset_request.vertical_axis,
+            platforms_metadata,
+            product_doi,
         )
-
+    if df.empty:
+        logger.info(
+            "No data found for the given parameters. "
+            "Please check your request and try again."
+        )
     return (
         df,
         variables,
@@ -337,11 +352,14 @@ def _transform_dataframe(
     df: pd.DataFrame,
     vertical_axis: VerticalAxis,
     platforms_metadata: dict[str, Entity],
+    product_doi: Optional[str],
 ) -> pd.DataFrame:
     """
     Transform the dataframe to match the expected format to be consistent with MyOceanPro
     and Copernicus Marine Services.
     """  # noqa
+    if df.empty:
+        return df
     # Needs to be done before striping the type to the platform_id
     df["institution"] = df["platform_id"].apply(
         lambda x: (
@@ -358,6 +376,12 @@ def _transform_dataframe(
             (platforms_metadata[x].doi if x in platforms_metadata else pd.NA)
             or pd.NA
         )
+    )
+
+    df["product_doi"] = (
+        f"https://doi.org/{product_doi}"
+        if product_doi and "https://" not in product_doi
+        else product_doi
     )
 
     # From "platform___type" to "platform" since the type is in
