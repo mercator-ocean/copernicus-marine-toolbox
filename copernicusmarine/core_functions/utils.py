@@ -2,7 +2,7 @@ import concurrent.futures
 import logging
 import pathlib
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import (
     Any,
     Callable,
@@ -84,9 +84,6 @@ def datetime_parser(date: Union[str, numpy.datetime64]) -> datetime:
         parsed_datetime = parser.parse(
             date, default=datetime(1978, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
         )
-        # # add timezone info if not present
-        # if parsed_datetime.tzinfo is None:
-        #     parsed_datetime = parsed_datetime.replace(tzinfo=timezone.utc)
         return parsed_datetime
     except ParserError:
         pass
@@ -100,20 +97,34 @@ def timestamp_parser(
     Convert a timestamp in milliseconds to a datetime object.
     The unit can be changed to seconds by passing "s".
     """
-    conversion_factor = 1 if unit == "s" else 1e3
-
-    return datetime.fromtimestamp(
-        timestamp / conversion_factor, tz=timezone.utc
+    delta = (
+        timedelta(seconds=timestamp)
+        if unit == "s"
+        else timedelta(milliseconds=timestamp)
     )
+    return datetime(1970, 1, 1, tzinfo=timezone.utc) + delta
 
 
 def timestamp_or_datestring_to_datetime(
-    date: Union[str, int, float, numpy.datetime64]
+    date: Union[str, int, float, numpy.datetime64],
 ) -> datetime:
     if isinstance(date, int) or isinstance(date, float):
         return timestamp_parser(date)
     else:
         return datetime_parser(date)
+
+
+def datetime_to_isoformat(
+    date: datetime,
+) -> str:
+    """
+    Convert a datetime object to ISO 8601 format.
+    For consistency we want to return a timezone-aware datetime.
+
+    Example: 2023-11-25T00:00:00+00:00
+    or 2023-11-25T00:00:00Z (we prefer the latter)
+    """
+    return date.isoformat().replace("+00:00", "Z")
 
 
 def add_copernicusmarine_version_in_dataset_attributes(
@@ -188,7 +199,7 @@ def create_custom_query_function(username: Optional[str]) -> Callable:
     return _add_custom_query_param
 
 
-def original_grid_check(
+def get_geographical_inputs(
     minimum_longitude: Optional[float],
     maximum_longitude: Optional[float],
     minimum_latitude: Optional[float],
@@ -198,7 +209,45 @@ def original_grid_check(
     minimum_y: Optional[float],
     maximum_y: Optional[float],
     dataset_part: Optional[str],
-) -> None:
+) -> tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+    """
+    Returns the geographical selection of the user.
+
+    Parameters
+    ----------
+    minimum_longitude : float
+        Minimum longitude of the area of interest. For lat/lon datasets.
+    maximum_longitude : float
+        Maximum longitude of the area of interest. For lat/lon datasets.
+    minimum_latitude : float
+        Minimum latitude of the area of interest. For lat/lon datasets.
+    maximum_latitude : float
+        Maximum latitude of the area of interest. For lat/lon datasets.
+    minimum_x : float
+        Minimum x coordinate of the area of interest. For "originalGrid" datasets.
+    maximum_x : float
+        Maximum x coordinate of the area of interest. For "originalGrid" datasets.
+    minimum_y : float
+        Minimum y coordinate of the area of interest. For "originalGrid" datasets.
+    maximum_y : float
+        Maximum y coordinate of the area of interest. For "originalGrid" datasets.
+    dataset_part : str
+        The part of the dataset to be used. If "originalGrid", the x and y coordinates
+        should be the inputs.
+
+    Returns
+    -------
+    tuple[Optional[float], Optional[float], Optional[float], Optional[float]]
+        The geographical selection of the user. (minimum_x_axis, maximum_x_axis, minimum_y_axis, maximum_y_axis).
+
+    Raises
+    ------
+
+    LonLatSubsetNotAvailableInOriginalGridDatasets
+        If the dataset is "originalGrid" and the user tries to use lat/lon coordinates.
+    XYNotAvailableInNonOriginalGridDatasets
+        If the dataset is not "originalGrid" and the user tries to use x/y coordinates.
+    """  # noqa: E501
     if dataset_part == "originalGrid":
         if (
             minimum_longitude is not None
@@ -207,6 +256,13 @@ def original_grid_check(
             or maximum_latitude is not None
         ):
             raise LonLatSubsetNotAvailableInOriginalGridDatasets
+        else:
+            return (
+                minimum_x,
+                maximum_x,
+                minimum_y,
+                maximum_y,
+            )
     else:
         if (
             minimum_x is not None
@@ -215,4 +271,10 @@ def original_grid_check(
             or maximum_y is not None
         ):
             raise XYNotAvailableInNonOriginalGridDatasets
-    return
+        else:
+            return (
+                minimum_longitude,
+                maximum_longitude,
+                minimum_latitude,
+                maximum_latitude,
+            )

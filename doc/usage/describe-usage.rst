@@ -218,19 +218,21 @@ The ``describe`` command will show you only one version of a dataset, prioritisi
 If you want to see all versions, you can use the ``--show-all-versions`` option.
 It allows in some cases to access the metadata of datasets that are to be released or datasets that will be retired soon.
 
+.. _arco-updat-date:
+
 ``arco_updating_start_date`` and ``arco_updated_date`` fields
 ---------------------------------------------------------------
 
-These fields on the :class:`copernicusmarine.CopernicusMarinePart` can help to know if when the requested data has been updated and if it is still being updated.
-It only concerns the ARCO services i.e. all services for the subsetting. It is not meant to indicate when the original data has been updated.
+These fields on the :class:`copernicusmarine.CopernicusMarinePart` can help to determine when the requested data has been updated on the Marine Data Store and if it is currently being updated.
+It only concerns the ARCO services i.e. all services for the subsetting. They are not meant to indicate when the data producers last updated the original data.
 
-``arco_updated_date`` is the date when the ARCO data has been updated for the last time.
-For example, if ``arco_updated_date=="2025-03-26T08:50:15.873Z"`` it means that the last update of the dataset was on the 26th of March 2025.
+``arco_updated_date`` is the date when the ARCO data was last updated.
+For example, if ``arco_updated_date=="2025-03-26T08:50:15.873Z"``, it means that the last update of the dataset was on the 26th of March 2025.
 
-``arco_updating_start_date`` is the time point of the dataset from which the data is being updated.
-For example, if ``arco_updating_start_date=="1990-05-16T08:50:15.873Z"`` it means that the dataset is being updated from the time point: 16th of May 1990.
+``arco_updating_start_date`` refers to the segment of the data currently being updated. The datasets are updated by temporal segments, starting from a certain date and continuing to the end of the dataset. This value marks the start of the temporal segment being updated.
+For example, if ``arco_updating_start_date=="1990-05-16T08:50:15.873Z"`` it means that the dataset is being updated starting from the 16th of May 1990.
 See `the raise-if-updating <raise-if-updating>`_ option to be sure your requested data is up-to-date.
 
 .. warning::
 
-    ``arco_updating_start_date`` is a date that designate a value in the dataset contrary to ``arco_updated_date`` which is a "real life" date.
+    ``arco_updating_start_date`` is a date within the dataset while ``arco_updated_date`` is a real-world timestamp.

@@ -17,7 +17,7 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.core_functions.request_structure import LoadRequest
 from copernicusmarine.core_functions.services_utils import CommandType
-from copernicusmarine.core_functions.utils import original_grid_check
+from copernicusmarine.core_functions.utils import get_geographical_inputs
 from copernicusmarine.download_functions.download_zarr import (
     open_dataset_from_arco_series,
 )
@@ -64,7 +64,7 @@ def open_dataset(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
-    chunk_size_limit: int = 100,
+    chunk_size_limit: int = -1,
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using 'lazy-loading' mode from a Copernicus Marine data source.
@@ -119,8 +119,8 @@ def open_dataset(
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
-    chunk_size_limit : int, default 100
-        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
+    chunk_size_limit : int, default -1
+        Limit the size of the chunks in the dask array. Default is set to -1 which behaves similarly to 'chunks=auto' from ``xarray``. Positive integer values and '-1' are accepted. This is an experimental feature.
 
     Returns
     -------
@@ -132,27 +132,44 @@ def open_dataset(
     credentials_file = (
         pathlib.Path(credentials_file) if credentials_file else None
     )
-    if dataset_part == "originalGrid":
-        geographicalparameters = GeographicalParameters(
-            y_axis_parameters=YParameters(
-                minimum_y=minimum_y, maximum_y=maximum_y, coordinate_id="y"
+
+    (
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
+    ) = get_geographical_inputs(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+
+    geographicalparameters = GeographicalParameters(
+        y_axis_parameters=YParameters(
+            minimum_y=minimum_y_axis,
+            maximum_y=maximum_y_axis,
+            coordinate_id=(
+                "y" if dataset_part == "originalGrid" else "latitude"
             ),
-            x_axis_parameters=XParameters(
-                minimum_x=minimum_x, maximum_x=maximum_x, coordinate_id="x"
+        ),
+        x_axis_parameters=XParameters(
+            minimum_x=minimum_x_axis,
+            maximum_x=maximum_x_axis,
+            coordinate_id=(
+                "x" if dataset_part == "originalGrid" else "longitude"
             ),
-            projection="originalGrid",
-        )
-    else:
-        geographicalparameters = GeographicalParameters(
-            y_axis_parameters=YParameters(
-                minimum_y=minimum_latitude,
-                maximum_y=maximum_latitude,
-            ),
-            x_axis_parameters=XParameters(
-                minimum_x=minimum_longitude,
-                maximum_x=maximum_longitude,
-            ),
-        )
+        ),
+        projection=(
+            "originalGrid" if dataset_part == "originalGrid" else "lonlat"
+        ),
+    )
+
     load_request = LoadRequest(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
@@ -173,18 +190,6 @@ def open_dataset(
         coordinates_selection_method=coordinates_selection_method,
         force_service=service,
         credentials_file=credentials_file,
-    )
-
-    original_grid_check(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
     )
 
     dataset = load_data_object_from_load_request(

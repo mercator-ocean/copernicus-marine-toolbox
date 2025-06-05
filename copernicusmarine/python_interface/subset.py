@@ -21,7 +21,7 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.subset import subset_function
-from copernicusmarine.core_functions.utils import original_grid_check
+from copernicusmarine.core_functions.utils import get_geographical_inputs
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -67,7 +67,7 @@ def subset(
     staging: bool = False,
     netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
-    chunk_size_limit: int = 100,
+    chunk_size_limit: int = -1,
     raise_if_updating: bool = False,
     platform_ids: Optional[List[str]] = None,
 ) -> ResponseSubset:
@@ -142,8 +142,8 @@ def subset(
         Specify a compression level to apply on the NetCDF output file. A value of 0 means no compression, and 9 is the highest level of compression available.
     netcdf3_compatible : bool, optional
         Enable downloading the dataset in a netCDF3 compatible format.
-    chunk_size_limit : int, default 100
-        Limit the size of the chunks in the dask array. Default is around 100MB. Can be set to 0 to disable chunking. Positive integer values are accepted. This is an experimental feature.
+    chunk_size_limit : int, default -1
+        Limit the size of the chunks in the dask array. Default is set to -1 which behaves similarly to 'chunks=auto' from ``xarray``. Positive integer values and '-1' are accepted. This is an experimental feature.
     raise_if_updating : bool, default False
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     platform_ids : List[str], optional
@@ -175,7 +175,12 @@ def subset(
     start_datetime = homogenize_datetime(start_datetime)
     end_datetime = homogenize_datetime(end_datetime)
 
-    original_grid_check(
+    (
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
+    ) = get_geographical_inputs(
         minimum_longitude,
         maximum_longitude,
         minimum_latitude,
@@ -194,10 +199,10 @@ def subset(
         username,
         password,
         variables,
-        minimum_longitude or minimum_x,
-        maximum_longitude or maximum_x,
-        minimum_latitude or minimum_y,
-        maximum_latitude or maximum_y,
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
         minimum_depth,
         maximum_depth,
         vertical_axis,
