@@ -19,7 +19,7 @@ from copernicusmarine.command_line_interface.utils import (
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
-    DeprecatedClickOption,
+    CustomDeprecatedClickOption,
 )
 from copernicusmarine.core_functions.fields_query_builder import (
     build_query,
@@ -284,8 +284,8 @@ def cli_subset() -> None:
     "--motu-api-request",
     type=str,
     help=documentation_utils.SUBSET["MOTU_API_REQUEST_HELP"],
-    cls=DeprecatedClickOption,
-    deprecated=["--motu-api-request"],
+    cls=CustomDeprecatedClickOption,
+    custom_deprecated=["--motu-api-request"],
 )
 @click.option(
     "--dry-run",

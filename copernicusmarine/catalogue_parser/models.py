@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, Optional, Type, TypeVar, Union
 
@@ -268,7 +269,6 @@ class CopernicusMarineVariable(BaseModel):
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]
         cube_dimensions = metadata_item.properties["cube:dimensions"]
-
         extra_fields_asset = asset.extra_fields
         dimensions = extra_fields_asset.get("viewDims") or {}
         return cls(
@@ -581,6 +581,24 @@ class CopernicusMarineVersion(BaseModel):
         return self.parts[0].released_date, self.parts[0].retired_date
 
 
+# For internal use only
+@dataclass
+class DatasetItem:
+    """
+    Intermediate class for the dataset item.
+    Used to parse the dataset item from the catalogue.
+    """
+
+    item_id: str
+    parsed_id: str
+    parsed_part: str
+    parsed_version: str
+    url: str
+    stac_item: pystac.Item
+    stac_json: dict
+    product_doi: Optional[str]
+
+
 class CopernicusMarineDataset(BaseModel):
     """
     Dataset of a product.
@@ -591,6 +609,9 @@ class CopernicusMarineDataset(BaseModel):
     dataset_id: str
     #: The dataset name.
     dataset_name: str
+    #: Digital object identifier or doi from
+    #: the product the dataset belongs to.
+    digital_object_identifier: Optional[str]
     #: List of versions of the dataset.
     versions: list[CopernicusMarineVersion]
 
@@ -630,22 +651,15 @@ class CopernicusMarineDataset(BaseModel):
 
     def parse_dataset_metadata_items(
         self,
-        url_dataset_items_mapping: dict[str, pystac.Item],
+        dataset_items: list[DatasetItem],
     ) -> None:
         all_versions = set()
-        for (
-            url_metadata,
-            metadata_item,
-        ) in url_dataset_items_mapping.items():
-            (
-                _,
-                dataset_version,
-                dataset_part,
-            ) = get_version_and_part_from_full_dataset_id(metadata_item.id)
+        for dataset_item in dataset_items:
+            dataset_version = dataset_item.parsed_version
             part = CopernicusMarinePart.from_metadata_item(
-                metadata_item,
-                dataset_part,
-                url_metadata,
+                dataset_item.stac_item,
+                dataset_item.parsed_part,
+                dataset_item.url,
             )
             if not part:
                 continue
@@ -676,7 +690,7 @@ class CopernicusMarineProduct(BaseModel):
     thumbnail_url: str
     #: Description of the product.
     description: Optional[str]
-    #: Digital object identifier of the product.
+    #: Digital object identifier or doi of the product.
     digital_object_identifier: Optional[str]
     #: Sources of the product.
     sources: list[str]
