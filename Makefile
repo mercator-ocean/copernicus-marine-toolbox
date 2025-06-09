@@ -41,10 +41,10 @@ check-format:
 	pre-commit run --all-files --show-diff-on-failure
 
 run-tests:
-	poetry run pytest tests --cov --cov-report xml -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	poetry run pytest tests -k "not fast" --cov --cov-report xml -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 run-quick-tests:
-	poetry run pytest tests -k "not fast" -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	poetry run pytest tests -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 release-bump-patch:
 	poetry version patch
