@@ -8,7 +8,7 @@ on:
 
 jobs:
   release-pypi-docker:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Release')
+    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Toolbox Release')
     runs-on: self-hosted
     timeout-minutes: 20
 
@@ -16,7 +16,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
 
       - uses: mamba-org/setup-micromamba@v1
@@ -55,32 +54,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create v${{ steps.set-version.outputs.VERSION }} --generate-notes
 
-      - name: Wait for Pypi version to be available
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'https://pypi.org/project/copernicusmarine/${{ steps.set-version.outputs.VERSION }}/'
-          responseCode: '200'
-          timeout: 600000
-          interval: 5000
-
-      - name: Wait 30sec for the version to be in pip
-        run: sleep 30s
-        shell: bash
-
-      - name: Build and publish Docker image
-        shell: micromamba-shell {0}
-        env:
-          VERSION: ${{ steps.set-version.outputs.VERSION }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
-        run: make build-and-publish-dockerhub-image
 
   create-binaries:
-    if: ${{ success() || failure() }}
+    if: ${{ success()}}
     needs: [release-pypi-docker]
     uses: ./.github/workflows/binaries.yml
 
   create-windows-binary:
-    if: ${{ success() || failure() }}
+    if: ${{ success() }}
     needs: [release-pypi-docker]
     uses: ./.github/workflows/binary-windows.yml
+
+  release-docker:
+    if: ${{ success()}}
+    needs: [release-pypi-docker]
+    uses: ./.github/workflows/push-docker-image.yml
