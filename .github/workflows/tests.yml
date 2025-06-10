@@ -35,23 +35,23 @@ jobs:
         run: |
           python3.13 -m pip install poetry
 
-      # - name: Load cached venv
-      #   id: cached-poetry-dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache
-      #     key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      # - name: Install dependencies
-      #   run: |
-      #     poetry install --no-interaction --no-root
-      # - name: Install ncdump dependency
-      #   run: sudo apt-get install netcdf-bin
-      # - name: Install library
-      #   run: poetry install --no-interaction --with dev
-      # - name: Run tests
-      #   env:
-      #     COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-      #     COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-      #   run: |
-      #     source $VENV
-      #     make run-tests
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --no-root
+      - name: Install ncdump dependency
+        run: sudo apt-get install netcdf-bin
+      - name: Install library
+        run: poetry install --no-interaction --with dev
+      - name: Run tests
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        run: |
+          source $VENV
+          make run-tests
