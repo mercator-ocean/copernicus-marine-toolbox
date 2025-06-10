@@ -1,36 +1,36 @@
-# name: Check format
+name: Check format
 
-# on:
-#   push:
-#     branches:
-#       - "main"
-#       - "release/**"
-#       - "pre-releases/**"
-#   pull_request:
+on:
+  push:
+    branches:
+      - "main"
+      - "release/**"
+      - "pre-releases/**"
+  pull_request:
 
-# jobs:
-#   check-format:
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 10
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
 
-#     steps:
-#       - name: Check out code
-#         uses: actions/checkout@v4
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
 
-#       - uses: mamba-org/setup-micromamba@v1
-#         with:
-#           micromamba-version: '1.5.6-0'
-#           micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-#           environment-file: conda_environment.yaml
-#           environment-name: copernicusmarine
-#           condarc-file: .condarc
-#           cache-environment: true
-#           post-cleanup: 'all'
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.6-0'
+          micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+          environment-file: conda_environment.yaml
+          environment-name: copernicusmarine
+          condarc-file: .condarc
+          cache-environment: true
+          post-cleanup: 'all'
 
-#       - name: Poetry install
-#         run: poetry install --with dev
-#         shell: micromamba-shell {0}
+      - name: Poetry install
+        run: poetry install --with dev
+        shell: micromamba-shell {0}
 
-#       - name: Check format
-#         run: make check-format
-#         shell: micromamba-shell {0}
+      - name: Check format
+        run: make check-format
+        shell: micromamba-shell {0}
