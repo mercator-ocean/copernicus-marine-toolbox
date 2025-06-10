@@ -13,6 +13,8 @@
   <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue" alt="Licence" /></a>
   <a href="https://pypistats.org/packages/copernicusmarine"><img src="https://img.shields.io/pypi/dm/copernicusmarine.svg" alt="Downloads" /></a>
 </div>
+<!-- Pytest Coverage Comment:Begin -->
+<!-- Pytest Coverage Comment:End -->
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
 
