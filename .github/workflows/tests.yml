@@ -25,17 +25,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
             python-version: '3.13'
-      - name: Check Python version
-        run: |
-          python --version
-          python3.13 --version
-          which python
-          which python3.13
       - name: Install and configure Poetry
         run: |
           python3.13 -m pip install poetry
-          which poetry
-
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
