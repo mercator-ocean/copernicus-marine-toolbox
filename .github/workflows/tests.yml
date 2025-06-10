@@ -65,3 +65,8 @@ jobs:
         with:
           pytest-xml-coverage-path: ./coverage.xml
           report-only-changed-files: true
+
+  create-readme-badge:
+    if: ${{ success() }}
+    needs: [tests]
+    uses: ./.github/workflows/update_coverage_readme.yml
