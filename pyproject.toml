@@ -30,6 +30,9 @@ arcosparse = "^0.4.0"
 [project.scripts]
 copernicusmarine = 'copernicusmarine.command_line_interface.copernicus_marine:command_line_interface'
 
+[tool.poetry.group.dev]
+optional = true
+
 [tool.poetry.group.dev.dependencies]
 types-toml = "^0.10.8.20240310"
 pre-commit = "^4.0.1"
@@ -42,6 +45,9 @@ toml = "^0.10.2"
 syrupy = "^4.8.1"
 numpydoc = "^1.8.0"
 netcdf4 = "^1.7.2"
+pytest-xdist = "^3.7.0"
+compliance-checker = { version = "^5.1.1", python = ">3.10" }
+pytest-cov = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core"]

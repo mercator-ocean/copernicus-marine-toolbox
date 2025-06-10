@@ -28,7 +28,7 @@ jobs:
           post-cleanup: 'all'
 
       - name: Poetry install
-        run: poetry install
+        run: poetry install --with dev
         shell: micromamba-shell {0}
 
       - name: Check format
