@@ -44,7 +44,7 @@ jobs:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
-          sudo apt install build-essential
+          sudo apt install build-essential -y
           python3.13 -m poetry install --no-interaction --no-root
       - name: Install ncdump dependency
         run: sudo apt-get install netcdf-bin
