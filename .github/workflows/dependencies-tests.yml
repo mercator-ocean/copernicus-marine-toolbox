@@ -1,9 +1,6 @@
 name: Dependencies tests
 
 on:
-  push:
-    branches:
-      - "add-windows-mac-dependencies-tests-CMT-260-CMT-259"
   schedule:
     - cron: '0 0 * * 6'
 
