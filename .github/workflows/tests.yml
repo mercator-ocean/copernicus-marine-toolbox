@@ -43,11 +43,11 @@ jobs:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
-          poetry install --no-interaction --no-root
+          python3.13 -m poetry install --no-interaction --no-root
       - name: Install ncdump dependency
         run: sudo apt-get install netcdf-bin
       - name: Install library
-        run: poetry install --no-interaction --with dev
+        run: python3.13 -m poetry install --no-interaction --with dev
       - name: Run tests
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
