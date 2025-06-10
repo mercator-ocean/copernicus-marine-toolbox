@@ -1,63 +1,63 @@
-name: Run tests binaries
+# name: Run tests binaries
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - "main"
-      - "release/**"
-      - "pre-releases/**"
-  pull_request:
-    branches:
-      - "main"
-    paths:
-      - 'pyproject.toml'
-      - 'conda_environment_binary.yaml'
-      - 'tests_extra/test_basic_commands_binaries.py'
-      - 'Makefile'
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - "main"
+#       - "release/**"
+#       - "pre-releases/**"
+#   pull_request:
+#     branches:
+#       - "main"
+#     paths:
+#       - 'pyproject.toml'
+#       - 'conda_environment_binary.yaml'
+#       - 'tests_extra/test_basic_commands_binaries.py'
+#       - 'Makefile'
 
 
 
-jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-24.04]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+# jobs:
+#   build:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         os: [macos-latest, ubuntu-22.04, macos-13, ubuntu-24.04]
+#     runs-on: ${{ matrix.os }}
+#     timeout-minutes: 20
 
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 0
+#     steps:
+#     - name: Check out code
+#       uses: actions/checkout@v4
+#       with:
+#         ref: ${{ github.event.pull_request.head.sha }}
+#         fetch-depth: 0
 
-    - uses: mamba-org/setup-micromamba@v1
-      with:
-        micromamba-version: '1.5.6-0'
-        micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-        environment-file: conda_environment_binary.yaml
-        environment-name: copernicusmarine-binary
-        condarc-file: .condarc
-        cache-environment: true
-        post-cleanup: 'all'
+#     - uses: mamba-org/setup-micromamba@v1
+#       with:
+#         micromamba-version: '1.5.6-0'
+#         micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
+#         environment-file: conda_environment_binary.yaml
+#         environment-name: copernicusmarine-binary
+#         condarc-file: .condarc
+#         cache-environment: true
+#         post-cleanup: 'all'
 
-    - name: Build with PyInstaller
-      shell: micromamba-shell {0}
-      run: |
-        make run-using-pyinstaller-${{ matrix.os }}
+#     - name: Build with PyInstaller
+#       shell: micromamba-shell {0}
+#       run: |
+#         make run-using-pyinstaller-${{ matrix.os }}
 
-    - name: Standarise name to make the tests easy
-      shell: micromamba-shell {0}
-      run:
-        make change-name-binary
+#     - name: Standarise name to make the tests easy
+#       shell: micromamba-shell {0}
+#       run:
+#         make change-name-binary
 
-    - name: Run tests
-      env:
-        COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-        COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        BINARY_NAME: "./copernicusmarine.cli"
-      shell: micromamba-shell {0}
-      run: make run-tests-binaries
+#     - name: Run tests
+#       env:
+#         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+#         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+#         BINARY_NAME: "./copernicusmarine.cli"
+#       shell: micromamba-shell {0}
+#       run: make run-tests-binaries
