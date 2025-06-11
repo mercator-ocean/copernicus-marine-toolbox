@@ -1,0 +1,8 @@
+This is a test file²
+And a second one
+And a third one
+And a fourth one
+And a fifth one
+And a sixth one
+And a seventh one
+And a eigth one
