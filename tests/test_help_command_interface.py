@@ -21,7 +21,12 @@ class TestHelpCommandLineInterface:
             ["copernicusmarine", "subset", "--help"]
         )
         assert self.output.returncode == 0
-        assert str(self.output).split("\\n") == snapshot
+        import platform
+
+        if platform.system() == "Windows":
+            assert str(self.output).split("\\r\\n") == snapshot
+        else:
+            assert str(self.output).split("\\n") == snapshot
 
     def test_help_from_login_is_as_expected(self, snapshot):
         self.output = execute_in_terminal(
