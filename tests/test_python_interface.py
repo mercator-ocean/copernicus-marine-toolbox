@@ -287,7 +287,7 @@ class TestPythonInterface:
         assert subsetdata.time.attrs["calendar"] == "gregorian"
         assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
 
-    def test_compressed_and_uncompressed_no_diff(self, tmp_path):
+    def test_compressed_and_uncompressed_no_diff_w_ncdump(self, tmp_path):
         data_query = {
             "dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
             "start_datetime": "2019-01-31",

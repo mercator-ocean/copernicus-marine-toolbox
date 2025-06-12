@@ -10,14 +10,14 @@ from tests.test_utils import (
 
 
 class TestCFCompliance:
-    def test_subset_open(self, tmp_path, snapshot):
+    def test_subset_open_cfcompliant(self, tmp_path, snapshot):
         dataset_id = "cmems_mod_nws_bgc-pft_my_7km-3D-pico_P1M-m"
         self.if_I_subset_a_dataset(dataset_id, tmp_path, "output_1.nc", "pico")
         self.then_it_is_cf_compliant(
             dataset_id, tmp_path, snapshot, "output_1"
         )
 
-    def test_subset_with_warns(self, tmp_path, snapshot):
+    def test_subset_with_warns_cfcompliant(self, tmp_path, snapshot):
         dataset_id = (
             "cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m"
         )

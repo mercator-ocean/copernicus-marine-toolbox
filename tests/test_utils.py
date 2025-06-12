@@ -14,6 +14,13 @@ def _remove_loggin_prefix(full_message: bytes):
 
 
 def remove_extra_logging_prefix_info(multi_line_message: bytes):
+    import platform
+
+    if platform.system() == "Windows":
+        multi_line_message = multi_line_message.rstrip(b"\r\n")
+        return b"\n".join(
+            map(_remove_loggin_prefix, multi_line_message.split(b"\r\n"))
+        )
     multi_line_message = multi_line_message.rstrip(b"\n")
     return b"\n".join(
         map(_remove_loggin_prefix, multi_line_message.split(b"\n"))
@@ -32,6 +39,15 @@ def execute_in_terminal(
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
+    import platform
+
+    if platform.system() == "Windows":
+        # On Windows, try to resolve the executable with .exe extension
+        import shutil
+
+        executable = shutil.which(command[0])
+        if executable:
+            command = [executable] + command[1:]
     output = subprocess.run(
         command,
         capture_output=True,
