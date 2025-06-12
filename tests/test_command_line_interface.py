@@ -1545,8 +1545,8 @@ class TestCommandLineInterface:
             assert (
                 re.search(
                     (
-                        r"nrt_global_allsat_phy_l4_20220119_20220125\.nc|"
-                        r"nrt_global_allsat_phy_l4_20220120_20220126\.nc"
+                        r"nrt_global_allsat_phy_l4_20240101_20240107\.nc|"
+                        r"nrt_global_allsat_phy_l4_20240101_20240107\.nc"
                     ),
                     filename,
                 )
@@ -1616,7 +1616,7 @@ class TestCommandLineInterface:
             os.path.getmtime(output_file)
         ) < (five_minutes_ago)
 
-    def test_netcdf3_option(self, tmp_path):
+    def test_netcdf3_option_w_ncdump(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
