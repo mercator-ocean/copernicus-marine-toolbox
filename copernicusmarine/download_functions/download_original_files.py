@@ -548,7 +548,7 @@ def _list_files_on_marine_data_lake_s3(
     disable_progress_bar: bool,
 ) -> list[tuple[str, int, datetime, str]]:
     s3_client, _ = get_configured_boto3_session(
-        endpoint_url, ["ListObjects"], username
+        endpoint_url, ["ListObjectsV2"], username
     )
 
     paginator = s3_client.get_paginator("list_objects")
