@@ -54,7 +54,7 @@ def get_ssl_context() -> Optional[ssl.SSLContext]:
 
 def get_configured_boto3_session(
     endpoint_url: str,
-    operation_type: list[Literal["ListObjects", "HeadObject", "GetObject"]],
+    operation_type: list[Literal["ListObjectsV2", "HeadObject", "GetObject"]],
     username: Optional[str] = None,
     return_ressources: bool = False,
 ) -> tuple[Any, Any]:

@@ -12,7 +12,7 @@ from copernicusmarine.versioner import __version__ as toolbox_version
 logger = logging.getLogger("copernicusmarine")
 
 MARINE_DATASTORE_CONFIG_URL_CDN = (
-    "https://stac.marine.copernicus.eu/clientsConfigV1.json"
+    "https://stac.marine.copernicus.eu/clients-config-v1"
 )
 MARINE_DATASTORE_CONFIG_URL_DIRECT = (
     COPERNICUSMARINE_CONFIG_URL
