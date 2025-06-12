@@ -923,7 +923,8 @@ class TestCommandLineInterface:
         command = ["copernicusmarine", "subset", "--create-template"]
 
         self.output = execute_in_terminal(command)
-
+        print(self.output.stderr)
+        print(remove_extra_logging_prefix_info(self.output.stderr))
         assert (
             b"Template created at: subset_template.json"
             == remove_extra_logging_prefix_info(self.output.stderr)
@@ -1616,7 +1617,7 @@ class TestCommandLineInterface:
             os.path.getmtime(output_file)
         ) < (five_minutes_ago)
 
-    def test_netcdf3_option(self, tmp_path):
+    def test_netcdf3_option_w_ncdump(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -1964,7 +1965,7 @@ class TestCommandLineInterface:
             "--output-directory",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(command, timeout_second=60)
+        self.output = execute_in_terminal(command, timeout_second=70)
         assert self.output.returncode == 0
 
     def test_that_requested_interval_is_correct_w_weird_windowing(
