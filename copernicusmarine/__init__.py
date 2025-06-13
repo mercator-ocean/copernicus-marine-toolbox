@@ -14,6 +14,7 @@ from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     DatasetVersionNotFound,
     DatasetVersionPartNotFound,
+    ProductNotFound,
     ServiceNotHandled,
 )
 from copernicusmarine.command_line_interface.utils import (
@@ -93,6 +94,7 @@ __all__ = [
     "NotEnoughPlatformMetadata",
     "OtherOptionsPassedWithCreateTemplate",
     "PlatformsSubsettingNotAvailable",
+    "ProductNotFound",
     "ResponseGet",
     "ResponseSubset",
     "ServiceDoesNotExistForCommand",

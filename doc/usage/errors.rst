@@ -47,3 +47,5 @@ Custom errors
 .. autoclass:: copernicusmarine.PlatformsSubsettingNotAvailable()
 
 .. autoclass:: copernicusmarine.WrongPlatformID()
+
+.. autoclass:: copernicusmarine.ProductNotFound()

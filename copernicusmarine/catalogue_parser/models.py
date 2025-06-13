@@ -814,6 +814,30 @@ class DatasetIsNotPartOfTheProduct(Exception):
         super().__init__(message)
 
 
+class ProductNotFound(Exception):
+    """
+    Exception raised when the product is not found in the catalogue.
+
+    Possible reasons:
+
+    - The productID is incorrect and not present in the catalogue.
+    - The product has been retired.
+
+    Please verifiy that the productID is can be found in
+    the result of the :func:`~copernicusmarine.describe` command.
+    If yes, please contact the User Support, (widget chat on
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
+    """
+
+    def __init__(self, product_id: str):
+        message = (
+            f"{product_id} "
+            f"Please check that the product exists and "
+            f"the input productID is correct."
+        )
+        super().__init__(message)
+
+
 REGEX_PATTERN_DATE_YYYYMM = r"[12]\d{3}(0[1-9]|1[0-2])"
 PART_SEPARATOR = "--ext--"
 
