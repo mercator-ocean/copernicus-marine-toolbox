@@ -6,7 +6,11 @@ from copernicusmarine.catalogue_parser.catalogue_parser import (
     merge_catalogues,
     parse_catalogue,
 )
-from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
+from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineCatalogue,
+    DatasetNotFound,
+    ProductNotFound,
+)
 from copernicusmarine.core_functions.marine_datastore_config import (
     get_config_and_check_version_describe,
 )
@@ -31,18 +35,31 @@ def describe_function(
         )
     catalogues: list[CopernicusMarineCatalogue] = []
     for catalogue_config in marine_datasetore_config.catalogues:
-        catalogue: CopernicusMarineCatalogue = parse_catalogue(
-            force_product_id=force_product_id,
-            force_dataset_id=force_dataset_id,
-            max_concurrent_requests=max_concurrent_requests,
-            disable_progress_bar=disable_progress_bar,
-            catalogue_config=catalogue_config,
-        )
-        catalogues.append(catalogue)
+        try:
+            catalogue: CopernicusMarineCatalogue = parse_catalogue(
+                force_product_id=force_product_id,
+                force_dataset_id=force_dataset_id,
+                max_concurrent_requests=max_concurrent_requests,
+                disable_progress_bar=disable_progress_bar,
+                catalogue_config=catalogue_config,
+            )
+            catalogues.append(catalogue)
+        except DatasetNotFound:
+            logger.debug(
+                f"Dataset not found in catalogue {catalogue_config.root_metadata_url}"
+            )
 
     # Merge all catalogues
     base_catalogue = merge_catalogues(catalogues)
-
+    if (force_dataset_id or force_product_id) and not base_catalogue.products:
+        if force_product_id:
+            raise ProductNotFound(
+                product_id=force_product_id,
+            )
+        if force_dataset_id:
+            raise DatasetNotFound(
+                dataset_id=force_dataset_id,
+            )
     if not show_all_versions:
         base_catalogue.filter_only_official_versions_and_parts()
 
