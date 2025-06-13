@@ -7,6 +7,10 @@ from typing import Optional
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
+from copernicusmarine.core_functions.marine_datastore_config import (
+    MarineDataStoreConfig,
+    get_config_and_check_version_get,
+)
 from copernicusmarine.core_functions.models import CommandType, ResponseGet
 from copernicusmarine.core_functions.request_structure import (
     GetRequest,
@@ -18,7 +22,6 @@ from copernicusmarine.core_functions.services_utils import (
     get_retrieval_service,
 )
 from copernicusmarine.core_functions.utils import get_unique_filepath
-from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_original_files import (
     download_original_files,
 )
@@ -50,7 +53,7 @@ def get_function(
     disable_progress_bar: bool,
     staging: bool,
 ) -> ResponseGet:
-    VersionVerifier.check_version_get(staging)
+    marine_datastore_config = get_config_and_check_version_get(staging)
     if staging:
         logger.warning(
             "Detecting staging flag for get command. "
@@ -123,6 +126,7 @@ def get_function(
         get_request=get_request,
         create_file_list=create_file_list,
         credentials_file=credentials_file,
+        marine_datastore_config=marine_datastore_config,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
         staging=staging,
@@ -135,6 +139,7 @@ def _run_get_request(
     get_request: GetRequest,
     create_file_list: Optional[str],
     credentials_file: Optional[pathlib.Path],
+    marine_datastore_config: MarineDataStoreConfig,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool = False,
@@ -146,15 +151,13 @@ def _run_get_request(
     logger.debug("Checking dataset metadata...")
 
     retrieval_service: RetrievalService = get_retrieval_service(
-        get_request.dataset_id,
-        get_request.force_dataset_version,
-        get_request.force_dataset_part,
-        None,
-        CommandType.GET,
-        None,
-        False,
-        None,
-        staging=staging,
+        dataset_id=get_request.dataset_id,
+        force_dataset_version_label=get_request.force_dataset_version,
+        force_dataset_part_label=get_request.force_dataset_part,
+        force_service_name_or_short_name=None,
+        command_type=CommandType.GET,
+        dataset_subset=None,
+        marine_datastore_config=marine_datastore_config,
     )
     get_request.dataset_url = retrieval_service.uri
     downloaded_files = download_original_files(
