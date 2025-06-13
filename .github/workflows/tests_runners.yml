@@ -43,11 +43,16 @@ jobs:
         with:
           path: ~/.cache
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Special cfunits for windows
+      - name: Install udunits2
         if: matrix.os == 'windows-latest'
         run: |
-          vcpkg install udunits2:x64-windows
-          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
+          vcpkg install udunits2
+      - name: Install cfunits
+        if: matrix.os == 'windows-latest'
+        run: |
+          pip install cfunits
+        env:
+          UDUNITS2_XML_PATH: C:\vcpkg\installed\x64-windows\share\udunits\udunits2.xml
       - name: Install dependencies
         run: poetry install --no-interaction --no-root --with dev
       - name: Install project
