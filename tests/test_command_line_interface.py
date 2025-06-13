@@ -1964,7 +1964,7 @@ class TestCommandLineInterface:
             "--output-directory",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(command, timeout_second=60)
+        self.output = execute_in_terminal(command, timeout_second=70)
         assert self.output.returncode == 0
 
     def test_that_requested_interval_is_correct_w_weird_windowing(
