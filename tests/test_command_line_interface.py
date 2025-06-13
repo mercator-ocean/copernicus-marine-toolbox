@@ -1546,7 +1546,7 @@ class TestCommandLineInterface:
                 re.search(
                     (
                         r"nrt_global_allsat_phy_l4_20240101_20240107\.nc|"
-                        r"nrt_global_allsat_phy_l4_20240101_20240107\.nc"
+                        r"nrt_global_allsat_phy_l4_20240102_20240108\.nc"
                     ),
                     filename,
                 )
