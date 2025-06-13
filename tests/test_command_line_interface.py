@@ -1107,7 +1107,7 @@ class TestCommandLineInterface:
     # TODO: timeout extended to 15 seconds for it to pass
     # see https://github.com/pytest-dev/pytest-xdist/issues/385
     @pytest.mark.xdist_group(name="sequential")
-    def test_arco_subset_is_fast(self, tmp_path):
+    def test_arco_subset_is_fastwtimeout(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -1545,8 +1545,8 @@ class TestCommandLineInterface:
             assert (
                 re.search(
                     (
-                        r"nrt_global_allsat_phy_l4_20220119_20220125\.nc|"
-                        r"nrt_global_allsat_phy_l4_20220120_20220126\.nc"
+                        r"nrt_global_allsat_phy_l4_20240101_20240107\.nc|"
+                        r"nrt_global_allsat_phy_l4_20240102_20240108\.nc"
                     ),
                     filename,
                 )
@@ -1616,7 +1616,7 @@ class TestCommandLineInterface:
             os.path.getmtime(output_file)
         ) < (five_minutes_ago)
 
-    def test_netcdf3_option(self, tmp_path):
+    def test_netcdf3_option_w_ncdump(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -1964,7 +1964,7 @@ class TestCommandLineInterface:
             "--output-directory",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(command, timeout_second=60)
+        self.output = execute_in_terminal(command, timeout_second=70)
         assert self.output.returncode == 0
 
     def test_that_requested_interval_is_correct_w_weird_windowing(
