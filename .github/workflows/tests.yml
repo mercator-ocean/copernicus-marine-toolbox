@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        coverage: [yes, no]
+        coverage: [w-coverage, fast-and-wo-coverage]
     runs-on: self-hosted
     timeout-minutes: 30
     env:
@@ -52,13 +52,16 @@ jobs:
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: |
           source .venv/bin/activate
-          if [ "${{ matrix.coverage}}" == "no" ]; then
+          if [ "${{ matrix.coverage}}" == "fast-and-wo-coverage" ]; then
             make run-quick-tests
           else
             make run-tests
           fi
       - name: Upload coverage reports to Codecov
-        if: matrix.coverage == 'yes'
+        if: matrix.coverage == 'w-coverage'
         uses: codecov/codecov-action@v5
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
