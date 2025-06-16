@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [self-hosted, ubuntu-24.04]
-    runs-on: ${{ matrix.os }}
+        coverage: [yes, no]
+    runs-on: self-hosted
     timeout-minutes: 30
     env:
       ACTIONS_STEP_DEBUG: true
@@ -52,13 +52,13 @@ jobs:
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: |
           source .venv/bin/activate
-          if [ "${{ matrix.os}}" == "self-hosted" ]; then
+          if [ "${{ matrix.coverage}}" == "no" ]; then
             make run-quick-tests
           else
             make run-tests
           fi
       - name: Upload coverage reports to Codecov
-        if: matrix.os != 'self-hosted'
+        if: matrix.coverage == 'yes'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
