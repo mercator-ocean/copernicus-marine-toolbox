@@ -59,14 +59,8 @@ jobs:
           else
             make run-tests
           fi
-      - name: Pytest coverage comment
+      - name: Upload coverage reports to Codecov
         if: matrix.os != 'self-hosted'
-        uses: MishaKav/pytest-coverage-comment@main
+        uses: codecov/codecov-action@v5
         with:
-          pytest-xml-coverage-path: ./coverage.xml
-          report-only-changed-files: true
-
-  create-readme-badge:
-    if: ${{ success() }}
-    needs: [tests]
-    uses: ./.github/workflows/update_coverage_readme.yml
+          token: ${{ secrets.CODECOV_TOKEN }}
