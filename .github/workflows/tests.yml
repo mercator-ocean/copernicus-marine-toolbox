@@ -51,7 +51,7 @@ jobs:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: |
-          source $VENV
+          source .venv/bin/activate
           if [ "${{ matrix.os}}" == "self-hosted" ]; then
             make run-quick-tests
           else
