@@ -6,6 +6,9 @@
 </div>
 <div align="center">
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg" alt="PyPI Supported Versions" /></a>
+  <a href="https://codecov.io/gh/mercator-ocean/copernicus-marine-toolbox" >
+  <img src="https://codecov.io/gh/mercator-ocean/copernicus-marine-toolbox/graph/badge.svg?token=RY5BU78UWY"/>
+  </a>
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey" alt="Supported Platforms" /></a>
   <a href="https://hub.docker.com/r/copernicusmarine/copernicusmarine"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white" alt="Docker" /></a>
   <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/readthedocs/copernicusmarine/pre-releases-2.0.0a4?logo=readthedocs" alt="Documentation" /></a>
