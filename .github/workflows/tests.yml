@@ -53,13 +53,13 @@ jobs:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: |
-          if [ "${{ matrix.coverage}}" == "fast-and-wo-coverage" ]; then
+          if [ "${{ matrix.coverage}}" == "fast-and-without-coverage" ]; then
             python3.13 -m poetry run make run-quick-tests
           else
             python3.13 -m poetry run make run-cov-tests
           fi
       - name: Upload coverage reports to Codecov
-        if: matrix.coverage == 'w-coverage'
+        if: matrix.coverage == 'with-coverage'
         uses: codecov/codecov-action@v5
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
