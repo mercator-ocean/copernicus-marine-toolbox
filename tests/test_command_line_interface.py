@@ -1107,7 +1107,7 @@ class TestCommandLineInterface:
     # TODO: timeout extended to 15 seconds for it to pass
     # see https://github.com/pytest-dev/pytest-xdist/issues/385
     @pytest.mark.xdist_group(name="sequential")
-    def test_arco_subset_is_fast(self, tmp_path):
+    def test_arco_subset_is_fast_with_timeout(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",

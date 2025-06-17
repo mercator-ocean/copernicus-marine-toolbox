@@ -10,10 +10,15 @@ on:
 
 jobs:
   tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        coverage: [with-coverage, fast-and-without-coverage]
     runs-on: self-hosted
     timeout-minutes: 30
     env:
       ACTIONS_STEP_DEBUG: true
+      HOME: /home/github-runner
 
     steps:
       - name: Check out code
@@ -28,6 +33,7 @@ jobs:
       - name: Install and configure Poetry
         run: |
           python3.13 -m pip install poetry
+          python3.13 -m poetry config virtualenvs.in-project true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
@@ -47,5 +53,16 @@ jobs:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: |
-          source .venv/bin/activate
-          make run-tests
+          if [ "${{ matrix.coverage}}" == "fast-and-without-coverage" ]; then
+            python3.13 -m poetry run make run-quick-tests
+          else
+            python3.13 -m poetry run make run-cov-tests
+          fi
+      - name: Upload coverage reports to Codecov
+        if: matrix.coverage == 'with-coverage'
+        uses: codecov/codecov-action@v5
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
