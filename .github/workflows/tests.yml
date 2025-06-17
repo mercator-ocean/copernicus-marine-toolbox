@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 30
     env:
       ACTIONS_STEP_DEBUG: true
+      HOME: /home/runner
 
     steps:
       - name: Check out code
