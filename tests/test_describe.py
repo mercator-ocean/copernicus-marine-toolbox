@@ -16,13 +16,13 @@ from tests.test_utils import execute_in_terminal
 
 class TestDescribe:
     # CLI (Command Line Interface) tests
-    def test_describe_default_fastwtimeout(self):
+    def test_describe_default_fast_with_timeout(self):
         self.when_I_run_copernicus_marine_describe_with_default_arguments()
         self.then_stdout_can_be_load_as_json()
         self.then_I_can_read_the_default_json()
         self.and_there_are_no_warnings_about_backend_versions()
 
-    def test_describe_return_fields_datasets_fastwtimeout(self, snapshot):
+    def test_describe_return_fields_datasets_fast_with_timeout(self, snapshot):
         self.when_I_run_copernicus_marine_describe_including_datasets()
         self.then_I_can_read_it_does_not_contain_weird_symbols()
         self.then_I_can_read_the_json_including_datasets()
@@ -55,7 +55,7 @@ class TestDescribe:
         )
         self.then_I_have_an_error_message_about_dataset_id_and_product_id()
 
-    def test_describe_contains_option_fastwtimeout(self):
+    def test_describe_contains_option_fast_with_timeout(self):
         self.when_I_run_copernicus_marine_describe_with_contains_option()
         self.then_I_can_read_the_filtered_json()
 

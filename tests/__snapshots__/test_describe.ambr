@@ -4250,7 +4250,7 @@
     }),
   ])
 # ---
-# name: TestDescribe.test_describe_return_fields_datasets_fastwtimeout
+# name: TestDescribe.test_describe_return_fields_datasets_fast_with_timeout
   list([
     dict({
       'service_name': 'original-files',
