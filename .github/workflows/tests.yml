@@ -33,6 +33,7 @@ jobs:
       - name: Install and configure Poetry
         run: |
           python3.13 -m pip install poetry
+          python3.13 -m poetry config virtualenvs.in-project true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
