@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        coverage: [w-coverage, fast-and-wo-coverage]
+        coverage: [with-coverage, fast-and-without-coverage]
     runs-on: self-hosted
     timeout-minutes: 30
     env:
