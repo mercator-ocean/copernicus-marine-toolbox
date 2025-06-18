@@ -53,6 +53,7 @@ jobs:
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+          PYTHONIOENCODING: utf-8
         run: |
           source $VENV
           if [[ "${{ contains(matrix.os, 'windows') }}" == "true" ]]; then
