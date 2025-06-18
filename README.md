@@ -4,7 +4,7 @@
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/v/copernicusmarine.svg" alt="PyPI" /></a>
   <a href="https://anaconda.org/conda-forge/copernicusmarine"><img src="https://img.shields.io/conda/vn/conda-forge/copernicusmarine?logo=anaconda" alt="conda-forge" /></a>
   <a href="https://codecov.io/gh/mercator-ocean/copernicus-marine-toolbox">
-  <img src="https://codecov.io/gh/mercator-ocean/copernicus-marine-toolbox/graph/badge.svg?token=RY5BU78UWY"/>
+  <img src="https://codecov.io/gh/mercator-ocean/copernicus-marine-toolbox/graph/badge.svg?token=RY5BU78UWY" alt="Codecov"/>
   </a>
 </div>
 <div align="center">
