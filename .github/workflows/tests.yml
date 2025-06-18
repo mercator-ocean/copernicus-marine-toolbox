@@ -9,8 +9,6 @@ on:
   push:
     branches:
       - "main"
-      - "release/**"
-      - "pre-releases/**"
 
 
 jobs:
