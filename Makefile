@@ -44,7 +44,7 @@ run-tests:
 	poetry run pytest tests -k "not fast_with_timeout and not ncdump" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 run-tests-without-compliance-checker:
-	poetry run pytest tests -k "test_login_command_prompt_with_other_commands" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	poetry run pytest tests --timeout=120 -k "test_login_command_prompt_with_other_commands" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 # test_login_command_prompt_with_other_commands
 #not fast_with_timeout and not ncdump and not cfcompliant and not zarr and not is_as_expected
 run-cov-tests:
