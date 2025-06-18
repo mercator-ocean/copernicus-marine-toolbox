@@ -162,7 +162,7 @@ description = "Units of measure as required by the Climate and Forecast (CF) met
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "cf_units-3.3.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:a5eee5c0e5f6a2890673d785e7eea295ce4a41d347ecc123731521f683258d69"},
     {file = "cf_units-3.3.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:53d1f2819f7fb8e8e85edc032f9481143c1e74eee4d13e2da1cff998b83e9360"},
@@ -419,7 +419,7 @@ description = "Checks Datasets and SOS endpoints for standards compliance"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "compliance_checker-5.3.0-py3-none-any.whl", hash = "sha256:3f3b50685ba507b0c8833068e23b597fffd107884155a4f38a4af271f9f4818c"},
     {file = "compliance_checker-5.3.0.tar.gz", hash = "sha256:3511a27f87e2b36158d55d3ff90bd28bcb4a32689ecaac5b0c411bfa249b2030"},
@@ -1119,7 +1119,7 @@ description = "An ISO 8601 date/time/duration parser and formatter"
 optional = false
 python-versions = ">=3.7"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "isodate-0.7.2-py3-none-any.whl", hash = "sha256:28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15"},
     {file = "isodate-0.7.2.tar.gz", hash = "sha256:4cd1aa0f43ca76f4a6c6c0292a85f40b35ec2e43e315b59f06e6d32171a953e6"},
@@ -1818,7 +1818,7 @@ description = "OGC Web Service utility library"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "owslib-0.34.1-py3-none-any.whl", hash = "sha256:54ccde946f7732ac3be1408a35f9123ea9ffe794db2ef42d0d45294a5aa9e2f3"},
     {file = "owslib-0.34.1.tar.gz", hash = "sha256:9c46d59dc03c753912fc3ef3136dbc843dad7572feb1af2cdf0fc5d1a0959028"},
@@ -1971,7 +1971,7 @@ description = "Python datetimes made easy"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "pendulum-3.1.0-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:aa545a59e6517cf43597455a6fb44daa4a6e08473d67a7ad34e4fa951efb9620"},
     {file = "pendulum-3.1.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:299df2da6c490ede86bb8d58c65e33d7a2a42479d21475a54b467b03ccb88531"},
@@ -2366,7 +2366,7 @@ description = "A basic implementation of the __geo_interface__"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "pygeoif-1.5.1-py3-none-any.whl", hash = "sha256:2210cca8707c2858885525330db2164321218bb676fe0900123eed94624aab34"},
     {file = "pygeoif-1.5.1.tar.gz", hash = "sha256:f27a6b6a1ecb87aeacc2b51bcc59ca79be70ed12a0104de8601478b213dd5d81"},
@@ -2405,7 +2405,7 @@ description = "Python interface to PROJ (cartographic projections and coordinate
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "pyproj-3.7.1-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:bf09dbeb333c34e9c546364e7df1ff40474f9fddf9e70657ecb0e4f670ff0b0e"},
     {file = "pyproj-3.7.1-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:6575b2e53cc9e3e461ad6f0692a5564b96e7782c28631c7771c668770915e169"},
@@ -2672,7 +2672,7 @@ description = "Alternative regular expression module, to replace re."
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "regex-2024.11.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:ff590880083d60acc0433f9c3f713c51f7ac6ebb9adf889c79a261ecf541aa91"},
     {file = "regex-2024.11.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:658f90550f38270639e83ce492f27d2c8d2cd63805c65a13a14d36ca126753f0"},
@@ -2888,7 +2888,7 @@ description = "Manipulation and analysis of geometric objects"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "shapely-2.1.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d8ccc872a632acb7bdcb69e5e78df27213f7efd195882668ffba5405497337c6"},
     {file = "shapely-2.1.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:f24f2ecda1e6c091da64bcbef8dd121380948074875bd1b247b3d17e99407099"},
@@ -3411,6 +3411,7 @@ files = [
     {file = "typing_extensions-4.14.0-py3-none-any.whl", hash = "sha256:a1514509136dd0b477638fc68d6a91497af5076466ad0fa6c338e44e359944af"},
     {file = "typing_extensions-4.14.0.tar.gz", hash = "sha256:8676b788e32f02ab42d9e7c61324048ae4c6d844a399eebace3d4979d75ceef4"},
 ]
+markers = {dev = "python_version < \"3.12\" or sys_platform != \"win32\""}
 
 [[package]]
 name = "typing-inspection"
@@ -3438,7 +3439,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "python_full_version > \"3.10.0\""}
+markers = {dev = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""}
 
 [[package]]
 name = "urllib3"
@@ -3484,7 +3485,7 @@ description = "Python Data Validation for Humans™"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\""
+markers = "sys_platform != \"win32\" and python_full_version > \"3.10.0\""
 files = [
     {file = "validators-0.35.0-py3-none-any.whl", hash = "sha256:e8c947097eae7892cb3d26868d637f79f47b4a0554bc6b80065dfe5aac3705dd"},
     {file = "validators-0.35.0.tar.gz", hash = "sha256:992d6c48a4e77c81f1b4daba10d16c3a9bb0dbb79b3a19ea847ff0928e70497a"},
@@ -3677,4 +3678,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "2bcb8720970dece83e3ce6fbcde1cef271fa78b24873919dd7e9fc36146ed2c8"
+content-hash = "5e1a084294aa242f38474330fe9144c0210ff53885456c6d900e8d41592875e9"

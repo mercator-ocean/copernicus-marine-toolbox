@@ -52,7 +52,7 @@ class TestGetIndexInsituFiles:
         ]
         self.output = execute_in_terminal(self.command)
 
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
 
     def test_get_index_insitu_files_python(self):
         get_result = get(

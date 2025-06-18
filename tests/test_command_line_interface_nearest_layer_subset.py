@@ -1,3 +1,4 @@
+import os
 import pathlib
 
 import numpy
@@ -135,7 +136,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         ]
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -152,8 +155,14 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
 
         self.output = execute_in_terminal(command)
+        zarr_path = pathlib.Path(tmp_path, output_filename)
+        import platform
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        if platform.system() == "Windows":
+            if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
+                os.access(zarr_path, os.R_OK)
+        dataset = xarray.open_dataset(zarr_path, engine="zarr")
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -223,8 +232,15 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
+        zarr_path = pathlib.Path(tmp_path, output_filename)
+        import platform
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        if platform.system() == "Windows":
+            if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
+                os.access(zarr_path, os.R_OK)
+
+        dataset = xarray.open_dataset(zarr_path, engine="zarr")
         min_datetime = dataset.time.values.min()
         max_datetime = dataset.time.values.max()
 
@@ -250,7 +266,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_elevation = dataset.longitude.values.min()
         max_elevation = dataset.longitude.values.max()
 
@@ -276,8 +294,14 @@ class TestCommandLineInterfaceNearestLayerSubset:
             same_latitude=True,
         )
         self.output = execute_in_terminal(command)
+        zarr_path = pathlib.Path(tmp_path, output_filename)
+        import platform
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        if platform.system() == "Windows":
+            if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
+                os.access(zarr_path, os.R_OK)
+        dataset = xarray.open_dataset(zarr_path, engine="zarr")
         min_elevation = dataset.latitude.values.min()
         max_elevation = dataset.latitude.values.max()
 

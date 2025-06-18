@@ -1,19 +1,21 @@
 name: Run tests OSs
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - "main"
       - "release/**"
       - "pre-releases/**"
-
+  pull_request:
+    branches:
+      - "main"
 
 jobs:
   tests:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, ubuntu-22.04, macos-13, windows-2022, windows-2025]
+        os: [macos-13, windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     defaults:
@@ -53,10 +55,11 @@ jobs:
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+          PYTHONIOENCODING: utf-8
         run: |
           source $VENV
           if [[ "${{ contains(matrix.os, 'windows') }}" == "true" ]]; then
-            make run-tests-without-compliance-checker
+            make run-tests-windows
           else
-            make run-tests
+            make run-tests-unix
           fi
