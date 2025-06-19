@@ -32,63 +32,83 @@ def get_dataset_metadata(
 ) -> Optional[CopernicusMarineDataset]:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
+    catalogue_errors: list[tuple] = []
     for catalogue in marine_datastore_config.catalogues:
-        with JsonParserConnection() as connection:
-            stac_url = catalogue.root_metadata_url
-            dataset_product_mapping_url = catalogue.dataset_product_mapping_url
-            product_ids = connection.get_json_file(
-                dataset_product_mapping_url
-            ).get(dataset_id)
-            if not product_ids:
-                continue
-            for product_id in product_ids.split(","):
-                url = f"{stac_url}/{product_id}/product.stac.json"
-                product_json = connection.get_json_file(url)
-                product_collection = pystac.Collection.from_dict(product_json)
-                product_datasets_metadata_links = (
-                    product_collection.get_item_links()
+        try:
+            with JsonParserConnection() as connection:
+                stac_url = catalogue.root_metadata_url
+                dataset_product_mapping_url = (
+                    catalogue.dataset_product_mapping_url
                 )
-                digital_object_identifier = (
-                    product_collection.extra_fields.get("sci:doi", None)
-                    if product_collection.extra_fields
-                    else None
-                )
-                datasets_metadata_links = []
-                for dataset_metadata_link in product_datasets_metadata_links:
-                    if (
-                        dataset_id in dataset_metadata_link.href
-                        and dataset_metadata_link.href
-                        not in seen_dataset_links
-                    ):
-                        datasets_metadata_links.append(dataset_metadata_link)
-                        seen_dataset_links.add(dataset_metadata_link.href)
-
-                for link in datasets_metadata_links:
-                    url = f"{stac_url}/{product_id}/{link.href}"
-                    dataset_json = connection.get_json_file(url)
-                    dataset_item = _parse_dataset_json_to_pystac_item(
-                        dataset_json
+                product_ids = connection.get_json_file(
+                    dataset_product_mapping_url
+                ).get(dataset_id)
+                if not product_ids:
+                    continue
+                for product_id in product_ids.split(","):
+                    url = f"{stac_url}/{product_id}/product.stac.json"
+                    product_json = connection.get_json_file(url)
+                    product_collection = pystac.Collection.from_dict(
+                        product_json
                     )
-                    if dataset_item:
-                        (
-                            parsed_id,
-                            parsed_version,
-                            parsed_part,
-                        ) = get_version_and_part_from_full_dataset_id(
-                            dataset_item.id
-                        )
-                        dataset_items.append(
-                            DatasetItem(
-                                url=url,
-                                stac_json=dataset_json,
-                                stac_item=dataset_item,
-                                item_id=dataset_item.id,
-                                parsed_id=parsed_id,
-                                parsed_version=parsed_version,
-                                parsed_part=parsed_part,
-                                product_doi=digital_object_identifier,
+                    product_datasets_metadata_links = (
+                        product_collection.get_item_links()
+                    )
+                    digital_object_identifier = (
+                        product_collection.extra_fields.get("sci:doi", None)
+                        if product_collection.extra_fields
+                        else None
+                    )
+                    datasets_metadata_links = []
+                    for (
+                        dataset_metadata_link
+                    ) in product_datasets_metadata_links:
+                        if (
+                            dataset_id in dataset_metadata_link.href
+                            and dataset_metadata_link.href
+                            not in seen_dataset_links
+                        ):
+                            datasets_metadata_links.append(
+                                dataset_metadata_link
                             )
+                            seen_dataset_links.add(dataset_metadata_link.href)
+
+                    for link in datasets_metadata_links:
+                        url = f"{stac_url}/{product_id}/{link.href}"
+                        dataset_json = connection.get_json_file(url)
+                        dataset_item = _parse_dataset_json_to_pystac_item(
+                            dataset_json
                         )
+                        if dataset_item:
+                            (
+                                parsed_id,
+                                parsed_version,
+                                parsed_part,
+                            ) = get_version_and_part_from_full_dataset_id(
+                                dataset_item.id
+                            )
+                            dataset_items.append(
+                                DatasetItem(
+                                    url=url,
+                                    stac_json=dataset_json,
+                                    stac_item=dataset_item,
+                                    item_id=dataset_item.id,
+                                    parsed_id=parsed_id,
+                                    parsed_version=parsed_version,
+                                    parsed_part=parsed_part,
+                                    product_doi=digital_object_identifier,
+                                )
+                            )
+        except Exception as exception:
+            catalogue_errors.append((exception, catalogue.root_metadata_url))
+    if len(catalogue_errors) == len(marine_datastore_config.catalogues):
+        first_error = catalogue_errors[0][0]
+        raise first_error
+    else:
+        for error, catalogue_root in catalogue_errors:
+            logger.debug(
+                f"Error while fetching dataset metadata from {catalogue_root}: {error}"
+            )
 
     if not dataset_items:
         raise DatasetNotFound(dataset_id)

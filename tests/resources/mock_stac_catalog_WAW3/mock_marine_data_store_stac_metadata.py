@@ -6,38 +6,41 @@ from copernicusmarine.core_functions.credentials_utils import (
 from copernicusmarine.core_functions.marine_datastore_config import (
     MARINE_DATASTORE_CONFIG_URL_DIRECT,
 )
-from tests.resources.mock_stac_catalog.mock_catalog import MOCK_STAC_CATALOG
-from tests.resources.mock_stac_catalog.mock_catalog_waw4 import (
-    MOCK_CATALOG_WAW4,
+from tests.resources.mock_stac_catalog_WAW3.mock_catalog import (
+    MOCK_STAC_CATALOG as MOCK_STAC_CATALOG_WAW3,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_cur import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur import (
     MOCK_DATASET_GLO_PHY_CUR,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_cur_new_version import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur_new_version import (
     MOCK_DATASET_GLO_PHY_CUR_NEW_VERSION,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_GLO_glo_phy_so import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_so import (
     MOCK_DATASET_GLO_PHY_SO,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_in_prep import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_in_prep import (
     MOCK_DATASET_IN_PREP,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_NWSHELF_P1D_m_202012 import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_NWSHELF_P1D_m_202012 import (
     MOCK_DATASET_NWSHELF_P1D_M_202012,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_NWSHELF_P1M_m_202012 import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_NWSHELF_P1M_m_202012 import (
     MOCK_DATASET_NWSHELF_P1M_M_202012,
 )
-from tests.resources.mock_stac_catalog.mock_dataset_product_id_mapping import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_product_id_mapping import (
     MOCK_DATASET_PRODUCT_ID_MAPPING,
 )
-from tests.resources.mock_stac_catalog.mock_marine_datastore_config import (
+from tests.resources.mock_stac_catalog_WAW3.mock_marine_datastore_config import (
     MARINE_DATASTORE_CONFIG,
 )
-from tests.resources.mock_stac_catalog.mock_mds_version import MOCK_MDS_VERSION
-from tests.resources.mock_stac_catalog.mock_product_GLO import MOCK_PRODUCT_GLO
-from tests.resources.mock_stac_catalog.mock_product_NWSHELF import (
+from tests.resources.mock_stac_catalog_WAW3.mock_product_GLO import (
+    MOCK_PRODUCT_GLO,
+)
+from tests.resources.mock_stac_catalog_WAW3.mock_product_NWSHELF import (
     MOCK_PRODUCT_NWSHELF,
+)
+from tests.resources.mock_stac_catalog_WAW4.mock_catalog import (
+    MOCK_CATALOG as MOCK_CATALOG_WAW4,
 )
 
 BASE_URLS = [
@@ -75,7 +78,7 @@ def mocked_stac_requests_get(*args, **kwargs):
             pass
 
     if args[0] == CATALOG_URLS[1]:
-        return MockResponse(MOCK_STAC_CATALOG, 200)
+        return MockResponse(MOCK_STAC_CATALOG_WAW3, 200)
     elif args[0] == CATALOG_URLS[0]:
         return MockResponse(MOCK_CATALOG_WAW4, 200)
     elif (
@@ -124,11 +127,6 @@ def mocked_stac_requests_get(*args, **kwargs):
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_IN_PREP, 200)
-    elif (
-        args[0]
-        == "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
-    ):
-        return MockResponse(MOCK_MDS_VERSION, 200)
 
     elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
         return MockResponse({"preferred_username": "copernicususer"}, 200)

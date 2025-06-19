@@ -1,4 +1,4 @@
-MOCK_CATALOG_WAW4 = {
+MOCK_CATALOG = {
     "id": "MDS",
     "type": "Catalog",
     "stac_version": "1.0.0",
