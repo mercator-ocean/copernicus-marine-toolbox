@@ -20,3 +20,5 @@ per-file-ignores =
     # __init__ files
     dataset_product_mapping.py: E501
     conf.py: E501
+    # test files
+    test_several_metadata_catalogues.py: E501
