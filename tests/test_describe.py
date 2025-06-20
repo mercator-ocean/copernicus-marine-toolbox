@@ -73,7 +73,7 @@ class TestDescribe:
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, None, exclude="services"
         )
-        json_result = loads(self.output.stdout.decode("utf-8"))
+        json_result = loads(self.output.stdout)
         for product in json_result["products"]:
             for dataset in product["datasets"]:
                 for version in dataset["versions"]:
@@ -85,10 +85,10 @@ class TestDescribe:
         self.output = execute_in_terminal(command, timeout_second=30)
 
     def then_stdout_can_be_load_as_json(self):
-        loads(self.output.stdout.decode("utf-8"))
+        loads(self.output.stdout)
 
     def then_I_can_read_the_default_json(self):
-        json_result = loads(self.output.stdout.decode("utf-8"))
+        json_result = loads(self.output.stdout)
         # TODO: increase number after November release
         assert len(json_result["products"]) >= 270
         seen_processing_level = False

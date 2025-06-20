@@ -9,6 +9,10 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from tests.test_utils import execute_in_terminal
 
+# WARNING: To test locally delete your .copernicusmarine-credentials file
+# and set the environment variables COPERNICUSMARINE_SERVICE_USERNAME
+# and COPERNICUSMARINE_SERVICE_PASSWORD to your Copernicus Marine credentials.
+
 
 def get_environment_without_crendentials():
     environment_without_crendentials = os.environ.copy()
@@ -77,7 +81,7 @@ class TestLogin:
         ]
 
         self.output = execute_in_terminal(
-            command, env=environment_without_crendentials
+            command, env=environment_without_crendentials, user_input=""
         )
         assert self.output.returncode == 1
         assert (
