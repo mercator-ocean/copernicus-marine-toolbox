@@ -42,17 +42,21 @@ class MarineDataStoreConfig:
     staging: bool
 
 
-def get_config_and_check_version_describe(staging: bool):
+def get_config_and_check_version_describe(
+    staging: bool,
+) -> MarineDataStoreConfig:
     marine_datastore_config = _check_version("describe", staging)
     return marine_datastore_config
 
 
-def get_config_and_check_version_get(staging: bool):
+def get_config_and_check_version_get(staging: bool) -> MarineDataStoreConfig:
     marine_datastore_config = _check_version("get", staging)
     return marine_datastore_config
 
 
-def get_config_and_check_version_subset(staging: bool):
+def get_config_and_check_version_subset(
+    staging: bool,
+) -> MarineDataStoreConfig:
     marine_datastore_config = _check_version("subset", staging)
     return marine_datastore_config
 
