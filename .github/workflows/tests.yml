@@ -6,6 +6,9 @@ on:
       - "main"
       - "release/**"
       - "pre-releases/**"
+  push:
+    branches:
+      - "main"
 
 
 jobs:
