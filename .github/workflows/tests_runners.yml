@@ -57,7 +57,7 @@ jobs:
         run: |
           source $VENV
           if [[ "${{ contains(matrix.os, 'windows') }}" == "true" ]]; then
-            make run-tests-without-compliance-checker
+            make run-tests-windows
           else
             make run-tests-unix
           fi
