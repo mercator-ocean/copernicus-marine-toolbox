@@ -20,7 +20,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_only_geographical_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -48,7 +48,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-time-series"' in self.output.stderr
+        assert 'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_with_only_temporal_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -72,7 +72,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_geo_point(
         self,
@@ -106,7 +106,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-time-series"' in self.output.stderr
+        assert 'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_temporal_point(
         self,
@@ -140,7 +140,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset(self):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
@@ -172,7 +172,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-time-series"' in self.output.stderr
+        assert 'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_dataset_has_interdependant_coordinates(self):
         dataset_id = (
@@ -206,7 +206,7 @@ class TestArcoServiceSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_time_series_service_originalGrid(self):
         command = [
@@ -230,7 +230,7 @@ class TestArcoServiceSelection:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b'Selected service: "arco-time-series"' in self.output.stderr
+        assert 'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_geo_series_service_originalGrid(self):
         command = [
@@ -250,7 +250,7 @@ class TestArcoServiceSelection:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_should_be_geo_series_service(self):
         """
@@ -287,7 +287,7 @@ class TestArcoServiceSelection:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_close_call_between_services(self):
         """
@@ -333,4 +333,4 @@ class TestArcoServiceSelection:
         ]
         output = execute_in_terminal(command)
         assert output.returncode == 0
-        assert b'Selected service: "arco-time-series"' in output.stderr
+        assert 'Selected service: "arco-time-series"' in output.stderr

@@ -114,7 +114,7 @@ class TestGetSync:
 
         # now there shouldn't be any files to download
         self.output = execute_in_terminal(self.command)
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
 
     def test_get_sync_needs_version(self):
         self.command = [
@@ -126,7 +126,7 @@ class TestGetSync:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"Value error: Sync requires to set a dataset version."
+            "Value error: Sync requires to set a dataset version."
             in self.output.stderr
         )
 
@@ -161,7 +161,7 @@ class TestGetSync:
             f"{tmp_path}",
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
 
     def when_I_delete_one_file(self, tmp_path):
         self.command = [
@@ -247,14 +247,14 @@ class TestGetSync:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"Some files will be deleted due to sync delete:"
+            "Some files will be deleted due to sync delete:"
             in self.output.stderr
         )
         assert (
-            f"{tmp_path}".encode() + b"/ARCTIC_MULTIYEAR_BGC_002_005"
-            b"/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
-            b"/2007/01/"
-            b"20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
+            f"{tmp_path}" + "/ARCTIC_MULTIYEAR_BGC_002_005"
+            "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
+            "/2007/01/"
+            "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
             in self.output.stderr
         )
         assert (

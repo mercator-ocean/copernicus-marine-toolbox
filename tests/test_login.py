@@ -9,6 +9,10 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from tests.test_utils import execute_in_terminal
 
+# WARNING: To test locally delete your .copernicusmarine-credentials file
+# and set the environment variables COPERNICUSMARINE_SERVICE_USERNAME
+# and COPERNICUSMARINE_SERVICE_PASSWORD to your Copernicus Marine credentials.
+
 
 def get_environment_without_crendentials():
     environment_without_crendentials = os.environ.copy()
@@ -41,7 +45,7 @@ class TestLogin:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert b"Invalid username or password" in self.output.stderr
+        assert "Invalid username or password" in self.output.stderr
 
     def test_login_is_prompt_when_configuration_file_doest_not_exist(
         self, tmp_path
@@ -77,15 +81,15 @@ class TestLogin:
         ]
 
         self.output = execute_in_terminal(
-            command, env=environment_without_crendentials
+            command, env=environment_without_crendentials, user_input=""
         )
         assert self.output.returncode == 1
         assert (
-            b"Downloading Copernicus Marine data requires a Copernicus Marine username "
-            b"and password, sign up for free at:"
-            b" https://data.marine.copernicus.eu/register"
+            "Downloading Copernicus Marine data requires a Copernicus Marine username "
+            "and password, sign up for free at:"
+            " https://data.marine.copernicus.eu/register"
         ) in self.output.stderr
-        assert b"Copernicus Marine username:" in self.output.stdout
+        assert "Copernicus Marine username:" in self.output.stdout
 
     def test_login_command_prompt_with_other_commands(self, tmp_path):
         assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
@@ -129,7 +133,7 @@ class TestLogin:
         self.output = execute_in_terminal(
             command,
             env=environment_without_crendentials,
-            user_input=bytes(password, "utf-8"),
+            user_input=password,
         )
         assert self.output.returncode == 0, self.output.stderr
 
@@ -173,7 +177,7 @@ class TestLogin:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
-            b"Valid credentials from input username and password"
+            "Valid credentials from input username and password"
             in self.output.stderr
         )
 
@@ -191,7 +195,7 @@ class TestLogin:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Invalid credentials from input username and password"
+            "Invalid credentials from input username and password"
             in self.output.stderr
         )
 
@@ -217,7 +221,7 @@ class TestLogin:
         )
         assert self.output.returncode == 1
         assert (
-            b"Invalid credentials from environment variables"
+            "Invalid credentials from environment variables"
             in self.output.stderr
         )
 
@@ -230,7 +234,7 @@ class TestLogin:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
-            b"Valid credentials from environment variables"
+            "Valid credentials from environment variables"
             in self.output.stderr
         )
 
@@ -251,7 +255,7 @@ class TestLogin:
             command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
-        assert b"No credentials found." in self.output.stderr
+        assert "No credentials found." in self.output.stderr
 
     def check_credentials_file_is_valid(self, tmp_path):
         non_existing_directory = Path(tmp_path, "lolololo")
@@ -286,7 +290,7 @@ class TestLogin:
         )
         assert self.output.returncode == 0
         assert (
-            b"Valid credentials from configuration file" in self.output.stderr
+            "Valid credentials from configuration file" in self.output.stderr
         )
 
     def test_login_falls_back_to_old_system(self):
@@ -310,11 +314,11 @@ class TestLogin:
         )
         assert self.output.returncode == 1
         assert (
-            b"Could not connect with new authentication system"
+            "Could not connect with new authentication system"
             in self.output.stderr
         )
         assert (
-            b" Trying with old authentication system..." in self.output.stderr
+            " Trying with old authentication system..." in self.output.stderr
         )
 
     def test_login_python_interface(self, tmp_path):
@@ -350,8 +354,8 @@ class TestLogin:
             self.check_validity_of_credentials_in_netrc_file(tmp_path)
             if host in DEPRECATED_HOSTS:
                 assert (
-                    b"The following hosts are deprecated and will be removed"
-                    b" in future versions: ['nrt.cmems-du.eu', 'my.cmems-du.eu']"
+                    "The following hosts are deprecated and will be removed"
+                    " in future versions: ['nrt.cmems-du.eu', 'my.cmems-du.eu']"
                     in self.output.stderr
                 )
             (tmp_path / ".netrc").unlink()
@@ -372,7 +376,7 @@ class TestLogin:
         )
         assert self.output.returncode == 0
         assert (
-            b"Valid credentials from configuration file" in self.output.stderr
+            "Valid credentials from configuration file" in self.output.stderr
         )
 
     def create_netrc_file(self, tmp_path, host: str) -> None:
@@ -388,11 +392,11 @@ class TestLogin:
             self.create_netrc_file(tmp_path, host)
             credentials_file = tmp_path / ".netrc"
             self.simple_get_command(credentials_file)
-            assert b"netrc" in self.output.stderr
+            assert "netrc" in self.output.stderr
             if host in DEPRECATED_HOSTS:
                 assert (
-                    b"The following hosts are deprecated and will be removed"
-                    b" in future versions: ['nrt.cmems-du.eu', 'my.cmems-du.eu']"
+                    "The following hosts are deprecated and will be removed"
+                    " in future versions: ['nrt.cmems-du.eu', 'my.cmems-du.eu']"
                     in self.output.stderr
                 )
             (credentials_file).unlink()
@@ -436,11 +440,11 @@ class TestLogin:
         )
         assert self.output.returncode == 0
         assert (
-            b"Valid credentials from configuration file" in self.output.stderr
+            "Valid credentials from configuration file" in self.output.stderr
         )
         assert (
-            b"The motuclient configuration file is deprecated"
-            b" and will be removed in future versions" in self.output.stderr
+            "The motuclient configuration file is deprecated"
+            " and will be removed in future versions" in self.output.stderr
         )
         ((tmp_path / "motuclient") / "motuclient-python.ini").unlink()
 
@@ -458,9 +462,9 @@ class TestLogin:
         self.create_motuclient_file(tmp_path)
         credentials_file = tmp_path / "motuclient/motuclient-python.ini"
         self.simple_get_command(credentials_file)
-        assert b"motuclient-python.ini" in self.output.stderr
+        assert "motuclient-python.ini" in self.output.stderr
         assert (
-            b"The motuclient configuration file is deprecated"
-            b" and will be removed in future versions" in self.output.stderr
+            "The motuclient configuration file is deprecated"
+            " and will be removed in future versions" in self.output.stderr
         )
         (credentials_file).unlink()
