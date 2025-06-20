@@ -124,9 +124,9 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(unknown_dataset_request)
         assert (
-            b"Key error: The requested dataset 'FAKE_ID' was not found in the "
-            b"catalogue, you can use 'copernicusmarine describe "
-            b"--include-datasets --contains <search_token>' to find datasets"
+            "Key error: The requested dataset 'FAKE_ID' was not found in the "
+            "catalogue, you can use 'copernicusmarine describe "
+            "--include-datasets --contains <search_token>' to find datasets"
         ) in self.output.stderr
 
     def check_subset_request_with_no_subsetting(self):
@@ -141,12 +141,12 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Missing subset option. Try 'copernicusmarine subset --help'."
+            "Missing subset option. Try 'copernicusmarine subset --help'."
             in self.output.stderr
         )
         assert (
-            b"To retrieve a complete dataset, please use instead: "
-            b"copernicusmarine get --dataset-id " + bytes(dataset_id, "utf-8")
+            "To retrieve a complete dataset, please use instead: "
+            f"copernicusmarine get --dataset-id {dataset_id}"
         ) in self.output.stderr
 
     def test_retention_period_works(self, tmp_path):
@@ -178,7 +178,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
         assert (
-            b"time       (time) datetime64[ns] 2023" not in self.output.stderr
+            "time       (time) datetime64[ns] 2023" not in self.output.stderr
         )
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(tmp_path / "dataset.nc", response)
@@ -212,7 +212,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
         assert (
-            b"time       (time) datetime64[ns] 2023" not in self.output.stderr
+            "time       (time) datetime64[ns] 2023" not in self.output.stderr
         )
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(tmp_path / "dataset.nc", response)
@@ -410,16 +410,16 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
-            b"Some ``--response-fields`` fields are invalid:"
-            b" wrong_field" in self.output.stderr
+            "Some ``--response-fields`` fields are invalid:"
+            " wrong_field" in self.output.stderr
         )
 
         command[-1] = "wrong_field1, wrong_field2"
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Wrong fields error: All ``--response-fields`` "
-            b"fields are invalid: wrong_field1, wrong_field2"
+            "Wrong fields error: All ``--response-fields`` "
+            "fields are invalid: wrong_field1, wrong_field2"
             in self.output.stderr
         )
 
@@ -441,16 +441,16 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
-            b"Some ``--response-fields`` fields are invalid:"
-            b" wrong_field" in self.output.stderr
+            "Some ``--response-fields`` fields are invalid:"
+            " wrong_field" in self.output.stderr
         )
 
         command[-1] = "wrong_field1, wrong_field2"
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Wrong fields error: All ``--response-fields`` "
-            b"fields are invalid: wrong_field1, wrong_field2"
+            "Wrong fields error: All ``--response-fields`` "
+            "fields are invalid: wrong_field1, wrong_field2"
             in self.output.stderr
         )
 
@@ -632,7 +632,7 @@ class TestCommandLineInterface:
         ]
 
         self.output = execute_in_terminal(command)
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
         assert self.output.returncode == 0
 
     # TODO: separate tests for each service
@@ -659,10 +659,10 @@ class TestCommandLineInterface:
 
     def then_I_got_a_clear_output_with_available_service_for_subset(self):
         assert (
-            b"Service unavailable-service does not exist for command subset. "
-            b"Possible services: ['arco-geo-series', 'geoseries', "
-            b"'arco-time-series', 'timeseries', 'omi-arco', 'static-arco', "
-            b"'arco-platform-series', 'platformseries']"
+            "Service unavailable-service does not exist for command subset. "
+            "Possible services: ['arco-geo-series', 'geoseries', "
+            "'arco-time-series', 'timeseries', 'omi-arco', 'static-arco', "
+            "'arco-platform-series', 'platformseries']"
         ) in self.output.stderr
 
     def when_I_request_subset_dataset_with_zarr_service(
@@ -824,7 +824,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
     def then_I_can_see_the_arco_geo_series_service_is_choosen(self):
-        assert b'Selected service: "arco-geo-series"' in self.output.stderr
+        assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_get_2023_08_original_files(self):
         command = [
@@ -839,7 +839,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
-        assert b"No data to download" not in self.output.stderr
+        assert "No data to download" not in self.output.stderr
 
     def test_subset_with_chunking(
         self, tmp_path
@@ -926,7 +926,7 @@ class TestCommandLineInterface:
         print(self.output.stderr)
         print(remove_extra_logging_prefix_info(self.output.stderr))
         assert (
-            b"Template created at: subset_template.json"
+            "Template created at: subset_template.json"
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
         assert Path("subset_template.json").is_file()
@@ -950,7 +950,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert (
-            b"Template created at: get_template.json"
+            "Template created at: get_template.json"
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
         assert Path("get_template.json").is_file()
@@ -966,7 +966,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert (
-            b"Other options passed with create template: no_directories"
+            "Other options passed with create template: no_directories"
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
 
@@ -983,8 +983,8 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert (
-            b"The variable 'theta' is neither a "
-            b"variable or a standard name in the dataset" in self.output.stderr
+            "The variable 'theta' is neither a "
+            "variable or a standard name in the dataset" in self.output.stderr
         )
 
     def test_error_log_for_service_that_does_not_exist(self):
@@ -1004,7 +1004,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command)
 
         assert (
-            b"Service ft does not exist for command subset"
+            "Service ft does not exist for command subset"
             in self.output.stderr
         )
 
@@ -1099,7 +1099,7 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b"DEBUG - " in self.output.stderr
+        assert "DEBUG - " in self.output.stderr
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(
             tmp_path / output_filename, response
@@ -1314,10 +1314,10 @@ class TestCommandLineInterface:
         logger.info(
             f"{dataset_without_option.uo.encoding=}, {dataset_with_option.uo.encoding=}"
         )
-        assert dataset_without_option.uo.encoding["zlib"] is False
+        assert dataset_without_option.uo.encoding["zli"] is False
         assert dataset_without_option.uo.encoding["complevel"] == 0
 
-        assert dataset_with_option.uo.encoding["zlib"] is True
+        assert dataset_with_option.uo.encoding["zli"] is True
         assert dataset_with_option.uo.encoding["complevel"] == 1
         assert dataset_with_option.uo.encoding["contiguous"] is False
         assert dataset_with_option.uo.encoding["shuffle"] is True
@@ -1387,11 +1387,11 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(base_command)
         assert self.output.returncode == 0
-        assert b'Selected service: "omi-arco"' in self.output.stderr
+        assert 'Selected service: "omi-arco"' in self.output.stderr
 
         self.output = execute_in_terminal(base_command + ["-s", "omi-arco"])
         assert self.output.returncode == 0
-        assert b'Selected service: "omi-arco"' in self.output.stderr
+        assert 'Selected service: "omi-arco"' in self.output.stderr
 
     def test_static_arco_service(self, tmp_path):
         base_command = [
@@ -1412,11 +1412,11 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(base_command)
         assert self.output.returncode == 0
-        assert b'Selected service: "static-arco"' in self.output.stderr
+        assert 'Selected service: "static-arco"' in self.output.stderr
 
         self.output = execute_in_terminal(base_command + ["-s", "static-arco"])
         assert self.output.returncode == 0
-        assert b'Selected service: "static-arco"' in self.output.stderr
+        assert 'Selected service: "static-arco"' in self.output.stderr
 
     def test_subset_dataset_part_option(self, tmp_path):
         base_command = [
@@ -1478,7 +1478,7 @@ class TestCommandLineInterface:
         dataset = xarray.open_dataset(filepath)
         logger.info(f"{dataset.uo.encoding=}, {dataset.uo.encoding=}")
 
-        assert dataset.uo.encoding["zlib"] is True
+        assert dataset.uo.encoding["zli"] is True
         assert dataset.uo.encoding["complevel"] == forced_comp_level
         assert dataset.uo.encoding["contiguous"] is False
         assert dataset.uo.encoding["shuffle"] is True
@@ -1654,7 +1654,7 @@ class TestCommandLineInterface:
             ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"]
         )
         assert output_netcdf_format.returncode == 0
-        assert output_netcdf_format.stdout == b"classic\n"
+        assert output_netcdf_format.stdout == "classic\n"
 
     def test_that_requested_interval_fully_included_with_coords_sel_method_outside(
         self, tmp_path
@@ -1913,7 +1913,7 @@ class TestCommandLineInterface:
         ]
         self.output = execute_in_terminal(command)
         assert (
-            b"mdl-metadata-dta/dataset_product_id_mapping.json"
+            "mdl-metadata-dta/dataset_product_id_mapping.json"
             in self.output.stderr
         )
 
@@ -1932,7 +1932,7 @@ class TestCommandLineInterface:
         ]
         self.output = execute_in_terminal(command)
         assert (
-            b"mdl-metadata-dta/dataset_product_id_mapping.json"
+            "mdl-metadata-dta/dataset_product_id_mapping.json"
             in self.output.stderr
         )
 
