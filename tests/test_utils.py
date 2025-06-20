@@ -38,15 +38,9 @@ def execute_in_terminal(
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
-    # import platform
-
-    # if platform.system() == "Windows":
-    #     # On Windows, try to resolve the executable with .exe extension
-    #     import shutil
-
-    #     executable = shutil.which(command[0])
-    #     if executable:
-    #         command = [executable] + command[1:]
+    shell = False
+    if platform.system() == "Windows":
+        shell = True
     output = subprocess.run(
         command,
         capture_output=True,
@@ -54,6 +48,7 @@ def execute_in_terminal(
         input=user_input,
         env=env,
         text=True,
+        shell=shell,
     )
     t2 = time.time()
     duration_second = t2 - t1
