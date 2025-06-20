@@ -251,7 +251,7 @@ class TestGetSync:
             in self.output.stderr
         )
         assert (
-            f"{tmp_path}".encode() + "/ARCTIC_MULTIYEAR_BGC_002_005"
+            f"{tmp_path}" + "/ARCTIC_MULTIYEAR_BGC_002_005"
             "/cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105"
             "/2007/01/"
             "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
