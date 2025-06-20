@@ -17,7 +17,7 @@ class TestDatasetVersionSelection:
 
         self.output = execute_in_terminal(command)
 
-        assert b'Selected dataset version: "default"' in self.output.stderr
+        assert 'Selected dataset version: "default"' in self.output.stderr
 
     def test_get_when_dataset_version_is_specified(self):
         command = [
@@ -32,7 +32,7 @@ class TestDatasetVersionSelection:
 
         self.output = execute_in_terminal(command)
 
-        assert b'Selected dataset version: "default"' in self.output.stderr
+        assert 'Selected dataset version: "default"' in self.output.stderr
 
     def test_get_when_dataset_specified_version_does_not_exist(self):
         command = [
@@ -47,8 +47,8 @@ class TestDatasetVersionSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Dataset version not found: No version found "
-            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
+            "Dataset version not found: No version found "
+            "for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
             in self.output.stderr
         )
 
@@ -65,7 +65,7 @@ class TestDatasetVersionSelection:
 
         self.output = execute_in_terminal(command)
 
-        assert b'Selected dataset version: "default"' in self.output.stderr
+        assert 'Selected dataset version: "default"' in self.output.stderr
 
     def test_subset_when_dataset_version_is_specified(self):
         command = [
@@ -82,7 +82,7 @@ class TestDatasetVersionSelection:
 
         self.output = execute_in_terminal(command)
 
-        assert b'Selected dataset version: "default"' in self.output.stderr
+        assert 'Selected dataset version: "default"' in self.output.stderr
 
     def test_subset_when_dataset_specified_version_does_not_exist(self):
         command = [
@@ -99,8 +99,8 @@ class TestDatasetVersionSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Dataset version not found: No version found "
-            b"for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
+            "Dataset version not found: No version found "
+            "for dataset cmems_mod_blk_wav_anfc_2.5km_PT1H-i"
             in self.output.stderr
         )
 

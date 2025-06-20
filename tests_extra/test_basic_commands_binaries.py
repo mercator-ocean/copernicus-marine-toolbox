@@ -64,7 +64,7 @@ class TestBasicCommandsBinaries:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
-        assert b"No data to download" not in self.output.stderr
+        assert "No data to download" not in self.output.stderr
         returned_value = loads(self.output.stdout)
         assert self.output.returncode == 0
         assert len(returned_value["files"]) != 0

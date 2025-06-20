@@ -60,7 +60,7 @@ class TestGetDirectDownload:
             for file_get in response_get["files"]
             if to_check in file_get["file_path"]
         ]
-        assert b"Skipping" not in self.output.stderr
+        assert "Skipping" not in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58JM.nc"
         )
@@ -82,7 +82,7 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58JM.nc"
         )
@@ -150,13 +150,13 @@ class TestGetDirectDownload:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"File s3://mdl-native-01/native/"
-            b"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
-            b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
-            b"lololo not found on the server. Skipping."
+            "File s3://mdl-native-01/native/"
+            "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            "lololo not found on the server. Skipping."
         ) in self.output.stderr
         assert (
-            b"history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
+            "history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
         ) not in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, file_name="history/BO/AR_PR_BO_58JM.nc"
@@ -175,8 +175,8 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"WARNING" not in self.output.stderr
-        assert b"Skipping" not in self.output.stderr
+        assert "WARNING" not in self.output.stderr
+        assert "Skipping" not in self.output.stderr
         assert self.output.returncode == 0
 
     def test_get_direct_download_fails_but_listing_succeeds(self, tmp_path):
@@ -191,9 +191,9 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"Skipping" in self.output.stderr
+        assert "Skipping" in self.output.stderr
         assert (
-            b"No files found to download for direct download."
+            "No files found to download for direct download."
             in self.output.stderr
         )
         assert os.path.exists(

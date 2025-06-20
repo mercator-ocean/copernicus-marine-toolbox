@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+import platform
 import subprocess
 import time
 from subprocess import CompletedProcess
@@ -9,21 +10,19 @@ from typing import Optional
 logger = logging.getLogger()
 
 
-def _remove_loggin_prefix(full_message: bytes):
-    return full_message.split(b" - ", 2)[2]
+def _remove_loggin_prefix(full_message: str) -> str:
+    return full_message.split(" - ", 2)[2]
 
 
-def remove_extra_logging_prefix_info(multi_line_message: bytes):
-    import platform
-
+def remove_extra_logging_prefix_info(multi_line_message: str) -> str:
     if platform.system() == "Windows":
-        multi_line_message = multi_line_message.rstrip(b"\r\n")
-        return b"\n".join(
-            map(_remove_loggin_prefix, multi_line_message.split(b"\r\n"))
+        multi_line_message = multi_line_message.rstrip("\r\n")
+        return "\n".join(
+            map(_remove_loggin_prefix, multi_line_message.split("\r\n"))
         )
-    multi_line_message = multi_line_message.rstrip(b"\n")
-    return b"\n".join(
-        map(_remove_loggin_prefix, multi_line_message.split(b"\n"))
+    multi_line_message = multi_line_message.rstrip("\n")
+    return "\n".join(
+        map(_remove_loggin_prefix, multi_line_message.split("\n"))
     )
 
 
@@ -33,27 +32,28 @@ FIVE_MINUTES = 5 * 60
 def execute_in_terminal(
     command: list[str],
     timeout_second: float = FIVE_MINUTES,
-    user_input: Optional[bytes] = None,
+    user_input: Optional[str] = None,
     env: Optional[dict[str, str]] = None,
-) -> CompletedProcess[bytes]:
+) -> CompletedProcess[str]:
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
-    import platform
+    # import platform
 
-    if platform.system() == "Windows":
-        # On Windows, try to resolve the executable with .exe extension
-        import shutil
+    # if platform.system() == "Windows":
+    #     # On Windows, try to resolve the executable with .exe extension
+    #     import shutil
 
-        executable = shutil.which(command[0])
-        if executable:
-            command = [executable] + command[1:]
+    #     executable = shutil.which(command[0])
+    #     if executable:
+    #         command = [executable] + command[1:]
     output = subprocess.run(
         command,
         capture_output=True,
         timeout=timeout_second,
         input=user_input,
         env=env,
+        text=True,
     )
     t2 = time.time()
     duration_second = t2 - t1

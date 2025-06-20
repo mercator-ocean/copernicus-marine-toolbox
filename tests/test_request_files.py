@@ -39,7 +39,7 @@ class TestRequestFiles:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b'Selected dataset version: "default"' in self.output.stderr
+        assert 'Selected dataset version: "default"' in self.output.stderr
 
     def test_subset_request_without_subset(self):
         filepath = get_path_to_request_file(
@@ -51,13 +51,13 @@ class TestRequestFiles:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Missing subset option. Try 'copernicusmarine subset --help'."
+            "Missing subset option. Try 'copernicusmarine subset --help'."
             in self.output.stderr
         )
         assert (
-            b"To retrieve a complete dataset, please use instead: "
-            b"copernicusmarine get --dataset-id "
-            b"METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2"
+            "To retrieve a complete dataset, please use instead: "
+            "copernicusmarine get --dataset-id "
+            "METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2"
         ) in self.output.stderr
 
     def test_subset_request_with_dataset_not_in_catalog(self):
@@ -80,7 +80,7 @@ class TestRequestFiles:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            b"Service not available: Available services for dataset: []"
+            "Service not available: Available services for dataset: []"
         ) in self.output.stderr
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
@@ -115,7 +115,7 @@ class TestRequestFiles:
         ]
 
         self.output = execute_in_terminal(command)
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
         assert self.output.returncode == 0
 
     def test_get_request_with_request_file(self, tmp_path):
