@@ -13,6 +13,9 @@ from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
 from copernicusmarine.core_functions.exceptions import ServiceNotSupported
+from copernicusmarine.core_functions.marine_datastore_config import (
+    get_config_and_check_version_subset,
+)
 from copernicusmarine.core_functions.models import (
     CommandType,
     CoordinatesSelectionMethod,
@@ -28,7 +31,6 @@ from copernicusmarine.core_functions.services_utils import (
     get_retrieval_service,
 )
 from copernicusmarine.core_functions.utils import get_unique_filepath
-from copernicusmarine.core_functions.versions_verifier import VersionVerifier
 from copernicusmarine.download_functions.download_sparse import download_sparse
 from copernicusmarine.download_functions.download_zarr import download_zarr
 from copernicusmarine.download_functions.subset_xarray import (
@@ -75,7 +77,7 @@ def subset_function(
     chunk_size_limit: int,
     raise_if_updating: bool,
 ) -> ResponseSubset:
-    VersionVerifier.check_version_subset(staging)
+    marine_datastore_config = get_config_and_check_version_subset(staging)
     if staging:
         logger.warning(
             "Detecting staging flag for subset command. "
@@ -146,8 +148,8 @@ def subset_function(
         subset_request.force_service,
         CommandType.SUBSET,
         dataset_subset=subset_request,
-        staging=staging,
         platform_ids_subset=bool(subset_request.platform_ids),
+        marine_datastore_config=marine_datastore_config,
     )
     subset_request.dataset_url = retrieval_service.uri
     # TODO: Add check for insitu datasets

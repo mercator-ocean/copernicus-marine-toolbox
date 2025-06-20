@@ -2,7 +2,7 @@ from unittest import mock
 
 from copernicusmarine import CopernicusMarineCatalogue, describe
 from copernicusmarine.core_functions.fields_query_builder import build_query
-from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock import (
+from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata import (  # noqa: E501
     mocked_stac_requests_get,
 )
 
