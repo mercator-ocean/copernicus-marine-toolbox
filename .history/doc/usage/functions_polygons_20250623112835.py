@@ -66,7 +66,7 @@ def subset_and_clip_dataset(
     variables: list,
     min_depth: Optional[float] = None,
     max_depth: Optional[float] = None,
-    gdf: Optional[gpd.GeoDataFrame] = None,
+    gdf: Optional[GeoDataFrame] = None,
 ):
     """
     Opens a Copernicus Marine dataset, applies spatial/temporal/variable subsetting,

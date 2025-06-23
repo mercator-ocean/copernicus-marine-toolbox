@@ -14,5 +14,3 @@ doc/_build/
 
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints/
-
-doc/**/__pycache__/
