@@ -10,6 +10,17 @@ from typing import Optional
 logger = logging.getLogger()
 
 
+class FileToCheck:
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+
+    def get_path(self) -> str:
+        if platform.system() == "Windows":
+            # Convert to Windows path format if necessary
+            return self.file_path.replace("/", "\\")
+        return self.file_path
+
+
 def _remove_loggin_prefix(full_message: str) -> str:
     return full_message.split(" - ", 2)[2]
 
@@ -34,13 +45,15 @@ def execute_in_terminal(
     timeout_second: float = FIVE_MINUTES,
     user_input: Optional[str] = None,
     env: Optional[dict[str, str]] = None,
+    shell: Optional[bool] = None,
 ) -> CompletedProcess[str]:
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
-    shell = False
-    if platform.system() == "Windows":
+    if platform.system() == "Windows" and shell is None:
         shell = True
+    else:
+        shell = False
     output = subprocess.run(
         command,
         capture_output=True,

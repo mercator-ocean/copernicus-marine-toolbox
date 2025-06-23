@@ -14,7 +14,7 @@ on:
       - 'pyproject.toml'
 
 jobs:
-  build:
+  tests:
     runs-on: windows-latest
     timeout-minutes: 20
 
@@ -45,5 +45,6 @@ jobs:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         BINARY_NAME: "./dist/copernicusmarine.exe"
+        PYTHONIOENCODING: utf-8
       run: make run-tests-binaries
       shell: bash -el {0}

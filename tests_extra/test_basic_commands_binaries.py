@@ -9,6 +9,9 @@ BINARY = os.getenv("BINARY_NAME")
 
 class TestBasicCommandsBinaries:
     def test_help(self):
+        assert (
+            BINARY is not None
+        ), "BINARY_NAME environment variable is not set"
         self.output = execute_in_terminal([BINARY, "describe", "--help"])
         assert self.output.returncode == 0
         self.output = execute_in_terminal([BINARY, "get", "-h"])
