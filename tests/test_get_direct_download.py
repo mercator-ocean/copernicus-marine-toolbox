@@ -239,6 +239,7 @@ class TestGetDirectDownload:
     ):
         to_check = FileToCheck(
             "/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
-            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
         ).get_path()
+        file_name = FileToCheck(file_name).get_path()
         assert os.path.exists(f"{temp_path}{to_check}{file_name}")

@@ -1,3 +1,4 @@
+import logging
 import re
 from json import loads
 
@@ -12,6 +13,8 @@ from copernicusmarine.catalogue_parser.models import (
     VERSION_DEFAULT,
 )
 from tests.test_utils import execute_in_terminal
+
+logger = logging.getLogger()
 
 
 class TestDescribe:
@@ -420,6 +423,7 @@ class TestDescribe:
             "DEBUG",
         ]
         self.output = execute_in_terminal(command)
+        logger.info(self.output)
 
     def then_I_check_that_the_urls_contains_only_dta(self):
         assert (

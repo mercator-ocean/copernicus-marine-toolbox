@@ -14,7 +14,6 @@ import pytest
 import xarray
 
 from tests.test_utils import (
-    FileToCheck,
     execute_in_terminal,
     main_checks_when_file_is_downloaded,
     remove_extra_logging_prefix_info,
@@ -1100,6 +1099,7 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
+        logger.info(self.output)
         assert "DEBUG - " in self.output.stderr
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(
@@ -1302,12 +1302,8 @@ class TestCommandLineInterface:
         assert output_zarr_without_option.returncode == 0
         assert output_zarr_with_option.returncode != 0
 
-        filepath_without_option = FileToCheck(
-            tmp_path / filename_without_option
-        ).get_path()
-        filepath_with_option = FileToCheck(
-            tmp_path / filename_with_option
-        ).get_path()
+        filepath_without_option = Path(tmp_path / filename_without_option)
+        filepath_with_option = Path(tmp_path / filename_with_option)
 
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)
@@ -1316,13 +1312,17 @@ class TestCommandLineInterface:
 
         dataset_without_option = xarray.open_dataset(filepath_without_option)
         dataset_with_option = xarray.open_dataset(filepath_with_option)
+        assert os.path.exists(
+            pathlib.Path(tmp_path, filename_zarr_without_option)
+        )
+
         logger.info(
             f"{dataset_without_option.uo.encoding=}, {dataset_with_option.uo.encoding=}"
         )
-        assert dataset_without_option.uo.encoding["zli"] is False
+        assert dataset_without_option.uo.encoding["zlib"] is False
         assert dataset_without_option.uo.encoding["complevel"] == 0
 
-        assert dataset_with_option.uo.encoding["zli"] is True
+        assert dataset_with_option.uo.encoding["zlib"] is True
         assert dataset_with_option.uo.encoding["complevel"] == 1
         assert dataset_with_option.uo.encoding["contiguous"] is False
         assert dataset_with_option.uo.encoding["shuffle"] is True
@@ -1367,12 +1367,8 @@ class TestCommandLineInterface:
         assert output_without_option.returncode == 0
         assert output_with_option.returncode == 0
 
-        filepath_without_option = FileToCheck(
-            tmp_path / filename_without_option
-        ).get_path()
-        filepath_with_option = FileToCheck(
-            tmp_path / filename_with_option
-        ).get_path()
+        filepath_without_option = Path(tmp_path / filename_without_option)
+        filepath_with_option = Path(tmp_path / filename_with_option)
 
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)
@@ -1487,7 +1483,7 @@ class TestCommandLineInterface:
         dataset = xarray.open_dataset(filepath)
         logger.info(f"{dataset.uo.encoding=}, {dataset.uo.encoding=}")
 
-        assert dataset.uo.encoding["zli"] is True
+        assert dataset.uo.encoding["zlib"] is True
         assert dataset.uo.encoding["complevel"] == forced_comp_level
         assert dataset.uo.encoding["contiguous"] is False
         assert dataset.uo.encoding["shuffle"] is True
@@ -1582,6 +1578,7 @@ class TestCommandLineInterface:
         output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
 
         self.output = execute_in_terminal(command)
+        logger.info(f"Output filename: {self.output}")
         assert self.output.returncode == 0
         assert output_filename.is_file()
         with open(output_filename) as file:

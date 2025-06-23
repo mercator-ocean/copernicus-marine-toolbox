@@ -16,11 +16,13 @@ class TestBasicCommandsBinaries:
             [BINARY, "describe", "--help"], shell=False
         )
         assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "get", "-h"])
+        self.output = execute_in_terminal([BINARY, "get", "-h"], shell=False)
         assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "subset", "-h"])
+        self.output = execute_in_terminal(
+            [BINARY, "subset", "-h"], shell=False
+        )
         assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "login", "-h"])
+        self.output = execute_in_terminal([BINARY, "login", "-h"], shell=False)
         assert self.output.returncode == 0
 
     def test_describe(self):
@@ -66,7 +68,7 @@ class TestBasicCommandsBinaries:
             "*/2023/08/*",
             "--dry-run",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
 
         assert self.output.returncode == 0
         assert "No data to download" not in self.output.stderr
@@ -99,7 +101,7 @@ class TestBasicCommandsBinaries:
             "--output-directory",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
 
         assert self.output.returncode == 0
 
@@ -120,6 +122,6 @@ class TestBasicCommandsBinaries:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
