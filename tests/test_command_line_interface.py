@@ -14,6 +14,7 @@ import pytest
 import xarray
 
 from tests.test_utils import (
+    FileToCheck,
     execute_in_terminal,
     main_checks_when_file_is_downloaded,
     remove_extra_logging_prefix_info,
@@ -1301,8 +1302,12 @@ class TestCommandLineInterface:
         assert output_zarr_without_option.returncode == 0
         assert output_zarr_with_option.returncode != 0
 
-        filepath_without_option = Path(tmp_path / filename_without_option)
-        filepath_with_option = Path(tmp_path / filename_with_option)
+        filepath_without_option = FileToCheck(
+            tmp_path / filename_without_option
+        ).get_path()
+        filepath_with_option = FileToCheck(
+            tmp_path / filename_with_option
+        ).get_path()
 
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)
@@ -1362,8 +1367,12 @@ class TestCommandLineInterface:
         assert output_without_option.returncode == 0
         assert output_with_option.returncode == 0
 
-        filepath_without_option = Path(tmp_path / filename_without_option)
-        filepath_with_option = Path(tmp_path / filename_with_option)
+        filepath_without_option = FileToCheck(
+            tmp_path / filename_without_option
+        ).get_path()
+        filepath_with_option = FileToCheck(
+            tmp_path / filename_with_option
+        ).get_path()
 
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)

@@ -12,7 +12,9 @@ class TestBasicCommandsBinaries:
         assert (
             BINARY is not None
         ), "BINARY_NAME environment variable is not set"
-        self.output = execute_in_terminal([BINARY, "describe", "--help"])
+        self.output = execute_in_terminal(
+            [BINARY, "describe", "--help"], shell=False
+        )
         assert self.output.returncode == 0
         self.output = execute_in_terminal([BINARY, "get", "-h"])
         assert self.output.returncode == 0
@@ -26,7 +28,7 @@ class TestBasicCommandsBinaries:
             BINARY,
             "describe",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
 
     def test_subset(self):
@@ -51,7 +53,7 @@ class TestBasicCommandsBinaries:
             "VHM0",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
 
     def test_get(self):

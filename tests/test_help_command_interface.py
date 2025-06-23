@@ -24,9 +24,9 @@ class TestHelpCommandLineInterface:
         import platform
 
         if platform.system() == "Windows":
-            assert str(self.output).split("\\r\\n") == snapshot
+            assert str(self.output.stdout).split("\\r\\n") == snapshot
         else:
-            assert str(self.output).split("\\n") == snapshot
+            assert str(self.output.stdout).split("\\n") == snapshot
 
     def test_help_from_login_is_as_expected(self, snapshot):
         self.output = execute_in_terminal(
