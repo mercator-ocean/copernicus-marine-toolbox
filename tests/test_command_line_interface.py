@@ -592,7 +592,7 @@ class TestCommandLineInterface:
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
         filter_option = "*_200[45]*.nc"
-        regex = ".*_(2001|2002|2003).*.nc"
+        regex = "'.*_(2001|2002|2003).*.nc'"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",

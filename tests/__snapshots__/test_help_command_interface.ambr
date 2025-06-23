@@ -259,191 +259,193 @@
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', 'subset', '--help'], returncode=0, stdout='Usage: copernicusmarine subset [OPTIONS]",
-    '',
-    '  Extract a subset of data from a specified dataset using given parameters.',
-    '',
-    '  The datasetID is required and can be found via the ``describe`` command. See',
-    '  :ref:`describe <cli-describe>`.',
-    '',
-    '  Returns  JSON   A description of the downloaded data and its destination.',
-    '',
-    'Options:',
-    '  -i, --dataset-id TEXT           The datasetID, required either as an',
-    '                                  argument or in the request_file option.',
-    '  --dataset-version TEXT          Force the selection of a specific dataset',
-    '                                  version.',
-    '  --dataset-part TEXT             Force the selection of a specific dataset',
-    '                                  part.',
-    '  --username TEXT                 If not set, search for environment variable',
-    '                                  COPERNICUSMARINE_SERVICE_USERNAME, then',
-    '                                  search for a credentials file, else ask for',
-    '                                  user input.',
-    '  --password TEXT                 If not set, search for environment variable',
-    '                                  COPERNICUSMARINE_SERVICE_PASSWORD, then',
-    '                                  search for a credentials file, else ask for',
-    '                                  user input.',
-    '  -v, --variable TEXT             Specify dataset variable. Can be used',
-    '                                  multiple times.',
-    '  --minimum-longitude FLOAT       Minimum longitude for the subset. The value',
-    '                                  will be transposed to the interval [-180;',
-    '                                  360[.',
-    '  -x FLOAT                        Alias for ``--minimum-longitude`` and',
-    '                                  ``--minimum-x``.',
-    '  --minimum-x FLOAT               Minimum x-axis value for the subset. The',
-    '                                  units are considered in length (m,',
-    '                                  100km...).',
-    '  --maximum-longitude FLOAT       Maximum longitude for the subset. The value',
-    '                                  will be transposed to the interval [-180;',
-    '                                  360[.',
-    '  -X FLOAT                        Alias for ``--maximum-longitude`` and',
-    '                                  ``--maximum-x``.',
-    '  --maximum-x FLOAT               Maximum x-axis value for the subset. The',
-    '                                  units are considered in length (m,',
-    '                                  100km...).',
-    '  --minimum-latitude FLOAT RANGE  Minimum latitude for the subset. Requires a',
-    '                                  float from -90 degrees to +90.  [-90<=x<=90]',
-    '  -y FLOAT                        Alias for ``--minimum-latitude`` and',
-    '                                  ``--minimum-y``.',
-    '  --minimum-y FLOAT               Minimum y-axis value for the subset. The',
-    '                                  units are considered in length (m,',
-    '                                  100km...).',
-    '  --maximum-latitude FLOAT RANGE  Maximum latitude for the subset. Requires a',
-    '                                  float from -90 degrees to +90.  [-90<=x<=90]',
-    '  -Y FLOAT                        Alias for ``--maximum-latitude`` and',
-    '                                  ``--maximum-y``.',
-    '  --maximum-y FLOAT               Maximum y-axis value for the subset. The',
-    '                                  units are considered in length (m,',
-    '                                  100km...).',
-    '  -z, --minimum-depth FLOAT RANGE',
-    '                                  Minimum depth for the subset. Requires a',
-    '                                  positive float (or 0).  [x>=0]',
-    '  -Z, --maximum-depth FLOAT RANGE',
-    '                                  Maximum depth for the subset. Requires a',
-    '                                  positive float (or 0).  [x>=0]',
-    '  -V, --vertical-axis [depth|elevation]',
-    '                                  Consolidate the vertical dimension (the',
-    '                                  z-axis) as requested: depth with descending',
-    '                                  positive values, elevation with ascending',
-    '                                  positive values. Default is depth.',
-    '  -t, --start-datetime TEXT       The start datetime of the temporal subset.',
-    '                                  Supports common format parsed by dateutil (h',
-    '                                  ttps://dateutil.readthedocs.io/en/stable/par',
-    '                                  ser.html). Caution: encapsulate date with “',
-    '                                  “ to ensure valid expression for format',
-    '                                  “%Y-%m-%d %H:%M:%S”.',
-    '  -T, --end-datetime TEXT         The end datetime of the temporal subset.',
-    '                                  Supports common format parsed by dateutil (h',
-    '                                  ttps://dateutil.readthedocs.io/en/stable/par',
-    '                                  ser.html). Caution: encapsulate date with “',
-    '                                  “ to ensure valid expression for format',
-    '                                  “%Y-%m-%d %H:%M:%S”.',
-    '  -p, --platform-id TEXT          Specify platform ID. Can be used multiple',
-    '                                  times. Only available for platform chunked',
-    '                                  datasets.',
-    '  --coordinates-selection-method [inside|strict-inside|nearest|outside]',
-    '                                  If ``inside``, the selection retrieved will',
-    '                                  be inside the requested range. If ``strict-',
-    '                                  inside``, the selection retrieved will be',
-    '                                  inside the requested range, and an error',
-    "                                  will be raised if the values don\\'t exist. If",
-    '                                  ``nearest``, the extremes closest to the',
-    '                                  requested values will be returned. If',
-    '                                  ``outside``, the extremes will be taken to',
-    '                                  contain all the requested interval. The',
-    '                                  methods ``inside``, ``nearest`` and',
-    '                                  ``outside`` will display a warning if the',
-    '                                  request is out of bounds.',
-    '  -o, --output-directory PATH     The destination folder for the downloaded',
-    '                                  files. Default is the current directory.',
-    '  --credentials-file PATH         Path to a credentials file if not in its',
-    '                                  default directory',
-    '                                  (``$HOME/.copernicusmarine``). Accepts',
-    '                                  .copernicusmarine-credentials / .netrc or',
-    '                                  _netrc / motuclient-python.ini files.',
-    '  -f, --output-filename TEXT      Save the downloaded data with the given file',
-    '                                  name (under the output directory).',
-    '  --file-format [netcdf|zarr|csv|parquet]',
-    '                                  Format of the downloaded dataset. Default to',
-    "                                  NetCDF \\'.nc\\'.",
-    '  --overwrite                     If specified and if the file already exists',
-    '                                  on destination, then it will be overwritten.',
-    '                                  By default, the toolbox creates a new file',
-    "                                  with a new index (eg \\'filename_(1).nc\\').",
-    '                                  NOTE: This argument is mutually exclusive',
-    '                                  with arguments: [skip-existing].',
-    '  --skip-existing                 If the files already exists where it would',
-    '                                  be downloaded, then the download is skipped',
-    '                                  for this file. By default, the toolbox',
-    '                                  creates a new file with a new index (eg',
-    "                                  \\'filename_(1).nc\\'). NOTE: This argument is",
-    '                                  mutually exclusive with arguments:',
-    '                                  [overwrite].',
-    '  -s, --service TEXT              Force download through one of the available',
-    '                                  services using the service name among',
-    "                                  [\\'arco-geo-series\\', \\'arco-time-series\\',",
-    "                                  \\'omi-arco\\', \\'static-arco\\', \\'arco-platform-",
-    "                                  series\\'] or its short name among",
-    "                                  [\\'geoseries\\', \\'timeseries\\', \\'omi-arco\\',",
-    "                                  \\'static-arco\\', \\'platformseries\\'].",
-    '  --create-template               Option to create a file',
-    '                                  <argument>_template.json in your current',
-    '                                  directory containing the arguments. If',
-    '                                  specified, no other action will be',
-    '                                  performed.',
-    '  --request-file PATH             Option to pass a file containing the',
-    '                                  arguments. For more information please refer',
-    '                                  to the documentation or use option',
-    '                                  ``--create-template`` from the command line',
-    '                                  interface for an example template.',
-    '  --motu-api-request TEXT         Option to pass a complete MOTU API request',
-    '                                  as a string. Caution, user has to replace',
-    '                                  double quotes " with single quotes \\\' in the',
-    '                                  request.',
-    '  --dry-run                       If True, runs query without downloading',
-    '                                  data.',
-    '  -r, --response-fields TEXT      List of fields to include in the query',
-    '                                  metadata. The fields are separated by a',
-    "                                  comma. To return all fields, use \\'all\\'.",
-    '  --netcdf-compression-level INTEGER RANGE',
-    '                                  Specify a compression level to apply on the',
-    '                                  NetCDF output file. A value of 0 means no',
-    '                                  compression, and 9 is the highest level of',
-    '                                  compression available. If used as a flag,',
-    '                                  the assigned value will be 1.  [0<=x<=9]',
-    '  --netcdf3-compatible            Enable downloading the dataset in a netCDF3',
-    '                                  compatible format.',
-    '  --chunk-size-limit INTEGER RANGE',
-    '                                  Limit the size of the chunks in the dask',
-    '                                  array. Default is set to -1 which behaves',
-    "                                  similarly to \\'chunks=auto\\' from ``xarray``.",
-    "                                  Positive integer values and \\'-1\\' are",
-    '                                  accepted. This is an experimental feature.',
-    '                                  [x>=-1]',
-    '  --disable-progress-bar          Flag to hide progress bar.',
-    '  --log-level [DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]',
-    '                                  Set the details printed to console by the',
-    '                                  command (based on standard logging library).',
-    '  --raise-if-updating             If set, raises a',
-    '                                  :class:`copernicusmarine.DatasetUpdating`',
-    '                                  error if the dataset is being updated and',
-    '                                  the subset interval requested overpasses the',
-    '                                  updating start date of the dataset.',
-    '                                  Otherwise, a simple warning is displayed.',
-    '  -h, --help                      Show this message and exit.',
-    '',
-    '',
-    '    Examples:',
-    '',
-    '',
-    '        copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2',
-    '',
-    '    Equivalent to:',
-    '',
-    '',
-    '        copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 ',
-    '',
-    '    ',
-    "', stderr='')",
+    '''
+      Usage: copernicusmarine subset [OPTIONS]
+
+        Extract a subset of data from a specified dataset using given parameters.
+
+        The datasetID is required and can be found via the ``describe`` command. See
+        :ref:`describe <cli-describe>`.
+
+        Returns  JSON   A description of the downloaded data and its destination.
+
+      Options:
+        -i, --dataset-id TEXT           The datasetID, required either as an
+                                        argument or in the request_file option.
+        --dataset-version TEXT          Force the selection of a specific dataset
+                                        version.
+        --dataset-part TEXT             Force the selection of a specific dataset
+                                        part.
+        --username TEXT                 If not set, search for environment variable
+                                        COPERNICUSMARINE_SERVICE_USERNAME, then
+                                        search for a credentials file, else ask for
+                                        user input.
+        --password TEXT                 If not set, search for environment variable
+                                        COPERNICUSMARINE_SERVICE_PASSWORD, then
+                                        search for a credentials file, else ask for
+                                        user input.
+        -v, --variable TEXT             Specify dataset variable. Can be used
+                                        multiple times.
+        --minimum-longitude FLOAT       Minimum longitude for the subset. The value
+                                        will be transposed to the interval [-180;
+                                        360[.
+        -x FLOAT                        Alias for ``--minimum-longitude`` and
+                                        ``--minimum-x``.
+        --minimum-x FLOAT               Minimum x-axis value for the subset. The
+                                        units are considered in length (m,
+                                        100km...).
+        --maximum-longitude FLOAT       Maximum longitude for the subset. The value
+                                        will be transposed to the interval [-180;
+                                        360[.
+        -X FLOAT                        Alias for ``--maximum-longitude`` and
+                                        ``--maximum-x``.
+        --maximum-x FLOAT               Maximum x-axis value for the subset. The
+                                        units are considered in length (m,
+                                        100km...).
+        --minimum-latitude FLOAT RANGE  Minimum latitude for the subset. Requires a
+                                        float from -90 degrees to +90.  [-90<=x<=90]
+        -y FLOAT                        Alias for ``--minimum-latitude`` and
+                                        ``--minimum-y``.
+        --minimum-y FLOAT               Minimum y-axis value for the subset. The
+                                        units are considered in length (m,
+                                        100km...).
+        --maximum-latitude FLOAT RANGE  Maximum latitude for the subset. Requires a
+                                        float from -90 degrees to +90.  [-90<=x<=90]
+        -Y FLOAT                        Alias for ``--maximum-latitude`` and
+                                        ``--maximum-y``.
+        --maximum-y FLOAT               Maximum y-axis value for the subset. The
+                                        units are considered in length (m,
+                                        100km...).
+        -z, --minimum-depth FLOAT RANGE
+                                        Minimum depth for the subset. Requires a
+                                        positive float (or 0).  [x>=0]
+        -Z, --maximum-depth FLOAT RANGE
+                                        Maximum depth for the subset. Requires a
+                                        positive float (or 0).  [x>=0]
+        -V, --vertical-axis [depth|elevation]
+                                        Consolidate the vertical dimension (the
+                                        z-axis) as requested: depth with descending
+                                        positive values, elevation with ascending
+                                        positive values. Default is depth.
+        -t, --start-datetime TEXT       The start datetime of the temporal subset.
+                                        Supports common format parsed by dateutil (h
+                                        ttps://dateutil.readthedocs.io/en/stable/par
+                                        ser.html). Caution: encapsulate date with “
+                                        “ to ensure valid expression for format
+                                        “%Y-%m-%d %H:%M:%S”.
+        -T, --end-datetime TEXT         The end datetime of the temporal subset.
+                                        Supports common format parsed by dateutil (h
+                                        ttps://dateutil.readthedocs.io/en/stable/par
+                                        ser.html). Caution: encapsulate date with “
+                                        “ to ensure valid expression for format
+                                        “%Y-%m-%d %H:%M:%S”.
+        -p, --platform-id TEXT          Specify platform ID. Can be used multiple
+                                        times. Only available for platform chunked
+                                        datasets.
+        --coordinates-selection-method [inside|strict-inside|nearest|outside]
+                                        If ``inside``, the selection retrieved will
+                                        be inside the requested range. If ``strict-
+                                        inside``, the selection retrieved will be
+                                        inside the requested range, and an error
+                                        will be raised if the values don't exist. If
+                                        ``nearest``, the extremes closest to the
+                                        requested values will be returned. If
+                                        ``outside``, the extremes will be taken to
+                                        contain all the requested interval. The
+                                        methods ``inside``, ``nearest`` and
+                                        ``outside`` will display a warning if the
+                                        request is out of bounds.
+        -o, --output-directory PATH     The destination folder for the downloaded
+                                        files. Default is the current directory.
+        --credentials-file PATH         Path to a credentials file if not in its
+                                        default directory
+                                        (``$HOME/.copernicusmarine``). Accepts
+                                        .copernicusmarine-credentials / .netrc or
+                                        _netrc / motuclient-python.ini files.
+        -f, --output-filename TEXT      Save the downloaded data with the given file
+                                        name (under the output directory).
+        --file-format [netcdf|zarr|csv|parquet]
+                                        Format of the downloaded dataset. Default to
+                                        NetCDF '.nc'.
+        --overwrite                     If specified and if the file already exists
+                                        on destination, then it will be overwritten.
+                                        By default, the toolbox creates a new file
+                                        with a new index (eg 'filename_(1).nc').
+                                        NOTE: This argument is mutually exclusive
+                                        with arguments: [skip-existing].
+        --skip-existing                 If the files already exists where it would
+                                        be downloaded, then the download is skipped
+                                        for this file. By default, the toolbox
+                                        creates a new file with a new index (eg
+                                        'filename_(1).nc'). NOTE: This argument is
+                                        mutually exclusive with arguments:
+                                        [overwrite].
+        -s, --service TEXT              Force download through one of the available
+                                        services using the service name among
+                                        ['arco-geo-series', 'arco-time-series',
+                                        'omi-arco', 'static-arco', 'arco-platform-
+                                        series'] or its short name among
+                                        ['geoseries', 'timeseries', 'omi-arco',
+                                        'static-arco', 'platformseries'].
+        --create-template               Option to create a file
+                                        <argument>_template.json in your current
+                                        directory containing the arguments. If
+                                        specified, no other action will be
+                                        performed.
+        --request-file PATH             Option to pass a file containing the
+                                        arguments. For more information please refer
+                                        to the documentation or use option
+                                        ``--create-template`` from the command line
+                                        interface for an example template.
+        --motu-api-request TEXT         Option to pass a complete MOTU API request
+                                        as a string. Caution, user has to replace
+                                        double quotes " with single quotes ' in the
+                                        request.
+        --dry-run                       If True, runs query without downloading
+                                        data.
+        -r, --response-fields TEXT      List of fields to include in the query
+                                        metadata. The fields are separated by a
+                                        comma. To return all fields, use 'all'.
+        --netcdf-compression-level INTEGER RANGE
+                                        Specify a compression level to apply on the
+                                        NetCDF output file. A value of 0 means no
+                                        compression, and 9 is the highest level of
+                                        compression available. If used as a flag,
+                                        the assigned value will be 1.  [0<=x<=9]
+        --netcdf3-compatible            Enable downloading the dataset in a netCDF3
+                                        compatible format.
+        --chunk-size-limit INTEGER RANGE
+                                        Limit the size of the chunks in the dask
+                                        array. Default is set to -1 which behaves
+                                        similarly to 'chunks=auto' from ``xarray``.
+                                        Positive integer values and '-1' are
+                                        accepted. This is an experimental feature.
+                                        [x>=-1]
+        --disable-progress-bar          Flag to hide progress bar.
+        --log-level [DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]
+                                        Set the details printed to console by the
+                                        command (based on standard logging library).
+        --raise-if-updating             If set, raises a
+                                        :class:`copernicusmarine.DatasetUpdating`
+                                        error if the dataset is being updated and
+                                        the subset interval requested overpasses the
+                                        updating start date of the dataset.
+                                        Otherwise, a simple warning is displayed.
+        -h, --help                      Show this message and exit.
+
+
+          Examples:
+
+
+              copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2
+
+          Equivalent to:
+
+
+              copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2
+
+
+
+    ''',
   ])
 # ---
