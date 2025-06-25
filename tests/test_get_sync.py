@@ -132,6 +132,8 @@ class TestGetSync:
 
     def when_I_get_some_native_files_with_sync(self, tmp_path):
         self.command = [
+            "python",
+            "-m",
             "copernicusmarine",
             "get",
             "--dataset-id",
