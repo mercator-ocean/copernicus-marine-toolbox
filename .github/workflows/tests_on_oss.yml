@@ -1,11 +1,14 @@
 name: Run tests OSs
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - "main"
       - "release/**"
       - "pre-releases/**"
+  pull_request:
+    branches:
+      - "main"
 
 jobs:
   tests:
