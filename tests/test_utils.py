@@ -51,10 +51,7 @@ def get_poetry_python() -> str:
             check=True,
         )
         venv_path = result.stdout.strip()
-        if sys.platform == "win32":
-            return os.path.join(venv_path, "Scripts", "python.exe")
-        else:
-            return os.path.join(venv_path, "bin", "python")
+        return os.path.join(venv_path, "Scripts", "python.exe")
     except subprocess.CalledProcessError:
         return sys.executable
 
@@ -72,7 +69,7 @@ def execute_in_terminal(
     if platform.system() == "Windows" and shell is None:
         shell = True
     elif platform.system() == "Windows" and shell is False:
-        command[0] = get_poetry_python()
+        command = [get_poetry_python()] + ["-m"] + command
     else:
         shell = False
     output = subprocess.run(

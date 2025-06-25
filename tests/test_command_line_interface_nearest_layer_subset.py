@@ -158,6 +158,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
 
         if platform.system() == "Windows":
             if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
         dataset = xarray.open_dataset(zarr_path)
         min_depth = dataset.depth.values.min()
@@ -234,6 +235,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
 
         if platform.system() == "Windows":
             if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
 
         dataset = xarray.open_dataset(zarr_path)
@@ -266,6 +268,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
 
         if platform.system() == "Windows":
             if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
         dataset = xarray.open_dataset(zarr_path)
         min_elevation = dataset.longitude.values.min()
@@ -298,6 +301,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
 
         if platform.system() == "Windows":
             if os.path.exists(zarr_path):
+                _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
         dataset = xarray.open_dataset(zarr_path)
         min_elevation = dataset.latitude.values.min()
