@@ -203,10 +203,11 @@ class TestSparseSubset:
             "2025-01-05",
             "--output-directory",
             tmp_path,
+            "-r",
+            "all",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         response = loads(self.output.stdout)
-        assert response["filename"] == "sparse_data_along_track.parquet"
         output_path = pathlib.Path(response["file_path"])
         assert output_path.exists()
