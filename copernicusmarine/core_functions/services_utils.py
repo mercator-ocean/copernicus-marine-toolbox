@@ -21,6 +21,9 @@ from copernicusmarine.core_functions.exceptions import (
     ServiceDoesNotExistForCommand,
     ServiceNotAvailable,
 )
+from copernicusmarine.core_functions.marine_datastore_config import (
+    MarineDataStoreConfig,
+)
 from copernicusmarine.core_functions.models import CommandType, DatasetChunking
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
@@ -212,11 +215,12 @@ def get_retrieval_service(
     force_service_name_or_short_name: Optional[str],
     command_type: CommandType,
     dataset_subset: Optional[SubsetRequest],
+    marine_datastore_config: MarineDataStoreConfig,
     platform_ids_subset: bool = False,
-    username: Optional[str] = None,
-    staging: bool = False,
 ) -> RetrievalService:
-    dataset_metadata = get_dataset_metadata(dataset_id, staging=staging)
+    dataset_metadata = get_dataset_metadata(
+        dataset_id, marine_datastore_config
+    )
     if not dataset_metadata:
         raise KeyError(
             f"The requested dataset '{dataset_id}' was not found in the catalogue,"
@@ -239,7 +243,6 @@ def get_retrieval_service(
         force_service_name=force_service_name,
         command_type=command_type,
         dataset_subset=dataset_subset,
-        username=username,
         platform_ids_subset=platform_ids_subset,
         product_doi=product_doi,
     )
@@ -252,7 +255,6 @@ def _get_retrieval_service_from_dataset(
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
     dataset_subset: Optional[SubsetRequest],
-    username: Optional[str],
     platform_ids_subset: bool,
     product_doi: Optional[str],
 ) -> RetrievalService:
@@ -265,7 +267,6 @@ def _get_retrieval_service_from_dataset(
         force_service_name=force_service_name,
         command_type=command_type,
         dataset_subset=dataset_subset,
-        username=username,
         platform_ids_subset=platform_ids_subset,
         product_doi=product_doi,
     )
@@ -278,7 +279,6 @@ def _get_retrieval_service_from_dataset_version(
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
     dataset_subset: Optional[SubsetRequest],
-    username: Optional[str],
     platform_ids_subset: bool,
     product_doi: Optional[str],
 ) -> RetrievalService:

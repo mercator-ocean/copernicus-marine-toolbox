@@ -195,7 +195,7 @@ def _retrieve_credential_from_prompt(
 
 
 def _retrieve_credential_from_environment_variable(
-    credential_type: Literal["username", "password"]
+    credential_type: Literal["username", "password"],
 ) -> Optional[str]:
     if credential_type == "username":
         logger.debug("Tried to load username from environment variable")
@@ -420,6 +420,7 @@ def _check_credentials_with_old_cas(
     login_response.raise_for_status()
     login_success = 'class="success"' in login_response.text
     logger.debug("User credentials checked")
+    conn_session.close()
     return username if login_success else None
 
 
@@ -456,6 +457,7 @@ def _check_credentials_with_cas(
         if response.status_code == 200:
             response_json = response.json()
             return response_json["preferred_username"]
+    conn_session.close()
     return None
 
 

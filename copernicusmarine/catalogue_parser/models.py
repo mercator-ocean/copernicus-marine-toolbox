@@ -98,7 +98,7 @@ class ServiceNotHandled(Exception):
     """
     Exception raised when the dataset does not support the service type requested.
 
-    Please verifiy that the requested service type can be found in
+    Please verify that the requested service type can be found in
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset, version and part.
     """
@@ -744,7 +744,7 @@ class DatasetVersionPartNotFound(Exception):
     """
     Exception raised when the asked part of the version of the dataset cannot be found.
 
-    Please verifiy that the requested part can be found in
+    Please verify that the requested part can be found in
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset version and datasetID.
     If yes, please contact the User Support, (widget chat on
@@ -760,7 +760,7 @@ class DatasetVersionNotFound(Exception):
     """
     Exception raised when the asked version of the dataset cannot be found.
 
-    Please verifiy that the requested version can be found in
+    Please verify that the requested version can be found in
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset.
     If yes, please contact the User Support, (widget chat on
@@ -781,7 +781,7 @@ class DatasetNotFound(Exception):
     - The datasetID is incorrect and not present in the catalogue.
     - The dataset has been retired.
 
-    Please verifiy that the datasetID is can be found in
+    Please verify that the datasetID can be found in
     the result of the :func:`~copernicusmarine.describe` command.
     If yes, please contact the User Support, (widget chat on
     `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
@@ -810,6 +810,30 @@ class DatasetIsNotPartOfTheProduct(Exception):
             f"{dataset_id} not part of {product_id} "
             f"Please check that the dataset is part of the product and "
             f"the input datasetID is correct."
+        )
+        super().__init__(message)
+
+
+class ProductNotFound(Exception):
+    """
+    Exception raised when the product is not found in the catalogue.
+
+    Possible reasons:
+
+    - The productID is incorrect and not present in the catalogue.
+    - The product has been retired.
+
+    Please verify that the productID can be found in
+    the result of the :func:`~copernicusmarine.describe` command.
+    If yes, please contact the User Support, (widget chat on
+    `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
+    """
+
+    def __init__(self, product_id: str):
+        message = (
+            f"{product_id} "
+            f"Please check that the product exists and "
+            f"the input productID is correct."
         )
         super().__init__(message)
 

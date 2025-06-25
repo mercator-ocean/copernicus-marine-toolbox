@@ -28,7 +28,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         self._bucket = bucket
         self.client, _ = get_configured_boto3_session(
             endpoint,
-            ["GetObject", "HeadObject", "ListObjects"],
+            ["GetObject", "HeadObject", "ListObjectsV2"],
             copernicus_marine_username,
         )
 
