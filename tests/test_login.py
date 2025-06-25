@@ -140,6 +140,8 @@ class TestLogin:
     def test_login_command_with_username_and_password(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         command = [
+            "python",
+            "-m",
             "copernicusmarine",
             "login",
             "--force-overwrite",
@@ -151,7 +153,7 @@ class TestLogin:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
 
@@ -165,6 +167,8 @@ class TestLogin:
 
     def check_credentials_username_specified_password_are_valid(self):
         command = [
+            "python",
+            "-m",
             "copernicusmarine",
             "login",
             "--check-credentials-valid",
@@ -174,7 +178,7 @@ class TestLogin:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
         assert (
             "Valid credentials from input username and password"
