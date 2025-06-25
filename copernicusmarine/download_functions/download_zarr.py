@@ -492,6 +492,7 @@ def _save_dataset_locally(
                 "writing to ZARR"
             )
         _download_dataset_as_zarr(dataset, output_path)
+        dataset.close()
     else:
         _download_dataset_as_netcdf(
             dataset,
