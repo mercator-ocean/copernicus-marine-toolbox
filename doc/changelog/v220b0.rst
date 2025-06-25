@@ -1,7 +1,7 @@
 Pre-Release 2.2.0b0
 ====================
 
-Patch release with bug fixes and improvements.
+Minor version release with bug fixes and improvements.
 
 .. warning::
     This is a pre-release version. It is not recommended for production use.
@@ -13,6 +13,7 @@ New features
 ^^^^^^^^^^^^^^^
 
 * Development has focused on testing capabilities of the Toolbox.
+
   * Dependency tests now also run on MacOS and Windows.
   * Integration tests also run on MacOS and Windows.
   * Added coverage. See `copernicusmarine codecov page <https://app.codecov.io/gh/mercator-ocean/copernicus-marine-toolbox>`__.
