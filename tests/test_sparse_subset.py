@@ -190,3 +190,23 @@ class TestSparseSubset:
         )
         assert df.empty
         assert "No data found for the given parameters" in caplog.text
+
+    def test_can_subset_along_track_data(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_obs-sl_eur_phy-ssh_nrt_swon-l3-duacs_PT0.2S",
+            "-t",
+            "2025-01-04",
+            "-T",
+            "2025-01-05",
+            "--output-directory",
+            tmp_path,
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        assert response["filename"] == "sparse_data_along_track.parquet"
+        output_path = pathlib.Path(response["file_path"])
+        assert output_path.exists()
