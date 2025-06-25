@@ -144,7 +144,7 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(self.command)
+        self.output = execute_in_terminal(self.command, shell=False)
 
     def then_same_command_should_not_download(self, tmp_path):
         self.command = [
