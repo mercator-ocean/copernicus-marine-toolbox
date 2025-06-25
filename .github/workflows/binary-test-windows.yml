@@ -6,7 +6,7 @@ on:
     branches:
       - "main"
       - "release/**"
-      - "pre-releases/**"
+      - "pre-release/**"
   pull_request_target:
     branches:
       - "main"
