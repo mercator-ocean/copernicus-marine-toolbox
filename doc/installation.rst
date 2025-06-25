@@ -84,7 +84,6 @@ Create an account on Copernicus Marine website
 To be able to download Copernicus Marine data, you need to have an account on the Copernicus Marine website. You can create an account on the `Copernicus Marine registration page <https://data.marine.copernicus.eu/register>`_.
 
 
-
 Use the Copernicus Marine Toolbox binaries
 ***********************************************
 
@@ -196,6 +195,8 @@ and ``h5netcdf`` library as the backend.
 
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
+
+.. _installation-page-domains:
 
 Domains required by the Copernicus Marine Toolbox
 ********************************************************
