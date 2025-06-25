@@ -53,7 +53,7 @@ def execute_in_terminal(
     if platform.system() == "Windows" and shell is None:
         shell = True
     elif platform.system() == "Windows" and shell is False:
-        command = ["python", "-m"] + command
+        command = ["poetry", "run", "python", "-m"] + command
     else:
         shell = False
     output = subprocess.run(
