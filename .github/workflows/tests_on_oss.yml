@@ -7,7 +7,6 @@ on:
       - "release/**"
       - "pre-releases/**"
 
-
 jobs:
   tests:
     strategy:
