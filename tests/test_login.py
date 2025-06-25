@@ -140,8 +140,6 @@ class TestLogin:
     def test_login_command_with_username_and_password(self, tmp_path):
         non_existing_directory = Path(tmp_path, "i_dont_exist")
         command = [
-            "python",
-            "-m",
             "copernicusmarine",
             "login",
             "--force-overwrite",
@@ -167,8 +165,6 @@ class TestLogin:
 
     def check_credentials_username_specified_password_are_valid(self):
         command = [
-            "python",
-            "-m",
             "copernicusmarine",
             "login",
             "--check-credentials-valid",

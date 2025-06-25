@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 import platform
+import shutil
 import subprocess
 import time
 from subprocess import CompletedProcess
@@ -52,6 +53,9 @@ def execute_in_terminal(
     logger.info(f"Running command: {command_to_print}...")
     if platform.system() == "Windows" and shell is None:
         shell = True
+    elif platform.system() == "Windows" and shell is False:
+        copernicus_path = shutil.which("copernicusmarine")
+        command[0] = copernicus_path or "copernicusmarine"
     else:
         shell = False
     output = subprocess.run(
