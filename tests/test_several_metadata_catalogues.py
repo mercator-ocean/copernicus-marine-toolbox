@@ -29,12 +29,9 @@ class TestSeveralMetadataCatalogues:
         result = get(dataset_id=dataset_id, dry_run=True, staging=True)
 
         assert "s3.waw3-1.cloudferro.com" in result.files[0].https_url
-        result.files_not_found
 
     @responses.activate
-    def test_can_that_if_a_catalogue_fails_to_load_it_does_not_crash(
-        self, caplog
-    ):
+    def test_that_if_a_catalogue_fails_to_load_it_does_not_crash(self, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
             responses.mock.passthru_prefixes = ("http://", "https://")
@@ -101,7 +98,7 @@ class TestSeveralMetadataCatalogues:
             staging=True,
         )
         assert len(one_dataset_describe.products) == 1
-        assert one_dataset_describe.products[0].datasets
+        assert len(one_dataset_describe.products[0].datasets) == 1
         assert (
             "s3.waw3-1.cloudferro.com"
             not in one_dataset_describe.model_dump_json(
