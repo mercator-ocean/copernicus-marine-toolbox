@@ -3,6 +3,7 @@ import os
 import pathlib
 import platform
 import subprocess
+import sys
 import time
 from subprocess import CompletedProcess
 from typing import Optional
@@ -40,6 +41,24 @@ def remove_extra_logging_prefix_info(multi_line_message: str) -> str:
 FIVE_MINUTES = 5 * 60
 
 
+def get_poetry_python() -> str:
+    """Get the Python executable from the Poetry virtual environment"""
+    try:
+        result = subprocess.run(
+            ["poetry", "env", "info", "--path"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        venv_path = result.stdout.strip()
+        if sys.platform == "win32":
+            return os.path.join(venv_path, "Scripts", "python.exe")
+        else:
+            return os.path.join(venv_path, "bin", "python")
+    except subprocess.CalledProcessError:
+        return sys.executable
+
+
 def execute_in_terminal(
     command: list[str],
     timeout_second: float = FIVE_MINUTES,
@@ -53,7 +72,7 @@ def execute_in_terminal(
     if platform.system() == "Windows" and shell is None:
         shell = True
     elif platform.system() == "Windows" and shell is False:
-        command = ["poetry", "run", "python", "-m"] + command
+        command[0] = get_poetry_python()
     else:
         shell = False
     output = subprocess.run(
