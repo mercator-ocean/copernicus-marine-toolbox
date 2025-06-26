@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 import platform
+import shlex
 import subprocess
 
 # import sys
@@ -69,46 +70,37 @@ def execute_in_terminal(
     logger.info(f"Running command: {command_to_print}...")
     if platform.system() == "Windows" and shell is None:
         shell = True
+        output = subprocess.run(
+            command,
+            capture_output=True,
+            timeout=timeout_second,
+            input=user_input,
+            env=env,
+            text=True,
+            shell=shell,
+        )
     elif platform.system() == "Windows" and shell is False:
-        # Get Poetry environment path
-        result = subprocess.run(
-            ["poetry", "env", "info", "--path"], capture_output=True, text=True
+        command_str = shlex.join(command)
+        output = subprocess.run(
+            command_str,
+            capture_output=True,
+            timeout=timeout_second,
+            input=user_input,
+            env=env,
+            text=True,
+            shell=shell,
         )
-        venv_path = result.stdout.strip()
-        print(f"Virtual env path: {venv_path}")
-
-        # Check what's in the Scripts directory
-        scripts_dir = os.path.join(venv_path, "Scripts")
-        print(f"Scripts directory: {scripts_dir}")
-        print(f"Scripts directory exists: {os.path.exists(scripts_dir)}")
-
-        if os.path.exists(scripts_dir):
-            print("Contents of Scripts directory:")
-            for item in os.listdir(scripts_dir):
-                if "copernicus" in item.lower():
-                    full_path = os.path.join(scripts_dir, item)
-                    print(f"  {item} -> {full_path}")
-                    print(f"    Exists: {os.path.exists(full_path)}")
-                    print(f"    Is file: {os.path.isfile(full_path)}")
-
-        # Set up environment like Poetry would
-        env = os.environ.copy()
-        env["PATH"] = (
-            os.path.join(venv_path, "Scripts") + os.pathsep + env["PATH"]
-        )
-        command[0] = os.path.join(scripts_dir, "copernicusmarine.cmd")
-        command = ["cmd.exe", "/C"] + command
     else:
         shell = False
-    output = subprocess.run(
-        command,
-        capture_output=True,
-        timeout=timeout_second,
-        input=user_input,
-        env=env,
-        text=True,
-        shell=shell,
-    )
+        output = subprocess.run(
+            command,
+            capture_output=True,
+            timeout=timeout_second,
+            input=user_input,
+            env=env,
+            text=True,
+            shell=shell,
+        )
     t2 = time.time()
     duration_second = t2 - t1
     logger.info(f"Command executed in {duration_second} s: {command_to_print}")
