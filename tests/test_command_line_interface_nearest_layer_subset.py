@@ -160,7 +160,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             if os.path.exists(zarr_path):
                 _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
-        dataset = xarray.open_dataset(zarr_path)
+        dataset = xarray.open_dataset(zarr_path, engine="zarr")
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -238,7 +238,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
                 _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
 
-        dataset = xarray.open_dataset(zarr_path)
+        dataset = xarray.open_dataset(zarr_path, engine="zarr")
         min_datetime = dataset.time.values.min()
         max_datetime = dataset.time.values.max()
 
@@ -303,7 +303,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
             if os.path.exists(zarr_path):
                 _ = os.stat(zarr_path)
                 os.access(zarr_path, os.R_OK)
-        dataset = xarray.open_dataset(zarr_path)
+        dataset = xarray.open_dataset(zarr_path, engine="zarr")
         min_elevation = dataset.latitude.values.min()
         max_elevation = dataset.latitude.values.max()
 
