@@ -69,7 +69,7 @@ def execute_in_terminal(
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
     shell = True
-    if platform.system() == "Windows":
+    if platform.system() == "Windows" and not execute_quoting:
         output = subprocess.run(
             command,
             capture_output=True,
