@@ -70,7 +70,19 @@ def execute_in_terminal(
     if platform.system() == "Windows" and shell is None:
         shell = True
     elif platform.system() == "Windows" and shell is False:
-        command = ["poetry", "run"] + command
+        # Get Poetry environment info
+        result = subprocess.run(
+            ["poetry", "env", "info", "--path"], capture_output=True, text=True
+        )
+        venv_path = result.stdout.strip()
+
+        # Set up environment like Poetry would
+        env = os.environ.copy()
+        if os.name == "nt":  # Windows
+            env["PATH"] = (
+                os.path.join(venv_path, "Scripts") + os.pathsep + env["PATH"]
+            )
+            command[0] = "copernicusmarine.exe"
     else:
         shell = False
     output = subprocess.run(

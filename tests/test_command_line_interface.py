@@ -254,7 +254,7 @@ class TestCommandLineInterface:
         assert len(downloaded_files) == 31
 
     def test_get_download_s3_with_regex(self, tmp_path):
-        regex = '".*_(2001|2002|2003).*.nc"'
+        regex = ".*_(2001|2002|2003).*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
@@ -1578,7 +1578,7 @@ class TestCommandLineInterface:
         output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
 
         self.output = execute_in_terminal(command, shell=False)
-        logger.info(f"Output filename: {self.output}")
+        print(f"Output filename: {self.output}")
         assert self.output.returncode == 0
         assert output_filename.is_file()
         with open(output_filename) as file:
