@@ -78,11 +78,10 @@ def execute_in_terminal(
 
         # Set up environment like Poetry would
         env = os.environ.copy()
-        if os.name == "nt":  # Windows
-            env["PATH"] = (
-                os.path.join(venv_path, "Scripts") + os.pathsep + env["PATH"]
-            )
-            command[0] = "copernicusmarine.exe"
+        env["PATH"] = (
+            os.path.join(venv_path, "Scripts") + os.pathsep + env["PATH"]
+        )
+        command[0] = "copernicusmarine.exe"
     else:
         shell = False
     output = subprocess.run(
