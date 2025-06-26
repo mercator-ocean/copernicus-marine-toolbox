@@ -70,18 +70,33 @@ def execute_in_terminal(
     if platform.system() == "Windows" and shell is None:
         shell = True
     elif platform.system() == "Windows" and shell is False:
-        # Get Poetry environment info
+        # Get Poetry environment path
         result = subprocess.run(
             ["poetry", "env", "info", "--path"], capture_output=True, text=True
         )
         venv_path = result.stdout.strip()
+        print(f"Virtual env path: {venv_path}")
+
+        # Check what's in the Scripts directory
+        scripts_dir = os.path.join(venv_path, "Scripts")
+        print(f"Scripts directory: {scripts_dir}")
+        print(f"Scripts directory exists: {os.path.exists(scripts_dir)}")
+
+        if os.path.exists(scripts_dir):
+            print("Contents of Scripts directory:")
+            for item in os.listdir(scripts_dir):
+                if "copernicus" in item.lower():
+                    full_path = os.path.join(scripts_dir, item)
+                    print(f"  {item} -> {full_path}")
+                    print(f"    Exists: {os.path.exists(full_path)}")
+                    print(f"    Is file: {os.path.isfile(full_path)}")
 
         # Set up environment like Poetry would
         env = os.environ.copy()
         env["PATH"] = (
             os.path.join(venv_path, "Scripts") + os.pathsep + env["PATH"]
         )
-        command[0] = "copernicusmarine.exe"
+        command[0] = os.path.join(scripts_dir, "copernicusmarine.exe")
     else:
         shell = False
     output = subprocess.run(
