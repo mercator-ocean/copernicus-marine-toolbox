@@ -96,7 +96,8 @@ def execute_in_terminal(
         env["PATH"] = (
             os.path.join(venv_path, "Scripts") + os.pathsep + env["PATH"]
         )
-        command[0] = os.path.join(scripts_dir, "copernicusmarine")
+        command[0] = os.path.join(scripts_dir, "copernicusmarine.cmd")
+        command = ["cmd.exe", "/C"] + command
     else:
         shell = False
     output = subprocess.run(
