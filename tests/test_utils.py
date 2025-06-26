@@ -80,6 +80,7 @@ def execute_in_terminal(
             shell=shell,
         )
     elif platform.system() == "Windows" and shell is False:
+        command = ["poetry", "run"] + command
         command_str = shlex.join(command)
         output = subprocess.run(
             command_str,
