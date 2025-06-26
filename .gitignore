@@ -2,6 +2,7 @@ settings.json
 tests*/__pycache__/
 tests/resources/**/__pycache__/
 tests/downloads
+doc/**/__pycache__/
 .vscode/
 copernicusmarine/**/__pycache__/
 **/.aliases
@@ -15,4 +16,6 @@ doc/_build/
 # Jupyter notebook checkpoints
 **/.ipynb_checkpoints/
 
-doc/**/__pycache__/
+# asdf
+.tool-versions
+

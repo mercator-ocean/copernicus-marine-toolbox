@@ -5,7 +5,7 @@ import pytest
 
 from copernicusmarine import subset
 from copernicusmarine.core_functions.exceptions import DatasetUpdating
-from tests.resources.mock_stac_catalog.marine_data_store_stac_metadata_mock import (
+from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata import (  # noqa: E501
     mocked_stac_requests_get,
 )
 

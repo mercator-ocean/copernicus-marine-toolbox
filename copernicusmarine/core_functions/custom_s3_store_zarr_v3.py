@@ -31,7 +31,7 @@ class CustomS3StoreZarrV3(Store):
         self._bucket = bucket
         self.client, _ = get_configured_boto3_session(
             endpoint,
-            ["GetObject", "HeadObject", "ListObjects"],
+            ["GetObject", "HeadObject", "ListObjectsV2"],
             copernicus_marine_username,
         )
 

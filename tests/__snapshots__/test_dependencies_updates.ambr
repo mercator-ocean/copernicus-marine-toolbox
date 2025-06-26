@@ -1,7 +1,7 @@
 # serializer version: 1
 # name: TestDependeciesUpdates.test_update_dependencies
   dict({
-    'arcosparse': '^0.4.0',
+    'arcosparse': '^0.4.2',
     'boto3': '>=1.26',
     'click': '>=8.0.4,!=8.2.0',
     'dask': '>=2022',
