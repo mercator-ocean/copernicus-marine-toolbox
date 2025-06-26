@@ -63,17 +63,29 @@ def execute_in_terminal(
     user_input: Optional[str] = None,
     env: Optional[dict[str, str]] = None,
     shell: Optional[bool] = None,
+    execute_quoting: Optional[bool] = False,
 ) -> CompletedProcess[str]:
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
+    shell = True
     if platform.system() == "Windows":
-        shell = True
+        output = subprocess.run(
+            command,
+            capture_output=True,
+            timeout=timeout_second,
+            input=user_input,
+            env=env,
+            text=True,
+            shell=shell,
+        )
+    elif platform.system() == "Windows" and execute_quoting:
 
         def windows_quote(arg):
+            if '''"''' in arg:
+                return f"""'{arg}'"""
             if (
-                " " in arg
-                or "(" in arg
+                "(" in arg
                 or ")" in arg
                 or "|" in arg
                 or "*" in arg
@@ -92,18 +104,6 @@ def execute_in_terminal(
             text=True,
             shell=shell,
         )
-    # elif platform.system() == "Windows" and shell is False:
-    #     command = ["poetry", "run"] + command
-
-    #     output = subprocess.run(
-    #         command_str,
-    #         capture_output=True,
-    #         timeout=timeout_second,
-    #         input=user_input,
-    #         env=env,
-    #         text=True,
-    #         shell=shell,
-    #     )
     else:
         shell = False
         output = subprocess.run(

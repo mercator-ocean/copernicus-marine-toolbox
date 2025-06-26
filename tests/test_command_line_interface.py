@@ -268,7 +268,7 @@ class TestCommandLineInterface:
             "--skip-existing",
         ]
 
-        self.output = execute_in_terminal(command, shell=False)
+        self.output = execute_in_terminal(command, execute_quoting=True)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 3
@@ -607,7 +607,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = execute_in_terminal(command, shell=False)
+        self.output = execute_in_terminal(command, execute_quoting=True)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 5
@@ -1011,7 +1011,7 @@ class TestCommandLineInterface:
     def then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
         self, filepath
     ):
-        dataset = xarray.open_dataset(filepath)
+        dataset = xarray.open_dataset(filepath, engine="zarr")
         assert "copernicusmarine_version" in dataset.attrs
 
     def test_copernicusmarine_version_in_dataset_attributes_with_arco(
@@ -1577,7 +1577,7 @@ class TestCommandLineInterface:
 
         output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
 
-        self.output = execute_in_terminal(command, shell=False)
+        self.output = execute_in_terminal(command, execute_quoting=True)
         print(f"Output filename: {self.output}")
         assert self.output.returncode == 0
         assert output_filename.is_file()

@@ -144,7 +144,7 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(self.command, shell=False)
+        self.output = execute_in_terminal(self.command, execute_quoting=True)
 
     def then_same_command_should_not_download(self, tmp_path):
         self.command = [
@@ -247,7 +247,7 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(self.command, shell=False)
+        self.output = execute_in_terminal(self.command, execute_quoting=True)
         assert (
             "Some files will be deleted due to sync delete:"
             in self.output.stderr
