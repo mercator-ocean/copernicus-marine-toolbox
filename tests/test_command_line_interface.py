@@ -254,7 +254,7 @@ class TestCommandLineInterface:
         assert len(downloaded_files) == 31
 
     def test_get_download_s3_with_regex(self, tmp_path):
-        regex = ".*_(2001|2002|2003).*.nc"
+        regex = '".*_(2001|2002|2003).*.nc"'
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
