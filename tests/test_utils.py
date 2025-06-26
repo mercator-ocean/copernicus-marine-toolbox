@@ -2,7 +2,6 @@ import logging
 import os
 import pathlib
 import platform
-import shlex
 import subprocess
 
 # import sys
@@ -68,20 +67,22 @@ def execute_in_terminal(
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
-    if platform.system() == "Windows" and shell is None:
+    if platform.system() == "Windows":
         shell = True
-        output = subprocess.run(
-            command,
-            capture_output=True,
-            timeout=timeout_second,
-            input=user_input,
-            env=env,
-            text=True,
-            shell=shell,
-        )
-    elif platform.system() == "Windows" and shell is False:
-        command = ["poetry", "run"] + command
-        command_str = shlex.join(command)
+
+        def windows_quote(arg):
+            if (
+                " " in arg
+                or "(" in arg
+                or ")" in arg
+                or "|" in arg
+                or "*" in arg
+                or "." in arg
+            ):
+                return f'"{arg}"'
+            return arg
+
+        command_str = " ".join(windows_quote(arg) for arg in command)
         output = subprocess.run(
             command_str,
             capture_output=True,
@@ -91,6 +92,18 @@ def execute_in_terminal(
             text=True,
             shell=shell,
         )
+    # elif platform.system() == "Windows" and shell is False:
+    #     command = ["poetry", "run"] + command
+
+    #     output = subprocess.run(
+    #         command_str,
+    #         capture_output=True,
+    #         timeout=timeout_second,
+    #         input=user_input,
+    #         env=env,
+    #         text=True,
+    #         shell=shell,
+    #     )
     else:
         shell = False
         output = subprocess.run(
