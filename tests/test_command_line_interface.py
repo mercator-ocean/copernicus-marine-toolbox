@@ -1097,7 +1097,7 @@ class TestCommandLineInterface:
             "DEBUG",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, execute_quoting=True)
         assert self.output.returncode == 0
         logger.info(self.output)
         assert "DEBUG - " in self.output.stderr

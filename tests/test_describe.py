@@ -422,7 +422,7 @@ class TestDescribe:
             "--log-level",
             "DEBUG",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, execute_quoting=True)
         logger.info(self.output)
 
     def then_I_check_that_the_urls_contains_only_dta(self):

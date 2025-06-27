@@ -83,7 +83,7 @@ def execute_in_terminal(
 
         def windows_quote(arg):
             if '''"''' in arg:
-                return f"""'{arg}'"""
+                return f""" "{arg}" """
             if (
                 "(" in arg
                 or ")" in arg
@@ -95,6 +95,7 @@ def execute_in_terminal(
             return arg
 
         command_str = " ".join(windows_quote(arg) for arg in command)
+        logger.info(f"Running command with quoting: {command_str}...")
         output = subprocess.run(
             command_str,
             capture_output=True,
