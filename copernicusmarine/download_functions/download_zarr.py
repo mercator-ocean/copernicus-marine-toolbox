@@ -1,7 +1,8 @@
 import logging
 import os
 import pathlib
-from typing import Hashable, Iterable, Optional, Tuple, Union
+import warnings
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 import xarray
@@ -61,38 +62,6 @@ from copernicusmarine.download_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 
 
-def rechunk(
-    dataset: xarray.Dataset,
-    optimum_dask_chunking: Optional[dict[str, int]],
-    chunk_size_limit: int,
-) -> xarray.Dataset:
-    if chunk_size_limit == 0:
-        return dataset
-    elif chunk_size_limit > 0 and optimum_dask_chunking:
-        preferred_chunks = optimum_dask_chunking
-    else:
-        if chunk_size_limit > 0 and not optimum_dask_chunking:
-            logger.debug(
-                "Optimum chunking set to None whereas chunk_size_limit",
-                f" has been set to {chunk_size_limit}.",
-            )
-        preferred_chunks = {}
-        for variable in dataset:
-            preferred_chunks = dataset[variable].encoding["preferred_chunks"]
-            del dataset[variable].encoding["chunks"]
-
-    return dataset.chunk(
-        _filter_dimensions(preferred_chunks, dataset.sizes.keys())
-    )
-
-
-def _filter_dimensions(
-    rechunks: dict[str, int],
-    dimensions: Iterable[Hashable],
-) -> dict[str, int]:
-    return {k: v for k, v in rechunks.items() if k in dimensions}
-
-
 def download_dataset(
     username: str,
     password: str,
@@ -117,7 +86,7 @@ def download_dataset(
     skip_existing: bool,
     dataset_chunking: Optional[DatasetChunking],
 ) -> ResponseSubset:
-    if chunk_size_limit > 0 and dataset_chunking:
+    if chunk_size_limit and dataset_chunking:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service=service,
             variables=variables,
@@ -125,29 +94,20 @@ def download_dataset(
             chunk_size_limit=chunk_size_limit,
             axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         )
-        logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
     else:
         optimum_dask_chunking = None
-        if chunk_size_limit == -1:
-            # TODO: check the performance opening with None large datasets
-            # and then rechunking
-            logger.debug("Dask chunking selected 'auto'.")
-        else:
-            logger.debug("Dask chunking disabled.")
-    dataset = rechunk(
-        open_dataset_from_arco_series(
-            username=username,
-            password=password,
-            dataset_url=dataset_url,
-            variables=variables,
-            geographical_parameters=geographical_parameters,
-            temporal_parameters=temporal_parameters,
-            depth_parameters=depth_parameters,
-            coordinates_selection_method=coordinates_selection_method,
-            opening_dask_chunks=optimum_dask_chunking,
-        ),
+
+    logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
+    dataset = open_dataset_from_arco_series(
+        username=username,
+        password=password,
+        dataset_url=dataset_url,
+        variables=variables,
+        geographical_parameters=geographical_parameters,
+        temporal_parameters=temporal_parameters,
+        depth_parameters=depth_parameters,
+        coordinates_selection_method=coordinates_selection_method,
         optimum_dask_chunking=optimum_dask_chunking,
-        chunk_size_limit=chunk_size_limit,
     )
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
@@ -306,13 +266,15 @@ def open_dataset_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_dask_chunks: Optional[dict[str, int]],
+    optimum_dask_chunking: Optional[dict[str, int]],
 ) -> xarray.Dataset:
-    dataset = custom_open_zarr.open_zarr(
-        dataset_url,
-        chunks=opening_dask_chunks,
-        copernicus_marine_username=username,
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        dataset = custom_open_zarr.open_zarr(
+            dataset_url,
+            chunks=optimum_dask_chunking,
+            copernicus_marine_username=username,
+        )
     dataset = subset(
         dataset=dataset,
         variables=variables,
@@ -320,6 +282,7 @@ def open_dataset_from_arco_series(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=coordinates_selection_method,
+        optimum_dask_chunking=optimum_dask_chunking,
     )
     return dataset
 
@@ -333,7 +296,7 @@ def read_dataframe_from_arco_series(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    opening_dask_chunks: Optional[dict[str, int]],
+    optimum_dask_chunking: Optional[dict[str, int]],
 ) -> pd.DataFrame:
     dataset = open_dataset_from_arco_series(
         username=username,
@@ -344,21 +307,31 @@ def read_dataframe_from_arco_series(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=coordinates_selection_method,
-        opening_dask_chunks=opening_dask_chunks,
+        optimum_dask_chunking=optimum_dask_chunking,
     )
     return dataset.to_dataframe()
 
 
-def get_opening_dask_chunks(
+def get_coordinates_dask_and_zarr_chunks_info(
     service: CopernicusMarineService,
     variables: Optional[list[str]],
     dataset_chunking: DatasetChunking,
-) -> Tuple[dict, dict, bool]:
+) -> Tuple[dict, dict]:
+    """
+    Return
+    -------
+
+    Tuple[dict, dict, int]
+        A tuple containing:
+        - a dict with the maximum dask chunk factor for each coordinate id.
+          It tells us how many times we can multiply the zarr chunking per coordinate.
+        - a dict with the zarr chunking for each coordinate id. i.e. the number of values per zarr chunk.
+    """  # noqa
     set_variables = set(variables) if variables else set()
     coordinate_for_subset: dict[str, CopernicusMarineCoordinate] = {}
     for variable in service.variables:
         if (
-            not variables
+            not set_variables
             or variable.short_name in set_variables
             or variable.standard_name in set_variables
         ):
@@ -380,9 +353,10 @@ def get_opening_dask_chunks(
         if number_of_zarr_chunks_needed is None:
             continue
         max_dask_chunk_factor[coordinate_id] = number_of_zarr_chunks_needed
-    if _product(max_dask_chunk_factor.values()) < 100:
-        return max_dask_chunk_factor, coordinate_zarr_chunk_length, False
-    return max_dask_chunk_factor, coordinate_zarr_chunk_length, True
+    return (
+        max_dask_chunk_factor,
+        coordinate_zarr_chunk_length,
+    )
 
 
 def get_optimum_dask_chunking(
@@ -407,14 +381,35 @@ def get_optimum_dask_chunking(
     Knowing that, we should cap the size of the chunk to 100MB and use multiples of the zarr chunking.
 
     If the factors sum up to less than 100, no chunking is needed.
+
+    Returns
+    -------
+
+    Optional[dict[str, int]]
+        A dictionary with the optimum dask chunking for each coordinate id. In the form:
+        {
+            "longitude": 2,
+            "latitude": 2,
+            "time": 1,
+            "elevation": 1, # forced to work with ARCO standard
+        }
+        Can also be None if the dataset is not large enough to require dask chunking.
     """  # noqa
     (
         max_dask_chunk_factor,
         coordinate_zarr_chunk_length,
-        is_large_dataset,
-    ) = get_opening_dask_chunks(service, variables, dataset_chunking)
-    if not is_large_dataset:
-        return None
+    ) = get_coordinates_dask_and_zarr_chunks_info(
+        service, variables, dataset_chunking
+    )
+    number_of_chunks_to_download = dataset_chunking.number_chunks
+    if chunk_size_limit == -1:
+        if number_of_chunks_to_download <= 30:
+            return None
+        elif number_of_chunks_to_download <= 200:
+            chunk_size_limit = 50
+        else:
+            chunk_size_limit = 100
+    logger.debug(f"Chunk size limit: {chunk_size_limit}")
     logger.debug(f"Zarr chunking: {coordinate_zarr_chunk_length}")
     logger.debug(f"Max dask chunk factor: {max_dask_chunk_factor}")
     optimum_dask_factors = _get_optimum_factors(
@@ -429,6 +424,16 @@ def get_optimum_dask_chunking(
         for coordinate_id in optimum_dask_factors
     }
     logger.debug(f"Optimum dask chunking: {optimum_dask_chunking}")
+
+    if (
+        "z" in axis_coordinate_id_mapping
+        and (z_coordinate := axis_coordinate_id_mapping["z"]) != "elevation"
+        and z_coordinate in optimum_dask_chunking
+    ):
+        optimum_dask_chunking["elevation"] = optimum_dask_chunking[
+            z_coordinate
+        ]
+        del optimum_dask_chunking[z_coordinate]
     return optimum_dask_chunking
 
 
