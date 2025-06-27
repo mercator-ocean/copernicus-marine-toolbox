@@ -1,3 +1,4 @@
+import logging
 import re
 from json import loads
 
@@ -12,6 +13,8 @@ from copernicusmarine.catalogue_parser.models import (
     VERSION_DEFAULT,
 )
 from tests.test_utils import execute_in_terminal
+
+logger = logging.getLogger()
 
 
 class TestDescribe:
@@ -73,7 +76,7 @@ class TestDescribe:
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, None, exclude="services"
         )
-        json_result = loads(self.output.stdout.decode("utf-8"))
+        json_result = loads(self.output.stdout)
         for product in json_result["products"]:
             for dataset in product["datasets"]:
                 for version in dataset["versions"]:
@@ -85,10 +88,10 @@ class TestDescribe:
         self.output = execute_in_terminal(command, timeout_second=30)
 
     def then_stdout_can_be_load_as_json(self):
-        loads(self.output.stdout.decode("utf-8"))
+        loads(self.output.stdout)
 
     def then_I_can_read_the_default_json(self):
-        json_result = loads(self.output.stdout.decode("utf-8"))
+        json_result = loads(self.output.stdout)
         # TODO: increase number after November release
         assert len(json_result["products"]) >= 270
         seen_processing_level = False
@@ -111,7 +114,7 @@ class TestDescribe:
 
     def and_there_are_no_warnings_about_backend_versions(self):
         assert (
-            b"Please update to the latest client version."
+            "Please update to the latest client version."
             not in self.output.stderr
         )
 
@@ -289,12 +292,12 @@ class TestDescribe:
         self.output = execute_in_terminal(command, timeout_second=30)
 
     def then_I_can_read_it_does_not_contain_weird_symbols(self):
-        assert b"__" not in self.output.stdout
+        assert "__" not in self.output.stdout
         # TODO: remove this check after they are fixed
-        # assert b" _" not in self.output.stdout
-        # assert b"_ " not in self.output.stdout
-        assert b'"_' not in self.output.stdout
-        assert b'_"' not in self.output.stdout
+        # assert " _" not in self.output.stdout
+        # assert "_ " not in self.output.stdout
+        assert '"_' not in self.output.stdout
+        assert '_"' not in self.output.stdout
 
     def then_I_can_read_the_json_including_datasets(self):
         json_result = loads(self.output.stdout)
@@ -409,7 +412,7 @@ class TestDescribe:
 
     def then_I_have_an_error_message_about_dataset_id_and_product_id(self):
         assert self.output.returncode == 1
-        assert b"Dataset is not part of the product" in self.output.stderr
+        assert "Dataset is not part of the product" in self.output.stderr
 
     def when_I_use_staging_environment_in_debug_logging_level(self):
         command = [
@@ -419,11 +422,12 @@ class TestDescribe:
             "--log-level",
             "DEBUG",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, execute_quoting=True)
+        logger.info(self.output)
 
     def then_I_check_that_the_urls_contains_only_dta(self):
         assert (
-            b"https://s3.waw3-1.cloudferro.com/mdl-metadata/"
+            "https://s3.waw3-1.cloudferro.com/mdl-metadata/"
             not in self.output.stdout
         )
 
@@ -464,7 +468,7 @@ class TestDescribe:
         )
         assert self.output.returncode == 0
         assert (
-            b"Some ``--return-fields`` fields are invalid: invalid_field"
+            "Some ``--return-fields`` fields are invalid: invalid_field"
             in self.output.stderr
         )
 
@@ -475,8 +479,8 @@ class TestDescribe:
         )
         assert self.output.returncode == 1
         assert (
-            b"All ``--return-fields`` fields are invalid: "
-            b"invalid_field1, invalid_field2" in self.output.stderr
+            "All ``--return-fields`` fields are invalid: "
+            "invalid_field1, invalid_field2" in self.output.stderr
         )
 
         # Test with one wrong invalid exclude fields
@@ -486,7 +490,7 @@ class TestDescribe:
         )
         assert self.output.returncode == 0
         assert (
-            b"Some ``--exclude-fields`` fields are invalid: wrong_field"
+            "Some ``--exclude-fields`` fields are invalid: wrong_field"
             in self.output.stderr
         )
 
@@ -497,8 +501,8 @@ class TestDescribe:
         )
         assert self.output.returncode == 1
         assert (
-            b"All ``--exclude-fields`` fields are invalid: "
-            b"wrong_field1, wrong_field2" in self.output.stderr
+            "All ``--exclude-fields`` fields are invalid: "
+            "wrong_field1, wrong_field2" in self.output.stderr
         )
 
     def when_I_describe_with_invalid_return_fields(

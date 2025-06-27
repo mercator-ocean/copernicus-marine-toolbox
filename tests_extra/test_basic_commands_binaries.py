@@ -9,13 +9,20 @@ BINARY = os.getenv("BINARY_NAME")
 
 class TestBasicCommandsBinaries:
     def test_help(self):
-        self.output = execute_in_terminal([BINARY, "describe", "--help"])
+        assert (
+            BINARY is not None
+        ), "BINARY_NAME environment variable is not set"
+        self.output = execute_in_terminal(
+            [BINARY, "describe", "--help"], shell=False
+        )
         assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "get", "-h"])
+        self.output = execute_in_terminal([BINARY, "get", "-h"], shell=False)
         assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "subset", "-h"])
+        self.output = execute_in_terminal(
+            [BINARY, "subset", "-h"], shell=False
+        )
         assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "login", "-h"])
+        self.output = execute_in_terminal([BINARY, "login", "-h"], shell=False)
         assert self.output.returncode == 0
 
     def test_describe(self):
@@ -23,7 +30,7 @@ class TestBasicCommandsBinaries:
             BINARY,
             "describe",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
 
     def test_subset(self):
@@ -48,7 +55,7 @@ class TestBasicCommandsBinaries:
             "VHM0",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
 
     def test_get(self):
@@ -61,10 +68,10 @@ class TestBasicCommandsBinaries:
             "*/2023/08/*",
             "--dry-run",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
 
         assert self.output.returncode == 0
-        assert b"No data to download" not in self.output.stderr
+        assert "No data to download" not in self.output.stderr
         returned_value = loads(self.output.stdout)
         assert self.output.returncode == 0
         assert len(returned_value["files"]) != 0
@@ -94,7 +101,7 @@ class TestBasicCommandsBinaries:
             "--output-directory",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
 
         assert self.output.returncode == 0
 
@@ -115,6 +122,6 @@ class TestBasicCommandsBinaries:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
