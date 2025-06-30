@@ -602,7 +602,9 @@ def subset(
     )
 
     dataset = _depth_subset(
-        dataset, depth_parameters, coordinates_selection_method
+        dataset,
+        depth_parameters,
+        coordinates_selection_method,
     )
 
     dataset = _update_dataset_coordinate_attributes(
