@@ -8,9 +8,11 @@ from copernicusmarine import open_dataset, read_dataframe, subset
 from copernicusmarine.core_functions.utils import datetime_parser
 from tests.test_utils import execute_in_terminal
 
-dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
-variable = "po4"
-datasets_w_originalGrid = [
+EXAMPLE_DATASET_ID = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
+EXAMPLE_VARIABLE = "po4"
+# Each list in ORIGINAL_GRID_DATASETS represents a dataset with the following structure:
+# [dataset_id, start_datetime, minimum_x, maximum_x, minimum_y, maximum_y]
+ORIGINAL_GRID_DATASETS = [
     [
         "cmems_obs-si_arc_physic_nrt_1km-grl_P1D-irr",
         "2021",
@@ -87,9 +89,9 @@ datasets_w_originalGrid = [
     [
         "cmems_obs-wind_arc_phy_my_l3-s1a-sar-asc-0.01deg_P1D-i",
         "2024",
-        "215972.0",
-        "234972.0",
-        "-2799378.0",
+        "108549.0",
+        "98549.0",
+        "-2311438.0",
         "-2150378.0",
     ],
     [
@@ -170,9 +172,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            dataset_name,
+            EXAMPLE_DATASET_ID,
             "-v",
-            variable,
+            EXAMPLE_VARIABLE,
             "--dataset-part",
             "originalGrid",
             "--minimum-longitude",
@@ -222,9 +224,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            dataset_name,
+            EXAMPLE_DATASET_ID,
             "-v",
-            variable,
+            EXAMPLE_VARIABLE,
             "--dataset-part",
             "originalGrid",
             "-x",
@@ -249,9 +251,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            dataset_name,
+            EXAMPLE_DATASET_ID,
             "-v",
-            variable,
+            EXAMPLE_VARIABLE,
             "--dataset-part",
             "originalGrid",
             "-t",
@@ -295,7 +297,7 @@ class TestOriginalGridDatasets:
         assert len(coordinates) == 4
 
     def test_originalGrid_works_when_subsetting(self):
-        for dataset_info in datasets_w_originalGrid:
+        for dataset_info in ORIGINAL_GRID_DATASETS:
             if random.randrange(start=100) > 80:
                 print(f"running dataset {dataset_info[0]}")
                 self.run_one_dataset(dataset_info)
