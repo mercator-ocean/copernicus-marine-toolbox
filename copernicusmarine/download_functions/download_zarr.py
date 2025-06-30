@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 import warnings
+from copy import deepcopy
 from typing import Optional, Tuple, Union
 
 import pandas as pd
@@ -287,9 +288,10 @@ def open_dataset_from_arco_series(
         optimum_dask_chunking=optimum_dask_chunking,
     )
     if "depth" in dataset.coords and optimum_dask_chunking:
-        optimum_chunks_depth = optimum_dask_chunking.get(
-            "depth", optimum_dask_chunking.get("elevation", 1)
-        )
+        optimum_chunks_depth = deepcopy(optimum_dask_chunking)
+        if "elevation" in optimum_chunks_depth:
+            optimum_chunks_depth["depth"] = optimum_chunks_depth["elevation"]
+            del optimum_chunks_depth["elevation"]
         dataset = dataset.chunk(optimum_chunks_depth)
     elif optimum_dask_chunking:
         dataset = dataset.chunk(optimum_dask_chunking)
@@ -417,7 +419,7 @@ def get_optimum_dask_chunking(
         dataset_chunking.chunking_per_variable
     )
     if chunk_size_limit == -1:
-        if chunks_and_variables_size <= 50:
+        if chunks_and_variables_size <= 300:
             return None
         elif chunks_and_variables_size <= 1500:
             chunk_size_limit = 20
