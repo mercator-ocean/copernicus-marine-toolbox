@@ -117,7 +117,7 @@ def load_data_object_from_load_request(
                 load_request.temporal_parameters.start_datetime = (
                     parsed_start_datetime
                 )
-        if retrieval_service.dataset_chunking:
+        if chunks_factor_size_limit and retrieval_service.dataset_chunking:
             optimum_dask_chunking = get_optimum_dask_chunking(
                 service=retrieval_service.service,
                 variables=load_request.variables,

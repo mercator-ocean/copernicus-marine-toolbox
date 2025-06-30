@@ -10,12 +10,8 @@ from tests.test_utils import execute_in_terminal
 
 EXAMPLE_DATASET_ID = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
 EXAMPLE_VARIABLE = "po4"
-# dataset id
-# start datetime
-# minimum x
-# maximum x
-# minimum y
-# maximum y
+# Each list in ORIGINAL_GRID_DATASETS represents a dataset with the following structure:
+# [dataset_id, start_datetime, minimum_x, maximum_x, minimum_y, maximum_y]
 ORIGINAL_GRID_DATASETS = [
     [
         "cmems_obs-si_arc_physic_nrt_1km-grl_P1D-irr",
