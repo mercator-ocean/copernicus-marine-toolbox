@@ -275,6 +275,8 @@ def open_dataset_from_arco_series(
             chunks=optimum_dask_chunking,
             copernicus_marine_username=username,
         )
+    for variable in dataset:
+        del dataset[variable].encoding["chunks"]
     dataset = subset(
         dataset=dataset,
         variables=variables,
@@ -284,6 +286,13 @@ def open_dataset_from_arco_series(
         coordinates_selection_method=coordinates_selection_method,
         optimum_dask_chunking=optimum_dask_chunking,
     )
+    if "depth" in dataset.coords and optimum_dask_chunking:
+        optimum_chunks_depth = optimum_dask_chunking.get(
+            "depth", optimum_dask_chunking.get("elevation", 1)
+        )
+        dataset = dataset.chunk(optimum_chunks_depth)
+    elif optimum_dask_chunking:
+        dataset = dataset.chunk(optimum_dask_chunking)
     return dataset
 
 
@@ -401,11 +410,18 @@ def get_optimum_dask_chunking(
     ) = get_coordinates_dask_and_zarr_chunks_info(
         service, variables, dataset_chunking
     )
-    number_of_chunks_to_download = dataset_chunking.number_chunks
+    zarr_chunks_to_download = dataset_chunking.number_chunks
+    # it seems that dask chunks increases more
+    # with the number of variables
+    chunks_and_variables_size = zarr_chunks_to_download * len(
+        dataset_chunking.chunking_per_variable
+    )
     if chunk_size_limit == -1:
-        if number_of_chunks_to_download <= 30:
+        if chunks_and_variables_size <= 50:
             return None
-        elif number_of_chunks_to_download <= 200:
+        elif chunks_and_variables_size <= 1500:
+            chunk_size_limit = 20
+        elif chunks_and_variables_size <= 4000:
             chunk_size_limit = 50
         else:
             chunk_size_limit = 100
@@ -417,7 +433,6 @@ def get_optimum_dask_chunking(
         chunk_size_limit,
         axis_coordinate_id_mapping,
     )
-    logger.debug(f"Optimum dask factors: {optimum_dask_factors}")
     optimum_dask_chunking = {
         coordinate_id: coordinate_zarr_chunk_length[coordinate_id]
         * optimum_dask_factors[coordinate_id]
