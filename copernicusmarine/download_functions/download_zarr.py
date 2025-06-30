@@ -285,7 +285,6 @@ def open_dataset_from_arco_series(
         temporal_parameters=temporal_parameters,
         depth_parameters=depth_parameters,
         coordinates_selection_method=coordinates_selection_method,
-        optimum_dask_chunking=optimum_dask_chunking,
     )
     if "depth" in dataset.coords and optimum_dask_chunking:
         optimum_chunks_depth = deepcopy(optimum_dask_chunking)
