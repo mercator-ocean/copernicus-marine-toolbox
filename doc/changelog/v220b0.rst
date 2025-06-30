@@ -18,7 +18,7 @@ New features
   * Integration tests also run on MacOS and Windows.
   * Added coverage. See `copernicusmarine codecov page <https://app.codecov.io/gh/mercator-ocean/copernicus-marine-toolbox>`__.
 
-* Added a way for the Toolbox to fetch and parse metadata from several server locations. It makes the Toolbox more resilient to a data provider service outage. Please, check the :ref:`installation page <_installation-page-domains>` as new domains might be used by the Toolbox.
+* Added a way for the Toolbox to fetch and parse metadata from several server locations. It makes the Toolbox more resilient to a data provider service outage. Please, check the :ref:`installation page <installation-page-domains>` as new domains might be used by the Toolbox.
 
 
 Subset
@@ -29,3 +29,4 @@ Fixes
 
 * Fixed an issue where along-track data would not be correctly parsed by ``arcosparse`` library. Upgraded to ``arcosparse==0.4.2`` to fix this issue.
 * Fixed an issue where the service (``arco-geo-series`` or ``arco-time-series``) of the subset command would be wrong in some edge cases.
+* Fixed a bug that introduced performance regressions in v2.1.x of the Toolbox for some subset requests. The code has been refactored to improve performance and the use of ``chunk-size-limit`` option should have more predictable effects.
