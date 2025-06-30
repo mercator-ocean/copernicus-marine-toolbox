@@ -427,25 +427,8 @@ def _depth_subset(
             dataset["elevation"].attrs = attrs
         return dataset
 
-    def update_chunking_to_depth(
-        dataset: xarray.Dataset,
-    ) -> xarray.Dataset:
-        if (
-            "elevation" in dataset.chunks
-            and optimum_dask_chunking
-            and "elevation" in optimum_dask_chunking
-        ):
-            optimum_dask_chunking["depth"] = optimum_dask_chunking.pop(
-                "elevation"
-            )
-            dataset = dataset.chunk(
-                optimum_dask_chunking,
-            )
-        return dataset
-
     if depth_parameters.vertical_axis == "depth":
         dataset = convert_elevation_to_depth(dataset)
-        dataset = update_chunking_to_depth(dataset)
     else:
         dataset = update_elevation_attributes(dataset)
     minimum_depth = depth_parameters.minimum_depth

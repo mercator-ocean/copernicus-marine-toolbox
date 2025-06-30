@@ -419,7 +419,7 @@ def get_optimum_dask_chunking(
         dataset_chunking.chunking_per_variable
     )
     if chunk_size_limit == -1:
-        if chunks_and_variables_size <= 300:
+        if chunks_and_variables_size <= 50:
             return None
         elif chunks_and_variables_size <= 1500:
             chunk_size_limit = 20
