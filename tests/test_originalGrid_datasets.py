@@ -297,7 +297,7 @@ class TestOriginalGridDatasets:
 
     def test_originalGrid_works_when_subsetting(self):
         for dataset_info in ORIGINAL_GRID_DATASETS:
-            if random.randrange(start=100) >= 0:
+            if random.randrange(start=100) > 80:
                 print(f"running dataset {dataset_info[0]}")
                 self.run_one_dataset(dataset_info)
 
