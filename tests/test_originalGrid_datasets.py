@@ -77,7 +77,6 @@ ORIGINAL_GRID_DATASETS = [
         "-10000",
         "-8000",
     ],
-    # The upper ones, are new!
     [
         "DMI-ARC-SEAICE_BERG_MOSAIC-L4-NRT-OBS",
         "2024",
@@ -89,18 +88,18 @@ ORIGINAL_GRID_DATASETS = [
     [
         "cmems_obs-wind_arc_phy_my_l3-s1a-sar-asc-0.01deg_P1D-i",
         "2024",
-        "108549.0",
         "98549.0",
+        "108549.0",
         "-2311438.0",
-        "-2150378.0",
+        "-2050378.0",
     ],
     [
         "cmems_obs-wind_arc_phy_my_l3-s1a-sar-desc-0.01deg_P1D-i",
         "2024",
-        "215972.0",
-        "234972.0",
-        "-2799378.0",
-        "-2150378.0",
+        "90972.0",
+        "100972.0",
+        "-299378.0",
+        "-250378.0",
     ],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1D-m", "2020"],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1M-m", "2020"],
