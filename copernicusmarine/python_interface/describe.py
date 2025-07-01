@@ -6,13 +6,14 @@ from copernicusmarine.core_functions.deprecated_options import (
     deprecated_python_option,
 )
 from copernicusmarine.core_functions.describe import describe_function
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+
+# from copernicusmarine.python_interface.exception_handler import (
+#     log_exception_and_exit,
+# )
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
-@log_exception_and_exit
+# @log_exception_and_exit
 def describe(
     show_all_versions: bool = False,
     contains: list[str] = [],

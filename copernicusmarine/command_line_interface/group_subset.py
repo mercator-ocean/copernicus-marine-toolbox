@@ -4,9 +4,9 @@ from typing import List, Optional, Union
 
 import click
 
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_and_exit,
-)
+# from copernicusmarine.command_line_interface.exception_handler import (
+#    log_exception_and_exit,
+# )
 from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
@@ -345,7 +345,7 @@ def cli_subset() -> None:
     help=documentation_utils.SUBSET["RAISE_IF_UPDATING_HELP"],
 )
 @force_download_option
-@log_exception_and_exit
+# @log_exception_and_exit
 def subset(
     dataset_id: str,
     dataset_version: Optional[str],

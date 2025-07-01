@@ -4,9 +4,9 @@ from typing import Optional
 
 import click
 
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_and_exit,
-)
+# from copernicusmarine.command_line_interface.exception_handler import (
+#    log_exception_and_exit,
+# )
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
     CustomClickOptionsCommand,
@@ -94,7 +94,7 @@ def cli_login() -> None:
     default="INFO",
     help=documentation_utils.LOGIN["LOG_LEVEL_HELP"],
 )
-@log_exception_and_exit
+# @log_exception_and_exit
 def login(
     username: Optional[str],
     password: Optional[str],

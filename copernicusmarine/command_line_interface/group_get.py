@@ -4,9 +4,9 @@ from typing import Optional, Union
 
 import click
 
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_and_exit,
-)
+# from copernicusmarine.command_line_interface.exception_handler import (
+#    log_exception_and_exit,
+# )
 from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
@@ -210,7 +210,7 @@ def cli_get() -> None:
     hidden=True,
 )
 @force_download_option
-@log_exception_and_exit
+# @log_exception_and_exit
 def get(
     dataset_id: Optional[str],
     dataset_version: Optional[str],

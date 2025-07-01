@@ -22,14 +22,15 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.core_functions.subset import subset_function
 from copernicusmarine.core_functions.utils import get_geographical_inputs
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+
+# from copernicusmarine.python_interface.exception_handler import (
+#     log_exception_and_exit,
+# )
 from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
-@log_exception_and_exit
+# @log_exception_and_exit
 def subset(
     dataset_id: Optional[str] = None,
     dataset_version: Optional[str] = None,

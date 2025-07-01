@@ -10,13 +10,14 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.get import get_function
 from copernicusmarine.core_functions.models import ResponseGet
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+
+# from copernicusmarine.python_interface.exception_handler import (
+#     log_exception_and_exit,
+# )
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
-@log_exception_and_exit
+# @log_exception_and_exit
 def get(
     dataset_id: Optional[str] = None,
     dataset_version: Optional[str] = None,

@@ -28,9 +28,10 @@ from copernicusmarine.download_functions.subset_parameters import (
     XParameters,
     YParameters,
 )
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+
+# from copernicusmarine.python_interface.exception_handler import (
+#     log_exception_and_exit,
+# )
 from copernicusmarine.python_interface.load_utils import (
     load_data_object_from_load_request,
 )
@@ -38,7 +39,7 @@ from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
-@log_exception_and_exit
+# @log_exception_and_exit
 def open_dataset(
     dataset_id: str,
     dataset_version: Optional[str] = None,

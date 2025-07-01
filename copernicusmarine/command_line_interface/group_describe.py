@@ -4,9 +4,10 @@ from typing import Optional
 import click
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_and_exit,
-)
+
+# from copernicusmarine.command_line_interface.exception_handler import (
+#    log_exception_and_exit,
+# )
 from copernicusmarine.command_line_interface.utils import tqdm_disable_option
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
@@ -108,7 +109,7 @@ def cli_describe() -> None:
     is_flag=True,
     hidden=True,
 )
-@log_exception_and_exit
+# @log_exception_and_exit
 def describe(
     show_all_versions: bool,
     return_fields: Optional[str],
