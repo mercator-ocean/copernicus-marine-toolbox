@@ -25,8 +25,9 @@ class CustomS3StoreZarrV3(Store):
         copernicus_marine_username: Optional[str] = None,
         number_of_retries: int = 9,
         initial_retry_wait_seconds: int = 1,
+        **kwargs,
     ):
-        super().__init__()
+        super().__init__(**kwargs)
         self._root_path = root_path.lstrip("/")
         self._bucket = bucket
         self.client, _ = get_configured_boto3_session(
