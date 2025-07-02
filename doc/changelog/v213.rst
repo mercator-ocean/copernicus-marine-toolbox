@@ -1,0 +1,12 @@
+Release 2.1.2
+=============
+
+Patch release with bug fixes.
+
+General
+-------
+
+Fixes
+^^^^^
+
+* Limit the zarr version to lower than 3.0.9 (<=3.0.8).

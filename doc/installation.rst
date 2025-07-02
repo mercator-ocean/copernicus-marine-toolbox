@@ -152,7 +152,7 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `setuptools <https://setuptools.pypa.io/en/latest/>`__ (68.2.2 or later)
 - `xarray <https://xarray.pydata.org/>`__ (2023.4.0 or later)
 - `tqdm <https://tqdm.github.io/>`__ (4.65.0 or later)
-- `zarr <https://zarr.readthedocs.io/en/stable/>`__ (2.13.3 or later)
+- `zarr <https://zarr.readthedocs.io/en/stable/>`__ (2.13.3 or later, but less than 3.0.9)
 - `dask <https://www.dask.org/>`__ (2022 or later)
 - `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__ (1.26 or later)
 - `semver <https://python-semver.readthedocs.io/en/latest/>`__ (0.2 or later)
