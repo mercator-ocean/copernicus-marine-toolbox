@@ -74,14 +74,16 @@ Commit the changes and push the branch to the remote repository.
 
 ``` sh
 make add-commit-for-release
-git push origin main
+git push origin copernicusmarine-release
 ```
+
+`copernicusmarine-release` or any name that you used for your branch.
 
 #### Step 4
 
 Create a pull request to merge the `copernicusmarine-release` branch into the `main` branch.
 
-Name it `Copernicus Marine Toolbox vX.Y.Z` where `X.Y.Z` is the version you want to be released.
+Name it `Copernicus Marine Toolbox vX.Y.Z` where `X.Y.Z` is the version you want to be released. This name should be the same name as your latest commit message when you create the PR.
 
 #### Step 5
 
@@ -98,7 +100,7 @@ After some time, it will be possible to release to new version in conda-forge. T
 If you need to patch a bug in a current version, but `main` is not concerned by the fix or some commits from `main` are not relevant for the current version, you can create a pull request to a `release/*` branch.
 This case the steps are really similar except that you will need to create a branch from the `release/*` branch instead of `main`.
 
-#### Patch: Step 1
+#### Patch: Step 0
 
 Create a new branch from the `release/vX.Y` branch from a release tag.
 
@@ -107,6 +109,11 @@ git fetch origin
 git checkout -b release/vX.Y vX.Y.Z-1
 git push origin release/vX.Y
 ```
+
+Here, `vX.Y.Z-1` is the tag of the previous release. You can find the tags in the [releases page](
+https://github.com/mercator-ocean/copernicus-marine-toolbox/releases).
+
+#### Patch: Step 1
 
 Then same as before, create your branch but your base is `release/vX.Y`.
 
@@ -126,20 +133,24 @@ make release-bump-patch
 #### Patch: Step 3
 
 > [!IMPORTANT]
-> Here, in most cases, you want to cherry-pick the commits from `main` that are relevant for the patch release. You can do this by using the `git cherry-pick` command. However, in other situations, you might just fix the bug for this specific version here. The `release/vX.Y` branch now differs from `main`.
+> Here, in most cases, you want to cherry-pick the commits from `main` that are relevant for the patch release. You can do this by using the `git cherry-pick` command. However, in other situations, you might just fix the bug for this specific version here. Cherry-pick before you do the release commit.
+
+As an advice, try to keep everything as simple as possible i.e. once you have developed the fix or cherry-picked all, then you can commit the changes and push. Avoid multiple commits and test locally.
 
 And then we commit.
 
 ``` sh
 make add-commit-for-release
-git push origin main
+git push origin copernicusmarine-release
 ```
+
+`copernicusmarine-release` or any name that you used for your branch.
 
 #### Patch: Step 4
 
 Create a pull request to merge the `copernicusmarine-release` branch into the `release/vX.Y` branch.
 
-Name it `Copernicus Marine Toolbox vX.Y.Z+1` where `X.Y.Z+1` is the version you want to be released.
+Name it `Copernicus Marine Toolbox vX.Y.Z` where `X.Y.Z` is the version you want to be released. This name should be the same name as your latest commit message when you create the PR.
 
 Step 5 and step 6 are the same as before.
 

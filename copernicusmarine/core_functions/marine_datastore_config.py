@@ -19,7 +19,7 @@ MARINE_DATASTORE_CONFIG_URL_DIRECT = (
     or "https://s3.waw3-1.cloudferro.com/mdl-metadata/clientsConfigV1.json"
 )
 MARINE_DATASTORE_CONFIG_URL_STAGING = (
-    "https://stac-dta.marine.copernicus.eu/clientsConfigV1.json"
+    "https://stac-dta.marine.copernicus.eu/clients-config-v1"
 )
 
 MARINE_DATASTORE_SERVICES_MAPPING: dict[str, list[str]] = {

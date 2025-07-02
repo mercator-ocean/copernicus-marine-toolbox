@@ -331,7 +331,7 @@ def get_coordinates_dask_and_zarr_chunks_info(
     Return
     -------
 
-    Tuple[dict, dict, int]
+    Tuple[dict, dict]
         A tuple containing:
         - a dict with the maximum dask chunk factor for each coordinate id.
           It tells us how many times we can multiply the zarr chunking per coordinate.
