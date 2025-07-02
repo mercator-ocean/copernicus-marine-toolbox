@@ -170,6 +170,11 @@ There are some compatibility issues with the latest versions of xarray and numpy
 - ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
 - ``xarray<2024.10.0`` with ``numpy>=2.0.0`` leads to some time overhead. See this issue: `xarray issue 2 <https://github.com/pydata/xarray/issues/9545>`_.
 
+For the newer zarr versions:
+
+- If you want to use zarr v3, you need to use ``xarray>2025.3.0``.
+- If you want to use ``zarr>3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
+
 Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
 and ``h5netcdf`` library as the backend.
 
