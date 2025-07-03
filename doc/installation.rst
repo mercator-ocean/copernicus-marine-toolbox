@@ -172,7 +172,7 @@ There are some compatibility issues with the latest versions of xarray and numpy
 
 For ``zarr>=3.0.0``:
 
-- If you want to use zarr v3, you need to use ``xarray>=2025.3.0``.
+- If you want to use ``zarr>=v3``, you need to use ``xarray>=2025.3.0``.
 - If you want to use ``zarr>=3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
 
 Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
