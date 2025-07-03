@@ -72,3 +72,6 @@ jobs:
     if: ${{ success()}}
     needs: [release-pypi-docker]
     uses: ./.github/workflows/push-docker-image.yml
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}
