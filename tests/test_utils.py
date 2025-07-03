@@ -18,12 +18,11 @@ class FileToCheck:
 
     def get_path(self) -> str:
         if platform.system() == "Windows":
-            # Convert to Windows path format if necessary
             return self.file_path.replace("/", "\\")
         return self.file_path
 
 
-def _remove_loggin_prefix(full_message: str) -> str:
+def _remove_logging_prefix(full_message: str) -> str:
     return full_message.split(" - ", 2)[2]
 
 
@@ -31,30 +30,15 @@ def remove_extra_logging_prefix_info(multi_line_message: str) -> str:
     if platform.system() == "Windows":
         multi_line_message = multi_line_message.rstrip("\r\n")
         return "\n".join(
-            map(_remove_loggin_prefix, multi_line_message.split("\r\n"))
+            map(_remove_logging_prefix, multi_line_message.split("\r\n"))
         )
     multi_line_message = multi_line_message.rstrip("\n")
     return "\n".join(
-        map(_remove_loggin_prefix, multi_line_message.split("\n"))
+        map(_remove_logging_prefix, multi_line_message.split("\n"))
     )
 
 
 FIVE_MINUTES = 5 * 60
-
-
-# def get_poetry_python() -> str:
-#     """Get the Python executable from the Poetry virtual environment"""
-#     try:
-#         result = subprocess.run(
-#             ["poetry", "env", "info", "--path"],
-#             capture_output=True,
-#             text=True,
-#             check=True,
-#         )
-#         venv_path = result.stdout.strip()
-#         return os.path.join(venv_path, "Scripts", "python.exe")
-#     except subprocess.CalledProcessError:
-#         return sys.executable
 
 
 def execute_in_terminal(
@@ -87,15 +71,10 @@ def execute_in_terminal(
 
         def windows_quote(arg):
             arg_str = str(arg)
-
-            # Characters that require quoting in Windows cmd
             special_chars = ' "&<>|^()!%/'
-
             if any(char in arg_str for char in special_chars):
-                # Escape existing quotes by doubling them
                 escaped = arg_str.replace('"', '""')
                 return f'"{escaped}"'
-
             return arg_str
 
         command_str = " ".join(windows_quote(arg) for arg in command)
