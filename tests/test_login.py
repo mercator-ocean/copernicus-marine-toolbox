@@ -151,7 +151,7 @@ class TestLogin:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
 
@@ -173,7 +173,7 @@ class TestLogin:
             "--password",
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         assert self.output.returncode == 0
         assert (
             "Valid credentials from input username and password"
@@ -270,7 +270,7 @@ class TestLogin:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
 
         assert self.output.returncode == 0
         environment_without_crendentials = (

@@ -3,8 +3,6 @@ import os
 import pathlib
 import platform
 import subprocess
-
-# import sys
 import time
 from subprocess import CompletedProcess
 from typing import Optional
@@ -46,15 +44,13 @@ def execute_in_terminal(
     timeout_second: float = FIVE_MINUTES,
     user_input: Optional[str] = None,
     env: Optional[dict[str, str]] = None,
-    shell: Optional[bool] = None,
-    execute_quoting: Optional[bool] = False,
+    shell: bool = True,
+    safe_quoting: bool = False,
 ) -> CompletedProcess[str]:
     t1 = time.time()
     command_to_print = " ".join([str(c) for c in command])
     logger.info(f"Running command: {command_to_print}...")
-    if shell is None:
-        shell = True
-    if platform.system() == "Windows" and not execute_quoting:
+    if platform.system() == "Windows" and not safe_quoting:
 
         output = subprocess.run(
             command,
@@ -67,7 +63,7 @@ def execute_in_terminal(
             shell=shell,
             errors="replace",
         )
-    elif platform.system() == "Windows" and execute_quoting:
+    elif platform.system() == "Windows" and safe_quoting:
 
         def windows_quote(arg):
             arg_str = str(arg)

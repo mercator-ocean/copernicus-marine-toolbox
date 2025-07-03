@@ -268,7 +268,7 @@ class TestCommandLineInterface:
             "--skip-existing",
         ]
 
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 3
@@ -607,7 +607,7 @@ class TestCommandLineInterface:
             f"{tmp_path}",
         ]
 
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
         assert len(downloaded_files) == 5
@@ -1097,7 +1097,7 @@ class TestCommandLineInterface:
             "DEBUG",
         ]
 
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         assert self.output.returncode == 0
         logger.info(self.output)
         assert "DEBUG - " in self.output.stderr
@@ -1577,7 +1577,7 @@ class TestCommandLineInterface:
 
         output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
 
-        self.output = execute_in_terminal(command, execute_quoting=True)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         print(f"Output filename: {self.output}")
         assert self.output.returncode == 0
         assert output_filename.is_file()
@@ -1623,7 +1623,7 @@ class TestCommandLineInterface:
             os.path.getmtime(output_file)
         ) < (five_minutes_ago)
 
-    def test_netcdf3_option_w_ncdump(self, tmp_path):
+    def test_netcdf3_option_with_ncdump(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
