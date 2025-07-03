@@ -180,7 +180,7 @@ class TestLongitudesWithModulus:
 
         assert self.output.returncode == 1
         assert self.output.stderr.endswith(
-            b"Minimum longitude greater than maximum longitude: "
-            b"--minimum-longitude option must be smaller or equal to "
-            b"--maximum-longitude\n"
+            "Minimum longitude greater than maximum longitude: "
+            "--minimum-longitude option must be smaller or equal to "
+            "--maximum-longitude\n"
         )

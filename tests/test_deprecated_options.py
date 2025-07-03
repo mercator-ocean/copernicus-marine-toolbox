@@ -12,7 +12,7 @@ class TestDeprecatedOptions:
         ]
         self.output = execute_in_terminal(command)
         assert (
-            b"'--motu-api-request' has been deprecated." in self.output.stderr
+            "'--motu-api-request' has been deprecated." in self.output.stderr
         )
 
     def test_motu_api_request_deprecated_api(self, caplog):
@@ -37,7 +37,7 @@ class TestDeprecatedOptions:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b"'--force-download' has been deprecated." in self.output.stderr
+        assert "'--force-download' has been deprecated." in self.output.stderr
 
     def test_force_download_deprecated_get(self):
         command = [
@@ -50,7 +50,7 @@ class TestDeprecatedOptions:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b"'--force-download' has been deprecated." in self.output.stderr
+        assert "'--force-download' has been deprecated." in self.output.stderr
 
     def test_force_download_deprecated_subset_python_interface(self, caplog):
         subset(

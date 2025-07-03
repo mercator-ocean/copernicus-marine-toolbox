@@ -187,12 +187,12 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert b"DEBUG" in self.output.stderr
+        assert "DEBUG" in self.output.stderr
         assert (
-            b"Lon lat subset not available in original grid datasets: "
-            b"You cannot specify longitude and latitude when using the"
-            b" 'originalGrid' dataset part. Try using ``--minimum-x``"
-            b", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
+            "Lon lat subset not available in original grid datasets: "
+            "You cannot specify longitude and latitude when using the"
+            " 'originalGrid' dataset part. Try using ``--minimum-x``"
+            ", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
             in self.output.stderr
         )
 
@@ -238,10 +238,10 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
-        assert b"DEBUG" in self.output.stderr
+        assert "DEBUG" in self.output.stderr
         assert (
-            b"Because you are using an originalGrid dataset, we are considering"
-            b" the options -x, -X, -y, -Y to be in m/km, not in degrees."
+            "Because you are using an originalGrid dataset, we are considering"
+            " the options -x, -X, -y, -Y to be in m/km, not in degrees."
         ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
@@ -277,7 +277,7 @@ class TestOriginalGridDatasets:
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
-        assert b"DEBUG" in self.output.stderr
+        assert "DEBUG" in self.output.stderr
         assert datetime_parser("2020-01-01") == datetime_parser(
             dataset.time.values[0]
         )
@@ -374,15 +374,15 @@ class TestOriginalGridDatasets:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b"WARNING" in self.output.stderr
+        assert "WARNING" in self.output.stderr
         assert (
-            b"Some of your subset selection [-100.0, 100.0] for the"
-            b" x dimension exceed the dataset coordinates [-36.0, 38.0]"
+            "Some of your subset selection [-100.0, 100.0] for the"
+            " x dimension exceed the dataset coordinates [-36.0, 38.0]"
             in self.output.stderr
         )
         assert (
-            b"Some of your subset selection [-100.0, 100.0] for the "
-            b"y dimension exceed the dataset coordinates [-43.0, 28.0]"
+            "Some of your subset selection [-100.0, 100.0] for the "
+            "y dimension exceed the dataset coordinates [-43.0, 28.0]"
             in self.output.stderr
         )
 
@@ -412,10 +412,10 @@ class TestOriginalGridDatasets:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        assert b"ERROR" in self.output.stderr
+        assert "ERROR" in self.output.stderr
         assert (
-            b"Some of your subset selection [-100.0, 100.0] for the y"
-            b" dimension exceed the dataset coordinates [-43.0, 28.0]"
+            "Some of your subset selection [-100.0, 100.0] for the y"
+            " dimension exceed the dataset coordinates [-43.0, 28.0]"
             in self.output.stderr
         )
 

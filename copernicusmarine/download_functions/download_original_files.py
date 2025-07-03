@@ -236,11 +236,9 @@ def _get_files_to_delete_with_sync(
 ) -> S3FilesDescriptor:
     if not files_information.s3_files:
         return files_information
-    product_structure = str(
-        _local_path_from_s3_url(
-            files_information.s3_files[0].filename_in, pathlib.Path("")
-        )
-    ).split("/")
+    product_structure = _local_path_from_s3_url(
+        files_information.s3_files[0].filename_in, pathlib.Path("")
+    ).parts
     product_id = product_structure[0]
     dataset_id = product_structure[1]
     dataset_level_local_folder = output_directory / product_id / dataset_id

@@ -135,7 +135,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         ]
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -153,7 +155,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
 
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -224,7 +228,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_datetime = dataset.time.values.min()
         max_datetime = dataset.time.values.max()
 
@@ -250,7 +256,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_elevation = dataset.longitude.values.min()
         max_elevation = dataset.longitude.values.max()
 
@@ -277,7 +285,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
+        dataset = xarray.open_dataset(
+            pathlib.Path(tmp_path, output_filename), engine="zarr"
+        )
         min_elevation = dataset.latitude.values.min()
         max_elevation = dataset.latitude.values.max()
 
