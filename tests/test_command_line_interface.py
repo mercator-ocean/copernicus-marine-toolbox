@@ -1971,7 +1971,12 @@ class TestCommandLineInterface:
             "--output-directory",
             f"{tmp_path}",
         ]
-        self.output = execute_in_terminal(command, timeout_second=80)
+        timeout = 70
+        import platform
+
+        if platform.system() == "Windows" or platform.system() == "Darwin":
+            timeout = 150
+        self.output = execute_in_terminal(command, timeout_second=timeout)
         assert self.output.returncode == 0
 
     def test_that_requested_interval_is_correct_w_weird_windowing(
