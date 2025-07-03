@@ -6,7 +6,7 @@ Patch release with bug fixes.
 General
 -------
 
-``zarr==3.0.9``introduced a bug that breaks the subset command. Please use ``copernicusmarine>=2.2.0`` to use ``zarr>=3.0.9``.
+``zarr==3.0.9`` introduced a bug that breaks the subset command. Please use ``copernicusmarine>=2.2.0``, when released, to use ``zarr>=3.0.9``.
 
 Fixes
 ^^^^^
