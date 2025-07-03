@@ -6,9 +6,6 @@ on:
       - "main"
       - "release/**"
       - "pre-releases/**"
-  pull_request:
-    branches:
-      - "main"
 
 jobs:
   tests:
