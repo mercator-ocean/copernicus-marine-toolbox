@@ -4,6 +4,10 @@ import responses
 from requests.exceptions import HTTPError
 
 from copernicusmarine import DatasetNotFound, ProductNotFound, describe, get
+from copernicusmarine.core_functions.marine_datastore_config import (
+    MARINE_DATASTORE_CONFIG_URL_CDN,
+    MARINE_DATASTORE_CONFIG_URL_DIRECT,
+)
 
 # noqa: E501
 
@@ -150,3 +154,19 @@ class TestSeveralMetadataCatalogues:
             assert False, "Should raise HTTPError"
         except HTTPError:
             pass
+
+    @responses.activate
+    def test_cdn_works_on_prod(self, caplog):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            responses.mock.passthru_prefixes = ("http://", "https://")
+            responses.add(
+                responses.GET,
+                MARINE_DATASTORE_CONFIG_URL_DIRECT,
+                json=None,
+                status=400,
+            )
+            _ = describe(
+                dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
+            )
+
+            assert MARINE_DATASTORE_CONFIG_URL_CDN in caplog.text

@@ -388,10 +388,13 @@ def parse_catalogue(
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     catalogue_config: CatalogueConfig,
+    catalogue_number: int,
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
-        total=2, desc="Fetching catalogue", disable=disable_progress_bar
+        total=2,
+        desc=f"Fetching catalogue {catalogue_number + 1}",
+        disable=disable_progress_bar,
     )
     dataset_product_mapping_url = catalogue_config.dataset_product_mapping_url
     with JsonParserConnection() as connection:

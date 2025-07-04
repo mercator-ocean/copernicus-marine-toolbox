@@ -19,7 +19,7 @@ MARINE_DATASTORE_CONFIG_URL_DIRECT = (
     or "https://s3.waw3-1.cloudferro.com/mdl-metadata/clientsConfigV1.json"
 )
 MARINE_DATASTORE_CONFIG_URL_STAGING = (
-    "https://stac-dta.marine.copernicus.eu/clientsConfigV1.json"
+    "https://stac-dta.marine.copernicus.eu/clients-config-v1"
 )
 
 MARINE_DATASTORE_SERVICES_MAPPING: dict[str, list[str]] = {
@@ -108,7 +108,7 @@ def _get_required_versions_and_config(
     mds_config: dict = {}
     try:
         with JsonParserConnection(
-            timeout=2, retries=0
+            timeout=2, retries=1
         ) as connection_without_retries:
             mds_config = connection_without_retries.get_json_file(
                 url_mds_versions,
@@ -117,6 +117,9 @@ def _get_required_versions_and_config(
         if staging:
             raise e
         else:
+            logger.debug(
+                f"Failed to get the configuration file from {url_mds_versions}. "
+            )
             with JsonParserConnection() as connection:
                 mds_config = connection.get_json_file(
                     MARINE_DATASTORE_CONFIG_URL_CDN,
