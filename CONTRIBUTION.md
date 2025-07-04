@@ -102,7 +102,7 @@ This case the steps are really similar except that you will need to create a bra
 
 #### Patch: Step 0
 
-Create a new branch from the `release/vX.Y` branch from a release tag.
+Create a new branch from the `release/vX.Y` branch from a release tag if it does not exist yet.
 
 ``` sh
 git fetch origin
@@ -156,7 +156,7 @@ Step 5 and step 6 are the same as before.
 
 ### Pre-releases
 
-If you want to create a pre-release the flow is very similarly as the patch releases above. Instead of creating a `release/vX.Y` branch from a tag, we create a `pre-release/VX.Y.Z` branch from main and then create releases from this branch (e.g. `vX.Y.Za0` or  `vX.Y.Zb1`).
+If you want to create a pre-release the flow is very similarly as the patch releases above. Instead of creating a `release/vX.Y` branch from a tag, we create a `pre-release/VX.Y.Z` branch from `main` and then create releases from this branch (e.g. `vX.Y.Za0` or  `vX.Y.Zb1`).
 
 > [!NOTE]
 > Pre-Releases are not released to conda forge
