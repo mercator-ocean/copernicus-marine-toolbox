@@ -1,27 +1,27 @@
 # serializer version: 1
-# name: TestCFCompliance.test_subset_open
+# name: TestCFCompliance.test_subset_open_cfcompliant
   'cmems_mod_nws_bgc-pft_my_7km-3D-pico_P1M-m'
 # ---
-# name: TestCFCompliance.test_subset_open.1
+# name: TestCFCompliance.test_subset_open_cfcompliant.1
   160
 # ---
-# name: TestCFCompliance.test_subset_open.2
+# name: TestCFCompliance.test_subset_open_cfcompliant.2
   160
 # ---
-# name: TestCFCompliance.test_subset_open.3
+# name: TestCFCompliance.test_subset_open_cfcompliant.3
   list([
   ])
 # ---
-# name: TestCFCompliance.test_subset_with_warns
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant
   'cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m'
 # ---
-# name: TestCFCompliance.test_subset_with_warns.1
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant.1
   135
 # ---
-# name: TestCFCompliance.test_subset_with_warns.2
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant.2
   136
 # ---
-# name: TestCFCompliance.test_subset_with_warns.3
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant.3
   list([
     '§2.6 Attributes',
     list([

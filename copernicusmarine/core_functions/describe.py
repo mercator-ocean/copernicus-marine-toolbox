@@ -34,7 +34,7 @@ def describe_function(
             "Data will come from the staging environment."
         )
     catalogues: list[CopernicusMarineCatalogue] = []
-    for catalogue_config in marine_datasetore_config.catalogues:
+    for i, catalogue_config in enumerate(marine_datasetore_config.catalogues):
         try:
             catalogue: CopernicusMarineCatalogue = parse_catalogue(
                 force_product_id=force_product_id,
@@ -42,6 +42,7 @@ def describe_function(
                 max_concurrent_requests=max_concurrent_requests,
                 disable_progress_bar=disable_progress_bar,
                 catalogue_config=catalogue_config,
+                catalogue_number=i,
             )
             catalogues.append(catalogue)
         except DatasetNotFound:

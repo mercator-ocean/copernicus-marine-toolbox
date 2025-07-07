@@ -2,6 +2,11 @@ name: Push Docker Image on DockerHub
 
 on:
   workflow_call:
+    secrets:
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_PUSH_TOKEN:
+        required: true
   workflow_dispatch:
 
 jobs:

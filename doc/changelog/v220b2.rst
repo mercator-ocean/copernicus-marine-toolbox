@@ -1,0 +1,23 @@
+Pre-Release 2.2.0b2
+====================
+
+Minor version release with bug fixes and improvements.
+
+.. warning::
+    This is a pre-release version. It is not recommended for production use.
+
+General
+-------
+
+Fixes
+^^^^^
+
+* Updated CONTRIBUTION.md to clarify release process.
+
+Describe
+---------
+
+New features
+^^^^^^^^^^^^^^^
+
+* Numbered the catalogues' progress bar's title not to be confused with the progress bars when there are mutliple catalogues.

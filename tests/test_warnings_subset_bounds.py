@@ -39,11 +39,11 @@ class TestWarningsSubsetBounds:
         )
         self.output = execute_in_terminal(command)
 
-        assert b"WARNING" in self.output.stderr
+        assert "WARNING" in self.output.stderr
         assert (
-            b"Some of your subset selection [-180.0, 180.0]"
-            b" for the longitude dimension exceed the dataset"
-            b" coordinates [-179.9791717529297, 179.9791717529297]"
+            "Some of your subset selection [-180.0, 180.0]"
+            " for the longitude dimension exceed the dataset"
+            " coordinates [-179.9791717529297, 179.9791717529297]"
         ) in self.output.stderr
 
     def test_subset_warnings_differently(self):
@@ -57,8 +57,8 @@ class TestWarningsSubsetBounds:
         self.output = execute_in_terminal(command)
 
         assert (
-            b"Some or all of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
+            "Some or all of your subset selection [-179.9, 179.9] for the longitude "
+            "dimension  exceed the dataset coordinates [-180.0, 179.91668701171875]"
         ) not in self.output.stderr
 
     def test_subset_warnings_when_surpassing(self):
@@ -78,14 +78,14 @@ class TestWarningsSubsetBounds:
         self.output2 = execute_in_terminal(command2)
 
         assert (
-            b"Some of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
+            "Some of your subset selection [-180.0, 180.0] for the longitude "
+            "dimension exceed the dataset coordinates "
+            "[-179.9791717529297, 179.9791717529297]"
         ) in self.output1.stderr
         assert (
-            b"Some of your subset selection [-179.99, 179.99] for the longitude "
-            b"dimension exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
+            "Some of your subset selection [-179.99, 179.99] for the longitude "
+            "dimension exceed the dataset coordinates "
+            "[-179.9791717529297, 179.9791717529297]"
         ) in self.output2.stderr
 
     def test_subset_strict_error(self):
@@ -101,17 +101,17 @@ class TestWarningsSubsetBounds:
         )
         self.output1 = execute_in_terminal(command1)
         self.output2 = execute_in_terminal(command2)
-        assert (b"ERROR") in self.output1.stderr
+        assert ("ERROR") in self.output1.stderr
         assert (
-            b"Some of your subset selection [-180.0, 180.0] for the longitude "
-            b"dimension exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
+            "Some of your subset selection [-180.0, 180.0] for the longitude "
+            "dimension exceed the dataset coordinates "
+            "[-179.9791717529297, 179.9791717529297]"
         ) in self.output1.stderr
-        assert (b"ERROR") not in self.output2.stderr
+        assert ("ERROR") not in self.output2.stderr
         assert (
-            b"Some of your subset selection [-179.9, 179.9] for the longitude "
-            b"dimension exceed the dataset coordinates "
-            b"[-179.9791717529297, 179.9791717529297]"
+            "Some of your subset selection [-179.9, 179.9] for the longitude "
+            "dimension exceed the dataset coordinates "
+            "[-179.9791717529297, 179.9791717529297]"
         ) not in self.output2.stderr
 
     def test_subset_handle_180_point_correctly(self):
@@ -121,9 +121,9 @@ class TestWarningsSubsetBounds:
             dataset_id, "thetao", -150, 180, "strict-inside"
         )
         self.output = execute_in_terminal(command)
-        assert (b"ERROR") not in self.output.stderr
+        assert ("ERROR") not in self.output.stderr
         assert (
-            b"Some or all of your subset selection"
+            "Some or all of your subset selection"
         ) not in self.output.stderr
 
     def test_warn_depth_out_of_dataset_bounds(self, tmp_path):
@@ -163,9 +163,9 @@ class TestWarningsSubsetBounds:
         output = execute_in_terminal(command)
 
         assert (
-            b"Some of your subset selection [0.4, 50.0] for the depth "
-            b"dimension exceed the dataset coordinates "
-            b"[0.49402499198913574, 5727.9169921875]"
+            "Some of your subset selection [0.4, 50.0] for the depth "
+            "dimension exceed the dataset coordinates "
+            "[0.49402499198913574, 5727.9169921875]"
         ) in output.stderr
 
     def test_warn_elevation_out_of_dataset_bounds(self, tmp_path):
@@ -208,9 +208,9 @@ class TestWarningsSubsetBounds:
         response_subset = loads(output.stdout)
 
         assert (
-            b"Some of your subset selection [0.4, 50.0] for the depth "
-            b"dimension exceed the dataset coordinates "
-            b"[0.49402499198913574, 5727.9169921875]"
+            "Some of your subset selection [0.4, 50.0] for the depth "
+            "dimension exceed the dataset coordinates "
+            "[0.49402499198913574, 5727.9169921875]"
         ) in output.stderr
         elevation_coordinates_extent = [
             extent
@@ -261,18 +261,18 @@ class TestWarningsSubsetBounds:
 
     def then_I_can_read_an_error_in_stdout(self):
         assert self.output.returncode == 1
-        assert b"ERROR" in self.output.stderr
+        assert "ERROR" in self.output.stderr
         assert (
-            b"Some of your subset selection [-19.0, -17.0] for "
-            b"the longitude dimension exceed the dataset coordinates"
+            "Some of your subset selection [-19.0, -17.0] for "
+            "the longitude dimension exceed the dataset coordinates"
         ) in self.output.stderr
 
     def then_I_can_read_a_warning_in_stdout(self):
         assert self.output.returncode == 0
-        assert b"WARNING" in self.output.stderr
+        assert "WARNING" in self.output.stderr
         assert (
-            b"Some of your subset selection [-19.0, -17.0] for "
-            b"the longitude dimension exceed the dataset coordinates"
+            "Some of your subset selection [-19.0, -17.0] for "
+            "the longitude dimension exceed the dataset coordinates"
         ) in self.output.stderr
 
     def test_subset_strict_method(self):

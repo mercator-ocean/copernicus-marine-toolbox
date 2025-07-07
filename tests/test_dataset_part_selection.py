@@ -16,7 +16,7 @@ class TestDatasetPartSelection:
 
         self.output = execute_in_terminal(command)
 
-        assert b'Selected dataset part: "history"' in self.output.stderr
+        assert 'Selected dataset part: "history"' in self.output.stderr
 
     def test_get_when_dataset_specified_part_does_not_exist(self):
         command = [
@@ -31,7 +31,7 @@ class TestDatasetPartSelection:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        assert b"Dataset version part not found:" in self.output.stderr
+        assert "Dataset version part not found:" in self.output.stderr
 
     def test_dataset_part_is_specifiable_in_python_with_get(self, caplog):
         copernicusmarine.get(

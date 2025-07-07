@@ -8,7 +8,10 @@ on:
 
 jobs:
   release-pypi-docker:
-    if: startsWith(github.event.head_commit.message, 'Copernicus Marine Toolbox Release')
+    if: >
+      github.event_name == 'push' &&
+      github.event.before != github.event.after &&
+      startsWith(github.event.head_commit.message, 'Copernicus Marine Toolbox Release')
     runs-on: self-hosted
     timeout-minutes: 20
 
@@ -69,3 +72,6 @@ jobs:
     if: ${{ success()}}
     needs: [release-pypi-docker]
     uses: ./.github/workflows/push-docker-image.yml
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PUSH_TOKEN: ${{ secrets.DOCKER_HUB_PUSH_TOKEN }}

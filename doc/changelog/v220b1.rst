@@ -1,0 +1,16 @@
+Pre-Release 2.2.0b1
+====================
+
+Minor version release with bug fixes and improvements.
+
+.. warning::
+    This is a pre-release version. It is not recommended for production use.
+
+
+Subset
+------
+
+Fixes
+^^^^^
+
+* Fixed a bug that introduced performance regressions in v2.1.x of the Toolbox for some subset requests. The code has been refactored to improve performance and the use of ``chunk-size-limit`` option should have more predictable effects.
