@@ -1,4 +1,4 @@
-Pre-Release 2.2.0b1
+Pre-Release 2.2.0b2
 ====================
 
 Minor version release with bug fixes and improvements.
