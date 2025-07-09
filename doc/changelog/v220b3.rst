@@ -1,0 +1,15 @@
+Pre-Release 2.2.0b3
+====================
+
+Minor version release with bug fixes and improvements.
+
+.. warning::
+    This is a pre-release version. It is not recommended for production use.
+
+Subset
+-------
+
+Fixes
+^^^^^
+
+* Small subsets between 0 and 100MB don't use dask chunking anymore.
