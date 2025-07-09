@@ -206,7 +206,6 @@ Domains required by the Copernicus Marine Toolbox
 ********************************************************
 To be able to use the Copernicus Marine Services, you need to be able to access those domains:
 
-- ``https://cmems-cas.cls.fr``: for the old authentication process.
 - ``https://auth.marine.copernicus.eu``: for the new authentication process.
 - ``https://s3.waw3-1.cloudferro.com``: for the data and the metadata.
 - ``https://s3.waw4-1.cloudferro.com``: for the data and the metadata.

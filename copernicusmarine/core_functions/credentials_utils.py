@@ -102,7 +102,7 @@ class CouldNotConnectToAuthenticationSystem(Exception):
     Please check the following common problems:
 
     - Check your internet connection
-    - Make sure to authorize ``cmems-cas.cls.fr`` and/or ``auth.marine.copernicus.eu`` domains
+    - Make sure to authorize ``auth.marine.copernicus.eu`` domain
 
     If none of this worked, maybe the authentication system is down, please try again later.
     """  # noqa
