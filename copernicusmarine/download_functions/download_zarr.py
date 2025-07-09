@@ -419,7 +419,7 @@ def get_optimum_dask_chunking(
     )
     if chunk_size_limit == -1:
         # TODO: investigate in depth what are the optimal values.
-        # For now, we use the default values that seems to work well
+        # For now, we use the default values that seem to work well
         # for our examples but we should investigate more.
         if zarr_chunks_to_download <= 50:
             return None
