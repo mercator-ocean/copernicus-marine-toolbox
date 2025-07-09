@@ -12,4 +12,4 @@ Subset
 Fixes
 ^^^^^
 
-* Small subsets between 0 and 100MB don't use dask chunking anymore.
+* Small subsets between 0 and 100MB don't use dask chunking anymore. Can cause some issues with dataset with a lot of variables.
