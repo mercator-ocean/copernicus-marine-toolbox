@@ -418,7 +418,10 @@ def get_optimum_dask_chunking(
         dataset_chunking.chunking_per_variable
     )
     if chunk_size_limit == -1:
-        if chunks_and_variables_size <= 50:
+        # TODO: investigate in depth what are the optimal values.
+        # For now, we use the default values that seems to work well
+        # for our examples but we should investigate more.
+        if chunks_and_variables_size <= 50 or zarr_chunks_to_download <= 30:
             return None
         elif chunks_and_variables_size <= 1500:
             chunk_size_limit = 20
