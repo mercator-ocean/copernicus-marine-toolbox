@@ -5,7 +5,7 @@ on:
     branches:
       - "main"
       - "release/**"
-      - "pre-releases/**"
+      - "pre-release/**"
 
 jobs:
   tests:
