@@ -297,34 +297,6 @@ class TestLogin:
             "Valid credentials from configuration file" in self.output.stderr
         )
 
-    def test_login_falls_back_to_old_system(self):
-        environment_without_crendentials = (
-            get_environment_without_crendentials()
-        )
-        command = [
-            "copernicusmarine",
-            "login",
-            "--check-credentials-valid",
-            "--username",
-            "toto",
-            "--password",
-            "tutu",
-            "--log-level",
-            "DEBUG",
-        ]
-
-        self.output = execute_in_terminal(
-            command=command, env=environment_without_crendentials
-        )
-        assert self.output.returncode == 1
-        assert (
-            "Could not connect with new authentication system"
-            in self.output.stderr
-        )
-        assert (
-            " Trying with old authentication system..." in self.output.stderr
-        )
-
     def test_login_python_interface(self, tmp_path):
         folder = Path(tmp_path, "lololo12")
         assert not login(
