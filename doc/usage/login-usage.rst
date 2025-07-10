@@ -17,11 +17,6 @@ The ``login`` command creates a configuration file called ``.copernicusmarine-cr
 
 If the ``.copernicusmarine-credentials`` file already exists, the system will ask for confirmation before overwriting it. You can also use option ``–-force-overwrite`` to skip confirmation.
 
-Old Copernius Marine authentication system
--------------------------------------------
-
-From 9th July 2025, the old Copernicus Marine authentication system is deprecated.
-
 Access points migration and evolution
 -------------------------------------
 
