@@ -176,7 +176,13 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert "WARNING" not in self.output.stderr
+        if "WARNING" in self.output.stderr:
+            assert (
+                "Using a pre-release or a non-official version of the client."
+                in self.output.stderr
+            )
+        else:
+            assert "WARNING" not in self.output.stderr
         assert "Skipping" not in self.output.stderr
         assert self.output.returncode == 0
 
