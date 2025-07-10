@@ -1,0 +1,31 @@
+Release 2.2.0
+====================
+
+This release focuses on improving the testing capabilities of the Toolbox.
+It also includes some new features and fixes.
+
+General
+-------
+
+New features
+^^^^^^^^^^^^^^^
+
+* Development has focused on testing capabilities of the Toolbox.
+
+  * Dependency tests now also run on MacOS and Windows.
+  * Integration tests also run on MacOS and Windows.
+  * Added coverage. See `copernicusmarine codecov page <https://app.codecov.io/gh/mercator-ocean/copernicus-marine-toolbox>`__.
+
+* Added a way for the Toolbox to fetch and parse metadata from several server locations. It makes the Toolbox more resilient to a data provider service outage. Please, check the :ref:`installation page <installation-page-domains>` as new domains might be used by the Toolbox.
+* Release constraint on ``zarr`` has been relaxed, now allowing ``zarr>=3.0.0``.
+
+Subset
+------
+
+Fixes
+^^^^^
+
+* Fixed an issue where along-track data would not be correctly parsed by ``arcosparse`` library. Upgraded to ``arcosparse==0.4.2`` to fix this issue.
+* Fixed an issue where the service (``arco-geo-series`` or ``arco-time-series``) of the subset command would be wrong in some edge cases.
+* Fixed a bug that introduced performance regressions in v2.1.x of the Toolbox for some subset requests. The code has been refactored to improve performance and the use of ``chunk-size-limit`` option should have more predictable effects.
+* Fixed an issue where ``zarr==3.0.9`` would raise an error when subsetting. The Toolbox now supports ``zarr>=3.0.0``.
