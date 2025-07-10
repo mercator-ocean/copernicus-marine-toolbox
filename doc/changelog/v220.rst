@@ -1,8 +1,8 @@
 Release 2.2.0
 ====================
 
-This released focused on improving the testing capabilities of the Toolbox.
-It also include some new features and fixes.
+This release focuses on improving the testing capabilities of the Toolbox.
+It also includes some new features and fixes.
 
 General
 -------
@@ -28,4 +28,4 @@ Fixes
 * Fixed an issue where along-track data would not be correctly parsed by ``arcosparse`` library. Upgraded to ``arcosparse==0.4.2`` to fix this issue.
 * Fixed an issue where the service (``arco-geo-series`` or ``arco-time-series``) of the subset command would be wrong in some edge cases.
 * Fixed a bug that introduced performance regressions in v2.1.x of the Toolbox for some subset requests. The code has been refactored to improve performance and the use of ``chunk-size-limit`` option should have more predictable effects.
-* Fixed an issue where ``zarr==3.0.9`` would raise an error when used with the Toolbox. The Toolbox now supports ``zarr>=3.0.0``.
+* Fixed an issue where ``zarr==3.0.9`` would raise an error when subsetting. The Toolbox now supports ``zarr>=3.0.0``.
