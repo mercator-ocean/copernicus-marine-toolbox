@@ -1,4 +1,4 @@
-Pre-Release 2.2.0
+Release 2.2.0
 ====================
 
 This released focused on improving the testing capabilities of the Toolbox.
