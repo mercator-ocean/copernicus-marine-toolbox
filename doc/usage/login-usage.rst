@@ -17,16 +17,10 @@ The ``login`` command creates a configuration file called ``.copernicusmarine-cr
 
 If the ``.copernicusmarine-credentials`` file already exists, the system will ask for confirmation before overwriting it. You can also use option ``–-force-overwrite`` to skip confirmation.
 
-New Copernius Marine authentication system
+Old Copernius Marine authentication system
 -------------------------------------------
 
-A new Copernius Marine authentication system will be released in the following months after the release of the Copernicus Marine Toolbox version 2.0.0.
-From 2.0.0, the toolbox should be able to handle both the old and the new authentication systems.
-
-If you are blocking some domains, you will need to authorize the domain ``auth.marine.copernicus.eu`` to be able to connect when the old system is decomissioned.
-
-.. note::
-    One of limitation of the old system is that it goes through HTTP (through redirections) and not HTTPS. The new system will use HTTPS only.
+From 9th July 2025, the old Copernicus Marine authentication system is deprecated.
 
 Access points migration and evolution
 -------------------------------------
