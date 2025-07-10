@@ -45,8 +45,7 @@ class TestLogin:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        # TODO: once we get rid of the old authentication system
-        # assert "Invalid username or password" in self.output.stderr
+        assert "Invalid username or password" in self.output.stderr
 
     def test_login_is_prompt_when_configuration_file_doest_not_exist(
         self, tmp_path
@@ -194,10 +193,10 @@ class TestLogin:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        # TODO: once we get rid of the old authentication system
-        # assert (
-        # "Invalid credentials from input username and password" in self.output.stderr
-        # )
+        assert (
+            "Invalid credentials from input username and password"
+            in self.output.stderr
+        )
 
     def check_credentials_username_password_env_var_are_wrong(self):
         command = [
@@ -220,8 +219,10 @@ class TestLogin:
             command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
-        # TODO: once we get rid of the old authentication system
-        # assert "Invalid credentials from environment variables" in self.output.stderr
+        assert (
+            "Invalid credentials from environment variables"
+            in self.output.stderr
+        )
 
     def check_credentials_username_password_env_var_are_valid(self):
         command = [
@@ -253,8 +254,7 @@ class TestLogin:
             command, env=environment_without_crendentials
         )
         assert self.output.returncode == 1
-        # TODO: once we get rid of the old authentication system
-        # assert "No credentials found." in self.output.stderr
+        assert "No credentials found." in self.output.stderr
 
     def check_credentials_file_is_valid(self, tmp_path):
         non_existing_directory = Path(tmp_path, "lolololo")
@@ -327,13 +327,12 @@ class TestLogin:
 
     def test_login_python_interface(self, tmp_path):
         folder = Path(tmp_path, "lololo12")
-        # TODO: once we get rid of the old authentication system
-        # assert not login(
-        #     username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
-        #     password="FAKEPASSWORD",
-        #     configuration_file_directory=folder,
-        #     force_overwrite=True,
-        # )
+        assert not login(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password="FAKEPASSWORD",
+            configuration_file_directory=folder,
+            force_overwrite=True,
+        )
 
         assert folder.is_dir() is False
         assert login(
@@ -347,12 +346,10 @@ class TestLogin:
         assert login(
             check_credentials_valid=True,
         )
-
-        # TODO: once we get rid of the old authentication system
-        # assert not login(
-        #     username="toto",
-        #     password="tutu",
-        # )
+        assert not login(
+            username="toto",
+            password="tutu",
+        )
 
     def test_login_with_netrc_file(self, tmp_path):
         for host in ACCEPTED_HOSTS_NETRC_FILE:
