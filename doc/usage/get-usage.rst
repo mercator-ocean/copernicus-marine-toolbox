@@ -10,23 +10,23 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --log-level DEBUG
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
 
 **Returns:**
 
 .. code-block:: bash
 
-    INFO - 2024-04-03T11:39:18Z - Dataset version was not specified, the latest one was selected: "202211"
-    INFO - 2024-04-03T11:39:18Z - Dataset part was not specified, the first one was selected: "default"
-    INFO - 2024-04-03T11:39:18Z - Service was not specified, the default one was selected: "original-files"
-    INFO - 2024-04-03T11:39:18Z - Downloading using service original-files...
-    DEBUG - 2024-04-03T11:39:19Z - You requested the download of the following files:
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_19930101_19931231_R20221101_RE01.nc - 8.83 MB - 2023-11-12T23:47:13Z
-    [...]
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc - 8.62 MB - 2023-11-12T23:47:14Z
-    Printed 20 out of 29 files
-
-    Total size of the download: 252.94 MB
+    INFO - 2025-07-10T13:11:13Z - Selected dataset version: "202211"
+    INFO - 2025-07-10T13:11:13Z - Selected dataset part: "default"
+    INFO - 2025-07-10T13:11:13Z - Listing files on remote server...
+    1it [00:00,  2.74it/s]
+    Downloading files: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 31/31 [00:25<00:00,  1.22it/s]
+    {
+      "number_of_files_to_download": 31,
+      "total_size": 258.66549015045166,
+      "status": "000",
+      "message": "The request was successful."
+    }
 
 **By default:**
 
