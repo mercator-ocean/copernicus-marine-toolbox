@@ -395,28 +395,28 @@ def _check_credentials_with_cas(
     }
     conn_session = get_configured_requests_session()
     logger.debug(f"POSTing credentials to {keycloak_url}...")
-    response = conn_session.post(
+    response_post = conn_session.post(
         keycloak_url, data=data, proxies=conn_session.proxies
     )
-    logger.debug(f"Response status code: {response.status_code}")
-    if response.status_code == 200:
-        token_response = response.json()
+    logger.debug(f"Response status code: {response_post.status_code}")
+    if response_post.status_code == 200:
+        token_response = response_post.json()
         access_token = token_response["access_token"]
         bearer_auth = BearerAuth(access_token)
         userinfo_url = COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT
         logger.debug(f"GETing {userinfo_url}...")
-        response = conn_session.get(
+        response_get = conn_session.get(
             userinfo_url, auth=bearer_auth, proxies=conn_session.proxies
         )
-        response.raise_for_status()
-        if response.status_code == 200:
-            response_json = response.json()
+        response_get.raise_for_status()
+        if response_get.status_code == 200:
+            response_json = response_get.json()
             return response_json["preferred_username"]
-    elif response.status_code == 401:
+    elif response_post.status_code == 401:
         # Invalid credentials
         return None
     else:
-        response.raise_for_status()
+        response_post.raise_for_status()
 
     conn_session.close()
     return None
@@ -428,7 +428,7 @@ def _validate_and_get_user(username: str, password: str) -> Union[str, None]:
         return result
     except Exception as e:
         logger.debug(
-            f"Could not connect with authentication system because of: {e}"
+            f"Could not connect with the authentication system because of: {e}"
         )
         raise CouldNotConnectToAuthenticationSystem()
 

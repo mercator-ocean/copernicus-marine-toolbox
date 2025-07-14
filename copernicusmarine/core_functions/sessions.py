@@ -59,7 +59,6 @@ def get_configured_boto3_session(
     return_ressources: bool = False,
 ) -> tuple[Any, Any]:
     config_boto3 = botocore.config.Config(
-        # s3={"addressing_style": "virtual"},
         signature_version=botocore.UNSIGNED,
         retries={"max_attempts": 10, "mode": "standard"},
     )
@@ -113,7 +112,15 @@ class ConfiguredRequestsSession(requests.Session):
                     max_retries=Retry(
                         total=retries,
                         backoff_factor=1,
-                        status_forcelist=[408, 429, 500, 502, 503, 504],
+                        status_forcelist=[
+                            408,
+                            429,
+                            500,
+                            502,
+                            503,
+                            504,
+                        ],
+                        allowed_methods=False,
                     )
                 ),
             )

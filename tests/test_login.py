@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
 
+import responses
+
 from copernicusmarine import login
 from copernicusmarine.core_functions.credentials_utils import (
     ACCEPTED_HOSTS_NETRC_FILE,
+    COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT,
     DEFAULT_CLIENT_CREDENTIALS_FILENAME,
     DEPRECATED_HOSTS,
+    CouldNotConnectToAuthenticationSystem,
 )
 from tests.test_utils import execute_in_terminal
 
@@ -443,3 +447,18 @@ class TestLogin:
             " and will be removed in future versions" in self.output.stderr
         )
         (credentials_file).unlink()
+
+    @responses.activate
+    def test_authentication_endpoint_not_available(self):
+        responses.add(
+            responses.POST,
+            COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT,
+            json=None,
+            status=503,
+        )
+
+        try:
+            login(username="toto", password="lololo")
+            assert True, "should raise before"
+        except CouldNotConnectToAuthenticationSystem:
+            pass
