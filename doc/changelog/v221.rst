@@ -1,0 +1,12 @@
+Release 2.2.1
+==============
+
+Patch release with bug fixes and improvements.
+
+Login
+------
+
+Fixes
+^^^^^
+
+* Deleted the code from the old authentication system. It fixes some issues where the error returned by the Toolbox was not the proper ones.

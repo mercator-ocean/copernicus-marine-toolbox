@@ -201,6 +201,8 @@ and ``h5netcdf`` library as the backend.
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
 
+.. _installation-page-domains:
+
 Domains required by the Copernicus Marine Toolbox
 ********************************************************
 To be able to use the Copernicus Marine Services, you need to be able to access those domains:
