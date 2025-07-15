@@ -256,6 +256,8 @@ When used, the toolbox will by default, send the full return response of the com
 See :ref:`Response types documentation <response-types>` for more information about the response you can expect.
 
 
+.. _log-level:
+
 Option ``--log-level``
 *********************************
 
