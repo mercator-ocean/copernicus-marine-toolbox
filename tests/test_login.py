@@ -459,6 +459,6 @@ class TestLogin:
 
         try:
             login(username="toto", password="lololo")
-            assert True, "should raise before"
+            assert False, "should raise before"
         except CouldNotConnectToAuthenticationSystem:
             pass
