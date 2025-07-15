@@ -26,6 +26,7 @@ def describe_function(
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
+    stop_at_failure: bool = False,
 ) -> CopernicusMarineCatalogue:
     marine_datasetore_config = get_config_and_check_version_describe(staging)
     if staging:
@@ -43,6 +44,7 @@ def describe_function(
                 disable_progress_bar=disable_progress_bar,
                 catalogue_config=catalogue_config,
                 catalogue_number=i,
+                stop_at_failure=stop_at_failure,
             )
             catalogues.append(catalogue)
         except DatasetNotFound:

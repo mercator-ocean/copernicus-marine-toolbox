@@ -219,7 +219,7 @@ def get_retrieval_service(
     platform_ids_subset: bool = False,
 ) -> RetrievalService:
     dataset_metadata = get_dataset_metadata(
-        dataset_id, marine_datastore_config
+        dataset_id, marine_datastore_config, stop_at_failure=False
     )
     if not dataset_metadata:
         raise KeyError(

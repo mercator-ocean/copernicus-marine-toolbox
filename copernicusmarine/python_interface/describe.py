@@ -21,6 +21,7 @@ def describe(
     max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
     staging: bool = False,
+    stop_at_failure: bool = False,
 ) -> CopernicusMarineCatalogue:
     """
     Retrieve and parse the metadata information from the Copernicus Marine catalogue.
@@ -39,6 +40,8 @@ def describe(
         Maximum number of concurrent requests (>=1). Default 15. The command uses a thread pool executor to manage concurrent requests.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
+    stop_at_failure : bool, optional
+        If set to True, the function will stop at the first failure encountered during the parsing of the catalogue.
 
     Returns
     -------
@@ -58,4 +61,5 @@ def describe(
         max_concurrent_requests,
         disable_progress_bar,
         staging=staging,
+        stop_at_failure=stop_at_failure,
     )

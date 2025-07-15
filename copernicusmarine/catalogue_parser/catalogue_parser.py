@@ -28,7 +28,9 @@ logger = logging.getLogger("copernicusmarine")
 
 
 def get_dataset_metadata(
-    dataset_id: str, marine_datastore_config: MarineDataStoreConfig
+    dataset_id: str,
+    marine_datastore_config: MarineDataStoreConfig,
+    stop_at_failure: bool = False,
 ) -> Optional[CopernicusMarineDataset]:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
@@ -118,7 +120,8 @@ def get_dataset_metadata(
             dataset_item
             for dataset_item in dataset_items
             if dataset_item.parsed_id == dataset_id
-        ]
+        ],
+        stop_at_failure=stop_at_failure,
     )
 
 
@@ -152,6 +155,7 @@ def _parse_product_json_to_pystac_collection(
 
 def _parse_and_sort_dataset_items(
     dataset_items: list[DatasetItem],
+    stop_at_failure: bool = False,
 ) -> Optional[CopernicusMarineDataset]:
     """
     Return all dataset metadata parsed and sorted.
@@ -179,7 +183,9 @@ def _parse_and_sort_dataset_items(
         digital_object_identifier=dataset_item_example.product_doi,
         versions=[],
     )
-    dataset_part_version_merged.parse_dataset_metadata_items(dataset_items)
+    dataset_part_version_merged.parse_dataset_metadata_items(
+        dataset_items, stop_at_failure=stop_at_failure
+    )
 
     if dataset_part_version_merged.versions == []:
         return None
@@ -190,6 +196,7 @@ def _parse_and_sort_dataset_items(
 
 def _construct_marine_data_store_product(
     stac_tuple: tuple[pystac.Collection, list[DatasetItem]],
+    stop_at_failure: bool = False,
 ) -> CopernicusMarineProduct:
     stac_product, dataset_items = stac_tuple
     stac_datasets_sorted = sorted(dataset_items, key=lambda x: x.item_id)
@@ -221,7 +228,8 @@ def _construct_marine_data_store_product(
                         product_doi=digital_object_identifier,
                     )
                     for dataset_item in dataset_items
-                ]
+                ],
+                stop_at_failure=stop_at_failure,
             )
         )
     ]
@@ -389,6 +397,7 @@ def parse_catalogue(
     disable_progress_bar: bool,
     catalogue_config: CatalogueConfig,
     catalogue_number: int,
+    stop_at_failure: bool = False,
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
@@ -429,7 +438,7 @@ def parse_catalogue(
         and (
             (
                 product_metadata := _construct_marine_data_store_product(
-                    product_item
+                    product_item, stop_at_failure
                 )
             ).datasets
         )
