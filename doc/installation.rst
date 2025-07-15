@@ -157,7 +157,6 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__ (1.26 or later)
 - `semver <https://python-semver.readthedocs.io/en/latest/>`__ (0.2 or later)
 - `pystac <https://pystac.readthedocs.io/en/stable/>`__ (1.8.3 or later)
-- `lxml <https://lxml.de/>`__ (4.9.0 or later)
 - `numpy <https://www.numpy.org/>`__ (1.23 or later)
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
@@ -201,6 +200,8 @@ and ``h5netcdf`` library as the backend.
 
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
+
+.. _installation-page-domains:
 
 Domains required by the Copernicus Marine Toolbox
 ********************************************************

@@ -7,7 +7,6 @@ from platform import system
 from typing import Literal, Optional, Union
 
 import click
-import lxml.html
 import requests
 
 from copernicusmarine.core_functions.environment_variables import (
@@ -53,11 +52,6 @@ COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT = (
     + "realms/MIS/protocol/openid-connect/userinfo"
 )
 
-COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_DOMAIN = "cmems-cas.cls.fr"
-
-COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_URL = (
-    f"https://{COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_DOMAIN}/cas/login"
-)
 ACCEPTED_HOSTS_NETRC_FILE = [
     "nrt.cmems-du.eu",
     "my.cmems-du.eu",
@@ -114,7 +108,7 @@ def _warning_netrc_deprecated_hosts():
     logger.warning(
         "The following hosts are deprecated and will be removed in future versions: "
         f"{DEPRECATED_HOSTS}. "
-        "Please update your netrc file to use the new authentication system domain: "
+        "Please update your netrc file to use the authentication system domain: "
         f"{COPERNICUS_MARINE_AUTH_SYSTEM_DOMAIN}."
     )
 
@@ -277,15 +271,6 @@ def _retrieve_credential_from_configuration_files(
     return credential
 
 
-def copernicusmarine_configuration_file_exists(
-    configuration_file_directory: pathlib.Path,
-) -> bool:
-    configuration_filename = pathlib.Path(
-        configuration_file_directory / DEFAULT_CLIENT_CREDENTIALS_FILENAME
-    )
-    return configuration_filename.exists()
-
-
 def copernicusmarine_validate_and_get_user(
     configuration_file: Optional[pathlib.Path],
     username: Optional[str],
@@ -389,44 +374,14 @@ def create_copernicusmarine_configuration_file(
     return configuration_filename, False
 
 
-def _check_credentials_with_old_cas(
-    username: str, password: str
-) -> Union[str, None]:
-    logger.debug("Checking user credentials with old cas...")
-    service = "copernicus-marine-client"
-    cmems_cas_login_url = (
-        f"{COPERNICUS_MARINE_MARINE_AUTH_OLD_SYSTEM_URL}?service={service}"
-    )
-    conn_session = get_configured_requests_session()
-    logger.debug(f"GETing {cmems_cas_login_url}...")
-    login_session = conn_session.get(
-        cmems_cas_login_url, proxies=conn_session.proxies
-    )
-    login_session.raise_for_status()
-    login_from_html = lxml.html.fromstring(login_session.text)
-    hidden_elements_from_html = login_from_html.xpath(
-        '//form//input[@type="hidden"]'
-    )
-    payload = {
-        he.attrib["name"]: he.attrib["value"]
-        for he in hidden_elements_from_html
-    }
-    payload["username"] = username
-    payload["password"] = password
-    logger.debug(f"POSTing credentials to {cmems_cas_login_url}...")
-    login_response = conn_session.post(
-        cmems_cas_login_url, data=payload, proxies=conn_session.proxies
-    )
-    login_response.raise_for_status()
-    login_success = 'class="success"' in login_response.text
-    logger.debug("User credentials checked")
-    conn_session.close()
-    return username if login_success else None
-
-
 def _check_credentials_with_cas(
     username: str, password: str
 ) -> Union[str, None]:
+    """
+    Check the credentials with the Copernicus Marine Authentication System (CAS).
+    Returns the username if the credentials are valid, None otherwise.
+    Raises if the connection to the authentication system fails.
+    """
     keycloak_url = COPERNICUS_MARINE_AUTH_SYSTEM_TOKEN_ENDPOINT
     client_id = "toolbox"
     scope = "openid profile email"
@@ -440,60 +395,45 @@ def _check_credentials_with_cas(
     }
     conn_session = get_configured_requests_session()
     logger.debug(f"POSTing credentials to {keycloak_url}...")
-    response = conn_session.post(
+    response_post = conn_session.post(
         keycloak_url, data=data, proxies=conn_session.proxies
     )
-    response.raise_for_status()
-    if response.status_code == 200:
-        token_response = response.json()
+    logger.debug(f"Response status code: {response_post.status_code}")
+    if response_post.status_code == 200:
+        token_response = response_post.json()
         access_token = token_response["access_token"]
         bearer_auth = BearerAuth(access_token)
         userinfo_url = COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT
         logger.debug(f"GETing {userinfo_url}...")
-        response = conn_session.get(
+        response_get = conn_session.get(
             userinfo_url, auth=bearer_auth, proxies=conn_session.proxies
         )
-        response.raise_for_status()
-        if response.status_code == 200:
-            response_json = response.json()
+        response_get.raise_for_status()
+        if response_get.status_code == 200:
+            response_json = response_get.json()
             return response_json["preferred_username"]
+    elif response_post.status_code == 401:
+        # Invalid credentials
+        return None
+    else:
+        response_post.raise_for_status()
+
     conn_session.close()
     return None
 
 
-def _are_copernicus_marine_credentials_valid_old_system(
-    username: str, password: str
-) -> Union[str, None]:
-    number_of_retry = 3
-    while number_of_retry > 0:
-        try:
-            user = _check_credentials_with_old_cas(
-                username=username, password=password
-            )
-            return user
-        except requests.exceptions.ConnectTimeout:
-            number_of_retry -= 1
-        except requests.exceptions.ConnectionError:
-            number_of_retry -= 1
-    raise CouldNotConnectToAuthenticationSystem()
-
-
 def _validate_and_get_user(username: str, password: str) -> Union[str, None]:
     try:
-        result = _get_user_new_system(username, password)
+        result = _get_user(username, password)
         return result
-
     except Exception as e:
         logger.debug(
-            f"Could not connect with new authentication system because of: {e}"
+            f"Could not connect with the authentication system because of: {e}"
         )
-        logger.debug("Trying with old authentication system...")
-        return _are_copernicus_marine_credentials_valid_old_system(
-            username, password
-        )
+        raise CouldNotConnectToAuthenticationSystem()
 
 
-def _get_user_new_system(username: str, password: str) -> Union[str, None]:
+def _get_user(username: str, password: str) -> Union[str, None]:
     number_of_retry = 3
     while number_of_retry > 0:
         try:

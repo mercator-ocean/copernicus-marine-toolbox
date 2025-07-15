@@ -86,13 +86,11 @@ def _check_version(function_name: str, staging: bool) -> MarineDataStoreConfig:
                     f"{service}. Service needs version {required_version}."
                 )
                 logger.error(create_error_message(required_version))
-                return marine_datastore_config
         except ValueError:
             logger.warning(
                 f"Using a pre-release or a non-official version "
                 f"of the client. Client version: {toolbox_version}"
             )
-            return marine_datastore_config
     return marine_datastore_config
 
 
