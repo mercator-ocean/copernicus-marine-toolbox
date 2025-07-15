@@ -20,7 +20,7 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
   INFO - 2025-07-10T13:18:03Z - Selected dataset part: "default"
   INFO - 2025-07-10T13:18:05Z - Starting download. Please wait...
   100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 44/44 [00:10<00:00,  4.03it/s]
-  INFO - 2025-07-10T13:18:16Z - Successfully downloaded to cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m_thetao-so_0.08E_28.00N-28.08N_0.51-5698.06m_2021-01-01-2021-01-03_(1).nc
+  INFO - 2025-07-10T13:18:16Z - Successfully downloaded to cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m_thetao-so_0.08E_28.00N-28.08N_0.51-5698.06m_2021-01-01-2021-01-03.nc
   {
     "file_size": 0.01414503816793893,
     "data_transfer_size": 422.5758778625954,
