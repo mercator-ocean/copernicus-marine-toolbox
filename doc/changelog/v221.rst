@@ -3,6 +3,14 @@ Release 2.2.1
 
 Patch release with bug fixes and improvements.
 
+General
+------
+
+Fixes
+^^^^^
+
+* Updated the documentation output for some commands.
+
 Login
 ------
 
