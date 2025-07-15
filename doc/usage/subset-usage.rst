@@ -28,7 +28,7 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
     "message": "The request was successful."
   }
 
-Using log level DEBUG, a summary of the dataset subset is displayed. It is by default displayed when using the ``--dry-run`` option.
+Using log level DEBUG, a summary of the dataset subset is displayed.
 
 .. _sparse-subset:
 
