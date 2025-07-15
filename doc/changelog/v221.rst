@@ -9,7 +9,7 @@ General
 Fixes
 ^^^^^
 
-* Updated the documentation output for some commands.
+* Updated the output of some commands in the documentation.
 
 Login
 ------
