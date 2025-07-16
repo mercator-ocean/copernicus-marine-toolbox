@@ -1,5 +1,5 @@
 MOCK_DATASET_ORIOL = {
-    "id": "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D",
+    "id": "dataset_de_loriol",
     "type": "Feature",
     "stac_version": "1.0.0",
     "stac_extensions": [
@@ -520,7 +520,7 @@ MOCK_DATASET_ORIOL = {
     "assets": {
         "native": {
             "id": "native",
-            "href": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012",
+            "href": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/dataset_de_loriol_202012",
             "type": "application/x-netcdf",
             "roles": ["data"],
             "title": "Native dataset",
@@ -528,7 +528,7 @@ MOCK_DATASET_ORIOL = {
         },
         "timeChunked": {
             "id": "timeChunked",
-            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/timeChunked.zarr",
+            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/dataset_de_loriol_202012/timeChunked.zarr",
             "type": "application/vnd+zarr",
             "roles": ["data"],
             "title": "Time-chunked dataset in Zarr",
@@ -979,7 +979,7 @@ MOCK_DATASET_ORIOL = {
         },
         "geoChunked": {
             "id": "geoChunked",
-            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/geoChunked.zarr",
+            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/dataset_de_loriol_202012/geoChunked.zarr",
             "type": "application/vnd+zarr",
             "roles": ["data"],
             "title": "Geo-chunked dataset in Zarr",
@@ -988,7 +988,7 @@ MOCK_DATASET_ORIOL = {
             "viewDims": {
                 "time": {
                     "chunkLen": {"chl": 72},
-                    "len": 368,
+                    "len": "Fail",  # Fail
                     "units": "milliseconds since 1970-01-01 00:00:00Z (no leap seconds)",
                     "coords": {
                         "type": "explicit",
@@ -1367,7 +1367,7 @@ MOCK_DATASET_ORIOL = {
                 "elevation": {
                     "chunkLen": {"chl": 2},
                     "len": 24,
-                    "units": "m",
+                    "units": None,  # Fail
                     "coords": {
                         "type": "explicit",
                         "values": [
