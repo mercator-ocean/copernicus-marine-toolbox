@@ -668,6 +668,14 @@ class CopernicusMarineDataset(BaseModel):
                 )
             except Exception as e:
                 if stop_at_failure:
+                    logger.error(
+                        f"Failed to parse part {dataset_item.parsed_part} "
+                        f"for dataset {dataset_item.parsed_id}.",
+                    )
+                    logger.error(
+                        "Stopping describe. "
+                        "Check option stop_at_failure if needed."
+                    )
                     raise e
                 else:
                     log_exception_debug(
@@ -675,8 +683,9 @@ class CopernicusMarineDataset(BaseModel):
                     )
                     logger.debug(
                         f"Failed to parse part {dataset_item.parsed_part} "
-                        f"for dataset {dataset_item.parsed_id}",
+                        f"for dataset {dataset_item.parsed_id}.",
                     )
+                    logger.debug("Skipping part.")
                     part = None
             if not part:
                 continue

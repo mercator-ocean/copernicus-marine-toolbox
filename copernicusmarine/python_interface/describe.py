@@ -52,7 +52,6 @@ def describe(
 
     if not isinstance(contains, list):
         raise ValueError("contains must be of list type")
-
     return describe_function(
         show_all_versions,
         contains,
