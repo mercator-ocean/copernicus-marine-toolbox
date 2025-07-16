@@ -10,32 +10,25 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
 
 .. code-block:: bash
 
-    copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --log-level DEBUG
+    copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
 
 **Returns:**
 
 .. code-block:: bash
 
-    DEBUG - 2024-04-03T10:18:18Z - <xarray.Dataset> Size: 3kB
-    Dimensions:    (depth: 50, latitude: 2, longitude: 1, time: 3)
-    Coordinates:
-      * depth      (depth) float32 200B 0.5058 1.556 2.668 ... 5.292e+03 5.698e+03
-      * latitude   (latitude) float32 8B 28.0 28.08
-      * longitude  (longitude) float32 4B 0.08333
-      * time       (time) datetime64[ns] 24B 2021-01-01 2021-01-02 2021-01-03
-    Data variables:
-        thetao     (time, depth, latitude, longitude) float32 1kB dask.array<chunksize=(3, 1, 2, 1), meta=np.ndarray>
-        so         (time, depth, latitude, longitude) float32 1kB dask.array<chunksize=(3, 1, 2, 1), meta=np.ndarray>
-    Attributes: (12/20)
-        Conventions:               CF-1.0
-        bulletin_date:             2020-12-01
-        references:                http://marine.copernicus.eu
-        copernicusmarine_version:  1.1.0
-    INFO - 2024-04-03T10:18:18Z - Estimated size of the dataset file is 0.002 MB.
-    Estimated size of the data that needs to be downloaded to obtain the result: 207 MB
-    This a very rough estimation and usually its higher than the actual size of the data that needs to be downloaded.
+  INFO - 2025-07-10T13:18:03Z - Selected dataset version: "202012"
+  INFO - 2025-07-10T13:18:03Z - Selected dataset part: "default"
+  INFO - 2025-07-10T13:18:05Z - Starting download. Please wait...
+  100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 44/44 [00:10<00:00,  4.03it/s]
+  INFO - 2025-07-10T13:18:16Z - Successfully downloaded to cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m_thetao-so_0.08E_28.00N-28.08N_0.51-5698.06m_2021-01-01-2021-01-03.nc
+  {
+    "file_size": 0.01414503816793893,
+    "data_transfer_size": 422.5758778625954,
+    "status": "000",
+    "message": "The request was successful."
+  }
 
-Using log level DEBUG, a summary of the dataset subset is displayed. It is by default displayed when using the ``--dry-run`` option.
+Using log level DEBUG, a summary of the dataset subset is displayed. Check the :ref:`documentation about log-level option <log-level>` for more information.
 
 .. _sparse-subset:
 
