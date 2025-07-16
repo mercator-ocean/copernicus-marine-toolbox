@@ -1,5 +1,7 @@
+import logging
 import re
 from json import loads
+from unittest import mock
 
 from copernicusmarine import (
     CopernicusMarineCatalogue,
@@ -10,6 +12,9 @@ from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     REGEX_PATTERN_DATE_YYYYMM,
     VERSION_DEFAULT,
+)
+from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata import (  # noqa: E501
+    mocked_stac_requests_get,
 )
 from tests.test_utils import execute_in_terminal
 
@@ -79,6 +84,32 @@ class TestDescribe:
                 for version in dataset["versions"]:
                     for part in version["parts"]:
                         assert "services" not in part
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_stop_at_failure(self, caplog):
+        with caplog.at_level(logging.DEBUG):
+            try:
+                describe(
+                    stop_at_failure=True,
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert True
+                assert "Failed to parse part" in caplog.text
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_without_stop_at_failure(self, caplog):
+        with caplog.at_level(logging.DEBUG):
+            describe(
+                stop_at_failure=False,
+            )
+            assert "Failed to parse part" in caplog.text
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
