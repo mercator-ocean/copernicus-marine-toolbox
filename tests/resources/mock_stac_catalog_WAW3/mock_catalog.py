@@ -30,11 +30,5 @@ MOCK_STAC_CATALOG = {
             "title": "NWSHELF_MULTIYEAR_BGC_004_011",
             "type": "application/json",
         },
-        {
-            "rel": "child",
-            "href": "SEALEVEL_GLO_PHY_L4_NRT_008_046/product.stac.json",
-            "title": "SEALEVEL_GLO_PHY_L4_NRT_008_046",
-            "type": "application/json",
-        },
     ],
 }

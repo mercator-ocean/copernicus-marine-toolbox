@@ -1175,4 +1175,5 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "osisaf_obs-si_glo_phy-siedge_nrt_sh-P1D": "SEAICE_GLO_SEAICE_L4_NRT_OBSERVATIONS_011_001",
     "osisaf_obs-si_glo_phy-sitype_nrt_nh-P1D": "SEAICE_GLO_SEAICE_L4_NRT_OBSERVATIONS_011_001",
     "osisaf_obs-si_glo_phy-sitype_nrt_sh-P1D": "SEAICE_GLO_SEAICE_L4_NRT_OBSERVATIONS_011_001",
+    "dataset_de_loriol": "NWSHELF_MULTIYEAR_BGC_004_011",
 }

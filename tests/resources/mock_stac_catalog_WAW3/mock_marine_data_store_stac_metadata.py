@@ -133,8 +133,8 @@ def mocked_stac_requests_get(*args, **kwargs):
     ):
         return MockResponse(MOCK_DATASET_IN_PREP, 200)
     elif (
-        args[0] == f"{BASE_URL_WAW3}SEALEVEL_GLO_PHY_L4_NRT_008_046/"
-        f"cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D_202311/"
+        args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
+        f"dataset_de_loriol/"
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_ORIOL, 200)
