@@ -108,6 +108,13 @@ def cli_describe() -> None:
     is_flag=True,
     hidden=True,
 )
+@click.option(
+    "--stop-at-failure",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help=documentation_utils.DESCRIBE["STOP_AT_FAILURE_HELP"],
+)
 @log_exception_and_exit
 def describe(
     show_all_versions: bool,
@@ -120,6 +127,7 @@ def describe(
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
+    stop_at_failure: bool = False,
 ) -> None:
     if log_level == "QUIET":
         logger.disabled = True
@@ -138,6 +146,7 @@ def describe(
         max_concurrent_requests,
         disable_progress_bar,
         staging,
+        stop_at_failure,
     )
     include_query, exclude_query = _create_include_and_exclude(
         return_fields,
