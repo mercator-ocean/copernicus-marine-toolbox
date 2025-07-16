@@ -27,6 +27,9 @@ from tests.resources.mock_stac_catalog_WAW3.mock_dataset_NWSHELF_P1D_m_202012 im
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_NWSHELF_P1M_m_202012 import (
     MOCK_DATASET_NWSHELF_P1M_M_202012,
 )
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_oriol import (
+    MOCK_DATASET_ORIOL,
+)
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_product_id_mapping import (
     MOCK_DATASET_PRODUCT_ID_MAPPING,
 )
@@ -76,6 +79,8 @@ def mocked_stac_requests_get(*args, **kwargs):
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
+
+    print(args)
 
     if args[0] == CATALOG_URLS[1]:
         return MockResponse(MOCK_STAC_CATALOG_WAW3, 200)
@@ -127,6 +132,12 @@ def mocked_stac_requests_get(*args, **kwargs):
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_IN_PREP, 200)
+    elif (
+        args[0] == f"{BASE_URL_WAW3}SEALEVEL_GLO_PHY_L4_NRT_008_046/"
+        f"cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D_202311/"
+        f"dataset.stac.json"
+    ):
+        return MockResponse(MOCK_DATASET_ORIOL, 200)
 
     elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
         return MockResponse({"preferred_username": "copernicususer"}, 200)
