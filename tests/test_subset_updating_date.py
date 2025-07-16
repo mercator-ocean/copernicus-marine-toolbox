@@ -36,7 +36,7 @@ class TestSubsetUpdatingDate:
         side_effect=mocked_stac_requests_get,
     )
     def test_no_raise(self, snapshot, caplog):
-        with caplog.at_level(logging.DEBUG):
+        with caplog.at_level(logging.INFO):
             subset(
                 dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
                 start_datetime="2023-01-01",
