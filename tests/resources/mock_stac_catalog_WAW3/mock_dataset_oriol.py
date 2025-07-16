@@ -467,7 +467,7 @@ MOCK_DATASET_ORIOL = {
                 "id": "chl",
                 "dimensions": ["time", "elevation", "latitude", "longitude"],
                 "type": "data",
-                "unit": "mg m-3",
+                "unit": 3,
                 "standardName": "mass_concentration_of_chlorophyll_a_in_sea_water",
                 "abbreviation": "chl",
                 "name": {

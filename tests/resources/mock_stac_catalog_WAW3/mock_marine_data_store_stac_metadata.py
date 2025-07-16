@@ -80,8 +80,6 @@ def mocked_stac_requests_get(*args, **kwargs):
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
 
-    print(args)
-
     if args[0] == CATALOG_URLS[1]:
         return MockResponse(MOCK_STAC_CATALOG_WAW3, 200)
     elif args[0] == CATALOG_URLS[0]:
@@ -134,7 +132,7 @@ def mocked_stac_requests_get(*args, **kwargs):
         return MockResponse(MOCK_DATASET_IN_PREP, 200)
     elif (
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
-        f"dataset_de_loriol/"
+        f"dataset_de_loriol_202012/"
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_ORIOL, 200)

@@ -89,7 +89,7 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_stop_at_failure(self, caplog):
+    def test_describe_with_stop_at_failure(self, argument, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
                 describe(
@@ -98,19 +98,20 @@ class TestDescribe:
                 assert False, "Expected an exception to be raised"
             except Exception:
                 assert True
-                # assert "Failed to parse part" in caplog.text
+                assert "Stopping describe" in caplog.text
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_without_stop_at_failure(self, caplog):
+    def test_describe_without_stop_at_failure(self, argument, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             describe(
                 stop_at_failure=False,
                 show_all_versions=True,
             )
             assert "Failed to parse part" in caplog.text
+            assert "Skipping part." in caplog.text
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
