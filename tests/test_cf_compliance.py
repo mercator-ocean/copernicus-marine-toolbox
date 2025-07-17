@@ -6,6 +6,7 @@ import xarray
 
 from copernicusmarine import ResponseSubset, subset
 from tests.test_utils import (
+    FileToCheck,
     execute_in_terminal,
     main_checks_when_file_is_downloaded,
 )
@@ -114,10 +115,10 @@ class TestCFCompliance:
                 engine="netcdf4",
             )
         cf_convention = get_cf_convention(dataset)
-        result_compliance_path = (
+        result_compliance_path = FileToCheck(
             f"{response_subset.output_directory}"
             f"/{dataset_id}_cf_complicance_checked.json"
-        )
+        ).get_path()
         command = [
             "compliance-checker",
             f"--test=cf:{cf_convention}",
