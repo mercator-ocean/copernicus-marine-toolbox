@@ -1,4 +1,6 @@
 import json
+import re
+from pathlib import Path
 
 import xarray
 
@@ -7,6 +9,22 @@ from tests.test_utils import (
     execute_in_terminal,
     main_checks_when_file_is_downloaded,
 )
+
+
+def get_cf_convention(dataset: xarray.Dataset) -> str:
+    conventions = dataset.attrs.get("Conventions")
+    if conventions:
+        pattern = r"CF-(\d+\.\d+)"
+        match = re.search(pattern, conventions)
+        if match:
+            cf_convention = match.group(1)
+        else:
+            cf_convention = "1.6"
+    else:
+        cf_convention = "1.6"
+    if cf_convention < "1.6":
+        cf_convention = "1.6"
+    return cf_convention
 
 
 class TestCFCompliance:
@@ -43,6 +61,13 @@ class TestCFCompliance:
             dataset_id,
             response,
             snapshot,
+            delete_attributes=[
+                "instrument",
+                "instrument_type",
+                "platform",
+                "platform_type",
+                "band",
+            ],
         )
 
     def if_i_subset_a_dataset(
@@ -71,13 +96,28 @@ class TestCFCompliance:
         dataset_id: str,
         response_subset: ResponseSubset,
         snapshot,
+        delete_attributes: list[str] = [],
     ) -> None:
         dataset = xarray.open_dataset(response_subset.file_path)
-        cf_convention = dataset.attrs["Conventions"][-3:]
-        if cf_convention < "1.6":
-            cf_convention = "1.6"
-        result_compliance_path = f"{response_subset.output_directory}"
-        f"/{dataset_id}_cf_complicance_checked.json"
+        # delete attributes is a fix for this issue:
+        # https://github.com/ioos/compliance-checker/issues/1082
+        for attr in delete_attributes:
+            if attr in dataset.attrs:
+                del dataset.attrs[attr]
+        if delete_attributes:
+            response_subset.file_path = Path(
+                f"{response_subset.file_path}tmp.nc"
+            )
+            dataset.to_netcdf(
+                response_subset.file_path,
+                format="NETCDF4",
+                engine="netcdf4",
+            )
+        cf_convention = get_cf_convention(dataset)
+        result_compliance_path = (
+            f"{response_subset.output_directory}"
+            f"/{dataset_id}_cf_complicance_checked.json"
+        )
         command = [
             "compliance-checker",
             f"--test=cf:{cf_convention}",

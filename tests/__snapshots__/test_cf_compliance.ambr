@@ -33,3 +33,21 @@
     ]),
   ])
 # ---
+# name: TestCFCompliance.test_valid_ranges_correct
+  'cmems_obs-sst_glo_phy_l3s_pir_P1D-m'
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct.1
+  215
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct.2
+  217
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct.3
+  list([
+    '§7.3 Cell Methods',
+    list([
+      "sea_surface_temperature's cell_methods name component lat does not match a dimension, area or auxiliary coordinate",
+      "sea_surface_temperature's cell_methods name component lon does not match a dimension, area or auxiliary coordinate",
+    ]),
+  ])
+# ---
