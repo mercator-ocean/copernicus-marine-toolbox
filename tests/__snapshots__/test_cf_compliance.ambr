@@ -3,23 +3,27 @@
   'cmems_mod_nws_bgc-pft_my_7km-3D-pico_P1M-m'
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.1
-  160
+  168
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.2
-  160
+  169
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.3
   list([
+    '§2.3 Naming Conventions',
+    list([
+      'global attribute netcdf-version-id should begin with a letter and be composed of letters, digits, and underscores',
+    ]),
   ])
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant
   'cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m'
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.1
-  135
+  182
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.2
-  136
+  183
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.3
   list([
