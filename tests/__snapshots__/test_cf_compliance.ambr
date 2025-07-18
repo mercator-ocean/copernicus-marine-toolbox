@@ -33,16 +33,16 @@
     ]),
   ])
 # ---
-# name: TestCFCompliance.test_valid_ranges_correct
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant
   'cmems_obs-sst_glo_phy_l3s_pir_P1D-m'
 # ---
-# name: TestCFCompliance.test_valid_ranges_correct.1
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.1
   215
 # ---
-# name: TestCFCompliance.test_valid_ranges_correct.2
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.2
   217
 # ---
-# name: TestCFCompliance.test_valid_ranges_correct.3
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.3
   list([
     '§7.3 Cell Methods',
     list([
