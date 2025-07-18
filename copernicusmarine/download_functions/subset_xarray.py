@@ -451,7 +451,7 @@ def _get_variable_name_from_standard_name(
     return None
 
 
-def _adequate_dtypes_of_valid_minmax(
+def _cast_valid_minmax_to_variable_dtype(
     dataset: xarray.Dataset, variable: str
 ) -> xarray.Dataset:
     dataset[variable].attrs["valid_min"] = numpy.array(
@@ -465,7 +465,9 @@ def _adequate_dtypes_of_valid_minmax(
     return dataset
 
 
-def _adequate_dtypes_of_valid_range(dataset: xarray.Dataset, variable: str):
+def _cast_valid_range_to_variable_dtype(
+    dataset: xarray.Dataset, variable: str
+) -> xarray.Dataset:
     dataset[variable].attrs["valid_range"] = numpy.array(
         dataset[variable].attrs["valid_range"],
     ).astype(dataset[variable].encoding["dtype"])
@@ -480,9 +482,9 @@ def _update_variables_attributes(
             "valid_min" in dataset[variable].attrs
             and "valid_max" in dataset[variable].attrs
         ):
-            _adequate_dtypes_of_valid_minmax(dataset, variable)
+            _cast_valid_minmax_to_variable_dtype(dataset, variable)
         if "valid_range" in dataset[variable].attrs:
-            _adequate_dtypes_of_valid_range(dataset, variable)
+            _cast_valid_range_to_variable_dtype(dataset, variable)
     return dataset
 
 

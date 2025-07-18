@@ -49,7 +49,7 @@ class TestCFCompliance:
             snapshot,
         )
 
-    def test_valid_ranges_correct(self, tmp_path, snapshot):
+    def test_valid_ranges_correct_cfcompliant(self, tmp_path, snapshot):
         dataset_id = "cmems_obs-sst_glo_phy_l3s_pir_P1D-m"
         response = self.if_i_subset_a_dataset(
             dataset_id,
