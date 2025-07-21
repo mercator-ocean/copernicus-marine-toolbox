@@ -89,16 +89,37 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_stop_at_failure(self, argument, caplog):
+    def test_describe_with_stop_at_failure_error_in_stac(
+        self, argument, caplog
+    ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
                 describe(
                     stop_at_failure=True,
+                    product_id="NWSHELF_MULTIYEAR_BGC_004_011",
                 )
                 assert False, "Expected an exception to be raised"
             except Exception:
                 assert True
                 assert "Stopping describe" in caplog.text
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_stop_at_failure_unavailable_dataset(
+        self, argument, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    stop_at_failure=True,
+                    product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert True
+                assert "Failed to fetch or parse JSON for URL:" in caplog.text
 
     @mock.patch(
         "requests.Session.get",
@@ -112,6 +133,7 @@ class TestDescribe:
             )
             assert "Failed to parse part" in caplog.text
             assert "Skipping part." in caplog.text
+            assert "Failed to fetch or parse JSON for URL:" in caplog.text
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]

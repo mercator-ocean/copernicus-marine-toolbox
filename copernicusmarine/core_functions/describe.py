@@ -26,7 +26,7 @@ def describe_function(
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
-    stop_at_failure: bool = False,
+    stop_at_failure: bool,
 ) -> CopernicusMarineCatalogue:
     marine_datasetore_config = get_config_and_check_version_describe(staging)
     if staging:

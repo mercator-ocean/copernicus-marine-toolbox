@@ -60,8 +60,8 @@ MOCK_PRODUCT_NWSHELF = {
         },
         {
             "rel": "item",  # fake item
-            "href": "dataset_de_loriol_202012/dataset.stac.json",
-            "title": "dataset_de_loriol_202012",
+            "href": "dataset_w_errors_202012/dataset.stac.json",
+            "title": "dataset_w_errors_202012",
             "type": "application/json",
         },
         {

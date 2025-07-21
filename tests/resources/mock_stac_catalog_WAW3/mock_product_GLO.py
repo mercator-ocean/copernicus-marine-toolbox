@@ -89,6 +89,12 @@ MOCK_PRODUCT_GLO = {
             "type": "application/json",
         },
         {
+            "rel": "item",  # unavailable item
+            "href": "unavailable_dataset_202012/dataset.stac.json",
+            "title": "unavailable_dataset_202012",
+            "type": "application/json",
+        },
+        {
             "rel": "item",
             "href": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/dataset.stac.json",
             "title": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211",

@@ -1,5 +1,5 @@
-MOCK_DATASET_ORIOL = {
-    "id": "dataset_de_loriol",
+MOCK_DATASET_W_ERRORS = {
+    "id": "dataset_w_errors",
     "type": "Feature",
     "stac_version": "1.0.0",
     "stac_extensions": [
@@ -493,7 +493,7 @@ MOCK_DATASET_ORIOL = {
         },
         "admp_in_preparation": False,
         "admp_updated": "2024-02-28T19:50:33.119183Z",
-        "admp_released_date": "2060-02-28T19:49:29.817792Z",  # here manually modified
+        "admp_released_date": None,
         "admp_updating_start_date": "2023-05-01T00:00:00Z",
         "admp_retired_date": None,
     },
@@ -520,7 +520,7 @@ MOCK_DATASET_ORIOL = {
     "assets": {
         "native": {
             "id": "native",
-            "href": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/dataset_de_loriol_202012",
+            "href": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/dataset_w_errors_202012",
             "type": "application/x-netcdf",
             "roles": ["data"],
             "title": "Native dataset",
@@ -528,7 +528,7 @@ MOCK_DATASET_ORIOL = {
         },
         "timeChunked": {
             "id": "timeChunked",
-            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/dataset_de_loriol_202012/timeChunked.zarr",
+            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/dataset_w_errors_202012/timeChunked.zarr",
             "type": "application/vnd+zarr",
             "roles": ["data"],
             "title": "Time-chunked dataset in Zarr",
@@ -979,7 +979,7 @@ MOCK_DATASET_ORIOL = {
         },
         "geoChunked": {
             "id": "geoChunked",
-            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/dataset_de_loriol_202012/geoChunked.zarr",
+            "href": "https://s3.waw3-1.cloudferro.com/mdl-arco-geo-041/arco/NWSHELF_MULTIYEAR_BGC_004_011/dataset_w_errors_202012/geoChunked.zarr",
             "type": "application/vnd+zarr",
             "roles": ["data"],
             "title": "Geo-chunked dataset in Zarr",

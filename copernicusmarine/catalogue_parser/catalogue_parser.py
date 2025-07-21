@@ -17,6 +17,9 @@ from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     get_version_and_part_from_full_dataset_id,
 )
+from copernicusmarine.command_line_interface.exception_handler import (
+    log_exception_debug,
+)
 from copernicusmarine.core_functions.marine_datastore_config import (
     CatalogueConfig,
     MarineDataStoreConfig,
@@ -155,7 +158,7 @@ def _parse_product_json_to_pystac_collection(
 
 def _parse_and_sort_dataset_items(
     dataset_items: list[DatasetItem],
-    stop_at_failure: bool = False,
+    stop_at_failure: bool,
 ) -> Optional[CopernicusMarineDataset]:
     """
     Return all dataset metadata parsed and sorted.
@@ -196,7 +199,7 @@ def _parse_and_sort_dataset_items(
 
 def _construct_marine_data_store_product(
     stac_tuple: tuple[pystac.Collection, list[DatasetItem]],
-    stop_at_failure: bool = False,
+    stop_at_failure: bool,
 ) -> CopernicusMarineProduct:
     stac_product, dataset_items = stac_tuple
     stac_datasets_sorted = sorted(dataset_items, key=lambda x: x.item_id)
@@ -283,6 +286,7 @@ def fetch_dataset_items(
     connection: JsonParserConnection,
     collection: pystac.Collection,
     force_dataset_id: Optional[str],
+    stop_at_failure: bool,
 ) -> list[DatasetItem]:
     items: list[DatasetItem] = []
     for link in collection.get_item_links():
@@ -292,7 +296,14 @@ def fetch_dataset_items(
         if force_dataset_id and force_dataset_id not in link.href:
             continue
         url = root_url + "/" + link.owner.id + "/" + link.href
-        item_json = connection.get_json_file(url)
+        try:
+            item_json = connection.get_json_file(url)
+        except Exception as e:
+            logger.debug(f"Failed to fetch or parse JSON for URL: {url}")
+            if stop_at_failure:
+                raise e
+            log_exception_debug(e)
+            continue
         item = _parse_dataset_json_to_pystac_item(item_json)
         if item:
             (
@@ -320,12 +331,13 @@ def fetch_collection(
     connection: JsonParserConnection,
     url: str,
     force_dataset_id: Optional[str],
+    stop_at_failure: bool,
 ) -> Optional[tuple[pystac.Collection, list[DatasetItem]]]:
     json_collection = connection.get_json_file(url)
     collection = _parse_product_json_to_pystac_collection(json_collection)
     if collection:
         items = fetch_dataset_items(
-            root_url, connection, collection, force_dataset_id
+            root_url, connection, collection, force_dataset_id, stop_at_failure
         )
         return (collection, items)
     return None
@@ -339,13 +351,20 @@ def fetch_product_items(
     force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
+    stop_at_failure: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
     tasks = []
     for link in child_links:
         if force_product_id and force_product_id not in link.href:
             continue
         tasks.append(
-            (root_url, connection, link.absolute_href, force_dataset_id)
+            (
+                root_url,
+                connection,
+                link.absolute_href,
+                force_dataset_id,
+                stop_at_failure,
+            )
         )
     tdqm_bar_configuration = {
         "desc": "Fetching products",
@@ -371,6 +390,7 @@ def fetch_all_products_items(
     max_concurrent_requests: int,
     catalogue_config: CatalogueConfig,
     disable_progress_bar: bool,
+    stop_at_failure: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
     catalog_root_url = catalogue_config.stac_catalogue_url
     json_catalog = connection.get_json_file(catalog_root_url)
@@ -386,6 +406,7 @@ def fetch_all_products_items(
         force_dataset_id,
         max_concurrent_requests,
         disable_progress_bar,
+        stop_at_failure,
     )
     return childs
 
@@ -397,7 +418,7 @@ def parse_catalogue(
     disable_progress_bar: bool,
     catalogue_config: CatalogueConfig,
     catalogue_number: int,
-    stop_at_failure: bool = False,
+    stop_at_failure: bool,
 ) -> CopernicusMarineCatalogue:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
@@ -428,6 +449,7 @@ def parse_catalogue(
             max_concurrent_requests=max_concurrent_requests,
             catalogue_config=catalogue_config,
             disable_progress_bar=disable_progress_bar,
+            stop_at_failure=stop_at_failure,
         )
     progress_bar.update()
 

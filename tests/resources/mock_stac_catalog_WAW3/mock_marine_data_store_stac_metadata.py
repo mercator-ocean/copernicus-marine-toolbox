@@ -27,11 +27,11 @@ from tests.resources.mock_stac_catalog_WAW3.mock_dataset_NWSHELF_P1D_m_202012 im
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_NWSHELF_P1M_m_202012 import (
     MOCK_DATASET_NWSHELF_P1M_M_202012,
 )
-from tests.resources.mock_stac_catalog_WAW3.mock_dataset_oriol import (
-    MOCK_DATASET_ORIOL,
-)
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_product_id_mapping import (
     MOCK_DATASET_PRODUCT_ID_MAPPING,
+)
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_with_errors import (
+    MOCK_DATASET_W_ERRORS,
 )
 from tests.resources.mock_stac_catalog_WAW3.mock_marine_datastore_config import (
     MARINE_DATASTORE_CONFIG,
@@ -132,10 +132,10 @@ def mocked_stac_requests_get(*args, **kwargs):
         return MockResponse(MOCK_DATASET_IN_PREP, 200)
     elif (
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
-        f"dataset_de_loriol_202012/"
+        f"dataset_w_errors_202012/"
         f"dataset.stac.json"
     ):
-        return MockResponse(MOCK_DATASET_ORIOL, 200)
+        return MockResponse(MOCK_DATASET_W_ERRORS, 200)
 
     elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
         return MockResponse({"preferred_username": "copernicususer"}, 200)

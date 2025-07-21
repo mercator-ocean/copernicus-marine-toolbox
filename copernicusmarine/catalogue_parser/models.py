@@ -655,7 +655,7 @@ class CopernicusMarineDataset(BaseModel):
     def parse_dataset_metadata_items(
         self,
         dataset_items: list[DatasetItem],
-        stop_at_failure: bool = False,
+        stop_at_failure: bool,
     ) -> None:
         all_versions = set()
         for dataset_item in dataset_items:
