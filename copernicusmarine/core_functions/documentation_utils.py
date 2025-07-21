@@ -126,7 +126,7 @@ DESCRIBE: dict[str, str] = {
     ),
     "STOP_AT_FAILURE_HELP": (
         "If set to True, the function will stop at the first failure encountered "
-        "during the parsing of the catalogue."
+        "during the parsing and fetching of the catalogue."
     ),
 }
 
