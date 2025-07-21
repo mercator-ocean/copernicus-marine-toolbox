@@ -299,7 +299,9 @@ def fetch_dataset_items(
         try:
             item_json = connection.get_json_file(url)
         except Exception as e:
-            logger.debug(f"Failed to fetch or parse JSON for URL: {url}")
+            logger.debug(
+                f"Failed to fetch or parse JSON for dataset URL: {url}"
+            )
             if stop_at_failure:
                 raise e
             log_exception_debug(e)
@@ -333,7 +335,14 @@ def fetch_collection(
     force_dataset_id: Optional[str],
     stop_at_failure: bool,
 ) -> Optional[tuple[pystac.Collection, list[DatasetItem]]]:
-    json_collection = connection.get_json_file(url)
+    try:
+        json_collection = connection.get_json_file(url)
+    except Exception as e:
+        logger.debug(f"Failed to fetch or parse JSON for product URL: {url}")
+        if stop_at_failure:
+            raise e
+        log_exception_debug(e)
+        return None
     collection = _parse_product_json_to_pystac_collection(json_collection)
     if collection:
         items = fetch_dataset_items(

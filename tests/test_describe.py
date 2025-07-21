@@ -119,7 +119,32 @@ class TestDescribe:
                 assert False, "Expected an exception to be raised"
             except Exception:
                 assert True
-                assert "Failed to fetch or parse JSON for URL:" in caplog.text
+                assert (
+                    "Failed to fetch or parse JSON for dataset URL:"
+                    in caplog.text
+                )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_stop_at_failure_unavailable_product(
+        self, argument, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    stop_at_failure=True,
+                    product_id="UNAVAILABLE_PRODUCT",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert True
+                assert (
+                    "Failed to fetch or parse JSON for product URL:"
+                    in caplog.text
+                )
+                assert "UNAVAILABLE_PRODUCT" in caplog.text
 
     @mock.patch(
         "requests.Session.get",
@@ -133,7 +158,14 @@ class TestDescribe:
             )
             assert "Failed to parse part" in caplog.text
             assert "Skipping part." in caplog.text
-            assert "Failed to fetch or parse JSON for URL:" in caplog.text
+            assert (
+                "Failed to fetch or parse JSON for product URL:" in caplog.text
+            )
+            assert (
+                "Failed to fetch or parse JSON for dataset URL:" in caplog.text
+            )
+            assert "UNAVAILABLE_PRODUCT" in caplog.text
+            assert "unavailable_dataset" in caplog.text
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]

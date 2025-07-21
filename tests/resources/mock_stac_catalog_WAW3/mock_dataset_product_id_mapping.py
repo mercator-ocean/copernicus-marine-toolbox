@@ -1177,4 +1177,5 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "osisaf_obs-si_glo_phy-sitype_nrt_sh-P1D": "SEAICE_GLO_SEAICE_L4_NRT_OBSERVATIONS_011_001",
     "dataset_w_errors": "NWSHELF_MULTIYEAR_BGC_004_011",
     "unavailable_dataset": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+    "unexisting_dataset": "UNAVAILABLE_PRODUCT",
 }
