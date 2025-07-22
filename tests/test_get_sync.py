@@ -8,11 +8,19 @@ from tests.test_utils import FileToCheck, execute_in_terminal
 
 class TestGetSync:
     def test_get_sync(self, tmp_path):
-        self.when_I_get_some_native_files_with_sync(tmp_path)
-        self.then_same_command_should_not_download(tmp_path)
+        self.when_I_get_some_native_files_with_sync(tmp_path, False)
+        self.then_same_command_should_not_download(tmp_path, False)
         self.when_I_delete_one_file(tmp_path)
         self.then_same_command_with_sync_should_download_only_one_file(
-            tmp_path
+            tmp_path, False
+        )
+
+    def test_get_sync_no_directories(self, tmp_path):
+        self.when_I_get_some_native_files_with_sync(tmp_path, True)
+        self.then_same_command_should_not_download(tmp_path, True)
+        self.when_I_delete_one_file(tmp_path)
+        self.then_same_command_with_sync_should_download_only_one_file(
+            tmp_path, True
         )
 
     def test_get_sync_delete(self, tmp_path):
@@ -132,7 +140,9 @@ class TestGetSync:
             in self.output.stderr
         )
 
-    def when_I_get_some_native_files_with_sync(self, tmp_path):
+    def when_I_get_some_native_files_with_sync(
+        self, tmp_path, no_directories=False
+    ):
         self.command = [
             "copernicusmarine",
             "get",
@@ -146,9 +156,13 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
         ]
+        if no_directories:
+            self.command.append("--no-directories")
         self.output = execute_in_terminal(self.command, safe_quoting=True)
 
-    def then_same_command_should_not_download(self, tmp_path):
+    def then_same_command_should_not_download(
+        self, tmp_path, no_directories=False
+    ):
         self.command = [
             "copernicusmarine",
             "get",
@@ -162,6 +176,8 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
         ]
+        if no_directories:
+            self.command.append("--no-directories")
         self.output = execute_in_terminal(self.command)
         assert "No data to download" in self.output.stderr
 
@@ -176,7 +192,7 @@ class TestGetSync:
         self.output = execute_in_terminal(self.command)
 
     def then_same_command_with_sync_should_download_only_one_file(
-        self, tmp_path
+        self, tmp_path, no_directories=False
     ):
         self.command = [
             "copernicusmarine",
@@ -193,6 +209,8 @@ class TestGetSync:
             "-r",
             "file_path,file_status",
         ]
+        if no_directories:
+            self.command.append("--no-directories")
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
         response_get = json.loads(self.output.stdout)
@@ -202,6 +220,10 @@ class TestGetSync:
             "/2007/01/"
             "20070110_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
         ).get_path()
+        if no_directories:
+            to_check = FileToCheck(
+                f"{tmp_path}/20070110_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
+            ).get_path()
         assert [
             "nice"
             for file_get in response_get["files"]
@@ -213,7 +235,10 @@ class TestGetSync:
             "/2007/01/"
             "20070111_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
         )
-
+        if no_directories:
+            to_check_not_in = FileToCheck(
+                f"{tmp_path}/20070111_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
+            ).get_path()
         assert not [
             "not_nice"
             for file_get in response_get["files"]
