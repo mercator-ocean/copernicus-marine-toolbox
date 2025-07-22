@@ -125,7 +125,7 @@ class ResponseGet(BaseModel):
     files_not_found: Optional[list[str]]
     #: Number of files to be downloaded.
     number_of_files_to_download: int
-    #: Total size of the files that would be downloaded.
+    #: Total size of the files that would be downloaded in MB.
     total_size: Optional[float]
     #: Status of the request.
     status: StatusCode
