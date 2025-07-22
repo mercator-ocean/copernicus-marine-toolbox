@@ -200,7 +200,7 @@ def _parse_and_sort_dataset_items(
 def _construct_marine_data_store_product(
     stac_tuple: tuple[pystac.Collection, list[DatasetItem]],
     stop_at_failure: bool,
-) -> CopernicusMarineProduct:
+) -> Optional[CopernicusMarineProduct]:
     stac_product, dataset_items = stac_tuple
     stac_datasets_sorted = sorted(dataset_items, key=lambda x: x.item_id)
     dataset_items_by_dataset_id = groupby(
@@ -256,18 +256,27 @@ def _construct_marine_data_store_product(
         stac_product, "processingLevel"
     )
 
-    return CopernicusMarineProduct(
-        title=stac_product.title or stac_product.id,
-        product_id=stac_product.id,
-        thumbnail_url=thumbnail_url or "",
-        description=stac_product.description,
-        digital_object_identifier=digital_object_identifier,
-        sources=sources,
-        processing_level=processing_level,
-        production_center=production_center_name,
-        keywords=stac_product.keywords,
-        datasets=datasets,
-    )
+    try:
+        return CopernicusMarineProduct(
+            title=stac_product.title or stac_product.id,
+            product_id=stac_product.id,
+            thumbnail_url=thumbnail_url or "",
+            description=stac_product.description,
+            digital_object_identifier=digital_object_identifier,
+            sources=sources,
+            processing_level=processing_level,
+            production_center=production_center_name,
+            keywords=stac_product.keywords,
+            datasets=datasets,
+        )
+    except Exception as e:
+        logger.debug(
+            f"Error while parsing product {stac_product.title}: {e}",
+            exc_info=True,
+        )
+        if stop_at_failure:
+            raise e
+        return None
 
 
 def _get_stac_product_property(
@@ -337,13 +346,13 @@ def fetch_collection(
 ) -> Optional[tuple[pystac.Collection, list[DatasetItem]]]:
     try:
         json_collection = connection.get_json_file(url)
+        collection = _parse_product_json_to_pystac_collection(json_collection)
     except Exception as e:
         logger.debug(f"Failed to fetch or parse JSON for product URL: {url}")
         if stop_at_failure:
             raise e
         log_exception_debug(e)
         return None
-    collection = _parse_product_json_to_pystac_collection(json_collection)
     if collection:
         items = fetch_dataset_items(
             root_url, connection, collection, force_dataset_id, stop_at_failure
@@ -428,7 +437,7 @@ def parse_catalogue(
     catalogue_config: CatalogueConfig,
     catalogue_number: int,
     stop_at_failure: bool,
-) -> CopernicusMarineCatalogue:
+) -> Optional[CopernicusMarineCatalogue]:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
         total=2,
@@ -462,18 +471,17 @@ def parse_catalogue(
         )
     progress_bar.update()
 
-    products_metadata = [
-        product_metadata
-        for product_item in marine_data_store_root_collections
-        if product_item
-        and (
-            (
-                product_metadata := _construct_marine_data_store_product(
-                    product_item, stop_at_failure
-                )
-            ).datasets
-        )
-    ]
+    products_metadata: list[CopernicusMarineProduct] = []
+    for product_item in marine_data_store_root_collections:
+        if product_item:
+            if product_metadata := _construct_marine_data_store_product(
+                product_item, stop_at_failure
+            ):
+                product_metadata.datasets
+                products_metadata.append(product_metadata)
+    if not products_metadata:
+        return None
+
     products_metadata.sort(key=lambda x: x.product_id)
 
     full_catalog = CopernicusMarineCatalogue(products=products_metadata)

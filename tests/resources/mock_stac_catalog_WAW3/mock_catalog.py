@@ -36,5 +36,11 @@ MOCK_STAC_CATALOG = {
             "title": "UNAVAILABLE_PRODUCT",
             "type": "application/json",
         },
+        {
+            "rel": "child",  # unavailable product
+            "href": "PRODUCT_W_ERRORS/product.stac.json",
+            "title": "PRODUCT_W_ERRORS",
+            "type": "application/json",
+        },
     ],
 }

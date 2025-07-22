@@ -37,7 +37,7 @@ def describe_function(
     catalogues: list[CopernicusMarineCatalogue] = []
     for i, catalogue_config in enumerate(marine_datasetore_config.catalogues):
         try:
-            catalogue: CopernicusMarineCatalogue = parse_catalogue(
+            catalogue: Optional[CopernicusMarineCatalogue] = parse_catalogue(
                 force_product_id=force_product_id,
                 force_dataset_id=force_dataset_id,
                 max_concurrent_requests=max_concurrent_requests,
@@ -46,12 +46,12 @@ def describe_function(
                 catalogue_number=i,
                 stop_at_failure=stop_at_failure,
             )
-            catalogues.append(catalogue)
+            if catalogue:
+                catalogues.append(catalogue)
         except DatasetNotFound:
             logger.debug(
                 f"Dataset not found in catalogue {catalogue_config.root_metadata_url}"
             )
-
     # Merge all catalogues
     base_catalogue = merge_catalogues(catalogues)
     if (force_dataset_id or force_product_id) and not base_catalogue.products:

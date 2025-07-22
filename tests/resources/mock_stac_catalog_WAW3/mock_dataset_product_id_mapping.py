@@ -1178,4 +1178,5 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "dataset_w_errors": "NWSHELF_MULTIYEAR_BGC_004_011",
     "unavailable_dataset": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
     "unexisting_dataset": "UNAVAILABLE_PRODUCT",
+    "irrelevant_dataset": "PRODUCT_W_ERRORS",
 }

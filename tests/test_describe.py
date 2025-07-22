@@ -150,6 +150,24 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
+    def test_describe_with_stop_at_failure_product_w_errors(
+        self, argument, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    stop_at_failure=True,
+                    product_id="PRODUCT_W_ERRORS",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert True
+                assert "Error while parsing product" in caplog.text
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
     def test_describe_without_stop_at_failure(self, argument, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             describe(
