@@ -307,6 +307,7 @@ def fetch_dataset_items(
         url = root_url + "/" + link.owner.id + "/" + link.href
         try:
             item_json = connection.get_json_file(url)
+            item = _parse_dataset_json_to_pystac_item(item_json)
         except Exception as e:
             logger.debug(
                 f"Failed to fetch or parse JSON for dataset URL: {url}"
@@ -315,7 +316,6 @@ def fetch_dataset_items(
                 raise e
             log_exception_debug(e)
             continue
-        item = _parse_dataset_json_to_pystac_item(item_json)
         if item:
             (
                 parsed_id,
