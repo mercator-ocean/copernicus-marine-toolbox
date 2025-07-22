@@ -33,7 +33,7 @@ logger = logging.getLogger("copernicusmarine")
 def get_dataset_metadata(
     dataset_id: str,
     marine_datastore_config: MarineDataStoreConfig,
-    stop_at_failure: bool = False,
+    stop_at_failure: bool,
 ) -> Optional[CopernicusMarineDataset]:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
