@@ -100,7 +100,6 @@ class TestDescribe:
                 )
                 assert False, "Expected an exception to be raised"
             except Exception:
-                assert True
                 assert "Stopping describe" in caplog.text
 
     @mock.patch(
@@ -118,7 +117,6 @@ class TestDescribe:
                 )
                 assert False, "Expected an exception to be raised"
             except Exception:
-                assert True
                 assert (
                     "Failed to fetch or parse JSON for dataset URL:"
                     in caplog.text
@@ -139,7 +137,6 @@ class TestDescribe:
                 )
                 assert False, "Expected an exception to be raised"
             except Exception:
-                assert True
                 assert (
                     "Failed to fetch or parse JSON for product URL:"
                     in caplog.text
@@ -161,7 +158,6 @@ class TestDescribe:
                 )
                 assert False, "Expected an exception to be raised"
             except Exception:
-                assert True
                 assert "Error while parsing product" in caplog.text
 
     @mock.patch(
@@ -177,10 +173,15 @@ class TestDescribe:
             assert "Failed to parse part" in caplog.text
             assert "Skipping part." in caplog.text
             assert (
-                "Failed to fetch or parse JSON for product URL:" in caplog.text
+                "Failed to fetch or parse JSON for product URL: "
+                "https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata"
+                "/UNAVAILABLE_PRODUCT/product.stac.json" in caplog.text
             )
             assert (
-                "Failed to fetch or parse JSON for dataset URL:" in caplog.text
+                "Failed to fetch or parse JSON for dataset URL: "
+                "https://s3.waw3-1.cloudferro.com/mdl-metadata/meta"
+                "data/GLOBAL_ANALYSISFORECAST_PHY_001_024/unavailable_"
+                "dataset_202012/dataset.stac.json" in caplog.text
             )
             assert "UNAVAILABLE_PRODUCT" in caplog.text
             assert "unavailable_dataset" in caplog.text

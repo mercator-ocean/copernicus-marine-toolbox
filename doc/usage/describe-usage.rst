@@ -236,3 +236,9 @@ See `the raise-if-updating <raise-if-updating>`_ option to be sure your requeste
 .. warning::
 
     ``arco_updating_start_date`` is a date within the dataset while ``arco_updated_date`` is a real-world timestamp.
+
+``raise_on_error`` option
+----------------------------
+The ``describe`` command has a ``--raise-on-error`` option that allows you to raise an error if the fetching or parsing of the metadata fails.
+
+To see if indeed something went wrong, you can set the logging level to ``DEBUG``.

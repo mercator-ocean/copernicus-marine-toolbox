@@ -477,7 +477,6 @@ def parse_catalogue(
             if product_metadata := _construct_marine_data_store_product(
                 product_item, stop_at_failure
             ):
-                product_metadata.datasets
                 products_metadata.append(product_metadata)
     if not products_metadata:
         return None
