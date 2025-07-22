@@ -89,7 +89,7 @@ def cli_get() -> None:
     is_flag=True,
     help=documentation_utils.GET["NO_DIRECTORIES_HELP"],
     default=False,
-    mutually_exclusive=["sync", "sync-delete", "skip-existing"],
+    mutually_exclusive=["sync-delete", "skip-existing"],
 )
 @click.option(
     "--output-directory",
@@ -150,7 +150,7 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=documentation_utils.GET["SYNC_HELP"],
-    mutually_exclusive=["no-directories", "skip-existing"],
+    mutually_exclusive=["skip-existing"],
 )
 @click.option(
     "--sync-delete",

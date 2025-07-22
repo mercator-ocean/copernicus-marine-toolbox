@@ -470,8 +470,11 @@ def _check_needs_to_be_synced(
     size: int,
     last_modified_datetime: datetime,
     directory_out: pathlib.Path,
+    no_directories: bool,
 ) -> bool:
-    filename_out = _local_path_from_s3_url(filename, directory_out)
+    filename_out = _create_filename_out(
+        filename, directory_out, no_directories
+    )
     if not filename_out.is_file():
         return True
     else:
@@ -505,7 +508,11 @@ def _check_should_be_ignored(
     ) or (
         sync
         and not _check_needs_to_be_synced(
-            filename, size, last_modified_datetime, directory_out
+            filename,
+            size,
+            last_modified_datetime,
+            directory_out,
+            no_directories,
         )
     )
 
@@ -525,7 +532,11 @@ def _check_should_be_overwritten(
         or (
             sync
             and _check_needs_to_be_synced(
-                filename, size, last_modified_datetime, directory_out
+                filename,
+                size,
+                last_modified_datetime,
+                directory_out,
+                no_directories,
             )
         )
     )

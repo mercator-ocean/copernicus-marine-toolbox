@@ -80,13 +80,10 @@ def get_function(
         get_request.force_dataset_part = force_dataset_part
     if no_directories:
         get_request.no_directories = no_directories
-
     if overwrite:
         get_request.overwrite = overwrite
     if skip_existing:
         get_request.skip_existing = skip_existing
-    if no_directories:
-        get_request.no_directories = no_directories
 
     if filter_option:
         get_request.regex = filter_to_regex(filter_option)
