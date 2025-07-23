@@ -90,7 +90,7 @@ class TestDescribe:
         side_effect=mocked_stac_requests_get,
     )
     def test_describe_with_raise_on_error_error_in_stac(
-        self, argument, caplog
+        self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
@@ -107,7 +107,7 @@ class TestDescribe:
         side_effect=mocked_stac_requests_get,
     )
     def test_describe_with_raise_on_error_unavailable_dataset(
-        self, argument, caplog
+        self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
@@ -127,7 +127,7 @@ class TestDescribe:
         side_effect=mocked_stac_requests_get,
     )
     def test_describe_with_raise_on_error_unavailable_product(
-        self, argument, caplog
+        self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
@@ -148,7 +148,7 @@ class TestDescribe:
         side_effect=mocked_stac_requests_get,
     )
     def test_describe_with_raise_on_error_product_w_errors(
-        self, argument, caplog
+        self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
@@ -164,7 +164,7 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_without_raise_on_error(self, argument, caplog):
+    def test_describe_without_raise_on_error(self, mocked_requests, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             describe(
                 raise_on_error=False,
