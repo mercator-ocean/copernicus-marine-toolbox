@@ -41,7 +41,7 @@ def describe(
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
     raise_on_error : bool, optional
-        If set to True, the function will stop at the first failure encountered during the parsing and fetching of the catalogue.
+        If set to True, the function will raise at the first error encountered during the parsing and fetching of the catalogue. Default, False.
 
     Returns
     -------
