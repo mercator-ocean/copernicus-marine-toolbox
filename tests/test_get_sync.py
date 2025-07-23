@@ -24,10 +24,17 @@ class TestGetSync:
         )
 
     def test_get_sync_delete(self, tmp_path):
-        self.when_I_get_some_native_files_with_sync(tmp_path)
-        self.when_I_add_a_file_locally(tmp_path)
+        self.when_I_get_some_native_files_with_sync(tmp_path, False)
+        self.when_I_add_a_file_locally(tmp_path, False)
         self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
-            tmp_path
+            tmp_path, False
+        )
+
+    def test_get_sync_delete_no_directories(self, tmp_path):
+        self.when_I_get_some_native_files_with_sync(tmp_path, True)
+        self.when_I_add_a_file_locally(tmp_path, True)
+        self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
+            tmp_path, True
         )
 
     def test_get_sync_works_for_dataset_with_default_parts(self, tmp_path):
@@ -246,20 +253,25 @@ class TestGetSync:
             and file_get["file_status"] != "IGNORED"
         ]
 
-    def when_I_add_a_file_locally(self, tmp_path):
+    def when_I_add_a_file_locally(self, tmp_path, no_directories=False):
         file_to_add = FileToCheck(
             "ARCTIC_MULTIYEAR_BGC_002_005/"
             "cmems_mod_arc_bgc_my_ecosmo_P1D-m_202105/2007/01/"
             "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
         ).get_path()
+        if no_directories:
+            file_to_add = FileToCheck(
+                "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
+            ).get_path()
         if platform.system() == "Windows":
             self.command = ["echo.", ">", pathlib.Path(tmp_path, file_to_add)]
         else:
             self.command = ["touch", pathlib.Path(tmp_path, file_to_add)]
         self.output = execute_in_terminal(self.command)
+        assert pathlib.Path(tmp_path, file_to_add).exists()
 
     def then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
-        self, tmp_path
+        self, tmp_path, no_directories=False
     ):
         self.command = [
             "copernicusmarine",
@@ -274,6 +286,8 @@ class TestGetSync:
             "-o",
             f"{tmp_path}",
         ]
+        if no_directories:
+            self.command.append("--no-directories")
         self.output = execute_in_terminal(self.command, safe_quoting=True)
         assert (
             "Some files will be deleted due to sync delete:"
@@ -285,5 +299,9 @@ class TestGetSync:
             "/2007/01/"
             "20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
         ).get_path()
+        if no_directories:
+            file_to_check = FileToCheck(
+                "/20070120_dm-25km-NERSC-MODEL-ECOSMO-ARC-RAN-fv2.0.nc"
+            ).get_path()
         assert f"{tmp_path}{file_to_check}" in self.output.stderr
         assert os.path.isfile(f"{tmp_path}{file_to_check}") is False
