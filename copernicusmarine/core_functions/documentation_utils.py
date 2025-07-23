@@ -125,8 +125,8 @@ DESCRIBE: dict[str, str] = {
         "a thread pool executor to manage concurrent requests."
     ),
     "RAISE_ON_ERROR_HELP": (
-        "If set to True, the function will stop at the first failure encountered "
-        "during the parsing and fetching of the catalogue."
+        "If set to True, the function will raise at the first error encountered "
+        "during the parsing and fetching of the catalogue. Default, False."
     ),
 }
 
