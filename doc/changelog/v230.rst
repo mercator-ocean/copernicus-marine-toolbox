@@ -25,4 +25,4 @@ Describe
 New-Features
 ^^^^^^^^^^^^^^^
 
-* Add a flag `raise_on_error` to the `describe` command to raise an error when the fetching or parsing fails. Default is set to ``False``.
+* Add a flag :ref:`this section <raise_on_error>` to the `describe` command to raise an error when the fetching or parsing fails. Default is set to ``False``.

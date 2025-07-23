@@ -988,7 +988,7 @@ MOCK_IRRELEVANT_DATASET = {
             "viewDims": {
                 "time": {
                     "chunkLen": {"chl": 72},
-                    "len": 368,  # Fail
+                    "len": 368,
                     "units": "milliseconds since 1970-01-01 00:00:00Z (no leap seconds)",
                     "coords": {
                         "type": "explicit",
@@ -1367,7 +1367,7 @@ MOCK_IRRELEVANT_DATASET = {
                 "elevation": {
                     "chunkLen": {"chl": 2},
                     "len": 24,
-                    "units": "m",  # Fail
+                    "units": "m",
                     "coords": {
                         "type": "explicit",
                         "values": [

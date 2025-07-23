@@ -467,7 +467,7 @@ MOCK_DATASET_W_ERRORS = {
                 "id": "chl",
                 "dimensions": ["time", "elevation", "latitude", "longitude"],
                 "type": "data",
-                "unit": 3,
+                "unit": 3,  # Intentionally invalid value for testing error handling
                 "standardName": "mass_concentration_of_chlorophyll_a_in_sea_water",
                 "abbreviation": "chl",
                 "name": {
@@ -988,7 +988,7 @@ MOCK_DATASET_W_ERRORS = {
             "viewDims": {
                 "time": {
                     "chunkLen": {"chl": 72},
-                    "len": "Fail",  # Fail
+                    "len": "Fail",  # Intentionally invalid value for testing error handling
                     "units": "milliseconds since 1970-01-01 00:00:00Z (no leap seconds)",
                     "coords": {
                         "type": "explicit",
@@ -1367,7 +1367,7 @@ MOCK_DATASET_W_ERRORS = {
                 "elevation": {
                     "chunkLen": {"chl": 2},
                     "len": 24,
-                    "units": None,  # Fail
+                    "units": None,  # Intentionally invalid: units should be a string, not None
                     "coords": {
                         "type": "explicit",
                         "values": [
