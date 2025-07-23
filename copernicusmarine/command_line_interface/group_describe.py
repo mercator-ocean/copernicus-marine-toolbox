@@ -127,7 +127,7 @@ def describe(
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
-    raise_on_error: bool = False,
+    raise_on_error: bool,
 ) -> None:
     if log_level == "QUIET":
         logger.disabled = True
