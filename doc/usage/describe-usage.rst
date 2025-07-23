@@ -242,7 +242,6 @@ See `the raise-if-updating <raise-if-updating>`_ option to be sure your requeste
 
 ``raise_on_error`` option
 ----------------------------
-The ``describe`` command has a ``--raise-on-error`` option that allows you to raise an error if the fetching or parsing of the metadata fails.
-Although very uncommon, it can happen that the metadata cannot be fetched or parsed correctly due to various reasons, such as network issues or changes in the metadata format. In that case, the corresponding product or dataset which is affected would not appear until it was corrected.
+A flag that if set to True raises an error on any parsing or metadata compliance failure. By default (False), it skips errors and returns only valid products and datasets.
 
 To see if indeed something went wrong, you can set the logging level to ``DEBUG``.
