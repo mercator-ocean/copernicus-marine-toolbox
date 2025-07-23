@@ -655,7 +655,7 @@ class CopernicusMarineDataset(BaseModel):
     def parse_dataset_metadata_items(
         self,
         dataset_items: list[DatasetItem],
-        stop_at_failure: bool,
+        raise_on_error: bool,
     ) -> None:
         all_versions = set()
         for dataset_item in dataset_items:
@@ -667,14 +667,14 @@ class CopernicusMarineDataset(BaseModel):
                     dataset_item.url,
                 )
             except Exception as e:
-                if stop_at_failure:
+                if raise_on_error:
                     logger.error(
                         f"Failed to parse part {dataset_item.parsed_part} "
                         f"for dataset {dataset_item.parsed_id}.",
                     )
                     logger.error(
                         "Stopping describe. "
-                        "Check option stop_at_failure if needed."
+                        "Check option raise_on_error if needed."
                     )
                     raise e
                 else:

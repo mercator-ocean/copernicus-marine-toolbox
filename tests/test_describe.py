@@ -89,13 +89,13 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_stop_at_failure_error_in_stac(
+    def test_describe_with_raise_on_error_error_in_stac(
         self, argument, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
                 describe(
-                    stop_at_failure=True,
+                    raise_on_error=True,
                     product_id="NWSHELF_MULTIYEAR_BGC_004_011",
                 )
                 assert False, "Expected an exception to be raised"
@@ -106,13 +106,13 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_stop_at_failure_unavailable_dataset(
+    def test_describe_with_raise_on_error_unavailable_dataset(
         self, argument, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
                 describe(
-                    stop_at_failure=True,
+                    raise_on_error=True,
                     product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024",
                 )
                 assert False, "Expected an exception to be raised"
@@ -126,13 +126,13 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_stop_at_failure_unavailable_product(
+    def test_describe_with_raise_on_error_unavailable_product(
         self, argument, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
                 describe(
-                    stop_at_failure=True,
+                    raise_on_error=True,
                     product_id="UNAVAILABLE_PRODUCT",
                 )
                 assert False, "Expected an exception to be raised"
@@ -147,13 +147,13 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_stop_at_failure_product_w_errors(
+    def test_describe_with_raise_on_error_product_w_errors(
         self, argument, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             try:
                 describe(
-                    stop_at_failure=True,
+                    raise_on_error=True,
                     product_id="PRODUCT_W_ERRORS",
                 )
                 assert False, "Expected an exception to be raised"
@@ -164,10 +164,10 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_without_stop_at_failure(self, argument, caplog):
+    def test_describe_without_raise_on_error(self, argument, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             describe(
-                stop_at_failure=False,
+                raise_on_error=False,
                 show_all_versions=True,
             )
             assert "Failed to parse part" in caplog.text

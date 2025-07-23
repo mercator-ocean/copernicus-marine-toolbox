@@ -124,7 +124,7 @@ DESCRIBE: dict[str, str] = {
         "Maximum number of concurrent requests (>=1). Default 15. The command uses "
         "a thread pool executor to manage concurrent requests."
     ),
-    "STOP_AT_FAILURE_HELP": (
+    "RAISE_ON_ERROR_HELP": (
         "If set to True, the function will stop at the first failure encountered "
         "during the parsing and fetching of the catalogue."
     ),

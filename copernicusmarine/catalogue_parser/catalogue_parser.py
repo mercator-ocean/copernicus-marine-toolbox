@@ -33,7 +33,7 @@ logger = logging.getLogger("copernicusmarine")
 def get_dataset_metadata(
     dataset_id: str,
     marine_datastore_config: MarineDataStoreConfig,
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> Optional[CopernicusMarineDataset]:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
@@ -124,7 +124,7 @@ def get_dataset_metadata(
             for dataset_item in dataset_items
             if dataset_item.parsed_id == dataset_id
         ],
-        stop_at_failure=stop_at_failure,
+        raise_on_error=raise_on_error,
     )
 
 
@@ -158,7 +158,7 @@ def _parse_product_json_to_pystac_collection(
 
 def _parse_and_sort_dataset_items(
     dataset_items: list[DatasetItem],
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> Optional[CopernicusMarineDataset]:
     """
     Return all dataset metadata parsed and sorted.
@@ -187,7 +187,7 @@ def _parse_and_sort_dataset_items(
         versions=[],
     )
     dataset_part_version_merged.parse_dataset_metadata_items(
-        dataset_items, stop_at_failure=stop_at_failure
+        dataset_items, raise_on_error=raise_on_error
     )
 
     if dataset_part_version_merged.versions == []:
@@ -199,7 +199,7 @@ def _parse_and_sort_dataset_items(
 
 def _construct_marine_data_store_product(
     stac_tuple: tuple[pystac.Collection, list[DatasetItem]],
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> Optional[CopernicusMarineProduct]:
     stac_product, dataset_items = stac_tuple
     stac_datasets_sorted = sorted(dataset_items, key=lambda x: x.item_id)
@@ -232,7 +232,7 @@ def _construct_marine_data_store_product(
                     )
                     for dataset_item in dataset_items
                 ],
-                stop_at_failure=stop_at_failure,
+                raise_on_error=raise_on_error,
             )
         )
     ]
@@ -274,7 +274,7 @@ def _construct_marine_data_store_product(
             f"Error while parsing product {stac_product.title}: {e}",
             exc_info=True,
         )
-        if stop_at_failure:
+        if raise_on_error:
             raise e
         return None
 
@@ -295,7 +295,7 @@ def fetch_dataset_items(
     connection: JsonParserConnection,
     collection: pystac.Collection,
     force_dataset_id: Optional[str],
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> list[DatasetItem]:
     items: list[DatasetItem] = []
     for link in collection.get_item_links():
@@ -312,7 +312,7 @@ def fetch_dataset_items(
             logger.debug(
                 f"Failed to fetch or parse JSON for dataset URL: {url}"
             )
-            if stop_at_failure:
+            if raise_on_error:
                 raise e
             log_exception_debug(e)
             continue
@@ -342,20 +342,20 @@ def fetch_collection(
     connection: JsonParserConnection,
     url: str,
     force_dataset_id: Optional[str],
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> Optional[tuple[pystac.Collection, list[DatasetItem]]]:
     try:
         json_collection = connection.get_json_file(url)
         collection = _parse_product_json_to_pystac_collection(json_collection)
     except Exception as e:
         logger.debug(f"Failed to fetch or parse JSON for product URL: {url}")
-        if stop_at_failure:
+        if raise_on_error:
             raise e
         log_exception_debug(e)
         return None
     if collection:
         items = fetch_dataset_items(
-            root_url, connection, collection, force_dataset_id, stop_at_failure
+            root_url, connection, collection, force_dataset_id, raise_on_error
         )
         return (collection, items)
     return None
@@ -369,7 +369,7 @@ def fetch_product_items(
     force_dataset_id: Optional[str],
     max_concurrent_requests: int,
     disable_progress_bar: bool,
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
     tasks = []
     for link in child_links:
@@ -381,7 +381,7 @@ def fetch_product_items(
                 connection,
                 link.absolute_href,
                 force_dataset_id,
-                stop_at_failure,
+                raise_on_error,
             )
         )
     tdqm_bar_configuration = {
@@ -408,7 +408,7 @@ def fetch_all_products_items(
     max_concurrent_requests: int,
     catalogue_config: CatalogueConfig,
     disable_progress_bar: bool,
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
     catalog_root_url = catalogue_config.stac_catalogue_url
     json_catalog = connection.get_json_file(catalog_root_url)
@@ -424,7 +424,7 @@ def fetch_all_products_items(
         force_dataset_id,
         max_concurrent_requests,
         disable_progress_bar,
-        stop_at_failure,
+        raise_on_error,
     )
     return childs
 
@@ -436,7 +436,7 @@ def parse_catalogue(
     disable_progress_bar: bool,
     catalogue_config: CatalogueConfig,
     catalogue_number: int,
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> Optional[CopernicusMarineCatalogue]:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
@@ -467,7 +467,7 @@ def parse_catalogue(
             max_concurrent_requests=max_concurrent_requests,
             catalogue_config=catalogue_config,
             disable_progress_bar=disable_progress_bar,
-            stop_at_failure=stop_at_failure,
+            raise_on_error=raise_on_error,
         )
     progress_bar.update()
 
@@ -475,7 +475,7 @@ def parse_catalogue(
     for product_item in marine_data_store_root_collections:
         if product_item:
             if product_metadata := _construct_marine_data_store_product(
-                product_item, stop_at_failure
+                product_item, raise_on_error
             ):
                 products_metadata.append(product_metadata)
     if not products_metadata:

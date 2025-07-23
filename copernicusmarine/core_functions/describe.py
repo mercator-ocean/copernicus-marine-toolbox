@@ -26,7 +26,7 @@ def describe_function(
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
-    stop_at_failure: bool,
+    raise_on_error: bool,
 ) -> CopernicusMarineCatalogue:
     marine_datasetore_config = get_config_and_check_version_describe(staging)
     if staging:
@@ -44,7 +44,7 @@ def describe_function(
                 disable_progress_bar=disable_progress_bar,
                 catalogue_config=catalogue_config,
                 catalogue_number=i,
-                stop_at_failure=stop_at_failure,
+                raise_on_error=raise_on_error,
             )
             if catalogue:
                 catalogues.append(catalogue)
