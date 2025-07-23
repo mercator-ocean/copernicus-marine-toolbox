@@ -9,7 +9,7 @@ General
 New features
 ^^^^^^^^^^^^^^^
 
-* Increased the resilience when parsing or fetching the metada. Make the describe more robust and consequently the `subset` and `get` commands as well.
+* Increased the resilience when parsing or fetching the metadata. Make the ``describe`` more robust and consequently the ``subset`` and ``get`` commands as well.
 
 Subset
 ------
