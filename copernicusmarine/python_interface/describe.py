@@ -21,6 +21,7 @@ def describe(
     max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
     staging: bool = False,
+    raise_on_error: bool = False,
 ) -> CopernicusMarineCatalogue:
     """
     Retrieve and parse the metadata information from the Copernicus Marine catalogue.
@@ -39,6 +40,8 @@ def describe(
         Maximum number of concurrent requests (>=1). Default 15. The command uses a thread pool executor to manage concurrent requests.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
+    raise_on_error : bool, optional
+        If set to True, the function will raise at the first error encountered during the parsing and fetching of the catalogue. Default, False.
 
     Returns
     -------
@@ -49,7 +52,6 @@ def describe(
 
     if not isinstance(contains, list):
         raise ValueError("contains must be of list type")
-
     return describe_function(
         show_all_versions,
         contains,
@@ -58,4 +60,5 @@ def describe(
         max_concurrent_requests,
         disable_progress_bar,
         staging=staging,
+        raise_on_error=raise_on_error,
     )

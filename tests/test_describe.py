@@ -1,5 +1,7 @@
+import logging
 import re
 from json import loads
+from unittest import mock
 
 from copernicusmarine import (
     CopernicusMarineCatalogue,
@@ -10,6 +12,9 @@ from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     REGEX_PATTERN_DATE_YYYYMM,
     VERSION_DEFAULT,
+)
+from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata import (  # noqa: E501
+    mocked_stac_requests_get,
 )
 from tests.test_utils import execute_in_terminal
 
@@ -79,6 +84,107 @@ class TestDescribe:
                 for version in dataset["versions"]:
                     for part in version["parts"]:
                         assert "services" not in part
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_raise_on_error_error_in_stac(
+        self, mocked_requests, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    raise_on_error=True,
+                    product_id="NWSHELF_MULTIYEAR_BGC_004_011",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert "Stopping describe" in caplog.text
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_raise_on_error_unavailable_dataset(
+        self, mocked_requests, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    raise_on_error=True,
+                    product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert (
+                    "Failed to fetch or parse JSON for dataset URL:"
+                    in caplog.text
+                )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_raise_on_error_unavailable_product(
+        self, mocked_requests, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    raise_on_error=True,
+                    product_id="UNAVAILABLE_PRODUCT",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert (
+                    "Failed to fetch or parse JSON for product URL:"
+                    in caplog.text
+                )
+                assert "UNAVAILABLE_PRODUCT" in caplog.text
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_with_raise_on_error_product_w_errors(
+        self, mocked_requests, caplog
+    ):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            try:
+                describe(
+                    raise_on_error=True,
+                    product_id="PRODUCT_W_ERRORS",
+                )
+                assert False, "Expected an exception to be raised"
+            except Exception:
+                assert "Error while parsing product" in caplog.text
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_without_raise_on_error(self, mocked_requests, caplog):
+        with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
+            describe(
+                raise_on_error=False,
+                show_all_versions=True,
+            )
+            assert "Failed to parse part" in caplog.text
+            assert "Skipping part." in caplog.text
+            assert (
+                "Failed to fetch or parse JSON for product URL: "
+                "https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata"
+                "/UNAVAILABLE_PRODUCT/product.stac.json" in caplog.text
+            )
+            assert (
+                "Failed to fetch or parse JSON for dataset URL: "
+                "https://s3.waw3-1.cloudferro.com/mdl-metadata/meta"
+                "data/GLOBAL_ANALYSISFORECAST_PHY_001_024/unavailable_"
+                "dataset_202012/dataset.stac.json" in caplog.text
+            )
+            assert "UNAVAILABLE_PRODUCT" in caplog.text
+            assert "unavailable_dataset" in caplog.text
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]

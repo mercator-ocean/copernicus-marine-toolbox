@@ -30,5 +30,17 @@ MOCK_STAC_CATALOG = {
             "title": "NWSHELF_MULTIYEAR_BGC_004_011",
             "type": "application/json",
         },
+        {
+            "rel": "child",  # unavailable product
+            "href": "UNAVAILABLE_PRODUCT/product.stac.json",
+            "title": "UNAVAILABLE_PRODUCT",
+            "type": "application/json",
+        },
+        {
+            "rel": "child",  # unavailable product
+            "href": "PRODUCT_W_ERRORS/product.stac.json",
+            "title": "PRODUCT_W_ERRORS",
+            "type": "application/json",
+        },
     ],
 }

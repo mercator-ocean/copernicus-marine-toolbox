@@ -108,6 +108,13 @@ def cli_describe() -> None:
     is_flag=True,
     hidden=True,
 )
+@click.option(
+    "--raise-on-error",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help=documentation_utils.DESCRIBE["RAISE_ON_ERROR_HELP"],
+)
 @log_exception_and_exit
 def describe(
     show_all_versions: bool,
@@ -120,6 +127,7 @@ def describe(
     disable_progress_bar: bool,
     log_level: str,
     staging: bool,
+    raise_on_error: bool,
 ) -> None:
     if log_level == "QUIET":
         logger.disabled = True
@@ -138,6 +146,7 @@ def describe(
         max_concurrent_requests,
         disable_progress_bar,
         staging,
+        raise_on_error,
     )
     include_query, exclude_query = _create_include_and_exclude(
         return_fields,

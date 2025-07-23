@@ -236,3 +236,16 @@ See `the raise-if-updating <raise-if-updating>`_ option to be sure your requeste
 .. warning::
 
     ``arco_updating_start_date`` is a date within the dataset while ``arco_updated_date`` is a real-world timestamp.
+
+
+.. _raise_on_error:
+
+``raise_on_error`` option
+----------------------------
+A flag that if set to ``True`` raises an error on any parsing or metadata compliance failure. By default (``False``), it skips errors and returns only valid products and datasets.
+
+Set it to ``True`` to be sure of the integrity of the result. Otherwise, setting it to ``False`` will increase the availability and still return the result of the ``describe`` even in case of a momentary problem with a dataset or product.
+
+.. note:
+
+    Results are skipped at the part level as the lowest level. It could be that a dataset is correctly parsed, but might be missing a part that couldn't be fetched or parsed. A full dataset would be erroneous or even a full product. Please check to debug logs to know more.

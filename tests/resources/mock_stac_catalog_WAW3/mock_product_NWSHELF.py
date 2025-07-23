@@ -59,6 +59,12 @@ MOCK_PRODUCT_NWSHELF = {
             "type": "application/json",
         },
         {
+            "rel": "item",  # fake item
+            "href": "dataset_w_errors_202012/dataset.stac.json",
+            "title": "dataset_w_errors_202012",
+            "type": "application/json",
+        },
+        {
             "rel": "item",
             "href": "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012/dataset.stac.json",
             "title": "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012",
