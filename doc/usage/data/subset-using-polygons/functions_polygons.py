@@ -2,11 +2,12 @@ import os
 from typing import Optional
 
 import geopandas as gpd
+import xarray
 
 from copernicusmarine import open_dataset
 
 
-def load_gdf_and_bbox(polygon_file):
+def load_gdf_and_bbox(polygon_file) -> tuple[gpd.GeoDataFrame, dict]:
     """
     Loads a vector file and returns a GeoDataFrame and its bounding box (bbox_upload).
 
@@ -64,10 +65,10 @@ def subset_and_clip_dataset(
     start_date: str,
     end_date: str,
     variables: list,
+    gdf: gpd.GeoDataFrame,
     min_depth: Optional[float] = None,
     max_depth: Optional[float] = None,
-    gdf: Optional[gpd.GeoDataFrame] = None,
-):
+) -> xarray.Dataset:
     """
     Opens a Copernicus Marine dataset, applies spatial/temporal/variable subsetting,
     reprojects the data and applies a clip based on the GeoDataFrame.
@@ -89,14 +90,14 @@ def subset_and_clip_dataset(
     variables : list
         List of variables to extract.
 
+    gdf : GeoDataFrame
+        Polygon used to apply the spatial clip.
+
     min_depth : float, optional
         Minimum depth (in meters). None to ignore.
 
     max_depth : float, optional
         Maximum depth (in meters). None to ignore.
-
-    gdf : GeoDataFrame
-        Polygon used to apply the spatial clip.
 
     Returns
     -------
@@ -112,7 +113,7 @@ def subset_and_clip_dataset(
         depth_filter["maximum_depth"] = max_depth
 
     # Open the dataset
-    DS_subset = open_dataset(
+    ds_subset = open_dataset(
         dataset_id=dataset_id,
         minimum_longitude=bbox["lon_min"],
         maximum_longitude=bbox["lon_max"],
@@ -125,17 +126,20 @@ def subset_and_clip_dataset(
     )
 
     # Set projection to EPSG:4326
-    DS_subset_4326 = DS_subset.rio.write_crs("epsg:4326")
+    ds_subset_4326 = ds_subset.rio.write_crs("epsg:4326")
 
     # Clip using the polygon
-    raster_clipped = DS_subset_4326.rio.clip(
+    raster_clipped = ds_subset_4326.rio.clip(
         gdf.geometry.values, gdf.crs, drop=True
     )
 
     return raster_clipped
 
 
-def encoding(dataset_clipped, output_file=None):
+def encoding(
+    dataset_clipped: xarray.Dataset,
+    output_file: Optional[str] = None,
+) -> xarray.Dataset:
     prepare_encoding = {}
 
     # If no output file is specified, return the dataset without saving
@@ -213,7 +217,7 @@ def extract_clipped_dataset(
     min_depth: Optional[float] = None,
     max_depth: Optional[float] = None,
     output_file: Optional[str] = None,
-):
+) -> xarray.Dataset:
     """
     Load a polygon, extract the corresponding Copernicus Marine dataset,
     apply spatial clipping, compress and optionally save the result.

@@ -29,7 +29,7 @@ repos:
         args: [--pytest-test-first]
         exclude: ^(tests/resources/|tests/scripts)
       - id: pretty-format-json
-        exclude: ^(doc/usage/quickoverview.ipynb|doc/usage/subset_using_polygons.ipynb|doc/usage/stereo_subset.ipynb|doc/usage/french_coast\.geojson)
+        exclude: ^(doc/usage/quickoverview.ipynb|doc/usage/subset_using_polygons.ipynb|doc/usage/stereo_subset.ipynb|doc/usage/data/subset-using-polygons/french_coast\.geojson)
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
     hooks:
