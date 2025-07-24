@@ -1,13 +1,13 @@
 settings.json
-tests*/__pycache__/
-tests/resources/**/__pycache__/
 tests/downloads/
 .vscode/
-copernicusmarine/**/__pycache__/
 **/.aliases
 **/.DS_Store
 __debug.py
 dist/
+
+# Python cache files
+**/__pycache__/
 
 # Sphinx documentation html build
 doc/_build/
