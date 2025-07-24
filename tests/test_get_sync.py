@@ -40,7 +40,7 @@ class TestGetSync:
     #     )
 
     def test_get_sync_works_for_dataset_with_default_parts(self, tmp_path):
-        self.command = self.command = [
+        self.command = [
             "copernicusmarine",
             "get",
             "--dataset-id",
