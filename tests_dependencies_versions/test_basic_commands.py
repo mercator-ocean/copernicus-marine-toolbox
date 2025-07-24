@@ -79,6 +79,6 @@ class TestBasicCommands:
             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
         ]
 
-        self.output = execute_in_terminal(command)
+        self.output = execute_in_terminal(command, safe_quoting=True)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
