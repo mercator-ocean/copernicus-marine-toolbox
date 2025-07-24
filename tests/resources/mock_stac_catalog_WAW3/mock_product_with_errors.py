@@ -1,15 +1,15 @@
-MOCK_PRODUCT_GLO = {
-    "id": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+MOCK_PRODUCT_W_ERRORS = {
+    "id": "PRODUCT_W_ERRORS",
     "type": "Collection",
     "stac_version": "1.0.0",
     "stac_extensions": [
         "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
     ],
-    "title": "Global Ocean Physics Analysis and Forecast",
+    "title": 1,  # Intentionally invalid: title should be a string, not a number
     "description": "The Operational Mercator global ocean analysis and forecast system at 1/12 degree is providing 10 days of 3D global ocean forecasts updated daily. The time series is aggregated in time in order to reach a two full year’s time series sliding window.\n\nThis product includes daily and monthly mean files of temperature, salinity, currents, sea level, mixed layer depth and ice parameters from the top to the bottom over the global ocean. It also includes hourly mean surface fields for sea level height, temperature and currents. The global ocean output files are displayed with a 1/12 degree horizontal resolution with regular longitude/latitude equirectangular projection.\n\n50 vertical levels are ranging from 0 to 5500 meters.\n\nThis product also delivers a special dataset for surface current which also includes wave and tidal drift called SMOC (Surface merged Ocean Current).\n\n**DOI (product):**   \nhttps://doi.org/10.48670/moi-00016",
     "license": "proprietary",
     "providers": [
-        {"name": "Mercator Océan International", "roles": ["producer"]},
+        {"name": 4, "roles": ["producer"]},  # with a number instead of str
         {
             "name": "Copernicus Marine Service",
             "roles": ["host", "processor"],
@@ -71,33 +71,9 @@ MOCK_PRODUCT_GLO = {
             "type": "application/json",
         },
         {
-            "rel": "item",
-            "href": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/dataset.stac.json",
-            "title": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211",
-            "type": "application/json",
-        },
-        {
-            "rel": "item",  # fake item
-            "href": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011/dataset.stac.json",
-            "title": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_206011",
-            "type": "application/json",
-        },
-        {
-            "rel": "item",  # fake item
-            "href": "cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211/dataset.stac.json",
-            "title": "cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211",
-            "type": "application/json",
-        },
-        {
             "rel": "item",  # unavailable item
-            "href": "unavailable_dataset_202012/dataset.stac.json",
-            "title": "unavailable_dataset_202012",
-            "type": "application/json",
-        },
-        {
-            "rel": "item",
-            "href": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/dataset.stac.json",
-            "title": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211",
+            "href": "irrelevant_dataset_202012/dataset.stac.json",
+            "title": "irrelevant_dataset_202012",
             "type": "application/json",
         },
         {
@@ -268,5 +244,5 @@ MOCK_PRODUCT_GLO = {
         "isStaging": False,
         "admp_updated": "2024-04-23T08:52:57.342990Z",
     },
-    "sci:doi": "10.48670/moi-00016",
+    # "sci:doi": "10.48670/moi-00016",# without sci:doi
 }

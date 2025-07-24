@@ -1,0 +1,62 @@
+name: Run tests OSs
+
+on:
+  pull_request_target:
+    branches:
+      - "main"
+      - "release/**"
+      - "pre-release/**"
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      ACTIONS_STEP_DEBUG: true
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.13'
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        run: |
+          poetry --version
+          poetry install --no-interaction --no-root --with dev
+      - name: Install project
+        run: poetry install --no-interaction --with dev
+      - name: Run tests
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+          PYTHONIOENCODING: utf-8
+        run: |
+          source $VENV
+          if [[ "${{ contains(matrix.os, 'windows') }}" == "true" ]]; then
+            make run-tests-windows
+          else
+            make run-tests-unix
+          fi

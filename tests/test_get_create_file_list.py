@@ -16,7 +16,7 @@ class TestGetCreateFileList:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"Assertion error: Download file list must be a '.txt' or '.csv' file."
+            "Assertion error: Download file list must be a '.txt' or '.csv' file."
             in self.output.stderr
         )
 

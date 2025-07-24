@@ -1,3 +1,4 @@
+import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
@@ -16,6 +17,8 @@ from copernicusmarine.core_functions.utils import (
 
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
+
+logger = logging.getLogger("copernicusmarine")
 
 
 class CopernicusMarineServiceNames(str, Enum):
@@ -652,15 +655,38 @@ class CopernicusMarineDataset(BaseModel):
     def parse_dataset_metadata_items(
         self,
         dataset_items: list[DatasetItem],
+        raise_on_error: bool,
     ) -> None:
         all_versions = set()
         for dataset_item in dataset_items:
             dataset_version = dataset_item.parsed_version
-            part = CopernicusMarinePart.from_metadata_item(
-                dataset_item.stac_item,
-                dataset_item.parsed_part,
-                dataset_item.url,
-            )
+            try:
+                part = CopernicusMarinePart.from_metadata_item(
+                    dataset_item.stac_item,
+                    dataset_item.parsed_part,
+                    dataset_item.url,
+                )
+            except Exception as e:
+                if raise_on_error:
+                    logger.error(
+                        f"Failed to parse part {dataset_item.parsed_part} "
+                        f"for dataset {dataset_item.parsed_id}.",
+                    )
+                    logger.error(
+                        "Stopping describe. "
+                        "Check option raise_on_error if needed."
+                    )
+                    raise e
+                else:
+                    log_exception_debug(
+                        e,
+                    )
+                    logger.debug(
+                        f"Failed to parse part {dataset_item.parsed_part} "
+                        f"for dataset {dataset_item.parsed_id}.",
+                    )
+                    logger.debug("Skipping part.")
+                    part = None
             if not part:
                 continue
             if dataset_version in all_versions:

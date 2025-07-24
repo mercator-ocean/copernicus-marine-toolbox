@@ -39,32 +39,12 @@ from copernicusmarine.download_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 
 
-NETCDF_CONVENTION_VARIABLE_ATTRIBUTES = [
-    "standard_name",
-    "long_name",
-    "units",
-    "unit_long",
-    "valid_min",
-    "valid_max",
-]
 NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
     "standard_name",
     "long_name",
     "units",
     "unit_long",
     "axis",
-]
-NETCDF_CONVENTION_DATASET_ATTRIBUTES = [
-    "title",
-    "institution",
-    "source",
-    "history",
-    "references",
-    "comment",
-    "Conventions",
-    "producer",
-    "credit",
-    "contact",
 ]
 
 
@@ -471,7 +451,7 @@ def _get_variable_name_from_standard_name(
     return None
 
 
-def _adequate_dtypes_of_valid_minmax(
+def _cast_valid_minmax_to_variable_dtype(
     dataset: xarray.Dataset, variable: str
 ) -> xarray.Dataset:
     dataset[variable].attrs["valid_min"] = numpy.array(
@@ -485,39 +465,51 @@ def _adequate_dtypes_of_valid_minmax(
     return dataset
 
 
+def _cast_valid_range_to_variable_dtype(
+    dataset: xarray.Dataset, variable: str
+) -> xarray.Dataset:
+    dataset[variable].attrs["valid_range"] = numpy.array(
+        dataset[variable].attrs["valid_range"],
+    ).astype(dataset[variable].encoding["dtype"])
+    return dataset
+
+
 def _update_variables_attributes(
     dataset: xarray.Dataset, variables: List[str]
 ) -> xarray.Dataset:
     for variable in variables:
-        dataset[variable].attrs = _filter_attributes(
-            dataset[variable].attrs, NETCDF_CONVENTION_VARIABLE_ATTRIBUTES
-        )
         if (
             "valid_min" in dataset[variable].attrs
             and "valid_max" in dataset[variable].attrs
         ):
-            _adequate_dtypes_of_valid_minmax(dataset, variable)
+            _cast_valid_minmax_to_variable_dtype(dataset, variable)
+        if "valid_range" in dataset[variable].attrs:
+            _cast_valid_range_to_variable_dtype(dataset, variable)
     return dataset
 
 
 def _variables_subset(
-    dataset: xarray.Dataset, variables: List[str]
+    dataset: xarray.Dataset, variables: Optional[List[str]]
 ) -> xarray.Dataset:
     dataset_variables_filter = []
 
-    for variable in variables:
-        if variable in dataset.variables:
-            dataset_variables_filter.append(variable)
-        else:
-            variable_name_from_standard_name = (
-                _get_variable_name_from_standard_name(dataset, variable)
-            )
-            if variable_name_from_standard_name is not None:
-                dataset_variables_filter.append(
-                    variable_name_from_standard_name
-                )
+    if variables:
+        for variable in variables:
+            if variable in dataset.variables:
+                dataset_variables_filter.append(variable)
             else:
-                raise VariableDoesNotExistInTheDataset(variable)
+                variable_name_from_standard_name = (
+                    _get_variable_name_from_standard_name(dataset, variable)
+                )
+                if variable_name_from_standard_name is not None:
+                    dataset_variables_filter.append(
+                        variable_name_from_standard_name
+                    )
+                else:
+                    raise VariableDoesNotExistInTheDataset(variable)
+    else:
+        dataset_variables_filter = [str(v) for v in dataset.keys()]
+
     dataset = dataset[numpy.array(dataset_variables_filter)]
     return _update_variables_attributes(dataset, dataset_variables_filter)
 
@@ -569,10 +561,6 @@ def _update_dataset_coordinate_attributes(
                     }
             coord.attrs = _filter_attributes(attrs, coordinate_attributes)
 
-    dataset.attrs = _filter_attributes(
-        dataset.attrs, NETCDF_CONVENTION_DATASET_ATTRIBUTES
-    )
-
     return dataset
 
 
@@ -584,8 +572,7 @@ def subset(
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    if variables:
-        dataset = _variables_subset(dataset, variables)
+    dataset = _variables_subset(dataset, variables)
     dataset = _y_axis_subset(
         dataset,
         geographical_parameters.y_axis_parameters,
@@ -602,7 +589,9 @@ def subset(
     )
 
     dataset = _depth_subset(
-        dataset, depth_parameters, coordinates_selection_method
+        dataset,
+        depth_parameters,
+        coordinates_selection_method,
     )
 
     dataset = _update_dataset_coordinate_attributes(

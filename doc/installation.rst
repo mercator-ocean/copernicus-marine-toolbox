@@ -157,7 +157,6 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__ (1.26 or later)
 - `semver <https://python-semver.readthedocs.io/en/latest/>`__ (0.2 or later)
 - `pystac <https://pystac.readthedocs.io/en/stable/>`__ (1.8.3 or later)
-- `lxml <https://lxml.de/>`__ (4.9.0 or later)
 - `numpy <https://www.numpy.org/>`__ (1.23 or later)
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
@@ -169,6 +168,11 @@ There are some compatibility issues with the latest versions of xarray and numpy
 
 - ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
 - ``xarray<2024.10.0`` with ``numpy>=2.0.0`` leads to some time overhead. See this issue: `xarray issue 2 <https://github.com/pydata/xarray/issues/9545>`_.
+
+For ``zarr>=3.0.0``:
+
+- If you want to use ``zarr>=v3``, you need to use ``xarray>=2025.3.0``.
+- If you want to use ``zarr>=3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
 
 Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
 and ``h5netcdf`` library as the backend.
@@ -197,12 +201,13 @@ and ``h5netcdf`` library as the backend.
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
 
+.. _installation-page-domains:
+
 Domains required by the Copernicus Marine Toolbox
 ********************************************************
 To be able to use the Copernicus Marine Services, you need to be able to access those domains:
 
-- ``https://cmems-cas.cls.fr``: for the old authentication process.
-- ``https://auth.marine.copernicus.eu``: for the new authentication process.
+- ``https://auth.marine.copernicus.eu``: for the authentication process.
 - ``https://s3.waw3-1.cloudferro.com``: for the data and the metadata.
 - ``https://s3.waw4-1.cloudferro.com``: for the data and the metadata.
 - ``https://stac.marine.copernicus.eu``: for the metadata.

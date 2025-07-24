@@ -124,6 +124,10 @@ DESCRIBE: dict[str, str] = {
         "Maximum number of concurrent requests (>=1). Default 15. The command uses "
         "a thread pool executor to manage concurrent requests."
     ),
+    "RAISE_ON_ERROR_HELP": (
+        "If set to True, the function will raise at the first error encountered "
+        "during the parsing and fetching of the catalogue. Default, False."
+    ),
 }
 
 SUBSET: dict[str, str] = {

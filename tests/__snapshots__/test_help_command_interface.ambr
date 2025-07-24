@@ -1,7 +1,7 @@
 # serializer version: 1
 # name: TestHelpCommandLineInterface.test_help_from_copernicusmarin_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', '--help'], returncode=0, stdout=b'Usage: copernicusmarine [OPTIONS] COMMAND [ARGS]...",
+    "CompletedProcess(args=['copernicusmarine', '--help'], returncode=0, stdout='Usage: copernicusmarine [OPTIONS] COMMAND [ARGS]...",
     '',
     'Options:',
     '  -V, --version  Show the version and exit.',
@@ -13,12 +13,12 @@
     '  login     Create a configuration file with your Copernicus Marine',
     '            credentials.',
     '  subset    Download subsets of datasets as NetCDF files or Zarr stores.',
-    "', stderr=b'')",
+    "', stderr='')",
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_describe_is_as_expected
   list([
-    'CompletedProcess(args=[\'copernicusmarine\', \'describe\', \'--help\'], returncode=0, stdout=b"Usage: copernicusmarine describe [OPTIONS]',
+    'CompletedProcess(args=[\'copernicusmarine\', \'describe\', \'--help\'], returncode=0, stdout="Usage: copernicusmarine describe [OPTIONS]',
     '',
     '  Retrieve and parse the metadata information from the Copernicus Marine',
     '  catalogue.',
@@ -53,6 +53,10 @@
     '  --log-level [DEBUG|INFO|WARN|ERROR|CRITICAL|QUIET]',
     '                                  Set the details printed to console by the',
     '                                  command (based on standard logging library).',
+    '  --raise-on-error                If set to True, the function will raise at',
+    '                                  the first error encountered during the',
+    '                                  parsing and fetching of the catalogue.',
+    '                                  Default, False.',
     '  -h, --help                      Show this message and exit.',
     '',
     '',
@@ -65,12 +69,12 @@
     '        copernicusmarine describe -c METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 ',
     '',
     '    ',
-    '", stderr=b\'\')',
+    '", stderr=\'\')',
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_get_is_as_expected
   list([
-    'CompletedProcess(args=[\'copernicusmarine\', \'get\', \'--help\'], returncode=0, stdout=b"Usage: copernicusmarine get [OPTIONS]',
+    'CompletedProcess(args=[\'copernicusmarine\', \'get\', \'--help\'], returncode=0, stdout="Usage: copernicusmarine get [OPTIONS]',
     '',
     '  Download originally produced data files.',
     '',
@@ -188,12 +192,12 @@
     '        copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m ',
     '',
     '    ',
-    '", stderr=b\'\')',
+    '", stderr=\'\')',
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_login_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', 'login', '--help'], returncode=0, stdout=b'Usage: copernicusmarine login [OPTIONS]",
+    "CompletedProcess(args=['copernicusmarine', 'login', '--help'], returncode=0, stdout='Usage: copernicusmarine login [OPTIONS]",
     '',
     '  Create a configuration file with your Copernicus Marine credentials under',
     '  the ``$HOME/.copernicusmarine`` directory.',
@@ -254,12 +258,12 @@
     '        > Username: [USER-INPUT]',
     '        > Password: [USER-INPUT]',
     '    ',
-    "', stderr=b'')",
+    "', stderr='')",
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', 'subset', '--help'], returncode=0, stdout=b'Usage: copernicusmarine subset [OPTIONS]",
+    "CompletedProcess(args=['copernicusmarine', 'subset', '--help'], returncode=0, stdout='Usage: copernicusmarine subset [OPTIONS]",
     '',
     '  Extract a subset of data from a specified dataset using given parameters.',
     '',
@@ -329,15 +333,15 @@
     '  -t, --start-datetime TEXT       The start datetime of the temporal subset.',
     '                                  Supports common format parsed by dateutil (h',
     '                                  ttps://dateutil.readthedocs.io/en/stable/par',
-    '                                  ser.html). Caution: encapsulate date with \\xe2\\x80\\x9c',
-    '                                  \\xe2\\x80\\x9c to ensure valid expression for format',
-    '                                  \\xe2\\x80\\x9c%Y-%m-%d %H:%M:%S\\xe2\\x80\\x9d.',
+    '                                  ser.html). Caution: encapsulate date with “',
+    '                                  “ to ensure valid expression for format',
+    '                                  “%Y-%m-%d %H:%M:%S”.',
     '  -T, --end-datetime TEXT         The end datetime of the temporal subset.',
     '                                  Supports common format parsed by dateutil (h',
     '                                  ttps://dateutil.readthedocs.io/en/stable/par',
-    '                                  ser.html). Caution: encapsulate date with \\xe2\\x80\\x9c',
-    '                                  \\xe2\\x80\\x9c to ensure valid expression for format',
-    '                                  \\xe2\\x80\\x9c%Y-%m-%d %H:%M:%S\\xe2\\x80\\x9d.',
+    '                                  ser.html). Caution: encapsulate date with “',
+    '                                  “ to ensure valid expression for format',
+    '                                  “%Y-%m-%d %H:%M:%S”.',
     '  -p, --platform-id TEXT          Specify platform ID. Can be used multiple',
     '                                  times. Only available for platform chunked',
     '                                  datasets.',
@@ -444,6 +448,6 @@
     '        copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 ',
     '',
     '    ',
-    "', stderr=b'')",
+    "', stderr='')",
   ])
 # ---

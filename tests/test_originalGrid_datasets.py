@@ -8,9 +8,11 @@ from copernicusmarine import open_dataset, read_dataframe, subset
 from copernicusmarine.core_functions.utils import datetime_parser
 from tests.test_utils import execute_in_terminal
 
-dataset_name = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
-variable = "po4"
-datasets_w_originalGrid = [
+EXAMPLE_DATASET_ID = "cmems_mod_arc_bgc_my_ecosmo_P1D-m"
+EXAMPLE_VARIABLE = "po4"
+# Each list in ORIGINAL_GRID_DATASETS represents a dataset with the following structure:
+# [dataset_id, start_datetime, minimum_x, maximum_x, minimum_y, maximum_y]
+ORIGINAL_GRID_DATASETS = [
     [
         "cmems_obs-si_arc_physic_nrt_1km-grl_P1D-irr",
         "2021",
@@ -75,7 +77,6 @@ datasets_w_originalGrid = [
         "-10000",
         "-8000",
     ],
-    # The upper ones, are new!
     [
         "DMI-ARC-SEAICE_BERG_MOSAIC-L4-NRT-OBS",
         "2024",
@@ -87,18 +88,18 @@ datasets_w_originalGrid = [
     [
         "cmems_obs-wind_arc_phy_my_l3-s1a-sar-asc-0.01deg_P1D-i",
         "2024",
-        "215972.0",
-        "234972.0",
-        "-2799378.0",
-        "-2150378.0",
+        "98549.0",
+        "108549.0",
+        "-2311438.0",
+        "-2050378.0",
     ],
     [
         "cmems_obs-wind_arc_phy_my_l3-s1a-sar-desc-0.01deg_P1D-i",
         "2024",
-        "215972.0",
-        "234972.0",
-        "-2799378.0",
-        "-2150378.0",
+        "90972.0",
+        "100972.0",
+        "-299378.0",
+        "-250378.0",
     ],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1D-m", "2020"],
     ["cmems_mod_arc_bgc_anfc_ecosmo_P1M-m", "2020"],
@@ -170,9 +171,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            dataset_name,
+            EXAMPLE_DATASET_ID,
             "-v",
-            variable,
+            EXAMPLE_VARIABLE,
             "--dataset-part",
             "originalGrid",
             "--minimum-longitude",
@@ -186,12 +187,12 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 1
-        assert b"DEBUG" in self.output.stderr
+        assert "DEBUG" in self.output.stderr
         assert (
-            b"Lon lat subset not available in original grid datasets: "
-            b"You cannot specify longitude and latitude when using the"
-            b" 'originalGrid' dataset part. Try using ``--minimum-x``"
-            b", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
+            "Lon lat subset not available in original grid datasets: "
+            "You cannot specify longitude and latitude when using the"
+            " 'originalGrid' dataset part. Try using ``--minimum-x``"
+            ", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
             in self.output.stderr
         )
 
@@ -222,9 +223,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            dataset_name,
+            EXAMPLE_DATASET_ID,
             "-v",
-            variable,
+            EXAMPLE_VARIABLE,
             "--dataset-part",
             "originalGrid",
             "-x",
@@ -237,10 +238,10 @@ class TestOriginalGridDatasets:
         self.output = execute_in_terminal(command)
 
         assert self.output.returncode == 0
-        assert b"DEBUG" in self.output.stderr
+        assert "DEBUG" in self.output.stderr
         assert (
-            b"Because you are using an originalGrid dataset, we are considering"
-            b" the options -x, -X, -y, -Y to be in m/km, not in degrees."
+            "Because you are using an originalGrid dataset, we are considering"
+            " the options -x, -X, -y, -Y to be in m/km, not in degrees."
         ) in self.output.stderr
 
     def test_originalGrid_works_when_time_and_depth_subsetting(self, tmp_path):
@@ -249,9 +250,9 @@ class TestOriginalGridDatasets:
             "copernicusmarine",
             "subset",
             "-i",
-            dataset_name,
+            EXAMPLE_DATASET_ID,
             "-v",
-            variable,
+            EXAMPLE_VARIABLE,
             "--dataset-part",
             "originalGrid",
             "-t",
@@ -276,7 +277,7 @@ class TestOriginalGridDatasets:
 
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
-        assert b"DEBUG" in self.output.stderr
+        assert "DEBUG" in self.output.stderr
         assert datetime_parser("2020-01-01") == datetime_parser(
             dataset.time.values[0]
         )
@@ -295,7 +296,7 @@ class TestOriginalGridDatasets:
         assert len(coordinates) == 4
 
     def test_originalGrid_works_when_subsetting(self):
-        for dataset_info in datasets_w_originalGrid:
+        for dataset_info in ORIGINAL_GRID_DATASETS:
             if random.randrange(start=100) > 80:
                 print(f"running dataset {dataset_info[0]}")
                 self.run_one_dataset(dataset_info)
@@ -373,15 +374,15 @@ class TestOriginalGridDatasets:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert b"WARNING" in self.output.stderr
+        assert "WARNING" in self.output.stderr
         assert (
-            b"Some of your subset selection [-100.0, 100.0] for the"
-            b" x dimension exceed the dataset coordinates [-36.0, 38.0]"
+            "Some of your subset selection [-100.0, 100.0] for the"
+            " x dimension exceed the dataset coordinates [-36.0, 38.0]"
             in self.output.stderr
         )
         assert (
-            b"Some of your subset selection [-100.0, 100.0] for the "
-            b"y dimension exceed the dataset coordinates [-43.0, 28.0]"
+            "Some of your subset selection [-100.0, 100.0] for the "
+            "y dimension exceed the dataset coordinates [-43.0, 28.0]"
             in self.output.stderr
         )
 
@@ -411,10 +412,10 @@ class TestOriginalGridDatasets:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        assert b"ERROR" in self.output.stderr
+        assert "ERROR" in self.output.stderr
         assert (
-            b"Some of your subset selection [-100.0, 100.0] for the y"
-            b" dimension exceed the dataset coordinates [-43.0, 28.0]"
+            "Some of your subset selection [-100.0, 100.0] for the y"
+            " dimension exceed the dataset coordinates [-43.0, 28.0]"
             in self.output.stderr
         )
 

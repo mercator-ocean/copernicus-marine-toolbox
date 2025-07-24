@@ -4,28 +4,28 @@ import pathlib
 from unittest import mock
 
 from copernicusmarine import get
-from tests.test_utils import execute_in_terminal
+from tests.test_utils import FileToCheck, execute_in_terminal
 
-DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE = (
+DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE = FileToCheck(
     "tests/resources/file_list_examples/direct_download_file_list.txt"
-)
-DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED = (
+).get_path()
+DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED = FileToCheck(
     "tests/resources/file_list_examples/direct_download_file_list_extended.txt"
-)
+).get_path()
 
-DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_WITH_ONE_WRONG = (
+DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_WITH_ONE_WRONG = FileToCheck(
     "tests/resources/file_list_examples/"
     "direct_download_file_list_with_one_wrong.txt"
-)
-DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIFERENT_PATH_TYPES = (
+).get_path()
+DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIFERENT_PATH_TYPES = FileToCheck(
     "tests/resources/file_list_examples/"
     "direct_download_file_list_different_path_types.txt"
-)
+).get_path()
 
-DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS = (
+DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS = FileToCheck(
     "tests/resources/file_list_examples/"
     "direct_download_fails_listing_succeeds.txt"
-)
+).get_path()
 
 
 class TestGetDirectDownload:
@@ -50,17 +50,17 @@ class TestGetDirectDownload:
         ]
         self.output = execute_in_terminal(self.command)
         response_get = json.loads(self.output.stdout)
-        to_check = (
+        to_check = FileToCheck(
             "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
             "history/BO/AR_PR_BO_58JM.nc"
-        )
+        ).get_path()
         assert [
             "nice"
             for file_get in response_get["files"]
             if to_check in file_get["file_path"]
         ]
-        assert b"Skipping" not in self.output.stderr
+        assert "Skipping" not in self.output.stderr
         self._assert_insitu_file_exists_locally(
             tmp_path, "history/BO/AR_PR_BO_58JM.nc"
         )
@@ -82,12 +82,12 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"No data to download" in self.output.stderr
+        assert "No data to download" in self.output.stderr
         self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_58JM.nc"
+            tmp_path, FileToCheck("/history/BO/AR_PR_BO_58JM.nc").get_path()
         )
         self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_58US.nc"
+            tmp_path, FileToCheck("/history/BO/AR_PR_BO_58US.nc").get_path()
         )
         assert self.output.returncode == 0
 
@@ -108,11 +108,11 @@ class TestGetDirectDownload:
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
         response_get = json.loads(self.output.stdout)
-        file_to_check = (
+        file_to_check = FileToCheck(
             "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
             "history/BO/AR_PR_BO_LHUW.nc"
-        )
+        ).get_path()
         assert [
             "found"
             for file_get in response_get["files"]
@@ -120,13 +120,13 @@ class TestGetDirectDownload:
         ]
 
         self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_58JM.nc"
+            tmp_path, FileToCheck("/history/BO/AR_PR_BO_58JM.nc").get_path()
         )
         self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_58US.nc"
+            tmp_path, FileToCheck("history/BO/AR_PR_BO_58US.nc").get_path()
         )
         self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_LHUW.nc"
+            tmp_path, FileToCheck("history/BO/AR_PR_BO_LHUW.nc").get_path()
         )
         assert self.output.returncode == 0
 
@@ -150,16 +150,17 @@ class TestGetDirectDownload:
         ]
         self.output = execute_in_terminal(self.command)
         assert (
-            b"File s3://mdl-native-01/native/"
-            b"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
-            b"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
-            b"lololo not found on the server. Skipping."
+            "File s3://mdl-native-01/native/"
+            "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+            "lololo not found on the server. Skipping."
         ) in self.output.stderr
         assert (
-            b"history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
+            "history/BO/AR_PR_BO_58JM.nc not found on the server. Skipping."
         ) not in self.output.stderr
         self._assert_insitu_file_exists_locally(
-            tmp_path, file_name="history/BO/AR_PR_BO_58JM.nc"
+            tmp_path,
+            file_name=FileToCheck("/history/BO/AR_PR_BO_58JM.nc").get_path(),
         )
         assert self.output.returncode == 0
 
@@ -175,8 +176,14 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"WARNING" not in self.output.stderr
-        assert b"Skipping" not in self.output.stderr
+        if "WARNING" in self.output.stderr:
+            assert (
+                "Using a pre-release or a non-official version of the client."
+                in self.output.stderr
+            )
+        else:
+            assert "WARNING" not in self.output.stderr
+        assert "Skipping" not in self.output.stderr
         assert self.output.returncode == 0
 
     def test_get_direct_download_fails_but_listing_succeeds(self, tmp_path):
@@ -191,18 +198,17 @@ class TestGetDirectDownload:
             str(tmp_path),
         ]
         self.output = execute_in_terminal(self.command)
-        assert b"Skipping" in self.output.stderr
+        assert "Skipping" in self.output.stderr
         assert (
-            b"No files found to download for direct download."
+            "No files found to download for direct download."
             in self.output.stderr
         )
-        assert os.path.exists(
-            f"{tmp_path}/"
-            f"IBI_MULTIYEAR_PHY_005_002/"
-            f"cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/"
-            f"2021/"
-            f"CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211001_20211031_R20230101_RE01.nc"
-        )
+        to_check = FileToCheck(
+            "/IBI_MULTIYEAR_PHY_005_002/"
+            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/"
+            "2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211001_20211031_R20230101_RE01.nc"
+        ).get_path()
+        assert os.path.exists(f"{tmp_path}{to_check}")
         assert self.output.returncode == 0
 
     # Python interface tests
@@ -237,9 +243,9 @@ class TestGetDirectDownload:
         temp_path,
         file_name: str,
     ):
-        assert os.path.exists(
-            f"{temp_path}/"
-            f"INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
-            f"cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
-            f"{file_name}"
-        )
+        to_check = FileToCheck(
+            "/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030/"
+            "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
+        ).get_path()
+        file_name = FileToCheck(file_name).get_path()
+        assert os.path.exists(f"{temp_path}{to_check}{file_name}")

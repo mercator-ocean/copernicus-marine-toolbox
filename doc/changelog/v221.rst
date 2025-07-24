@@ -1,0 +1,20 @@
+Release 2.2.1
+==============
+
+Patch release with bug fixes and improvements.
+
+General
+--------
+
+Fixes
+^^^^^
+
+* Updated the output of some commands in the documentation.
+
+Login
+------
+
+Fixes
+^^^^^
+
+* Deleted the code from the old authentication system. It fixes some issues where the error returned by the Toolbox was not the proper one. It would also raise an error instead of returning ``False`` with the Python interface.
