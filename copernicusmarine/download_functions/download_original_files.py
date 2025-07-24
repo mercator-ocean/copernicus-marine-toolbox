@@ -125,7 +125,6 @@ def download_original_files(
         files_headers = _get_files_to_delete_with_sync(
             files_information=files_headers,
             output_directory=pathlib.Path(get_request.output_directory),
-            no_directories=get_request.no_directories,
         )
         if files_headers.files_to_delete:
             logger.info("Some files will be deleted due to sync delete:")
@@ -234,35 +233,23 @@ def create_response_get_from_files_headers(
 def _get_files_to_delete_with_sync(
     files_information: S3FilesDescriptor,
     output_directory: pathlib.Path,
-    no_directories: bool = False,
 ) -> S3FilesDescriptor:
     if not files_information.s3_files:
         return files_information
     filenames_out = {
         s3_file.filename_out for s3_file in files_information.s3_files
     }
-    if no_directories:
-        if (
-            output_directory == "."
-            or output_directory.resolve() == pathlib.Path.cwd()
-        ):
-            raise ValueError
-        for local_file in output_directory.glob("**/*"):
-            if local_file.is_file() and local_file not in filenames_out:
-                files_information.files_to_delete.append(local_file)
-        return files_information
-    else:
-        product_structure = _local_path_from_s3_url(
-            files_information.s3_files[0].filename_in, pathlib.Path("")
-        ).parts
-        product_id = product_structure[0]
-        dataset_id = product_structure[1]
-        dataset_level_local_folder = output_directory / product_id / dataset_id
+    product_structure = _local_path_from_s3_url(
+        files_information.s3_files[0].filename_in, pathlib.Path("")
+    ).parts
+    product_id = product_structure[0]
+    dataset_id = product_structure[1]
+    dataset_level_local_folder = output_directory / product_id / dataset_id
 
-        for local_file in dataset_level_local_folder.glob("**/*"):
-            if local_file.is_file() and local_file not in filenames_out:
-                files_information.files_to_delete.append(local_file)
-        return files_information
+    for local_file in dataset_level_local_folder.glob("**/*"):
+        if local_file.is_file() and local_file not in filenames_out:
+            files_information.files_to_delete.append(local_file)
+    return files_information
 
 
 def download_files(

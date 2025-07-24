@@ -30,12 +30,14 @@ class TestGetSync:
             tmp_path, False
         )
 
-    def test_get_sync_delete_no_directories(self, tmp_path):
-        self.when_I_get_some_native_files_with_sync(tmp_path, True)
-        self.when_I_add_a_file_locally(tmp_path, True)
-        self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
-            tmp_path, True
-        )
+    # TODO: once we have a clear view on how to handle the relation
+    #     of no_directories and sync_delete, we can adress this.
+    # def test_get_sync_delete_no_directories(self, tmp_path):
+    #     self.when_I_get_some_native_files_with_sync(tmp_path, True)
+    #     self.when_I_add_a_file_locally(tmp_path, True)
+    #     self.then_command_sync_delete_should_propose_to_delete_it_and_delete_it(
+    #         tmp_path, True
+    #     )
 
     def test_get_sync_works_for_dataset_with_default_parts(self, tmp_path):
         self.command = self.command = [
