@@ -1,6 +1,9 @@
 name: Dependencies tests
 
 on:
+  push:
+    branches:
+      - "dependency-on-windows"
   schedule:
     - cron: '0 0 * * 6'
 
