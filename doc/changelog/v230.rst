@@ -10,6 +10,7 @@ New features
 ^^^^^^^^^^^^^^^
 
 * Increased the resilience when parsing or fetching the metadata. Make the ``describe`` more robust and consequently the ``subset`` and ``get`` commands as well.
+* Improved the documentation page "Polygons Extractor Using the Copernicus Marine Toolbox" in the "Usage and technical details section". It should be clearer and should use less dependencies. See :ref:`"Polygons-based data selection" <polygons-based-data-selection>`.
 
 Subset
 ------
