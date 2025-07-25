@@ -12,7 +12,10 @@ from copernicusmarine.catalogue_parser.models import (
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
-from copernicusmarine.core_functions.exceptions import ServiceNotSupported
+from copernicusmarine.core_functions.exceptions import (
+    ServiceNotSupported,
+    WrongFormatRequested,
+)
 from copernicusmarine.core_functions.marine_datastore_config import (
     get_config_and_check_version_subset,
 )
@@ -61,7 +64,7 @@ def subset_function(
     platform_ids: Optional[List[str]],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
-    file_format: FileFormat,
+    file_format: Optional[FileFormat],
     force_service: Optional[str],
     request_file: Optional[pathlib.Path],
     output_directory: Optional[pathlib.Path],
@@ -172,36 +175,39 @@ def subset_function(
             == CopernicusMarineServiceFormat.ZARR
         ):
             raise_when_all_dataset_requested(subset_request, False)
-            if subset_request.file_format not in ["netcdf", "zarr"]:
-                raise ValueError(
-                    f"{subset_request.file_format} is not a valid format "
-                    "for this dataset. "
-                    "Available format for this dataset is 'netcdf' or 'zarr'."
+            if subset_request.file_format is None:
+                subset_request.file_format = "netcdf"
+            elif subset_request.file_format not in ["netcdf", "zarr"]:
+                raise WrongFormatRequested(
+                    format_type=subset_request.file_format,
+                    supported_formats=["netcdf", "zarr"],
                 )
             response = download_zarr(
-                username,
-                password,
-                subset_request,
-                retrieval_service.dataset_id,
-                disable_progress_bar,
-                retrieval_service.dataset_valid_start_date,
-                retrieval_service.service,
-                retrieval_service.is_original_grid,
-                retrieval_service.axis_coordinate_id_mapping,
-                chunk_size_limit,
-                retrieval_service.dataset_chunking,
+                username=username,
+                password=password,
+                subset_request=subset_request,
+                file_format=subset_request.file_format,
+                dataset_id=retrieval_service.dataset_id,
+                disable_progress_bar=disable_progress_bar,
+                dataset_valid_start_date=retrieval_service.dataset_valid_start_date,
+                service=retrieval_service.service,
+                is_original_grid=retrieval_service.is_original_grid,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+                chunk_size_limit=chunk_size_limit,
+                dataset_chunking=retrieval_service.dataset_chunking,
             )
         if (
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
             raise_when_all_dataset_requested(subset_request, True)
-            if subset_request.file_format not in ["parquet", "csv"]:
-                logger.debug(
-                    "Using 'csv' format by default. "
-                    "'parquet' format can also be set with 'file-format' option."
-                )
+            if subset_request.file_format is None:
                 subset_request.file_format = "csv"
+            elif subset_request.file_format not in ["parquet", "csv"]:
+                raise WrongFormatRequested(
+                    format_type=subset_request.file_format,
+                    supported_formats=["parquet", "csv"],
+                )
             if subset_request.coordinates_selection_method not in [
                 "inside",
                 "strict-inside",
@@ -213,13 +219,14 @@ def subset_function(
                     "Using 'inside' by default."
                 )
             response = download_sparse(
-                username,
-                subset_request,
-                retrieval_service.metadata_url,
-                retrieval_service.service,
-                retrieval_service.axis_coordinate_id_mapping,
-                retrieval_service.product_doi,
-                disable_progress_bar,
+                username=username,
+                subset_request=subset_request,
+                file_format=subset_request.file_format,
+                metadata_url=retrieval_service.metadata_url,
+                service=retrieval_service.service,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+                product_doi=retrieval_service.product_doi,
+                disable_progress_bar=disable_progress_bar,
             )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)

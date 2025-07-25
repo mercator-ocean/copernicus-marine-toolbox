@@ -11,7 +11,6 @@ from copernicusmarine.catalogue_parser.models import (
 )
 
 FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
-DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
 DEFAULT_FILE_FORMATS = list(get_args(FileFormat))
 
 FileExtension = Literal[".nc", ".zarr"]

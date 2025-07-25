@@ -12,7 +12,6 @@ from copernicusmarine.core_functions.deprecated_options import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
-    DEFAULT_FILE_FORMAT,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
@@ -62,7 +61,7 @@ class SubsetRequest:
         DEFAULT_COORDINATES_SELECTION_METHOD
     )
     output_filename: Optional[str] = None
-    file_format: FileFormat = DEFAULT_FILE_FORMAT
+    file_format: Optional[FileFormat] = None
     force_service: Optional[str] = None
     output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
