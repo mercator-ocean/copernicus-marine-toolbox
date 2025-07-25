@@ -28,7 +28,6 @@ from copernicusmarine.core_functions.fields_query_builder import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_COORDINATES_SELECTION_METHODS,
-    DEFAULT_FILE_FORMAT,
     DEFAULT_FILE_FORMATS,
     DEFAULT_VERTICAL_AXES,
     DEFAULT_VERTICAL_AXIS,
@@ -242,7 +241,7 @@ def cli_subset() -> None:
 @click.option(
     "--file-format",
     type=click.Choice(DEFAULT_FILE_FORMATS),
-    default=DEFAULT_FILE_FORMAT,
+    default=None,
     help=documentation_utils.SUBSET["FILE_FORMAT_HELP"],
 )
 @click.option(
@@ -373,7 +372,7 @@ def subset(
     platform_ids: Optional[List[str]],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
-    file_format: FileFormat,
+    file_format: Optional[FileFormat],
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
     service: Optional[str],
