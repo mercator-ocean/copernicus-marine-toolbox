@@ -142,6 +142,7 @@ def _build_filename_from_dataset(
 
 def build_filename_from_request(
     request: SubsetRequest,
+    file_format: FileFormat,
     variables: list[str],
     platform_ids: list[str],
     axis_coordinate_id_mapping: dict[str, str],
@@ -210,7 +211,7 @@ def build_filename_from_request(
     )
     filename = filename if len(filename) < 250 else filename[250:]
 
-    return filename + get_file_extension(request.file_format)
+    return filename + get_file_extension(file_format)
 
 
 def get_coordinate_ids_from_parameters(

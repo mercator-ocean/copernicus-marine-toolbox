@@ -88,6 +88,24 @@ class FormatNotSupported(Exception):
         )
 
 
+class WrongFormatRequested(Exception):
+    f"""
+    Exception raised when the requested format is wrong.
+    Note that some datasets do not support all formats. For example,
+    sparse datasets only support CSV format and Parquet format and will default to CSV.
+    Other datasets support NetCDF and Zarr formats and will default to NetCDF.
+
+    Please make sure the requested format is one of the supported formats for the dataset.
+    """  # noqa
+
+    def __init__(self, format_type: str, supported_formats: list[str]):
+        super().__init__(
+            f"Requested format '{format_type}' is not supported. "
+            f"Supported formats for this dataset "
+            f"are: {supported_formats}."
+        )
+
+
 class ServiceNotSupported(Exception):
     """
     Exception raised when the service type is not supported.
