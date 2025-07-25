@@ -113,9 +113,7 @@ def get(
         elif no_directories:
             raise MutuallyExclusiveArguments("skip_existing", "no_directories")
     if no_directories:
-        if sync:
-            raise MutuallyExclusiveArguments("sync", "no_directories")
-        elif sync_delete:
+        if sync_delete:
             raise MutuallyExclusiveArguments("sync_delete", "no_directories")
 
     output_directory = (

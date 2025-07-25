@@ -27,3 +27,11 @@ New-Features
 ^^^^^^^^^^^^^^^
 
 * Add a flag :ref:`this section <raise_on_error>` to the `describe` command to raise an error when the fetching or parsing fails. Default is set to ``False``.
+
+Get
+------
+
+New-Features
+^^^^^
+
+* Removed the incompatibility of ``sync`` option and ``no_directories`` option. Now, they can be used together.

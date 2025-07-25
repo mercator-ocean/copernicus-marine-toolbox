@@ -73,7 +73,6 @@ The ``--sync`` option downloads original files only if they do not exist or are 
 
 **Limitations:**
 
-- ``--sync`` is not compatible with ``--no-directories``.
 - ``--sync`` only works with ``--dataset-version``. (see :ref:`dataset-version <dataset version>` option )
 
 About filtering options
