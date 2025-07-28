@@ -158,7 +158,10 @@ def cli_get() -> None:
     is_flag=True,
     default=False,
     help=documentation_utils.GET["SYNC_DELETE_HELP"],
-    mutually_exclusive=["skip-existing", "no-directories",],
+    mutually_exclusive=[
+        "skip-existing",
+        "no-directories",
+    ],
 )
 @click.option(
     "--skip-existing",
