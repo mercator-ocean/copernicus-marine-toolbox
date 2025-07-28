@@ -236,15 +236,16 @@ def _get_files_to_delete_with_sync(
 ) -> S3FilesDescriptor:
     if not files_information.s3_files:
         return files_information
+    filenames_out = {
+        s3_file.filename_out for s3_file in files_information.s3_files
+    }
     product_structure = _local_path_from_s3_url(
         files_information.s3_files[0].filename_in, pathlib.Path("")
     ).parts
     product_id = product_structure[0]
     dataset_id = product_structure[1]
     dataset_level_local_folder = output_directory / product_id / dataset_id
-    filenames_out = {
-        s3_file.filename_out for s3_file in files_information.s3_files
-    }
+
     for local_file in dataset_level_local_folder.glob("**/*"):
         if local_file.is_file() and local_file not in filenames_out:
             files_information.files_to_delete.append(local_file)
@@ -470,8 +471,11 @@ def _check_needs_to_be_synced(
     size: int,
     last_modified_datetime: datetime,
     directory_out: pathlib.Path,
+    no_directories: bool,
 ) -> bool:
-    filename_out = _local_path_from_s3_url(filename, directory_out)
+    filename_out = _create_filename_out(
+        filename, directory_out, no_directories
+    )
     if not filename_out.is_file():
         return True
     else:
@@ -505,7 +509,11 @@ def _check_should_be_ignored(
     ) or (
         sync
         and not _check_needs_to_be_synced(
-            filename, size, last_modified_datetime, directory_out
+            filename,
+            size,
+            last_modified_datetime,
+            directory_out,
+            no_directories,
         )
     )
 
@@ -525,7 +533,11 @@ def _check_should_be_overwritten(
         or (
             sync
             and _check_needs_to_be_synced(
-                filename, size, last_modified_datetime, directory_out
+                filename,
+                size,
+                last_modified_datetime,
+                directory_out,
+                no_directories,
             )
         )
     )
