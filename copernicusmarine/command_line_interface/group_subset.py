@@ -424,17 +424,16 @@ def subset(
         maximum_y,
         dataset_part,
     )
-    if dataset_part == "originalGrid":
-        if (
-            alias_max_x is not None
-            or alias_min_x is not None
-            or alias_max_y is not None
-            or alias_min_y is not None
-        ):
-            logger.debug(
-                "Because you are using an originalGrid dataset, we are considering"
-                " the options -x, -X, -y, -Y to be in m/km, not in degrees."
-            )
+    if dataset_part == "originalGrid" and (
+        alias_max_x is not None
+        or alias_min_x is not None
+        or alias_max_y is not None
+        or alias_min_y is not None
+    ):
+        logger.debug(
+            "Because you are using an originalGrid dataset, we are considering"
+            " the options -x, -X, -y, -Y to be in m/km, not in degrees."
+        )
 
     response = subset_function(
         dataset_id=dataset_id,

@@ -89,7 +89,7 @@ class FormatNotSupported(Exception):
 
 
 class WrongFormatRequested(Exception):
-    f"""
+    """
     Exception raised when the requested format is wrong.
     Note that some datasets do not support all formats. For example,
     sparse datasets only support CSV format and Parquet format and will default to CSV.

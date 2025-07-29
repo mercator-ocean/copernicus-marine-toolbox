@@ -5,13 +5,16 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from json import load
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type, TypeVar
+
+from pydantic import BaseModel, ValidationError, field_validator
 
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
+    DEFAULT_FILE_FORMAT,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
@@ -39,9 +42,10 @@ MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
     "minimum_longitude": "minimum_x",
 }
 
+SubsetRequest_ = TypeVar("SubsetRequest_", bound="SubsetRequest")
 
-@dataclass
-class SubsetRequest:
+
+class SubsetRequest(BaseModel):
     dataset_id: str
     dataset_url: Optional[str] = None
     force_dataset_version: Optional[str] = None
@@ -61,7 +65,7 @@ class SubsetRequest:
         DEFAULT_COORDINATES_SELECTION_METHOD
     )
     output_filename: Optional[str] = None
-    file_format: Optional[FileFormat] = None
+    file_format: FileFormat = DEFAULT_FILE_FORMAT
     force_service: Optional[str] = None
     output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
@@ -72,67 +76,54 @@ class SubsetRequest:
     raise_if_updating: bool = False
 
     def update(self, new_dict: dict):
-        """Method to update values in SubsetRequest object.
-        Skips "None" values
-        """
-        for key, value in new_dict.items():
-            if value is None or (
-                isinstance(value, (list, tuple)) and len(value) < 1
-            ):
-                pass
-            else:
-                self.__dict__.update({key: value})
+        filtered_dict = {
+            key: value
+            for key, value in new_dict.items()
+            if value is not None
+            or (isinstance(value, (list, tuple)) and value)
+        }
 
-    def enforce_types(self):
-        type_enforced_dict = {}
-        for key, value in self.__dict__.items():
-            if key in [
-                "minimum_longitude",
-                "maximum_longitude",
-                "minimum_latitude",
-                "maximum_latitude",
-                "minimum_depth",
-                "maximum_depth",
-                "minimum_x",
-                "maximum_x",
-                "minimum_y",
-                "maximum_y",
-            ]:
-                new_value = float(value) if value is not None else None
-            elif key in [
-                "start_datetime",
-                "end_datetime",
-            ]:
-                new_value = datetime_parser(value) if value else None
-            elif key in ["variables", "platform_ids"]:
-                new_value = list(value) if value is not None else None
-            elif key in ["output_directory"]:
-                new_value = pathlib.Path(value) if value is not None else None
-            else:
-                new_value = str(value) if value else None
-            type_enforced_dict[key] = new_value
-        self.__dict__.update(type_enforced_dict)
+        for key, value in filtered_dict.items():
+            setattr(self, key, value)
 
-    def from_file(self, filepath: pathlib.Path):
-        json_file = open(filepath)
-        json_content = load(json_file)
+    @field_validator("start_datetime", "end_datetime", mode="before")
+    @classmethod
+    def parse_datetime(cls, v):
+        if v is None or v == "":
+            return None
+        if isinstance(v, str):
+            return datetime_parser(v)  # Your custom parser
+        return v
 
-        json_with_deprecated_options_replace = {}
+    @classmethod
+    def from_file(
+        cls: Type[SubsetRequest_], filepath: pathlib.Path
+    ) -> SubsetRequest_:
+        with open(filepath) as json_file:
+            json_content = load(json_file)
+        transformed_data = cls._transform_deprecated_options(json_content)
+        try:
+            return cls(**transformed_data)
+        except ValidationError as e:
+            raise ValueError(f"Invalid request in file {filepath}: {e}")
 
-        for key, val in json_content.items():
+    @classmethod
+    def _transform_deprecated_options(
+        cls: Type[SubsetRequest_], data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        transformed = {}
+        for key, val in data.items():
             if key in DEPRECATED_OPTIONS:
                 deprecated_option = DEPRECATED_OPTIONS[key]
-                json_with_deprecated_options_replace[
-                    deprecated_option.new_name
-                ] = val
+                new_key = deprecated_option.new_name
+                transformed[new_key] = val
             elif key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
                 new_key = MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS[key]
-                json_with_deprecated_options_replace[new_key] = val
+                transformed[new_key] = val
             else:
-                json_with_deprecated_options_replace[key] = val
+                transformed[key] = val
 
-        self.__dict__.update(json_with_deprecated_options_replace)
-        self.enforce_types()
+        return transformed
 
     def get_temporal_parameters(
         self, axis_coordinate_id_mapping: dict[str, str]
@@ -197,23 +188,25 @@ def convert_motu_api_request_to_structure(
         output_filename=None,
         force_service=None,
     )
-    # TODO: I think i will need to change this to maximum_x and so
     conversion_dict = {
         "product-id": "dataset_id",
-        "latitude-min": "minimum_latitude",
-        "latitude-max": "maximum_latitude",
-        "longitude-min": "minimum_longitude",
-        "longitude-max": "maximum_longitude",
+        "latitude-min": "minimum_y",
+        "latitude-max": "maximum_y",
+        "longitude-min": "minimum_x",
+        "longitude-max": "maximum_x",
         "depth-min": "minimum_depth",
         "depth-max": "maximum_depth",
         "date-min": "start_datetime",
         "date-max": "end_datetime",
         "variable": "variables",
     }
-    for key, value in motu_api_request_dict.items():
-        if key in conversion_dict.keys():
-            subset_request.__dict__.update({conversion_dict[key]: value})
-    subset_request.enforce_types()
+    subset_request.update(
+        {
+            conversion_dict[key]: value
+            for key, value in motu_api_request_dict.items()
+            if key in conversion_dict.keys()
+        }
+    )
     return subset_request
 
 
@@ -241,9 +234,7 @@ class GetRequest:
         Skips "None" values
         """
         for key, value in new_dict.items():
-            if value is None:
-                pass
-            else:
+            if value is not None:
                 self.__dict__.update({key: value})
 
     def enforce_types(self):

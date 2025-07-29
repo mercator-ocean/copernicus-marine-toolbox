@@ -1,4 +1,5 @@
 import inspect
+import math
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -7,6 +8,7 @@ from unittest import mock
 import xarray
 
 from copernicusmarine import (
+    WrongFormatRequested,
     describe,
     get,
     login,
@@ -29,12 +31,7 @@ class TestPythonInterface:
             output_directory=tmp_path,
         )
         assert get_result is not None
-        assert all(
-            map(
-                lambda x: x.exists(),
-                [result.file_path for result in get_result.files],
-            )
-        )
+        assert all(result.file_path.exists() for result in get_result.files)
 
     @mock.patch("os.utime", side_effect=PermissionError)
     def test_permission_denied_for_modification_date(
@@ -139,7 +136,7 @@ class TestPythonInterface:
             common_key_parameter
         ]
 
-    def test_ISO8601_datetime_format_as_string(
+    def test_iso8601_datetime_format_as_string(
         self,
     ):
         dataset = open_dataset(
@@ -325,7 +322,7 @@ class TestPythonInterface:
 
         diff.to_netcdf(tmp_path / "diff.nc")
         diff = xarray.open_dataset(tmp_path / "diff.nc")
-        assert diff.thetao.mean().values == 0.0
+        assert math.isclose(diff.thetao.mean().value, 0.0)
         output_uncompressed = execute_in_terminal(
             [
                 "ncdump",
@@ -389,3 +386,30 @@ class TestPythonInterface:
                     dataset[coordinate.coordinate_id].values.max()
                     == coordinate.maximum
                 )
+
+    def test_file_format_option(self):
+        response = subset(
+            dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
+            start_datetime="2023-11-01T00:00:00",
+            dry_run=True,
+        )
+        assert response.filename.endswith(".nc")
+
+        response = subset(
+            dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            start_datetime="2023-11-25T00:00:00",
+            file_format=None,
+            dry_run=True,
+        )
+        assert response.filename.endswith(".csv")
+
+        try:
+            response = subset(
+                dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
+                start_datetime="2023-11-01T00:00:00",
+                file_format="parquet",
+                dry_run=True,
+            )
+            assert False
+        except WrongFormatRequested:
+            pass

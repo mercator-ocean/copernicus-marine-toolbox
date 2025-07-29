@@ -45,12 +45,8 @@ def load_data_object_from_load_request(
         staging=False,
     )
     retrieval_service: RetrievalService = get_retrieval_service(
-        dataset_id=load_request.dataset_id,
-        force_dataset_version_label=load_request.force_dataset_version,
-        force_dataset_part_label=load_request.force_dataset_part,
-        force_service_name_or_short_name=load_request.force_service,
+        request=load_request.to_subset_request(),
         command_type=command_type,
-        dataset_subset=load_request.to_subset_request(),
         marine_datastore_config=marine_datastore_config,
     )
     username, password = get_and_check_username_password(

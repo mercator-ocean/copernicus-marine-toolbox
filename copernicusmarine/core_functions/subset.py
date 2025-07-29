@@ -88,6 +88,15 @@ def subset_function(
         )
 
     subset_request = SubsetRequest(dataset_id=dataset_id or "")
+    if request_file:
+        subset_request = SubsetRequest.from_file(request_file)
+    if motu_api_request:
+        motu_api_subset_request = convert_motu_api_request_to_structure(
+            motu_api_request
+        )
+        subset_request.update(motu_api_subset_request.__dict__)
+    if not subset_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a subset request.")
     if netcdf3_compatible:
         documentation_url = (
             f"https://toolbox-docs.marine.copernicus.eu"
@@ -98,13 +107,6 @@ def subset_function(
             f"package is required. "
             f"Please see {documentation_url}."
         )
-    if request_file:
-        subset_request.from_file(request_file)
-    if motu_api_request:
-        motu_api_subset_request = convert_motu_api_request_to_structure(
-            motu_api_request
-        )
-        subset_request.update(motu_api_subset_request.__dict__)
     request_update_dict = {
         "force_dataset_version": force_dataset_version,
         "force_dataset_part": force_dataset_part,
@@ -130,8 +132,6 @@ def subset_function(
         "raise_if_updating": raise_if_updating,
     }
     subset_request.update(request_update_dict)
-    if not subset_request.dataset_id:
-        raise ValueError("Please provide a dataset id for a subset request.")
     username, password = get_and_check_username_password(
         username,
         password,
@@ -145,13 +145,8 @@ def subset_function(
         subset_request.skip_existing = skip_existing
 
     retrieval_service: RetrievalService = get_retrieval_service(
-        subset_request.dataset_id,
-        subset_request.force_dataset_version,
-        subset_request.force_dataset_part,
-        subset_request.force_service,
-        CommandType.SUBSET,
-        dataset_subset=subset_request,
-        platform_ids_subset=bool(subset_request.platform_ids),
+        request=subset_request,
+        command_type=CommandType.SUBSET,
         marine_datastore_config=marine_datastore_config,
     )
     subset_request.dataset_url = retrieval_service.uri
@@ -175,13 +170,16 @@ def subset_function(
             == CopernicusMarineServiceFormat.ZARR
         ):
             raise_when_all_dataset_requested(subset_request, False)
-            if subset_request.file_format is None:
+            if "file_format" not in subset_request.model_fields_set:
                 subset_request.file_format = "netcdf"
             elif subset_request.file_format not in ["netcdf", "zarr"]:
                 raise WrongFormatRequested(
                     format_type=subset_request.file_format,
                     supported_formats=["netcdf", "zarr"],
                 )
+            logger.debug(
+                f"Downloading data in {subset_request.file_format} format."
+            )
             response = download_zarr(
                 username=username,
                 password=password,
@@ -201,13 +199,16 @@ def subset_function(
             == CopernicusMarineServiceFormat.SQLITE
         ):
             raise_when_all_dataset_requested(subset_request, True)
-            if subset_request.file_format is None:
+            if "file_format" not in subset_request.model_fields_set:
                 subset_request.file_format = "csv"
             elif subset_request.file_format not in ["parquet", "csv"]:
                 raise WrongFormatRequested(
                     format_type=subset_request.file_format,
                     supported_formats=["parquet", "csv"],
                 )
+            logger.debug(
+                f"Downloading data in {subset_request.file_format} format."
+            )
             if subset_request.coordinates_selection_method not in [
                 "inside",
                 "strict-inside",
