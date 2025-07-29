@@ -25,6 +25,7 @@ Fixes
 
 * Fixed an issue where the ``valid_range`` attribute for some variables of some netcdf files was not in the correct format and hence not CF-compliant. The Toolbox now checks the format of the ``valid_range`` attribute and converts it to the same type as the data.
 * Fixed an issue where we would not raise an error when the requested file format was not supported for sparse datasets. The Toolbox now raises a ``WrongFormatRequested`` exception when the requested format is not supported by the dataset.
+* Changed the result of the ``--create-template`` option to have the consistent type with the Command Line Interface.
 
 Describe
 ----------

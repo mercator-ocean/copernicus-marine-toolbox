@@ -896,10 +896,10 @@ class TestCommandLineInterface:
         )
 
     def test_subset_create_template(self):
-        self.when_created_is_created()
+        self.when_template_is_created()
         self.and_it_runs_correctly()
 
-    def when_created_is_created(self):
+    def when_template_is_created(self):
         command = ["copernicusmarine", "subset", "--create-template"]
 
         self.output = execute_in_terminal(command)
