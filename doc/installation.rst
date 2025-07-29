@@ -228,7 +228,7 @@ Then, run a requests and check that the result is as expected:
 
     # you can pass here proxies and ssl configuration if needed
     response = requests.get(
-        "https://s3.waw3-1.cloudferro.com/mdl-metadata/mdsVersions.json"
+        "https://s3.waw3-1.cloudferro.com/mdl-metadata/clientsConfigV1.json"
     )
     response.raise_for_status()
 
