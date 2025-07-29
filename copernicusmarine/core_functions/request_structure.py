@@ -5,7 +5,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from json import load
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar
 
 from pydantic import BaseModel, ValidationError, field_validator
 
@@ -50,7 +50,7 @@ class SubsetRequest(BaseModel):
     dataset_url: Optional[str] = None
     force_dataset_version: Optional[str] = None
     force_dataset_part: Optional[str] = None
-    variables: Optional[List[str]] = None
+    variables: Optional[list[str]] = None
     minimum_x: Optional[float] = None
     maximum_x: Optional[float] = None
     minimum_y: Optional[float] = None
@@ -60,7 +60,7 @@ class SubsetRequest(BaseModel):
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
-    platform_ids: Optional[List[str]] = None
+    platform_ids: Optional[list[str]] = None
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     )
@@ -77,13 +77,11 @@ class SubsetRequest(BaseModel):
 
     def update(self, new_dict: dict):
         filtered_dict = {
-            key: value
-            for key, value in new_dict.items()
-            if value is not None
-            or (isinstance(value, (list, tuple)) and value)
+            key: value for key, value in new_dict.items() if value is not None
         }
-
         for key, value in filtered_dict.items():
+            if isinstance(value, (list, tuple)) and not value:
+                continue
             setattr(self, key, value)
 
     @field_validator("start_datetime", "end_datetime", mode="before")
@@ -109,8 +107,8 @@ class SubsetRequest(BaseModel):
 
     @classmethod
     def _transform_deprecated_options(
-        cls: Type[SubsetRequest_], data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        cls: Type[SubsetRequest_], data: dict[str, Any]
+    ) -> dict[str, Any]:
         transformed = {}
         for key, val in data.items():
             if key in DEPRECATED_OPTIONS:
@@ -175,7 +173,7 @@ def convert_motu_api_request_to_structure(
     arg_value_tuples = [
         tuple(substr.split(" ", maxsplit=1)) for substr in arguments
     ]
-    motu_api_request_dict: Dict[str, Any] = {}
+    motu_api_request_dict: dict[str, Any] = {}
     for arg, value in arg_value_tuples:
         if arg == "variable":
             # special case for variable, since it can have multiple values
@@ -288,8 +286,8 @@ class LoadRequest:
     force_dataset_part: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
-    variables: Optional[List[str]] = None
-    platform_ids: Optional[List[str]] = None
+    variables: Optional[list[str]] = None
+    platform_ids: Optional[list[str]] = None
     geographical_parameters: GeographicalParameters = field(
         default_factory=GeographicalParameters
     )

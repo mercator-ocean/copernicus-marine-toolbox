@@ -6,7 +6,6 @@ import math
 import os
 import pathlib
 import re
-from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 from typing import List, Literal, Optional, Union
@@ -43,32 +42,6 @@ class TestCommandLineInterface:
     # Test on subset requests #
     # -------------------------#
 
-    @dataclass(frozen=True)
-    class SubsetServiceToTest:
-        name: str
-        subpath: str
-        dataset_url: str
-
-    GEOSERIES = SubsetServiceToTest(
-        "geoseries",
-        "download_zarr",
-        (
-            "https://s3.waw3-1.cloudferro.com/mdl-arco-time/arco/"
-            "GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/timeChunked.zarr"
-        ),
-    )
-    TIMESERIES = SubsetServiceToTest(
-        "timeseries",
-        "download_zarr",
-        (
-            "https://s3.waw2-1.cloudferro.com/swift/v1/"
-            "AUTH_04a16d35c9e7451fa5894a700508c003/mdl-arco-geo/"
-            "arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/geoChunked.zarr"
-        ),
-    )
-
     def flatten_request_dict(
         self, request_dict: dict[str, Optional[Union[str, Path]]]
     ) -> List:
@@ -80,9 +53,7 @@ class TestCommandLineInterface:
         flatten_list = list(filter(lambda x: x is not None, flatten_list))
         return flatten_list
 
-    def _test_subset_functionnalities(
-        self, subset_service_to_test: SubsetServiceToTest, tmp_path
-    ):
+    def test_subset_functionnalities(self, tmp_path):
         self.base_request_dict = {
             "--dataset-id": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             "--variable": "so",
@@ -92,31 +63,13 @@ class TestCommandLineInterface:
             "--maximum-latitude": "0.1",
             "--minimum-longitude": "0.2",
             "--maximum-longitude": "0.3",
-            "--service": subset_service_to_test.name,
             "--output-directory": tmp_path,
         }
-        self.check_default_subset_request(
-            subset_service_to_test.subpath, tmp_path
-        )
         self.check_subset_request_with_dataset_not_in_catalog()
-        self.check_subset_request_with_no_subsetting()
-
-    def check_default_subset_request(self, function_name, tmp_path):
-        folder = pathlib.Path(tmp_path, function_name)
-        if not folder.is_dir():
-            pathlib.Path.mkdir(folder, parents=True)
-
-        command = [
-            "copernicusmarine",
-            "subset",
-        ] + self.flatten_request_dict(self.base_request_dict)
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
+        self.check_subset_request_with_no_subsetting(tmp_path)
 
     def check_subset_request_with_dataset_not_in_catalog(self):
         self.base_request_dict["--dataset-id"] = "FAKE_ID"
-        self.base_request_dict.pop("--dataset-url")
 
         unknown_dataset_request = [
             "copernicusmarine",
@@ -125,18 +78,19 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(unknown_dataset_request)
         assert (
-            "Key error: The requested dataset 'FAKE_ID' was not found in the "
-            "catalogue, you can use 'copernicusmarine describe "
-            "--include-datasets --contains <search_token>' to find datasets"
+            "Dataset not found: FAKE_ID Please check "
+            "that the dataset exists and the input datasetID is correct"
         ) in self.output.stderr
 
-    def check_subset_request_with_no_subsetting(self):
+    def check_subset_request_with_no_subsetting(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
             "subset",
             "-i",
             f"{dataset_id}",
+            "-o",
+            f"{tmp_path}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -539,8 +493,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--service",
-            f"{self.GEOSERIES.name}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -1029,8 +981,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--service",
-            f"{self.GEOSERIES.name}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -1071,8 +1021,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--service",
-            f"{self.GEOSERIES.name}",
             "--log-level",
             "DEBUG",
         ]
