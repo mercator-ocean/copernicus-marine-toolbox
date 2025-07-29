@@ -322,7 +322,7 @@ class TestPythonInterface:
 
         diff.to_netcdf(tmp_path / "diff.nc")
         diff = xarray.open_dataset(tmp_path / "diff.nc")
-        assert math.isclose(diff.thetao.mean().value, 0.0)
+        assert math.isclose(diff.thetao.mean().values, 0.0)
         output_uncompressed = execute_in_terminal(
             [
                 "ncdump",
