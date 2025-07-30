@@ -184,7 +184,6 @@ def subset_function(
                 username=username,
                 password=password,
                 subset_request=subset_request,
-                file_format=subset_request.file_format,
                 dataset_id=retrieval_service.dataset_id,
                 disable_progress_bar=disable_progress_bar,
                 dataset_valid_start_date=retrieval_service.dataset_valid_start_date,
@@ -222,7 +221,6 @@ def subset_function(
             response = download_sparse(
                 username=username,
                 subset_request=subset_request,
-                file_format=subset_request.file_format,
                 metadata_url=retrieval_service.metadata_url,
                 service=retrieval_service.service,
                 axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,

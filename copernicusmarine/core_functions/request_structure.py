@@ -11,6 +11,7 @@ from pydantic import BaseModel, ValidationError, field_validator
 
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
+    log_deprecated_message,
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
@@ -113,6 +114,15 @@ class SubsetRequest(BaseModel):
         for key, val in data.items():
             if key in DEPRECATED_OPTIONS:
                 deprecated_option = DEPRECATED_OPTIONS[key]
+                if deprecated_option.old_name == deprecated_option.new_name:
+                    log_deprecated_message(deprecated_option.old_name, None)
+                else:
+                    log_deprecated_message(
+                        deprecated_option.old_name,
+                        deprecated_option.new_name,
+                    )
+                if deprecated_option.do_not_pass:
+                    continue
                 new_key = deprecated_option.new_name
                 transformed[new_key] = val
             elif key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:

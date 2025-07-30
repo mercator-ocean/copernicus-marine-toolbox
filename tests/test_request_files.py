@@ -145,3 +145,23 @@ class TestRequestFiles:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
+
+    def test_subset_request_wrong_typings(self):
+        filepath = get_path_to_request_file("test_subset_wrong_typings")
+
+        command = build_command(filepath, "subset") + ["--dry-run"]
+
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
+        assert "Invalid request in file" in self.output.stderr
+
+    def test_subset_works_deprecated_options(self):
+        filepath = get_path_to_request_file(
+            "test_subset_works_deprecated_options"
+        )
+
+        command = build_command(filepath, "subset") + ["--dry-run"]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert "'force_download' has been deprecated" in self.output.stderr
+        assert "'motu_api_request' has been deprecated" in self.output.stderr

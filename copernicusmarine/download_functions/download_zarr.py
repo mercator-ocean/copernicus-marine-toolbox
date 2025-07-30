@@ -195,7 +195,6 @@ def download_zarr(
     username: str,
     password: str,
     subset_request: SubsetRequest,
-    file_format: FileFormat,
     dataset_id: str,
     disable_progress_bar: bool,
     dataset_valid_start_date: Optional[Union[str, int, float]],
@@ -244,7 +243,7 @@ def download_zarr(
         dataset_url=dataset_url,
         output_directory=output_directory,
         output_filename=subset_request.output_filename,
-        file_format=file_format,
+        file_format=subset_request.file_format,
         variables=variables,
         disable_progress_bar=disable_progress_bar,
         overwrite=subset_request.overwrite,
@@ -550,12 +549,13 @@ def _download_dataset_as_netcdf(
         logger.info(
             f"NetCDF compression enabled with level {netcdf_compression_level}"
         )
-        comp = dict(
-            zlib=True,
-            complevel=netcdf_compression_level,
-            contiguous=False,
-            shuffle=True,
-        )
+        comp = {
+            "zlib": True,
+            "complevel": netcdf_compression_level,
+            "contiguous": False,
+            "shuffle": True,
+        }
+
         keys_to_keep = {
             "scale_factor",
             "add_offset",

@@ -24,7 +24,6 @@ from copernicusmarine.core_functions.exceptions import (
     WrongPlatformID,
 )
 from copernicusmarine.core_functions.models import (  # TimeExtent,
-    FileFormat,
     FileStatus,
     ResponseSubset,
     StatusCode,
@@ -84,7 +83,6 @@ SORTING = {
 def download_sparse(
     username: str,
     subset_request: SubsetRequest,
-    file_format: FileFormat,
     metadata_url: str,
     service: CopernicusMarineService,
     axis_coordinate_id_mapping: dict[str, str],
@@ -104,7 +102,6 @@ def download_sparse(
         )
         response = _get_response_subset(
             subset_request,
-            file_format=file_format,
             variables=variables,
             platform_ids=platform_ids,
             axis_coordinate_id_mapping=axis_coordinate_id_mapping,
@@ -123,7 +120,6 @@ def download_sparse(
     )
     response = _get_response_subset(
         subset_request,
-        file_format=file_format,
         variables=variables,
         platform_ids=platform_ids,
         axis_coordinate_id_mapping=axis_coordinate_id_mapping,
@@ -299,17 +295,15 @@ def _get_plaform_ids_to_subset(
 
 def _build_filename_and_output_path(
     subset_request: SubsetRequest,
-    file_format: FileFormat,
     variables: list[str],
     platform_ids: list[str],
     axis_coordinate_id_mapping: dict[str, str],
 ) -> tuple[pathlib.Path, pathlib.Path]:
-    extension_file = get_file_extension(file_format)
+    extension_file = get_file_extension(subset_request.file_format)
     filename = pathlib.Path(
         subset_request.output_filename
         or build_filename_from_request(
             request=subset_request,
-            file_format=file_format,
             variables=variables,
             platform_ids=platform_ids,
             axis_coordinate_id_mapping=axis_coordinate_id_mapping,
@@ -329,14 +323,12 @@ def _build_filename_and_output_path(
 
 def _get_response_subset(
     subset_request: SubsetRequest,
-    file_format: FileFormat,
     variables: list[str],
     platform_ids: list[str],
     axis_coordinate_id_mapping: dict[str, str],
 ) -> ResponseSubset:
     filename, output_path = _build_filename_and_output_path(
         subset_request,
-        file_format,
         variables,
         platform_ids,
         axis_coordinate_id_mapping,
