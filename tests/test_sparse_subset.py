@@ -60,7 +60,7 @@ BASIC_COMMAND_DICT = {
 
 
 class TestSparseSubset:
-    def test_I_can_subset_sparse_data(self, tmp_path):
+    def test_i_can_subset_sparse_data(self, tmp_path):
         command = BASIC_COMMAND + [
             "--output-directory",
             tmp_path,
@@ -76,7 +76,7 @@ class TestSparseSubset:
         assert not df.empty
         assert list(df.columns) == COLUMNS_ORDER_DEPTH
 
-    def test_I_can_subset_on_platform_ids_in_parquet(self, tmp_path):
+    def test_i_can_subset_on_platform_ids_in_parquet(self, tmp_path):
         command = BASIC_COMMAND + [
             "--platform-id",
             "B-Sulafjorden___MO",
@@ -131,18 +131,26 @@ class TestSparseSubset:
         assert self.output.returncode == 0
         assert (tmp_path / "sparse_data_(1).csv").exists()
 
-    def test_can_download_in_csv_format(self, tmp_path):
+    def test_can_download_in_different_format(self):
+        # parquet done in another test
         command = BASIC_COMMAND + [
-            "--output-directory",
-            tmp_path,
-            "--output-filename",
-            "sparse_data",
-            "--file-format",
-            "csv",
+            "--dry-run",
+            "--log-level",
+            "DEBUG",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (tmp_path / "sparse_data.csv").exists()
+        assert "in csv format" in self.output.stderr
+        response = loads(self.output.stdout)
+        assert response["filename"].endswith(".csv")
+
+        wrong_command = BASIC_COMMAND + [
+            "--file-format",
+            "netcdf",
+        ]
+        self.output = execute_in_terminal(wrong_command)
+        assert self.output.returncode == 1
+        assert "Wrong format requested" in self.output.stderr
 
     def test_can_read_dataframe(self):
         df = read_dataframe(**BASIC_COMMAND_DICT)

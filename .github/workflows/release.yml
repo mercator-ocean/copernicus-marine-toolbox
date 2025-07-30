@@ -7,7 +7,7 @@ on:
       - "release/**"
 
 jobs:
-  release-pypi-docker:
+  release-pypi:
     if: >
       github.event_name == 'push' &&
       github.event.before != github.event.after &&
@@ -60,17 +60,17 @@ jobs:
 
   create-binaries:
     if: ${{ success()}}
-    needs: [release-pypi-docker]
+    needs: [release-pypi]
     uses: ./.github/workflows/binaries.yml
 
   create-windows-binary:
     if: ${{ success() }}
-    needs: [release-pypi-docker]
+    needs: [release-pypi]
     uses: ./.github/workflows/binary-windows.yml
 
   release-docker:
     if: ${{ success()}}
-    needs: [release-pypi-docker]
+    needs: [release-pypi]
     uses: ./.github/workflows/push-docker-image.yml
     secrets:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}

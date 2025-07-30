@@ -13,7 +13,6 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
-    DEFAULT_FILE_FORMAT,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
@@ -54,7 +53,7 @@ def subset(
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
     output_filename: Optional[str] = None,
-    file_format: FileFormat = DEFAULT_FILE_FORMAT,
+    file_format: Optional[FileFormat] = None,
     service: Optional[str] = None,
     request_file: Optional[Union[pathlib.Path, str]] = None,
     output_directory: Optional[Union[pathlib.Path, str]] = None,
@@ -125,7 +124,7 @@ def subset(
     output_filename : str, optional
         Save the downloaded data with the given file name (under the output directory).
     file_format : str, optional
-        Format of the downloaded dataset. Default to NetCDF '.nc'.
+        Format of the downloaded dataset. If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets and to CSV '.csv' for sparse datasets.
     overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
     skip_existing : bool, optional

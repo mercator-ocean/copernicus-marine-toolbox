@@ -12,7 +12,10 @@ from copernicusmarine.catalogue_parser.models import (
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
-from copernicusmarine.core_functions.exceptions import ServiceNotSupported
+from copernicusmarine.core_functions.exceptions import (
+    ServiceNotSupported,
+    WrongFormatRequested,
+)
 from copernicusmarine.core_functions.marine_datastore_config import (
     get_config_and_check_version_subset,
 )
@@ -61,7 +64,7 @@ def subset_function(
     platform_ids: Optional[List[str]],
     coordinates_selection_method: CoordinatesSelectionMethod,
     output_filename: Optional[str],
-    file_format: FileFormat,
+    file_format: Optional[FileFormat],
     force_service: Optional[str],
     request_file: Optional[pathlib.Path],
     output_directory: Optional[pathlib.Path],
@@ -85,6 +88,15 @@ def subset_function(
         )
 
     subset_request = SubsetRequest(dataset_id=dataset_id or "")
+    if request_file:
+        subset_request = SubsetRequest.from_file(request_file)
+    if motu_api_request:
+        motu_api_subset_request = convert_motu_api_request_to_structure(
+            motu_api_request
+        )
+        subset_request.update(motu_api_subset_request.__dict__)
+    if not subset_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a subset request.")
     if netcdf3_compatible:
         documentation_url = (
             f"https://toolbox-docs.marine.copernicus.eu"
@@ -95,13 +107,6 @@ def subset_function(
             f"package is required. "
             f"Please see {documentation_url}."
         )
-    if request_file:
-        subset_request.from_file(request_file)
-    if motu_api_request:
-        motu_api_subset_request = convert_motu_api_request_to_structure(
-            motu_api_request
-        )
-        subset_request.update(motu_api_subset_request.__dict__)
     request_update_dict = {
         "force_dataset_version": force_dataset_version,
         "force_dataset_part": force_dataset_part,
@@ -127,8 +132,6 @@ def subset_function(
         "raise_if_updating": raise_if_updating,
     }
     subset_request.update(request_update_dict)
-    if not subset_request.dataset_id:
-        raise ValueError("Please provide a dataset id for a subset request.")
     username, password = get_and_check_username_password(
         username,
         password,
@@ -142,13 +145,8 @@ def subset_function(
         subset_request.skip_existing = skip_existing
 
     retrieval_service: RetrievalService = get_retrieval_service(
-        subset_request.dataset_id,
-        subset_request.force_dataset_version,
-        subset_request.force_dataset_part,
-        subset_request.force_service,
-        CommandType.SUBSET,
-        dataset_subset=subset_request,
-        platform_ids_subset=bool(subset_request.platform_ids),
+        request=subset_request,
+        command_type=CommandType.SUBSET,
         marine_datastore_config=marine_datastore_config,
     )
     subset_request.dataset_url = retrieval_service.uri
@@ -172,36 +170,44 @@ def subset_function(
             == CopernicusMarineServiceFormat.ZARR
         ):
             raise_when_all_dataset_requested(subset_request, False)
-            if subset_request.file_format not in ["netcdf", "zarr"]:
-                raise ValueError(
-                    f"{subset_request.file_format} is not a valid format "
-                    "for this dataset. "
-                    "Available format for this dataset is 'netcdf' or 'zarr'."
+            if "file_format" not in subset_request.model_fields_set:
+                subset_request.file_format = "netcdf"
+            elif subset_request.file_format not in ["netcdf", "zarr"]:
+                raise WrongFormatRequested(
+                    format_type=subset_request.file_format,
+                    supported_formats=["netcdf", "zarr"],
                 )
+            logger.debug(
+                f"Downloading data in {subset_request.file_format} format."
+            )
             response = download_zarr(
-                username,
-                password,
-                subset_request,
-                retrieval_service.dataset_id,
-                disable_progress_bar,
-                retrieval_service.dataset_valid_start_date,
-                retrieval_service.service,
-                retrieval_service.is_original_grid,
-                retrieval_service.axis_coordinate_id_mapping,
-                chunk_size_limit,
-                retrieval_service.dataset_chunking,
+                username=username,
+                password=password,
+                subset_request=subset_request,
+                dataset_id=retrieval_service.dataset_id,
+                disable_progress_bar=disable_progress_bar,
+                dataset_valid_start_date=retrieval_service.dataset_valid_start_date,
+                service=retrieval_service.service,
+                is_original_grid=retrieval_service.is_original_grid,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+                chunk_size_limit=chunk_size_limit,
+                dataset_chunking=retrieval_service.dataset_chunking,
             )
         if (
             retrieval_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
             raise_when_all_dataset_requested(subset_request, True)
-            if subset_request.file_format not in ["parquet", "csv"]:
-                logger.debug(
-                    "Using 'csv' format by default. "
-                    "'parquet' format can also be set with 'file-format' option."
-                )
+            if "file_format" not in subset_request.model_fields_set:
                 subset_request.file_format = "csv"
+            elif subset_request.file_format not in ["parquet", "csv"]:
+                raise WrongFormatRequested(
+                    format_type=subset_request.file_format,
+                    supported_formats=["parquet", "csv"],
+                )
+            logger.debug(
+                f"Downloading data in {subset_request.file_format} format."
+            )
             if subset_request.coordinates_selection_method not in [
                 "inside",
                 "strict-inside",
@@ -213,13 +219,13 @@ def subset_function(
                     "Using 'inside' by default."
                 )
             response = download_sparse(
-                username,
-                subset_request,
-                retrieval_service.metadata_url,
-                retrieval_service.service,
-                retrieval_service.axis_coordinate_id_mapping,
-                retrieval_service.product_doi,
-                disable_progress_bar,
+                username=username,
+                subset_request=subset_request,
+                metadata_url=retrieval_service.metadata_url,
+                service=retrieval_service.service,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+                product_doi=retrieval_service.product_doi,
+                disable_progress_bar=disable_progress_bar,
             )
     else:
         raise ServiceNotSupported(retrieval_service.service_name)
@@ -246,9 +252,7 @@ def create_subset_template() -> None:
                 "maximum_depth": 10,
                 "variables": ["so", "thetao"],
                 "output_directory": "copernicusmarine_data",
-                "service": False,
-                "request_file": False,
-                "motu_api_request": False,
+                "service": None,
                 "overwrite": False,
                 "dry_run": False,
             },

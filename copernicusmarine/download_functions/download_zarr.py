@@ -549,12 +549,13 @@ def _download_dataset_as_netcdf(
         logger.info(
             f"NetCDF compression enabled with level {netcdf_compression_level}"
         )
-        comp = dict(
-            zlib=True,
-            complevel=netcdf_compression_level,
-            contiguous=False,
-            shuffle=True,
-        )
+        comp = {
+            "zlib": True,
+            "complevel": netcdf_compression_level,
+            "contiguous": False,
+            "shuffle": True,
+        }
+
         keys_to_keep = {
             "scale_factor",
             "add_offset",
