@@ -129,7 +129,6 @@ def get_function(
         marine_datastore_config=marine_datastore_config,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
-        staging=staging,
     )
 
 
@@ -142,7 +141,6 @@ def _run_get_request(
     marine_datastore_config: MarineDataStoreConfig,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
-    staging: bool = False,
 ) -> ResponseGet:
     logger.debug("Checking username and password...")
     username, password = get_and_check_username_password(
@@ -151,12 +149,8 @@ def _run_get_request(
     logger.debug("Checking dataset metadata...")
 
     retrieval_service: RetrievalService = get_retrieval_service(
-        dataset_id=get_request.dataset_id,
-        force_dataset_version_label=get_request.force_dataset_version,
-        force_dataset_part_label=get_request.force_dataset_part,
-        force_service_name_or_short_name=None,
+        request=get_request,
         command_type=CommandType.GET,
-        dataset_subset=None,
         marine_datastore_config=marine_datastore_config,
     )
     get_request.dataset_url = retrieval_service.uri

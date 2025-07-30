@@ -49,3 +49,5 @@ Custom errors
 .. autoclass:: copernicusmarine.WrongPlatformID()
 
 .. autoclass:: copernicusmarine.ProductNotFound()
+
+.. autoclass:: copernicusmarine.WrongFormatRequested()

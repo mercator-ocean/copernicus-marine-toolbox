@@ -102,9 +102,9 @@ def download_sparse(
         )
         response = _get_response_subset(
             subset_request,
-            variables,
-            platform_ids,
-            axis_coordinate_id_mapping,
+            variables=variables,
+            platform_ids=platform_ids,
+            axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         )
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
@@ -120,9 +120,9 @@ def download_sparse(
     )
     response = _get_response_subset(
         subset_request,
-        variables,
-        platform_ids,
-        axis_coordinate_id_mapping,
+        variables=variables,
+        platform_ids=platform_ids,
+        axis_coordinate_id_mapping=axis_coordinate_id_mapping,
     )
     output_path = response.file_path
     if subset_request.skip_existing and output_path.exists():
@@ -303,10 +303,10 @@ def _build_filename_and_output_path(
     filename = pathlib.Path(
         subset_request.output_filename
         or build_filename_from_request(
-            subset_request,
-            variables,
-            platform_ids,
-            axis_coordinate_id_mapping,
+            request=subset_request,
+            variables=variables,
+            platform_ids=platform_ids,
+            axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         )
     )
 
