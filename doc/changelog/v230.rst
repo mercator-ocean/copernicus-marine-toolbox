@@ -20,6 +20,12 @@ Fixes
 Subset
 ------
 
+New features
+^^^^^^^^^^^^^^^
+
+* Inverting the order of the arguments in the ``subset`` for minimum and maximum values will now raise. It should help users to avoid mistakes and have a more consistent behavior.
+* Request around the antemeridian line (180 degrees longitude) is now supported (except for sparse datasets). The Toolbox will automatically shift the window to the left or right of the antemeridian line, depending on the requested area. Check the :ref:`subset documentation <about-longitude-range>` for more details.
+
 Fixes
 ^^^^^
 
@@ -39,6 +45,6 @@ Get
 ------
 
 New-Features
-^^^^^
+^^^^^^^^^^^^^^^
 
 * Removed the incompatibility of ``sync`` option and ``no_directories`` option. Now, they can be used together.

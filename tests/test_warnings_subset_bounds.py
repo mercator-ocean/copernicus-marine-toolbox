@@ -220,7 +220,7 @@ class TestWarningsSubsetBounds:
         assert int(elevation_coordinates_extent["minimum"]) == -47
         assert int(elevation_coordinates_extent["maximum"]) == 0
 
-    def test_error_Coord_out_of_dataset_bounds(self):
+    def test_error_coordinates_out_of_dataset_bounds(self):
         try:
             _ = subset(
                 dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
@@ -231,7 +231,7 @@ class TestWarningsSubsetBounds:
         except CoordinatesOutOfDatasetBounds as e:
             assert "Some of your subset selection" in e.__str__()
 
-    def when_I_request_a_dataset_with_coordinates_selection_method_option(
+    def when_i_request_a_dataset_with_coordinates_selection_method_option(
         self, coordinates_selection_method
     ):
         command = [
@@ -259,7 +259,7 @@ class TestWarningsSubsetBounds:
 
         self.output = execute_in_terminal(command)
 
-    def then_I_can_read_an_error_in_stdout(self):
+    def then_i_can_read_an_error_in_stdout(self):
         assert self.output.returncode == 1
         assert "ERROR" in self.output.stderr
         assert (
@@ -267,7 +267,7 @@ class TestWarningsSubsetBounds:
             "the longitude dimension exceed the dataset coordinates"
         ) in self.output.stderr
 
-    def then_I_can_read_a_warning_in_stdout(self):
+    def then_i_can_read_a_warning_in_stdout(self):
         assert self.output.returncode == 0
         assert "WARNING" in self.output.stderr
         assert (
@@ -276,13 +276,13 @@ class TestWarningsSubsetBounds:
         ) in self.output.stderr
 
     def test_subset_strict_method(self):
-        self.when_I_request_a_dataset_with_coordinates_selection_method_option(
+        self.when_i_request_a_dataset_with_coordinates_selection_method_option(
             "strict-inside"
         )
-        self.then_I_can_read_an_error_in_stdout()
+        self.then_i_can_read_an_error_in_stdout()
 
     def test_subset_nearest_method(self):
-        self.when_I_request_a_dataset_with_coordinates_selection_method_option(
+        self.when_i_request_a_dataset_with_coordinates_selection_method_option(
             "nearest"
         )
-        self.then_I_can_read_a_warning_in_stdout()
+        self.then_i_can_read_a_warning_in_stdout()

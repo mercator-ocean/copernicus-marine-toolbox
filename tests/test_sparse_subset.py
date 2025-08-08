@@ -2,11 +2,9 @@ import pathlib
 from json import loads
 
 import pandas as pd
+import pytest
 
 from copernicusmarine import read_dataframe
-from copernicusmarine.core_functions.exceptions import (
-    MinimumLongitudeGreaterThanMaximumLongitude,
-)
 from copernicusmarine.download_functions.download_sparse import (
     COLUMNS_ORDER_DEPTH,
     COLUMNS_ORDER_ELEVATION,
@@ -168,7 +166,10 @@ class TestSparseSubset:
         assert list(df.columns) == COLUMNS_ORDER_ELEVATION
 
     def test_error_raises_for_inverted_longitude(self):
-        try:
+        with pytest.raises(
+            ValueError,
+            match="Minimum longitude greater than maximum longitude",
+        ):
             _ = read_dataframe(
                 dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
                 variables=["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
@@ -178,11 +179,6 @@ class TestSparseSubset:
                 maximum_longitude=31.9,
                 start_datetime="01-01-2023",
                 end_datetime="02-01-2023",
-            )
-        except MinimumLongitudeGreaterThanMaximumLongitude as e:
-            assert (
-                "--minimum-longitude option must be smaller "
-                "or equal to --maximum-longitude" in e.__str__()
             )
 
     def test_if_ask_for_empty_dataframe_it_works(self, caplog):
