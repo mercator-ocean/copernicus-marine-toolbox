@@ -185,10 +185,10 @@ class TestSparseSubset:
         df = read_dataframe(
             dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
             variables=["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
-            maximum_latitude=30.1875,
-            minimum_latitude=30.188,
-            maximum_longitude=32,
+            minimum_latitude=30.1876,
+            maximum_latitude=30.1877,
             minimum_longitude=31.9,
+            maximum_longitude=32,
             start_datetime="01-01-2023",
             end_datetime="02-01-2023",
         )

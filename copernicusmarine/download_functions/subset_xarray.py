@@ -858,9 +858,9 @@ def _check_longitude_overlap_and_contained(
             ),
             (
                 user_minimum_coordinate_value
-                < dataset_minimum_coordinate_value
+                >= dataset_minimum_coordinate_value
                 or user_maximum_coordinate_value
-                > dataset_maximum_coordinate_value
+                <= dataset_maximum_coordinate_value
             ),
         )
 

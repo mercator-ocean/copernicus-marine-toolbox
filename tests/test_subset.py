@@ -1744,6 +1744,6 @@ class TestSubset:
             )
             assert "WARNING" in caplog.text
             assert (
-                "Minimum longitude is greater than maximum longitude"
+                "Minimum longitude greater than maximum longitude"
                 in caplog.text
             )

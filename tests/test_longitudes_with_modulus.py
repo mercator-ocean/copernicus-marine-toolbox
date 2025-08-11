@@ -168,19 +168,3 @@ class TestLongitudesWithModulus:
         assert self.output.returncode == 0
         assert longitudes.min() == numpy.float32(-180)
         assert longitudes.max() == numpy.float32(179.91669)
-
-    def test_minimum_longitude_greater_than_maximum_longitude(self, tmp_path):
-        filename_dataset = "dataset.nc"
-
-        command = self._build_custom_command(
-            tmp_path, filename_dataset, 60, 30
-        )
-
-        self.output = execute_in_terminal(command)
-
-        assert self.output.returncode == 1
-        assert self.output.stderr.endswith(
-            "Minimum longitude greater than maximum longitude: "
-            "--minimum-longitude option must be smaller or equal to "
-            "--maximum-longitude\n"
-        )

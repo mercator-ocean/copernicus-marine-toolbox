@@ -322,7 +322,7 @@ def check_requested_area_time_valid(
     ):
         if service_format == CopernicusMarineServiceFormat.ZARR:
             logger.warning(
-                "Minimum longitude is greater than maximum longitude. "
+                "Minimum longitude greater than maximum longitude. "
                 "Your selection will wrap around the 180° meridian: "
                 f"Minimum longitude: {subset_request.minimum_x}, "
                 f"Maximum longitude: {subset_request.maximum_x}."
@@ -331,7 +331,7 @@ def check_requested_area_time_valid(
             raise ValueError(
                 "Minimum longitude greater than maximum longitude: "
                 "minimum-longitude option must be smaller or equal to "
-                "maximum-longitude for this dataset."
+                "maximum-longitude for this dataset. "
                 f"Minimum longitude: {subset_request.minimum_x}, "
                 f"Maximum longitude: {subset_request.maximum_x}."
             )
@@ -342,7 +342,7 @@ def check_requested_area_time_valid(
     ):
         raise ValueError(
             "Minimum latitude greater than maximum latitude: minimum-latitude "
-            "option must be smaller or equal to maximum-latitude"
+            "option must be smaller or equal to maximum-latitude. "
             f"Minimum latitude: {subset_request.minimum_y}, "
             f"Maximum latitude: {subset_request.maximum_y}."
         )
@@ -353,7 +353,7 @@ def check_requested_area_time_valid(
     ):
         raise ValueError(
             "Minimum depth greater than maximum depth: minimum-depth "
-            "option must be smaller or equal to maximum-depth"
+            "option must be smaller or equal to maximum-depth. "
             f"Minimum depth: {subset_request.minimum_depth}, "
             f"Maximum depth: {subset_request.maximum_depth}."
         )
@@ -364,7 +364,7 @@ def check_requested_area_time_valid(
     ):
         raise ValueError(
             "Start datetime greater than end datetime: start-datetime "
-            "option must be smaller or equal to end-datetime"
+            "option must be smaller or equal to end-datetime. "
             f"Start date: {subset_request.start_datetime}, "
             f"End date: {subset_request.end_datetime}."
         )

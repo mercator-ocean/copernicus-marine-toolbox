@@ -146,12 +146,12 @@ class TestOpenDatasetAndReadDataFrame:
                 maximum_longitude=5.0,
             )
             assert (
-                "Minimum longitude is greater than maximum longitude"
+                "Minimum longitude greater than maximum longitude"
                 in caplog.text
             )
         with pytest.raises(
             ValueError,
-            match="Minimum latitude is greater than maximum latitude",
+            match="Minimum latitude greater than maximum latitude",
         ):
             open_dataset(
                 dataset_id=dataset_id,
@@ -160,7 +160,7 @@ class TestOpenDatasetAndReadDataFrame:
             )
         with pytest.raises(
             ValueError,
-            match="Minimum depth is greater than maximum depth",
+            match="Minimum depth greater than maximum depth",
         ):
             open_dataset(
                 dataset_id=dataset_id,
