@@ -86,6 +86,8 @@ def _get_best_arco_service_type(
         CopernicusMarineServiceNames.TIMESERIES,
         dataset_version_part,
     )
+    logger.debug(f"Geoseries chunking: {dataset_chunking_geoseries}")
+    logger.debug(f"Timeseries chunking: {dataset_chunking_timeseries}")
     if (
         dataset_chunking_geoseries.number_chunks < 0
         and dataset_chunking_timeseries.number_chunks < 0

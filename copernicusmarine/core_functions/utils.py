@@ -170,6 +170,31 @@ def run_concurrently(
     return out
 
 
+def run_multiprocessors(
+    func: Callable[..., _T],
+    function_arguments: Sequence[tuple[Any, ...]],
+    max_concurrent_requests: int,
+    tdqm_bar_configuration: dict = {},
+) -> list[_T]:
+    out = []
+    with tqdm(
+        total=len(function_arguments),
+        **tdqm_bar_configuration,
+    ) as pbar:
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=max_concurrent_requests
+        ) as executor:
+            future_to_url = (
+                executor.submit(func, *function_argument)
+                for function_argument in function_arguments
+            )
+            for future in concurrent.futures.as_completed(future_to_url):
+                data = future.result()
+                out.append(data)
+                pbar.update(1)
+    return out
+
+
 # Example data_path
 # https://s3.waw3-1.cloudferro.com/mdl-native-01/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105
 # https://s3.region.cloudferro.com/bucket/arco/product/dataset/geoChunked.zarr
