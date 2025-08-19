@@ -174,7 +174,7 @@ def subset_function(
                 subset_request.file_format = "netcdf"
             elif subset_request.file_format not in ["netcdf", "zarr"]:
                 raise WrongFormatRequested(
-                    format_type=subset_request.file_format,
+                    requested_format=subset_request.file_format,
                     supported_formats=["netcdf", "zarr"],
                 )
             logger.debug(
@@ -202,7 +202,7 @@ def subset_function(
                 subset_request.file_format = "csv"
             elif subset_request.file_format not in ["parquet", "csv"]:
                 raise WrongFormatRequested(
-                    format_type=subset_request.file_format,
+                    requested_format=subset_request.file_format,
                     supported_formats=["parquet", "csv"],
                 )
             logger.debug(
