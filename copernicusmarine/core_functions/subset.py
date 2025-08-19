@@ -154,6 +154,7 @@ def subset_function(
     check_requested_area_time_valid(
         subset_request=subset_request,
         service_format=retrieval_service.service_format,
+        dataset_part=retrieval_service.dataset_part.name,
     )
     check_dataset_subset_bounds(
         service=retrieval_service.service,
@@ -309,18 +310,20 @@ def raise_when_all_dataset_requested(
 def check_requested_area_time_valid(
     subset_request: SubsetRequest,
     service_format: Optional[CopernicusMarineServiceFormat],
+    dataset_part: str,
 ) -> None:
-    """
-    In case of inversion for a dataset that is in originalGrid,
-    we check before and would raise an error if the x
-    or y coordinates are inverted.
-    """  # noqa: E501
+    is_original_grid = dataset_part == "originalGrid"
+    x_axis_name = "x" if is_original_grid else "longitude"
+    y_axis_name = "y" if is_original_grid else "latitude"
     if (
         subset_request.minimum_x is not None
         and subset_request.maximum_x is not None
         and subset_request.minimum_x > subset_request.maximum_x
     ):
-        if service_format == CopernicusMarineServiceFormat.ZARR:
+        if (
+            service_format == CopernicusMarineServiceFormat.ZARR
+            and not is_original_grid
+        ):
             logger.warning(
                 "Minimum longitude greater than maximum longitude. "
                 "Your selection will wrap around the 180° meridian: "
@@ -329,11 +332,11 @@ def check_requested_area_time_valid(
             )
         else:
             raise ValueError(
-                "Minimum longitude greater than maximum longitude: "
-                "minimum-longitude option must be smaller or equal to "
-                "maximum-longitude for this dataset. "
-                f"Minimum longitude: {subset_request.minimum_x}, "
-                f"Maximum longitude: {subset_request.maximum_x}."
+                f"Minimum {x_axis_name} greater than maximum {x_axis_name}: "
+                f"minimum-{x_axis_name} option must be smaller or equal to "
+                f"maximum-{x_axis_name} for this dataset. "
+                f"Minimum {x_axis_name}: {subset_request.minimum_x}, "
+                f"Maximum {x_axis_name}: {subset_request.maximum_x}."
             )
     if (
         subset_request.minimum_y is not None
@@ -341,10 +344,11 @@ def check_requested_area_time_valid(
         and subset_request.minimum_y > subset_request.maximum_y
     ):
         raise ValueError(
-            "Minimum latitude greater than maximum latitude: minimum-latitude "
-            "option must be smaller or equal to maximum-latitude. "
-            f"Minimum latitude: {subset_request.minimum_y}, "
-            f"Maximum latitude: {subset_request.maximum_y}."
+            f"Minimum {y_axis_name} greater than maximum {y_axis_name}: "
+            f"minimum-{y_axis_name} option must be smaller or equal to "
+            f"maximum-{y_axis_name} for this dataset. "
+            f"Minimum {y_axis_name}: {subset_request.minimum_y}, "
+            f"Maximum {y_axis_name}: {subset_request.maximum_y}."
         )
     if (
         subset_request.minimum_depth is not None

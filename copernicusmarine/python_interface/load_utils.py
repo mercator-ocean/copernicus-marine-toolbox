@@ -61,6 +61,7 @@ def load_data_object_from_load_request(
     check_requested_area_time_valid(
         subset_request=load_request.to_subset_request(),
         service_format=retrieval_service.service_format,
+        dataset_part=retrieval_service.dataset_part.name,
     )
 
     check_dataset_subset_bounds(

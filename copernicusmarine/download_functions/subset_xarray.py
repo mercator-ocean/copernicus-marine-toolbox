@@ -839,14 +839,19 @@ def _check_longitude_overlap_and_contained(
         - second boolean indicates if the request is contained within the dataset range
     """  # noqa: E501
     if user_minimum_coordinate_value > user_maximum_coordinate_value:
+        eastern_contained = (
+            dataset_minimum_coordinate_value <= user_minimum_coordinate_value
+        ) and (dataset_maximum_coordinate_value >= 180)
+        western_contained = (dataset_minimum_coordinate_value <= -180) and (
+            dataset_maximum_coordinate_value >= user_maximum_coordinate_value
+        )
+
         # Dataset overlaps if intersects [user_min, 180] ∪ [-180, user_max]
         return (
             dataset_maximum_coordinate_value >= user_minimum_coordinate_value
             or dataset_minimum_coordinate_value
             <= user_maximum_coordinate_value,
-            dataset_maximum_coordinate_value >= user_minimum_coordinate_value
-            and dataset_minimum_coordinate_value
-            <= user_maximum_coordinate_value,
+            eastern_contained and western_contained,
         )
     else:
         return (
@@ -859,7 +864,7 @@ def _check_longitude_overlap_and_contained(
             (
                 user_minimum_coordinate_value
                 >= dataset_minimum_coordinate_value
-                or user_maximum_coordinate_value
+                and user_maximum_coordinate_value
                 <= dataset_maximum_coordinate_value
             ),
         )
