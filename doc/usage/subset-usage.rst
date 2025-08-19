@@ -109,6 +109,8 @@ There are also some options that behave differently or are not available for spa
 Additional options
 ------------------
 
+.. _about-longitude-range:
+
 About longitude range
 """"""""""""""""""""""
 
@@ -120,7 +122,19 @@ The ``--minimum-longitude`` and ``--maximum-longitude`` options work as follows:
   * **Does not cross** the antemeridian, the dataset between -180 and 180 is returned.
   * **Crosses** the antemeridian, the dataset between 0 and 360 is returned.
 
-Note that any longitudes can be requested. The system applies a modulus operation to bring the result between -180° and 360°. For example, a request for [530, 560] will return data for longitudes [170, 200].
+Any longitudes can be requested. The system applies a modulus operation to bring the result between -180° and 360°. For example, a request for [530, 560] will return data for longitudes [170, 200].
+
+Example of request that crosses the antemeridian:
+
+.. code-block:: bash
+
+    copernicusmarine subset -i cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M -x 10 -X -40
+    # Equivalent to:
+    copernicusmarine subset -i cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M -x 10 -X 320
+
+.. note::
+
+  Crossing the antemeridian is not supported for sparse datasets. If you want to see this feature, please contact us.
 
 Option ``--netcdf-compression-level``
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

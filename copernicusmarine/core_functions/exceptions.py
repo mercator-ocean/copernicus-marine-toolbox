@@ -1,13 +1,3 @@
-class MinimumLongitudeGreaterThanMaximumLongitude(Exception):
-    """
-    Exception raised when the minimum longitude is greater than the maximum longitude.
-
-    Please make sure the minimum longitude is less or equal than the maximum longitude.
-    """
-
-    pass
-
-
 class VariableDoesNotExistInTheDataset(Exception):
     """
     Exception raised when the variable does not exist in the dataset.
@@ -21,11 +11,6 @@ class VariableDoesNotExistInTheDataset(Exception):
             f"The variable '{variable}' is neither a variable or a standard name in"
             f" the dataset."
         )
-        self.__setattr__(
-            "custom_exception_message",
-            f"The variable '{variable}' is neither a variable or a standard name in "
-            f"the dataset.",
-        )
 
 
 class CoordinatesOutOfDatasetBounds(Exception):
@@ -38,7 +23,6 @@ class CoordinatesOutOfDatasetBounds(Exception):
 
     def __init__(self, message: str):
         super().__init__(message)
-        self.__setattr__("custom_exception_message", message)
 
 
 class NetCDFCompressionNotAvailable(Exception):
@@ -223,8 +207,7 @@ class ServiceDoesNotExistForCommand(Exception):
         command_name: str,
         available_services: list[str],
     ):
-        super().__init__()
-        self.__setattr__(
+        super().__init__(
             "custom_exception_message",
             f"Service {requested_service_name} "
             f"does not exist for command {command_name}. "

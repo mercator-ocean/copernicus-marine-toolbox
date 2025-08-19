@@ -2,8 +2,11 @@ import fnmatch
 import re
 from pathlib import Path
 
-from tests.test_command_line_interface import get_all_files_in_folder_tree
-from tests.test_utils import execute_in_terminal
+from tests.test_utils import (
+    execute_in_terminal,
+    get_all_files_in_folder_tree,
+    remove_extra_logging_prefix_info,
+)
 
 
 def get_path_to_request_file(filename: str):
@@ -145,3 +148,78 @@ class TestRequestFiles:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
+
+    def test_subset_request_wrong_typings(self):
+        filepath = get_path_to_request_file("test_subset_wrong_typings")
+
+        command = build_command(filepath, "subset") + ["--dry-run"]
+
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 1
+        assert "Invalid request in file" in self.output.stderr
+
+    def test_subset_works_deprecated_options(self):
+        filepath = get_path_to_request_file(
+            "test_subset_works_deprecated_options"
+        )
+
+        command = build_command(filepath, "subset") + ["--dry-run"]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert "'force_download' has been deprecated" in self.output.stderr
+        assert "'motu_api_request' has been deprecated" in self.output.stderr
+
+    def test_subset_create_template(self):
+        self.when_template_is_created()
+        self.and_it_runs_correctly()
+
+    def when_template_is_created(self):
+        command = ["copernicusmarine", "subset", "--create-template"]
+
+        self.output = execute_in_terminal(command)
+        print(self.output.stderr)
+        print(remove_extra_logging_prefix_info(self.output.stderr))
+        assert (
+            "Template created at: subset_template.json"
+            == remove_extra_logging_prefix_info(self.output.stderr)
+        )
+        assert Path("subset_template.json").is_file()
+
+    def and_it_runs_correctly(self):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--request-file",
+            "./subset_template.json",
+            "--dry-run",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+        assert self.output.returncode == 0
+
+    def test_get_template_creation(self):
+        command = ["copernicusmarine", "get", "--create-template"]
+
+        self.output = execute_in_terminal(command)
+
+        assert (
+            "Template created at: get_template.json"
+            == remove_extra_logging_prefix_info(self.output.stderr)
+        )
+        assert Path("get_template.json").is_file()
+
+    def test_get_template_creation_with_extra_arguments(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "--create-template",
+            "--no-directories",
+        ]
+
+        self.output = execute_in_terminal(command)
+
+        assert (
+            "Other options passed with create template: no_directories"
+            == remove_extra_logging_prefix_info(self.output.stderr)
+        )
