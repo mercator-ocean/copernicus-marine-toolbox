@@ -17,6 +17,7 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     FileFormat,
     ResponseSubset,
+    SplitOnOption,
     VerticalAxis,
 )
 from copernicusmarine.core_functions.subset import subset_function
@@ -69,7 +70,8 @@ def subset(
     chunk_size_limit: int = -1,
     raise_if_updating: bool = False,
     platform_ids: Optional[List[str]] = None,
-) -> ResponseSubset:
+    split_on: Optional[SplitOnOption] = None,
+) -> list[ResponseSubset]:
     """
     Extract a subset of data from a specified dataset using given parameters.
 
@@ -147,6 +149,8 @@ def subset(
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     platform_ids : List[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
+    split_on : SplitOnOption, optional
+        Only applicable when 'file_format' is set to 'netcdf'. If set, the dataset will be split on the specified variable.
 
     Returns
     -------
@@ -225,6 +229,7 @@ def subset(
         netcdf3_compatible,
         chunk_size_limit,
         raise_if_updating,
+        split_on,
     )
 
 

@@ -38,6 +38,7 @@ def get_file_extension(file_format: FileFormat) -> str:
 
 def get_filename(
     filename: Optional[str],
+    key: Optional[str],
     dataset: xarray.Dataset,
     dataset_id: str,
     file_format: FileFormat,
@@ -48,10 +49,15 @@ def get_filename(
         if pathlib.Path(filename).suffix in DEFAULT_FILE_EXTENSIONS:
             return filename
         else:
-            return filename + get_file_extension(file_format)
+            return (
+                filename
+                + (f"_{key}" if key else "")
+                + get_file_extension(file_format)
+            )
     else:
         return _build_filename_from_dataset(
             dataset,
+            key,
             dataset_id,
             file_format,
             axis_coordinate_id_mapping,
@@ -61,6 +67,7 @@ def get_filename(
 
 def _build_filename_from_dataset(
     dataset: xarray.Dataset,
+    key: Optional[str],
     dataset_id: str,
     file_format: FileFormat,
     axis_coordinate_id_mapping: dict[str, str],
@@ -136,6 +143,9 @@ def _build_filename_from_dataset(
         )
     )
     filename = filename if len(filename) < 250 else filename[250:]
+
+    if key:
+        filename = f"{filename}_{key}"
 
     return filename + get_file_extension(file_format)
 

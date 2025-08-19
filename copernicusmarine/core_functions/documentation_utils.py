@@ -253,6 +253,10 @@ SUBSET: dict[str, str] = {
         "the updating start date of the dataset."
         " Otherwise, a simple warning is displayed."
     ),
+    "SPLIT_ON_HELP": (
+        "When subsetting to netCDF, allows to split the output "
+        "file by variable or by time."
+    ),
 }
 
 GET: dict[str, str] = {
