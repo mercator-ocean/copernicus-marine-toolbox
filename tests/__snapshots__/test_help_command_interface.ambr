@@ -1,7 +1,7 @@
 # serializer version: 1
 # name: TestHelpCommandLineInterface.test_help_from_copernicusmarin_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', '--help'], returncode=0, stdout='Usage: copernicusmarine [OPTIONS] COMMAND [ARGS]...",
+    'Usage: copernicusmarine [OPTIONS] COMMAND [ARGS]...',
     '',
     'Options:',
     '  -V, --version  Show the version and exit.',
@@ -13,12 +13,12 @@
     '  login     Create a configuration file with your Copernicus Marine',
     '            credentials.',
     '  subset    Download subsets of datasets as NetCDF files or Zarr stores.',
-    "', stderr='')",
+    '',
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_describe_is_as_expected
   list([
-    'CompletedProcess(args=[\'copernicusmarine\', \'describe\', \'--help\'], returncode=0, stdout="Usage: copernicusmarine describe [OPTIONS]',
+    'Usage: copernicusmarine describe [OPTIONS]',
     '',
     '  Retrieve and parse the metadata information from the Copernicus Marine',
     '  catalogue.',
@@ -69,12 +69,12 @@
     '        copernicusmarine describe -c METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2 ',
     '',
     '    ',
-    '", stderr=\'\')',
+    '',
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_get_is_as_expected
   list([
-    'CompletedProcess(args=[\'copernicusmarine\', \'get\', \'--help\'], returncode=0, stdout="Usage: copernicusmarine get [OPTIONS]',
+    'Usage: copernicusmarine get [OPTIONS]',
     '',
     '  Download originally produced data files.',
     '',
@@ -191,12 +191,12 @@
     '        copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m ',
     '',
     '    ',
-    '", stderr=\'\')',
+    '',
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_login_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', 'login', '--help'], returncode=0, stdout='Usage: copernicusmarine login [OPTIONS]",
+    'Usage: copernicusmarine login [OPTIONS]',
     '',
     '  Create a configuration file with your Copernicus Marine credentials under',
     '  the ``$HOME/.copernicusmarine`` directory.',
@@ -257,12 +257,12 @@
     '        > Username: [USER-INPUT]',
     '        > Password: [USER-INPUT]',
     '    ',
-    "', stderr='')",
+    '',
   ])
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_is_as_expected
   list([
-    "CompletedProcess(args=['copernicusmarine', 'subset', '--help'], returncode=0, stdout='Usage: copernicusmarine subset [OPTIONS]",
+    'Usage: copernicusmarine subset [OPTIONS]',
     '',
     '  Extract a subset of data from a specified dataset using given parameters.',
     '',
@@ -349,7 +349,7 @@
     '                                  be inside the requested range. If ``strict-',
     '                                  inside``, the selection retrieved will be',
     '                                  inside the requested range, and an error',
-    "                                  will be raised if the values don\\'t exist. If",
+    "                                  will be raised if the values don't exist. If",
     '                                  ``nearest``, the extremes closest to the',
     '                                  requested values will be returned. If',
     '                                  ``outside``, the extremes will be taken to',
@@ -368,29 +368,29 @@
     '                                  name (under the output directory).',
     '  --file-format [netcdf|zarr|csv|parquet]',
     '                                  Format of the downloaded dataset. If not set',
-    "                                  or set to ``None``, defaults to NetCDF \\'.nc\\'",
-    "                                  for gridded datasets and to CSV \\'.csv\\' for",
+    "                                  or set to ``None``, defaults to NetCDF '.nc'",
+    "                                  for gridded datasets and to CSV '.csv' for",
     '                                  sparse datasets.',
     '  --overwrite                     If specified and if the file already exists',
     '                                  on destination, then it will be overwritten.',
     '                                  By default, the toolbox creates a new file',
-    "                                  with a new index (eg \\'filename_(1).nc\\').",
+    "                                  with a new index (eg 'filename_(1).nc').",
     '                                  NOTE: This argument is mutually exclusive',
     '                                  with arguments: [skip-existing].',
     '  --skip-existing                 If the files already exists where it would',
     '                                  be downloaded, then the download is skipped',
     '                                  for this file. By default, the toolbox',
     '                                  creates a new file with a new index (eg',
-    "                                  \\'filename_(1).nc\\'). NOTE: This argument is",
+    "                                  'filename_(1).nc'). NOTE: This argument is",
     '                                  mutually exclusive with arguments:',
     '                                  [overwrite].',
     '  -s, --service TEXT              Force download through one of the available',
     '                                  services using the service name among',
-    "                                  [\\'arco-geo-series\\', \\'arco-time-series\\',",
-    "                                  \\'omi-arco\\', \\'static-arco\\', \\'arco-platform-",
-    "                                  series\\'] or its short name among",
-    "                                  [\\'geoseries\\', \\'timeseries\\', \\'omi-arco\\',",
-    "                                  \\'static-arco\\', \\'platformseries\\'].",
+    "                                  ['arco-geo-series', 'arco-time-series',",
+    "                                  'omi-arco', 'static-arco', 'arco-platform-",
+    "                                  series'] or its short name among",
+    "                                  ['geoseries', 'timeseries', 'omi-arco',",
+    "                                  'static-arco', 'platformseries'].",
     '  --create-template               Option to create a file',
     '                                  <argument>_template.json in your current',
     '                                  directory containing the arguments. If',
@@ -403,13 +403,13 @@
     '                                  interface for an example template.',
     '  --motu-api-request TEXT         Option to pass a complete MOTU API request',
     '                                  as a string. Caution, user has to replace',
-    '                                  double quotes " with single quotes \\\' in the',
+    '                                  double quotes " with single quotes \' in the',
     '                                  request.',
     '  --dry-run                       If True, runs query without downloading',
     '                                  data.',
     '  -r, --response-fields TEXT      List of fields to include in the query',
     '                                  metadata. The fields are separated by a',
-    "                                  comma. To return all fields, use \\'all\\'.",
+    "                                  comma. To return all fields, use 'all'.",
     '  --netcdf-compression-level INTEGER RANGE',
     '                                  Specify a compression level to apply on the',
     '                                  NetCDF output file. A value of 0 means no',
@@ -421,8 +421,8 @@
     '  --chunk-size-limit INTEGER RANGE',
     '                                  Limit the size of the chunks in the dask',
     '                                  array. Default is set to -1 which behaves',
-    "                                  similarly to \\'chunks=auto\\' from ``xarray``.",
-    "                                  Positive integer values and \\'-1\\' are",
+    "                                  similarly to 'chunks=auto' from ``xarray``.",
+    "                                  Positive integer values and '-1' are",
     '                                  accepted. This is an experimental feature.',
     '                                  [x>=-1]',
     '  --disable-progress-bar          Flag to hide progress bar.',
@@ -449,6 +449,6 @@
     '        copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 ',
     '',
     '    ',
-    "', stderr='')",
+    '',
   ])
 # ---

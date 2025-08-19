@@ -1,50 +1,262 @@
-import datetime
-import fnmatch
 import itertools
 import logging
 import math
 import os
 import pathlib
-import re
+from datetime import datetime
 from json import loads
 from pathlib import Path
-from typing import List, Literal, Optional, Union
+from typing import Literal, Optional, Union
 
 import pytest
 import xarray
 
+from copernicusmarine import WrongFormatRequested, open_dataset, subset
 from tests.test_utils import (
     execute_in_terminal,
+    get_file_size,
     main_checks_when_file_is_downloaded,
-    remove_extra_logging_prefix_info,
 )
 
-logger = logging.getLogger()
 
+class TestSubset:
+    def test_subset_function(self, tmp_path):
+        self.when_subset_function(tmp_path)
+        self.then_the_same_with_skip_existing_does_not_download(tmp_path)
 
-def get_all_files_in_folder_tree(folder: str) -> list[str]:
-    downloaded_files = []
-    for _, _, files in os.walk(folder):
-        for filename in files:
-            downloaded_files.append(filename)
-    return downloaded_files
+    def when_subset_function(self, tmp_path):
+        subset_result = subset(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
+            dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
+            variables=["so"],
+            start_datetime=datetime(year=2024, month=1, day=1),
+            end_datetime=datetime(year=2024, month=1, day=2),
+            minimum_latitude=0.0,
+            maximum_latitude=0.1,
+            minimum_longitude=0.2,
+            maximum_longitude=0.3,
+            output_directory=tmp_path,
+        )
 
+        assert subset_result is not None
+        assert subset_result.file_path.exists()
 
-def get_file_size(filepath):
-    file_path = Path(filepath)
-    file_stats = file_path.stat()
-    return file_stats.st_size
+    def then_the_same_with_skip_existing_does_not_download(self, tmp_path):
+        subset_result = subset(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
+            dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
+            variables=["so"],
+            start_datetime=datetime(year=2024, month=1, day=1),
+            end_datetime=datetime(year=2024, month=1, day=2),
+            minimum_latitude=0.0,
+            maximum_latitude=0.1,
+            minimum_longitude=0.2,
+            maximum_longitude=0.3,
+            output_directory=tmp_path,
+            skip_existing=True,
+        )
+        assert subset_result.file_path.exists()
+        assert "IGNORED" == subset_result.file_status
+        assert "000" == subset_result.status
 
+    def test_subset_modify_attr_for_depth(self):
+        dataset = open_dataset(
+            dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1D-m"
+        )
+        assert dataset.depth.attrs["positive"] == "down"
+        assert dataset.depth.attrs["standard_name"] == "depth"
+        assert dataset.depth.attrs["long_name"] == "Depth"
 
-class TestCommandLineInterface:
+    def test_subset_keeps_fillvalue_empty(self, tmp_path):
+        subset(
+            dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            variables=["thetao"],
+            minimum_longitude=-28.10,
+            maximum_longitude=-27.94,
+            minimum_latitude=40.20,
+            maximum_latitude=40.44,
+            start_datetime="2024-02-23T00:00:00",
+            end_datetime="2024-02-23T23:59:59",
+            minimum_depth=0,
+            maximum_depth=1,
+            output_directory=tmp_path,
+            output_filename="netcdf_fillval.nc",
+            overwrite=True,
+        )
 
-    # -------------------------#
-    # Test on subset requests #
-    # -------------------------#
+        subsetdata = xarray.open_dataset(
+            f"{tmp_path}/netcdf_fillval.nc", decode_cf=False
+        )
+        assert "_FillValue" not in subsetdata.longitude.attrs
+        assert "_FillValue" not in subsetdata.time.attrs
+        assert "_FillValue" not in subsetdata.latitude.attrs
+        assert "_FillValue" not in subsetdata.depth.attrs
+        assert subsetdata.time.attrs["calendar"] == "gregorian"
+        assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
+
+    def test_subset_keeps_fillvalue_empty_w_compression(self, tmp_path):
+        subset(
+            dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            variables=["thetao"],
+            minimum_longitude=-28.10,
+            maximum_longitude=-27.94,
+            minimum_latitude=40.20,
+            maximum_latitude=40.44,
+            start_datetime="2024-02-23T00:00:00",
+            end_datetime="2024-02-23T23:59:59",
+            minimum_depth=5,
+            maximum_depth=10,
+            output_directory=tmp_path,
+            output_filename="netcdf_fillval_compressed.nc",
+            netcdf_compression_level=1,
+            overwrite=True,
+        )
+
+        subsetdata = xarray.open_dataset(
+            f"{tmp_path}/netcdf_fillval_compressed.nc", decode_cf=False
+        )
+        assert "_FillValue" not in subsetdata.longitude.attrs
+        assert "_FillValue" not in subsetdata.time.attrs
+        assert "_FillValue" not in subsetdata.latitude.attrs
+        assert "_FillValue" not in subsetdata.depth.attrs
+        assert subsetdata.time.attrs["calendar"] == "gregorian"
+        assert subsetdata.time.attrs["units"] == "hours since 1950-01-01"
+
+    def test_compressed_and_uncompressed_no_diff_with_ncdump(self, tmp_path):
+        data_query = {
+            "dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+            "start_datetime": "2019-01-31",
+            "end_datetime": "2019-01-31",
+            "minimum_depth": 0,
+            "maximum_depth": 1,
+            "variables": ["sea_water_potential_temperature"],
+            "output_directory": tmp_path,
+        }
+        subset(**data_query, output_filename="uncompressed_data.nc")
+        subset(
+            **data_query,
+            netcdf_compression_level=1,
+            output_filename="compressed_data.nc",
+        )
+        dataset_uncompressed = xarray.open_dataset(
+            tmp_path / "uncompressed_data.nc"
+        )
+        dataset_compressed = xarray.open_dataset(
+            tmp_path / "compressed_data.nc"
+        )
+        size_uncompressed = (tmp_path / "uncompressed_data.nc").stat().st_size
+        size_compressed = (tmp_path / "compressed_data.nc").stat().st_size
+        assert len(dataset_uncompressed.longitude.values) > 4300
+        assert len(dataset_compressed.longitude.values) > 4300
+        assert len(dataset_uncompressed.latitude.values) > 2000
+        assert len(dataset_compressed.latitude.values) > 2000
+
+        assert size_uncompressed > 2 * size_compressed
+
+        diff = dataset_uncompressed - dataset_compressed
+        diff.attrs = dataset_uncompressed.attrs
+        for var in diff.data_vars:
+            diff[var].attrs = dataset_uncompressed[var].attrs
+
+        diff.to_netcdf(tmp_path / "diff.nc")
+        diff = xarray.open_dataset(tmp_path / "diff.nc")
+        assert math.isclose(diff.thetao.mean().values, 0.0)
+        output_uncompressed = execute_in_terminal(
+            [
+                "ncdump",
+                "-h",
+                str(tmp_path / "uncompressed_data.nc"),
+            ]
+        )
+        output_compressed = execute_in_terminal(
+            [
+                "ncdump",
+                "-h",
+                str(tmp_path / "compressed_data.nc"),
+            ]
+        )
+        # we skip the first line that contains the title
+        assert output_compressed.stdout[23:] == output_uncompressed.stdout[25:]
+
+    def test_lonlat_attributes_when_not_in_arco(self, tmp_path):
+        dataset_response = subset(
+            dataset_id="esa_obs-si_arc_phy-sit_nrt_l4-multi_P1D-m",
+            variables=["density_of_ocean", "quality_flag"],
+            minimum_longitude=-28.10,
+            maximum_longitude=-27.94,
+            minimum_latitude=40.20,
+            maximum_latitude=40.44,
+            start_datetime="2024-11-21T00:00:00",
+            end_datetime="2024-11-21T00:00:00",
+            minimum_depth=5,
+            maximum_depth=10,
+            output_directory=tmp_path,
+            output_filename="without_lonlat_attrs_dataset.nc",
+        )
+        dataset = xarray.open_dataset(
+            tmp_path / "without_lonlat_attrs_dataset.nc"
+        )
+
+        assert dataset_response.status == "000"
+        assert dataset.longitude.attrs == {
+            "axis": "X",
+            "long_name": "Longitude",
+            "standard_name": "longitude",
+            "units": "degrees_east",
+        }
+        assert dataset.latitude.attrs == {
+            "axis": "Y",
+            "long_name": "Latitude",
+            "standard_name": "latitude",
+            "units": "degrees_north",
+        }
+        for coordinate in dataset_response.coordinates_extent:
+            assert coordinate.coordinate_id in dataset.sizes
+            if coordinate.coordinate_id in [
+                "longitude",
+                "latitude",
+            ]:  # not time
+                assert (
+                    min(dataset[coordinate.coordinate_id].values)
+                    == coordinate.minimum
+                )
+                assert (
+                    dataset[coordinate.coordinate_id].values.max()
+                    == coordinate.maximum
+                )
+
+    def test_file_format_option(self):
+        response = subset(
+            dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
+            start_datetime="2023-11-01T00:00:00",
+            dry_run=True,
+        )
+        assert response.filename.endswith(".nc")
+
+        response = subset(
+            dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            start_datetime="2023-11-25T00:00:00",
+            file_format=None,
+            dry_run=True,
+        )
+        assert response.filename.endswith(".csv")
+
+        try:
+            response = subset(
+                dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
+                start_datetime="2023-11-01T00:00:00",
+                file_format="parquet",
+                dry_run=True,
+            )
+            assert False
+        except WrongFormatRequested:
+            pass
 
     def flatten_request_dict(
         self, request_dict: dict[str, Optional[Union[str, Path]]]
-    ) -> List:
+    ) -> list:
         flatten_list = list(
             itertools.chain.from_iterable(
                 [[key, val] for key, val in request_dict.items()]
@@ -172,195 +384,6 @@ class TestCommandLineInterface:
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(tmp_path / "dataset.nc", response)
 
-    # -------------------------#
-    # Test on get requests #
-    # -------------------------#
-    def test_get_download_s3_without_regex(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        self.output = execute_in_terminal(command)
-        downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert self.output.returncode == 0
-        assert len(downloaded_files) == 31
-
-    def test_get_download_s3_with_regex(self, tmp_path):
-        regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--regex",
-            f"{regex}",
-            "--output-directory",
-            f"{tmp_path}",
-            "--skip-existing",
-        ]
-
-        self.output = execute_in_terminal(command, safe_quoting=True)
-        downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert self.output.returncode == 0
-        assert len(downloaded_files) == 3
-
-        for filename in downloaded_files:
-            assert re.match(regex, filename) is not None
-
-    def test_get_something_and_skip_existing(self, tmp_path):
-        self.when_get_by_default_returns_status_message(tmp_path)
-        self.and_i_do_skip_existing(tmp_path)
-
-    def when_get_by_default_returns_status_message(self, tmp_path):
-        filter_option = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--filter",
-            f"{filter_option}",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
-        returned_value = loads(self.output.stdout)
-        assert returned_value["status"]
-        assert returned_value["message"]
-
-    def and_i_do_skip_existing(self, tmp_path):
-        filter_option = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--filter",
-            f"{filter_option}",
-            "--output-directory",
-            f"{tmp_path}",
-            "--skip-existing",
-            "-r",
-            "all",
-        ]
-        self.output2 = execute_in_terminal(command)
-        assert self.output2.returncode == 0
-        returned_value = loads(self.output2.stdout)
-        assert returned_value["status"] == "003"
-        assert returned_value["message"]
-        start_path = (
-            f"{tmp_path}/"
-            f"IBI_MULTIYEAR_PHY_005_002/"
-            f"cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/"
-            f"CMEMS_v5r1_IBI_PHY_MY_NL_01yav_"
-        )
-        assert os.path.exists(
-            start_path + "20010101_20011231_R20221101_RE01.nc"
-        )
-        assert not os.path.exists(
-            start_path + "20010101_20011231_R20221101_RE01_(1).nc"
-        )
-        assert returned_value["total_size"] == 0
-
-    def test_get_download_with_dry_run_option(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--output-directory",
-            f"{tmp_path}",
-            "--dry-run",
-        ]
-
-        self.output = execute_in_terminal(command)
-        returned_value = loads(self.output.stdout)
-        assert self.output.returncode == 0
-        assert len(returned_value["files"]) != 0
-        assert returned_value["total_size"]
-        assert returned_value["status"]
-        assert returned_value["message"]
-        for get_file in returned_value["files"]:
-            assert get_file["s3_url"] is not None
-            assert get_file["https_url"] is not None
-            assert get_file["file_size"] is not None
-            assert get_file["last_modified_datetime"] is not None
-            assert get_file["etag"] is not None
-            assert get_file["file_format"] is not None
-            assert get_file["output_directory"] is not None
-            assert get_file["filename"] is not None
-            assert get_file["file_path"] is not None
-            assert str(tmp_path) in get_file["file_path"]
-            assert not os.path.exists(get_file["file_path"])
-
-    def test_get_can_choose_return_fields(self, tmp_path):
-        filter_ = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--filter",
-            f"{filter_}",
-            "--output-directory",
-            f"{tmp_path}",
-            "-r",
-            "https_url",
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
-        returned_value = loads(self.output.stdout)
-        assert "status" not in returned_value
-        assert "message" not in returned_value
-        assert "files" in returned_value
-        for get_file in returned_value["files"]:
-            assert "s3_url" not in get_file
-            assert "https_url" in get_file
-            assert "https://" in get_file["https_url"]
-
-    def test_get_wrong_input_response_fields_warning_and_error(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        response_fields = "https_url, wrong_field"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--dry-run",
-            "-r",
-            response_fields,
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
-        assert (
-            "Some ``--response-fields`` fields are invalid:"
-            " wrong_field" in self.output.stderr
-        )
-
-        command[-1] = "wrong_field1, wrong_field2"
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 1
-        assert (
-            "Wrong fields error: All ``--response-fields`` "
-            "fields are invalid: wrong_field1, wrong_field2"
-            in self.output.stderr
-        )
-
     def test_subset_wrong_input_response_fields_warning_and_error(self):
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
         response_fields = "status, wrong_field"
@@ -414,10 +437,7 @@ class TestCommandLineInterface:
         assert str(tmp_path) in returned_value["file_path"]
         assert not os.path.exists(returned_value["file_path"])
 
-    def test_subset_by_default_returns_status_message(
-        self, tmp_path
-    ):  # TODO: it feels like we can just add this test into another one!
-        # so, do we need to download a whole dataset for this?
+    def test_subset_by_default_returns_status_message(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -429,6 +449,14 @@ class TestCommandLineInterface:
             "-9.9",
             "--maximum-longitude",
             "-9.6",
+            "-t",
+            "2023",
+            "-T",
+            "2023",
+            "-y",
+            "55",
+            "-Y",
+            "56",
             "-o",
             f"{tmp_path}",
         ]
@@ -466,113 +494,6 @@ class TestCommandLineInterface:
         assert "file_path" in returned_value
         assert "coordinates_extent" not in returned_value
 
-    def test_subset_output_file_as_netcdf(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        output_filename = "test_subset_output_file_as_netcdf.nc"
-
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--dataset-id",
-            f"{dataset_id}",
-            "--variable",
-            "thetao",
-            "--minimum-longitude",
-            "-9.9",
-            "--maximum-longitude",
-            "-9.6",
-            "--minimum-latitude",
-            "33.96",
-            "--maximum-latitude",
-            "34.2",
-            "--minimum-depth",
-            "0.5",
-            "--maximum-depth",
-            "1.6",
-            "-o",
-            f"{tmp_path}",
-            "-f",
-            f"{output_filename}",
-        ]
-
-        self.output = execute_in_terminal(command)
-        is_file = pathlib.Path(tmp_path, output_filename).is_file()
-        response = loads(self.output.stdout)
-        main_checks_when_file_is_downloaded(
-            tmp_path / output_filename, response
-        )
-        assert self.output.returncode == 0
-        assert is_file
-
-    def test_get_download_s3_with_wildcard_filter(self, tmp_path):
-        filter_ = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--filter",
-            f"{filter_}",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        self.output = execute_in_terminal(command)
-        downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert self.output.returncode == 0
-        assert len(downloaded_files) == 3
-
-        for filename in downloaded_files:
-            assert fnmatch.fnmatch(filename, filter_)
-
-    def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
-        filter_option = "*_200[45]*.nc"
-        regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--filter",
-            f"{filter_option}",
-            "--regex",
-            f"{regex}",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        self.output = execute_in_terminal(command, safe_quoting=True)
-        downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert self.output.returncode == 0
-        assert len(downloaded_files) == 5
-
-        for filename in downloaded_files:
-            assert (
-                fnmatch.fnmatch(filename, filter_option)
-                or re.match(regex, filename) is not None
-            )
-
-    def test_get_download_no_files(self):
-        regex = "toto"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--regex",
-            f"{regex}",
-            "--dry-run",
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert "No data to download" in self.output.stderr
-        assert self.output.returncode == 0
-
-    # TODO: separate tests for each service
-    # SUBSET, GET, DESCRIBE
     def test_subset_error_when_forced_service_does_not_exist(self):
         self.when_i_run_copernicus_marine_subset_forcing_a_service_not_available()
         self.then_i_got_a_clear_output_with_available_service_for_subset()
@@ -679,63 +600,6 @@ class TestCommandLineInterface:
         )
         self.then_i_have_correct_attribute_value(tmp_path, "elevation", "up")
 
-    def when_i_run_copernicus_marine_command_using_no_directories_option(
-        self, tmp_path, output_directory=None
-    ):
-        download_folder = (
-            tmp_path
-            if not output_directory
-            else str(Path(tmp_path) / Path(output_directory))
-        )
-
-        filter_ = "*_200[12]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--filter",
-            f"{filter_}",
-            "--output-directory",
-            f"{download_folder}",
-            "--no-directories",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert self.output.returncode == 0
-
-    def then_files_are_created_without_tree_folder(
-        self, tmp_path, output_directory=None
-    ):
-        expected_files = [
-            "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc",
-            "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc",
-        ]
-
-        download_folder = (
-            Path(tmp_path)
-            if not output_directory
-            else Path(tmp_path) / Path(output_directory)
-        )
-
-        downloaded_files = [path.name for path in download_folder.iterdir()]
-
-        assert set(expected_files).issubset(downloaded_files)
-
-    def test_no_directories_option_original_files(self, tmp_path):
-        self.when_i_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path
-        )
-        self.then_files_are_created_without_tree_folder(tmp_path)
-        self.when_i_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path, output_directory="test"
-        )
-        self.then_files_are_created_without_tree_folder(
-            tmp_path, output_directory="test"
-        )
-
     def test_default_service_for_subset_command(self):
         self.when_i_run_copernicus_marine_subset_with_default_service()
         self.then_i_can_see_the_arco_geo_series_service_is_choosen()
@@ -759,21 +623,6 @@ class TestCommandLineInterface:
 
     def then_i_can_see_the_arco_geo_series_service_is_choosen(self):
         assert 'Selected service: "arco-geo-series"' in self.output.stderr
-
-    def test_get_2023_08_original_files(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
-            "--filter",
-            "*/2023/08/*",
-            "--dry-run",
-        ]
-        self.output = execute_in_terminal(command)
-
-        assert self.output.returncode == 0
-        assert "No data to download" not in self.output.stderr
 
     def test_subset_with_dataset_sensitive_to_chunking(self, tmp_path):
         command = [
@@ -810,97 +659,6 @@ class TestCommandLineInterface:
         assert self.output.returncode == 0
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(tmp_path / "output.nc", response)
-
-    def test_short_option_for_copernicus_marine_command_helper(self):
-        short_option_command = [
-            "copernicusmarine",
-            "-h",
-        ]
-        long_option_command = [
-            "copernicusmarine",
-            "--help",
-        ]
-
-        self.short_option_output = execute_in_terminal(short_option_command)
-        self.long_option_output = execute_in_terminal(long_option_command)
-
-        assert (
-            self.short_option_output.stderr == self.long_option_output.stderr
-        )
-
-    def test_short_option_for_copernicus_marine_subcommand_helper(self):
-        short_option_command = [
-            "copernicusmarine",
-            "subset",
-            "-h",
-        ]
-        long_option_command = [
-            "copernicusmarine",
-            "subset",
-            "--help",
-        ]
-
-        self.short_option_output = execute_in_terminal(short_option_command)
-        self.long_option_output = execute_in_terminal(long_option_command)
-
-        assert (
-            self.short_option_output.stderr == self.long_option_output.stderr
-        )
-
-    def test_subset_create_template(self):
-        self.when_template_is_created()
-        self.and_it_runs_correctly()
-
-    def when_template_is_created(self):
-        command = ["copernicusmarine", "subset", "--create-template"]
-
-        self.output = execute_in_terminal(command)
-        print(self.output.stderr)
-        print(remove_extra_logging_prefix_info(self.output.stderr))
-        assert (
-            "Template created at: subset_template.json"
-            == remove_extra_logging_prefix_info(self.output.stderr)
-        )
-        assert Path("subset_template.json").is_file()
-
-    def and_it_runs_correctly(self):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--request-file",
-            "./subset_template.json",
-            "--dry-run",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert self.output.returncode == 0
-
-    def test_get_template_creation(self):
-        command = ["copernicusmarine", "get", "--create-template"]
-
-        self.output = execute_in_terminal(command)
-
-        assert (
-            "Template created at: get_template.json"
-            == remove_extra_logging_prefix_info(self.output.stderr)
-        )
-        assert Path("get_template.json").is_file()
-
-    def test_get_template_creation_with_extra_arguments(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--create-template",
-            "--no-directories",
-        ]
-
-        self.output = execute_in_terminal(command)
-
-        assert (
-            "Other options passed with create template: no_directories"
-            == remove_extra_logging_prefix_info(self.output.stderr)
-        )
 
     def test_error_log_for_variable_does_not_exist(self):
         command = [
@@ -994,47 +752,6 @@ class TestCommandLineInterface:
             tmp_path / output_filename, response
         )
 
-    def test_log_level_debug(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        output_filename = "data.zarr"
-
-        command = [
-            "copernicusmarine",
-            "subset",
-            "--dataset-id",
-            f"{dataset_id}",
-            "--variable",
-            "sea_water_potential_temperature",
-            "--minimum-longitude",
-            "-9.9",
-            "--maximum-longitude",
-            "-9.6",
-            "--minimum-latitude",
-            "33.96",
-            "--maximum-latitude",
-            "34.2",
-            "--minimum-depth",
-            "0.5",
-            "--maximum-depth",
-            "1.6",
-            "-o",
-            f"{tmp_path}",
-            "-f",
-            f"{output_filename}",
-            "--log-level",
-            "DEBUG",
-        ]
-
-        self.output = execute_in_terminal(command, safe_quoting=True)
-        assert self.output.returncode == 0
-        logger.info(self.output)
-        assert "DEBUG - " in self.output.stderr
-        response = loads(self.output.stdout)
-        main_checks_when_file_is_downloaded(
-            tmp_path / output_filename, response
-        )
-
-    # TODO: timeout extended to 15 seconds for it to pass
     # see https://github.com/pytest-dev/pytest-xdist/issues/385
     @pytest.mark.xdist_group(name="sequential")
     def test_arco_subset_is_fast_with_timeout(self, tmp_path):
@@ -1235,7 +952,6 @@ class TestCommandLineInterface:
 
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)
-        logger.info(f"{size_without_option=}, {size_with_option=}")
         assert size_with_option < size_without_option
 
         dataset_without_option = xarray.open_dataset(filepath_without_option)
@@ -1244,9 +960,6 @@ class TestCommandLineInterface:
             pathlib.Path(tmp_path, filename_zarr_without_option)
         )
 
-        logger.info(
-            f"{dataset_without_option.uo.encoding=}, {dataset_with_option.uo.encoding=}"
-        )
         assert dataset_without_option.uo.encoding["zlib"] is False
         assert dataset_without_option.uo.encoding["complevel"] == 0
 
@@ -1300,7 +1013,6 @@ class TestCommandLineInterface:
 
         size_without_option = get_file_size(filepath_without_option)
         size_with_option = get_file_size(filepath_with_option)
-        logger.info(f"{size_without_option=}, {size_with_option=}")
         assert 1.6 * size_with_option < size_without_option
 
     def test_omi_arco_service(self, tmp_path):
@@ -1409,7 +1121,6 @@ class TestCommandLineInterface:
 
         filepath = Path(tmp_path / "data.nc")
         dataset = xarray.open_dataset(filepath)
-        logger.info(f"{dataset.uo.encoding=}, {dataset.uo.encoding=}")
 
         assert dataset.uo.encoding["zlib"] is True
         assert dataset.uo.encoding["complevel"] == forced_comp_level
@@ -1456,139 +1167,6 @@ class TestCommandLineInterface:
         assert self.output.returncode == 0
         response_subset = loads(self.output.stdout)
         assert int(response_subset["data_transfer_size"]) == 56876
-
-    def test_file_list_filter(self, tmp_path):
-        dataset_id = "cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--file-list",
-            "./tests/resources/file_list_examples/file_list_example.txt",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        self.output = execute_in_terminal(command)
-        downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
-        assert self.output.returncode == 0
-        assert len(downloaded_files) == 2
-
-        for filename in downloaded_files:
-            assert (
-                re.search(
-                    (
-                        r"nrt_global_allsat_phy_l4_20240101_20240107\.nc|"
-                        r"nrt_global_allsat_phy_l4_20240102_20240108\.nc"
-                    ),
-                    filename,
-                )
-                is not None
-            )
-
-    def test_get_download_file_list(self, tmp_path):
-        regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            f"{dataset_id}",
-            "--regex",
-            f"{regex}",
-            "--create-file-list",
-            "files_to_download.txt",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-
-        output_filename = pathlib.Path(tmp_path) / "files_to_download.txt"
-
-        self.output = execute_in_terminal(command, safe_quoting=True)
-        print(f"Output filename: {self.output}")
-        assert self.output.returncode == 0
-        assert output_filename.is_file()
-        with open(output_filename) as file:
-            lines = file.read().splitlines()
-            assert len(lines) == 3
-            assert (
-                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc"
-                in lines[0]
-            )
-            assert (
-                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc"
-                in lines[1]
-            )
-            assert (
-                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20030101_20031231_R20221101_RE01.nc"
-                in lines[2]
-            )
-
-    def test_last_modified_date_is_set_with_s3(self, tmp_path):
-        command = [
-            "copernicusmarine",
-            "get",
-            "-i",
-            "METOFFICE-GLO-SST-L4-REP-OBS-SST",
-            "--filter",
-            "*2022053112000*",
-            "--output-directory",
-            f"{tmp_path}",
-            "--no-directories",
-        ]
-        self.output = execute_in_terminal(command)
-        output_file = pathlib.Path(
-            tmp_path,
-            "20220531120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.nc",
-        )
-        five_minutes_ago = datetime.datetime.now() - datetime.timedelta(
-            minutes=5
-        )
-
-        assert self.output.returncode == 0
-        assert datetime.datetime.fromtimestamp(
-            os.path.getmtime(output_file)
-        ) < (five_minutes_ago)
-
-    def test_netcdf3_option_with_ncdump(self, tmp_path):
-        command = [
-            "copernicusmarine",
-            "subset",
-            "-i",
-            "cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i",
-            "-v",
-            "thetao",
-            "-t",
-            "2022-01-01T00:00:00",
-            "-T",
-            "2022-12-31T23:59:59",
-            "-x",
-            "-6.17",
-            "-X",
-            "-5.08",
-            "-y",
-            "35.75",
-            "-Y",
-            "36.30",
-            "-z",
-            "0.0",
-            "-Z",
-            "5.0",
-            "-f",
-            "dataset.nc",
-            "-o",
-            f"{tmp_path}",
-            "--netcdf3-compatible",
-        ]
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
-
-        output_netcdf_format = execute_in_terminal(
-            ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"]
-        )
-        assert output_netcdf_format.returncode == 0
-        assert output_netcdf_format.stdout == "classic\n"
 
     def test_requested_interval_fully_included_with_coords_sel_method_outside(
         self, tmp_path
@@ -1642,12 +1220,12 @@ class TestCommandLineInterface:
         assert dataset.latitude.values.max() >= max_latitude
         assert dataset.depth.values.min() <= min_depth
         assert dataset.depth.values.max() >= max_depth
-        assert datetime.datetime.strptime(
+        assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
-        assert datetime.datetime.strptime(
+        ) <= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+        ) >= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
     def test_requested_interval_is_correct_with_coords_sel_method_inside(
         self, tmp_path
@@ -1701,12 +1279,12 @@ class TestCommandLineInterface:
         assert dataset.latitude.values.max() <= max_latitude
         assert dataset.depth.values.min() >= min_depth
         assert dataset.depth.values.max() <= max_depth
-        assert datetime.datetime.strptime(
+        assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
-        assert datetime.datetime.strptime(
+        ) >= datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+        assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+        ) <= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
     def test_requested_interval_is_correct_with_coords_sel_method_nearest(
         self, tmp_path
@@ -1761,12 +1339,12 @@ class TestCommandLineInterface:
         assert math.isclose(dataset.latitude.values.max(), 1.0833358764648438)
         assert math.isclose(dataset.depth.values.min(), 29.444730758666992)
         assert math.isclose(dataset.depth.values.max(), 47.37369155883789)
-        assert datetime.datetime.strptime(
+        assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) == datetime.datetime.strptime("2023-01-01", "%Y-%m-%d")
-        assert datetime.datetime.strptime(
+        ) == datetime.strptime("2023-01-01", "%Y-%m-%d")
+        assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) == datetime.datetime.strptime("2023-01-04", "%Y-%m-%d")
+        ) == datetime.strptime("2023-01-04", "%Y-%m-%d")
 
     def test_coordinates_selection_method_outside_w_elevation(self, tmp_path):
         """dataset characteristics:
@@ -1827,29 +1405,12 @@ class TestCommandLineInterface:
         assert dataset.latitude.values.max() >= 45.9791  # dataset limit
         assert dataset.elevation.values.max() >= -1.01823665  # dataset limit
         assert dataset.elevation.values.min() <= -2.3  # our limit
-        assert datetime.datetime.strptime(
+        assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.datetime.strptime("2023-01-01", "%Y-%m-%d")
-        assert datetime.datetime.strptime(
+        ) <= datetime.strptime("2023-01-01", "%Y-%m-%d")
+        assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.datetime.strptime("2023-01-03", "%Y-%m-%d")
-
-    def test_get_goes_to_staging(self):
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-            "--staging",
-            "--log-level",
-            "DEBUG",
-            "--dry-run",
-        ]
-        self.output = execute_in_terminal(command)
-        assert (
-            "mdl-metadata-dta/dataset_product_id_mapping.json"
-            in self.output.stderr
-        )
+        ) >= datetime.strptime("2023-01-03", "%Y-%m-%d")
 
     def test_subset_goes_to_staging(self):
         command = [
@@ -2054,3 +1615,135 @@ class TestCommandLineInterface:
             "'lkdjflkjsf' is not one of 'netcdf', 'zarr', 'csv', 'parquet'."
             in output.stderr
         )
+
+    def test_log_level_debug(self, tmp_path):
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        output_filename = "data.zarr"
+
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            f"{dataset_id}",
+            "--variable",
+            "sea_water_potential_temperature",
+            "--minimum-longitude",
+            "-9.9",
+            "--maximum-longitude",
+            "-9.6",
+            "--minimum-latitude",
+            "33.96",
+            "--maximum-latitude",
+            "34.2",
+            "--minimum-depth",
+            "0.5",
+            "--maximum-depth",
+            "1.6",
+            "-o",
+            f"{tmp_path}",
+            "-f",
+            f"{output_filename}",
+            "--log-level",
+            "DEBUG",
+        ]
+
+        self.output = execute_in_terminal(command, safe_quoting=True)
+        assert self.output.returncode == 0
+        assert "DEBUG - " in self.output.stderr
+        response = loads(self.output.stdout)
+        main_checks_when_file_is_downloaded(
+            tmp_path / output_filename, response
+        )
+
+    def test_netcdf3_option_with_ncdump(self, tmp_path):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_mod_glo_phy-thetao_anfc_0.083deg_PT6H-i",
+            "-v",
+            "thetao",
+            "-t",
+            "2022-01-01T00:00:00",
+            "-T",
+            "2022-12-31T23:59:59",
+            "-x",
+            "-6.17",
+            "-X",
+            "-5.08",
+            "-y",
+            "35.75",
+            "-Y",
+            "36.30",
+            "-z",
+            "0.0",
+            "-Z",
+            "5.0",
+            "-f",
+            "dataset.nc",
+            "-o",
+            f"{tmp_path}",
+            "--netcdf3-compatible",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+
+        output_netcdf_format = execute_in_terminal(
+            ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"]
+        )
+        assert output_netcdf_format.returncode == 0
+        assert output_netcdf_format.stdout == "classic\n"
+
+    def test_invert_min_max_raises_error_or_warning(self, caplog):
+        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        with pytest.raises(
+            ValueError,
+            match="Minimum latitude greater than maximum latitude",
+        ):
+            subset(
+                dataset_id=dataset_id,
+                minimum_latitude=1.0,
+                maximum_latitude=0.0,
+                dry_run=True,
+            )
+
+        with pytest.raises(
+            ValueError,
+            match="Minimum depth greater than maximum depth",
+        ):
+            subset(
+                dataset_id=dataset_id,
+                minimum_latitude=1.0,
+                maximum_latitude=2.0,
+                minimum_depth=1.0,
+                maximum_depth=0.0,
+                dry_run=True,
+            )
+
+        with pytest.raises(
+            ValueError,
+            match="Start datetime greater than end datetime",
+        ):
+            subset(
+                dataset_id=dataset_id,
+                minimum_latitude=1.0,
+                maximum_latitude=2.0,
+                minimum_depth=1.0,
+                maximum_depth=2.0,
+                start_datetime="2023-01-02T00:00:00",
+                end_datetime="2023-01-01T00:00:00",
+                dry_run=True,
+            )
+
+        with caplog.at_level(logging.INFO):
+            subset(
+                dataset_id=dataset_id,
+                minimum_longitude=1.0,
+                maximum_longitude=0.0,
+                dry_run=True,
+            )
+            assert "WARNING" in caplog.text
+            assert (
+                "Minimum longitude greater than maximum longitude"
+                in caplog.text
+            )

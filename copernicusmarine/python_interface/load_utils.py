@@ -23,6 +23,9 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
+from copernicusmarine.core_functions.subset import (
+    check_requested_area_time_valid,
+)
 from copernicusmarine.download_functions.download_sparse import (
     read_dataframe_sparse,
 )
@@ -55,6 +58,12 @@ def load_data_object_from_load_request(
         load_request.credentials_file,
     )
     load_request.dataset_url = retrieval_service.uri
+    check_requested_area_time_valid(
+        subset_request=load_request.to_subset_request(),
+        service_format=retrieval_service.service_format,
+        dataset_part=retrieval_service.dataset_part.name,
+    )
+
     check_dataset_subset_bounds(
         service=retrieval_service.service,
         part=retrieval_service.dataset_part,
@@ -84,14 +93,6 @@ def load_data_object_from_load_request(
             disable_progress_bar=load_request.disable_progress_bar,
         )
 
-    load_request.dataset_url = retrieval_service.uri
-    check_dataset_subset_bounds(
-        service=retrieval_service.service,
-        part=retrieval_service.dataset_part,
-        dataset_subset=load_request.to_subset_request(),
-        coordinates_selection_method=load_request.coordinates_selection_method,
-        axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
-    )
     load_request.update_attributes(
         retrieval_service.axis_coordinate_id_mapping
     )

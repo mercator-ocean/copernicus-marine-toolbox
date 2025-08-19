@@ -20,6 +20,20 @@ class FileToCheck:
         return self.file_path
 
 
+def get_file_size(filepath):
+    file_path = pathlib.Path(filepath)
+    file_stats = file_path.stat()
+    return file_stats.st_size
+
+
+def get_all_files_in_folder_tree(folder: str) -> list[str]:
+    downloaded_files = []
+    for _, _, files in os.walk(folder):
+        for filename in files:
+            downloaded_files.append(filename)
+    return downloaded_files
+
+
 def _remove_logging_prefix(full_message: str) -> str:
     return full_message.split(" - ", 2)[2]
 
@@ -118,4 +132,3 @@ def main_checks_when_file_is_downloaded(
             >= response["file_size"] * (1 - size_variance) - offset_size
         )
     assert response["file_size"] <= response["data_transfer_size"]
-    return

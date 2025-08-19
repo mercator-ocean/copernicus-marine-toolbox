@@ -193,7 +193,7 @@ def parse_access_dataset_url(
         )
         return endpoint_url, bucket, path
     else:
-        raise Exception(f"Invalid data path: {data_path}")
+        raise ValueError(f"Invalid data path: {data_path}")
 
 
 def create_custom_query_function(username: Optional[str]) -> Callable:
@@ -258,6 +258,7 @@ def get_geographical_inputs(
     XYNotAvailableInNonOriginalGridDatasets
         If the dataset is not "originalGrid" and the user tries to use x/y coordinates.
     """  # noqa: E501
+
     if dataset_part == "originalGrid":
         if (
             minimum_longitude is not None

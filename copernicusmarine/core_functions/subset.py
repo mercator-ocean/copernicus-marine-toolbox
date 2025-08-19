@@ -150,7 +150,12 @@ def subset_function(
         marine_datastore_config=marine_datastore_config,
     )
     subset_request.dataset_url = retrieval_service.uri
-    # TODO: Add check for insitu datasets
+
+    check_requested_area_time_valid(
+        subset_request=subset_request,
+        service_format=retrieval_service.service_format,
+        dataset_part=retrieval_service.dataset_part.name,
+    )
     check_dataset_subset_bounds(
         service=retrieval_service.service,
         part=retrieval_service.dataset_part,
@@ -299,4 +304,71 @@ def raise_when_all_dataset_requested(
         )
         raise ValueError(
             "Missing subset option. Try 'copernicusmarine subset --help'."
+        )
+
+
+def check_requested_area_time_valid(
+    subset_request: SubsetRequest,
+    service_format: Optional[CopernicusMarineServiceFormat],
+    dataset_part: str,
+) -> None:
+    is_original_grid = dataset_part == "originalGrid"
+    x_axis_name = "x" if is_original_grid else "longitude"
+    y_axis_name = "y" if is_original_grid else "latitude"
+    if (
+        subset_request.minimum_x is not None
+        and subset_request.maximum_x is not None
+        and subset_request.minimum_x > subset_request.maximum_x
+    ):
+        if (
+            service_format == CopernicusMarineServiceFormat.ZARR
+            and not is_original_grid
+        ):
+            logger.warning(
+                "Minimum longitude greater than maximum longitude. "
+                "Your selection will wrap around the 180° meridian: "
+                f"Minimum longitude: {subset_request.minimum_x}, "
+                f"Maximum longitude: {subset_request.maximum_x}."
+            )
+        else:
+            raise ValueError(
+                f"Minimum {x_axis_name} greater than maximum {x_axis_name}: "
+                f"minimum-{x_axis_name} option must be smaller or equal to "
+                f"maximum-{x_axis_name} for this dataset. "
+                f"Minimum {x_axis_name}: {subset_request.minimum_x}, "
+                f"Maximum {x_axis_name}: {subset_request.maximum_x}."
+            )
+    if (
+        subset_request.minimum_y is not None
+        and subset_request.maximum_y is not None
+        and subset_request.minimum_y > subset_request.maximum_y
+    ):
+        raise ValueError(
+            f"Minimum {y_axis_name} greater than maximum {y_axis_name}: "
+            f"minimum-{y_axis_name} option must be smaller or equal to "
+            f"maximum-{y_axis_name} for this dataset. "
+            f"Minimum {y_axis_name}: {subset_request.minimum_y}, "
+            f"Maximum {y_axis_name}: {subset_request.maximum_y}."
+        )
+    if (
+        subset_request.minimum_depth is not None
+        and subset_request.maximum_depth is not None
+        and subset_request.minimum_depth > subset_request.maximum_depth
+    ):
+        raise ValueError(
+            "Minimum depth greater than maximum depth: minimum-depth "
+            "option must be smaller or equal to maximum-depth. "
+            f"Minimum depth: {subset_request.minimum_depth}, "
+            f"Maximum depth: {subset_request.maximum_depth}."
+        )
+    if (
+        subset_request.start_datetime is not None
+        and subset_request.end_datetime is not None
+        and subset_request.start_datetime > subset_request.end_datetime
+    ):
+        raise ValueError(
+            "Start datetime greater than end datetime: start-datetime "
+            "option must be smaller or equal to end-datetime. "
+            f"Start date: {subset_request.start_datetime}, "
+            f"End date: {subset_request.end_datetime}."
         )
