@@ -27,3 +27,4 @@ The ``copernicusmarine`` Python library offers capabilities through both **comma
    response-types
    changelog/changelog
    migration-guide/migration-guide
+   end-of-life
