@@ -59,7 +59,7 @@ Release and End-of-Life Timeline
 
 Dependencies and Versions
 ----------------------------
-Although for a more thorough view of the dependencies versions allowed you can check the documentation of each version, here is a summary of the dependencies versions for some of the more relevant libraries used:
+Although for a more thorough view of the dependency versions allowed you can check the documentation of each version, here is a summary of the dependency versions for some of the more relevant libraries used:
 
 ========  ========  ===========  ===========
 Version   Python    Xarray       Zarr
