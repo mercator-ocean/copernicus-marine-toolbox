@@ -1,4 +1,5 @@
-Copernicus Marine Toolbox – Versioning and End-of-Life (EOL) Policy
+=======================================================================
+Versioning and End-of-Life (EOL) Policy
 =======================================================================
 
 Purpose
