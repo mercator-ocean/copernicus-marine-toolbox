@@ -255,7 +255,8 @@ SUBSET: dict[str, str] = {
     ),
     "SPLIT_ON_HELP": (
         "When subsetting to netCDF, allows to split the output "
-        "file by variable or by time."
+        "file by variable or by time. This option also "
+        "enables parallel downloading for netCDF."
     ),
 }
 

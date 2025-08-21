@@ -221,15 +221,17 @@ def subset_function(
                     "is not supported for sparse data. "
                     "Using 'inside' by default."
                 )
-            return download_sparse(
-                username=username,
-                subset_request=subset_request,
-                metadata_url=retrieval_service.metadata_url,
-                service=retrieval_service.service,
-                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
-                product_doi=retrieval_service.product_doi,
-                disable_progress_bar=disable_progress_bar,
-            )
+            return [
+                download_sparse(
+                    username,
+                    subset_request,
+                    retrieval_service.metadata_url,
+                    retrieval_service.service,
+                    retrieval_service.axis_coordinate_id_mapping,
+                    retrieval_service.product_doi,
+                    disable_progress_bar,
+                )
+            ]
     raise ServiceNotSupported(retrieval_service.service_name)
 
 

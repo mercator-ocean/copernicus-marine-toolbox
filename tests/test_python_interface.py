@@ -74,7 +74,8 @@ class TestPythonInterface:
         )
 
         assert subset_result is not None
-        assert subset_result.file_path.exists()
+        for response in subset_result:
+            assert response.file_path.exists()
 
     def then_the_same_with_skip_existing_does_not_download(self, tmp_path):
         subset_result = subset(
@@ -91,9 +92,10 @@ class TestPythonInterface:
             output_directory=tmp_path,
             skip_existing=True,
         )
-        assert subset_result.file_path.exists()
-        assert "IGNORED" == subset_result.file_status
-        assert "000" == subset_result.status
+        for response in subset_result:
+            assert response.file_path.exists()
+            assert "IGNORED" == response.file_status
+            assert "000" == response.status
 
     def test_open_dataset(self):
         dataset = open_dataset(
@@ -354,7 +356,7 @@ class TestPythonInterface:
             maximum_depth=10,
             output_directory=tmp_path,
             output_filename="without_lonlat_attrs_dataset.nc",
-        )
+        )[0]
         dataset = xarray.open_dataset(
             tmp_path / "without_lonlat_attrs_dataset.nc"
         )
@@ -388,20 +390,22 @@ class TestPythonInterface:
                 )
 
     def test_file_format_option(self):
-        response = subset(
+        responses = subset(
             dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
             start_datetime="2023-11-01T00:00:00",
             dry_run=True,
         )
-        assert response.filename.endswith(".nc")
+        for response in responses:
+            assert response.filename.endswith(".nc")
 
-        response = subset(
+        responses = subset(
             dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             start_datetime="2023-11-25T00:00:00",
             file_format=None,
             dry_run=True,
         )
-        assert response.filename.endswith(".csv")
+        for response in responses:
+            assert response.filename.endswith(".csv")
 
         try:
             response = subset(
