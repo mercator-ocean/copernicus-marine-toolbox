@@ -37,7 +37,7 @@ def get(
     sync_delete: bool = False,
     skip_existing: bool = False,
     dry_run: bool = False,
-    max_concurrent_requests: int = 15,
+    max_concurrent_requests: int = 1,
     disable_progress_bar: bool = False,
     staging: bool = False,
 ) -> ResponseGet:
