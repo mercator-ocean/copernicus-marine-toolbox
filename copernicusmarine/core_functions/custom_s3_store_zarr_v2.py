@@ -126,6 +126,8 @@ class CustomS3StoreZarrV2(MutableMapping):
         for index_try in range(self.number_of_retries):
             try:
                 return fn()
+            except KeyError:
+                raise
             except Exception as e:
                 if index_try == self.number_of_retries - 1:
                     raise e

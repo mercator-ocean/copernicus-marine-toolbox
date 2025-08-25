@@ -1,0 +1,12 @@
+Release 2.2.2
+==============
+
+Patch release with a bug fix.
+
+General
+------
+
+Fixes
+^^^^^
+
+* Made the zarr store for zarr v2 better handle the errors.
