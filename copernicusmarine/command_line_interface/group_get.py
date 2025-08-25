@@ -192,7 +192,7 @@ def cli_get() -> None:
 @click.option(
     "--max-concurrent-requests",
     type=int,
-    default=5,
+    default=1,
     help=documentation_utils.GET["MAX_CONCURRENT_REQUESTS_HELP"],
 )
 @tqdm_disable_option
