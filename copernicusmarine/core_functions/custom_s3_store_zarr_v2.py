@@ -42,7 +42,8 @@ class CustomS3StoreZarrV2(MutableMapping):
                 resp = self.client.get_object(
                     Bucket=self._bucket, Key=full_key
                 )
-                return resp["Body"].read()
+                res = resp["Body"].read()
+                return res
             except botocore.exceptions.ClientError as e:
                 raise KeyError(key) from e
 
@@ -50,13 +51,17 @@ class CustomS3StoreZarrV2(MutableMapping):
 
     def __contains__(self, key):
         full_key = f"{self._root_path}/{key}"
-        try:
-            self.client.head_object(Bucket=self._bucket, Key=full_key)
-            return True
-        except botocore.exceptions.ClientError as e:
-            if "404" in str(e) or "403" in str(e):
-                return False
-            raise
+
+        def fn():
+            try:
+                self.client.head_object(Bucket=self._bucket, Key=full_key)
+                return True
+            except botocore.exceptions.ClientError as e:
+                if "404" in str(e) or "403" in str(e):
+                    return False
+                raise
+
+        return self.with_retries(fn)
 
     def __setitem__(self, key, value, headers=None):
         def fn():
@@ -121,11 +126,6 @@ class CustomS3StoreZarrV2(MutableMapping):
         for index_try in range(self.number_of_retries):
             try:
                 return fn()
-            # KeyError is a normal error that we want to propagate
-            # (e.g. if we try to get a chunk and it doesn't exist,
-            # we want the caller to know this has happened -- and not retry!)
-            except KeyError:
-                raise
             except Exception as e:
                 if index_try == self.number_of_retries - 1:
                     raise e

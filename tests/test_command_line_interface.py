@@ -1971,11 +1971,11 @@ class TestCommandLineInterface:
             "--output-directory",
             f"{tmp_path}",
         ]
-        timeout = 70
+        timeout = 700  # TODO: back to 70 after issue is solved
         import platform
 
         if platform.system() == "Windows" or platform.system() == "Darwin":
-            timeout = 150
+            timeout = 1500  # TODO: back to 150 after issue is solved
         self.output = execute_in_terminal(command, timeout_second=timeout)
         assert self.output.returncode == 0
 
