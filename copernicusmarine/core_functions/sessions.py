@@ -60,7 +60,7 @@ def get_configured_boto3_session(
 ) -> tuple[Any, Any]:
     config_boto3 = botocore.config.Config(
         signature_version=botocore.UNSIGNED,
-        retries={"max_attempts": 10, "mode": "standard"},
+        retries={"max_attempts": 10, "mode": "adaptive"},
     )
     s3_session = boto3.Session()
     s3_client = s3_session.client(
