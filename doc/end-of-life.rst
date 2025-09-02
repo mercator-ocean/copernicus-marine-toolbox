@@ -12,7 +12,7 @@ This document defines the versioning scheme and end-of-life (EOL) timeline for t
 Versioning Scheme
 -----------------
 
-The Copernicus Marine Toolbox follows `**semantic versioning** <https://semver.org>`_:
+The Copernicus Marine Toolbox follows `semantic versioning <https://semver.org>`_:
 
 MAJOR.MINOR.PATCH
 ^^^^^^^^^^^^^^^^^
@@ -64,9 +64,9 @@ For a more detailed overview of the allowed dependency versions, you can refer t
 ================  ========  ===========  =================  ========
 Copernicusmarine  Python    Xarray       Zarr               Dask
 ================  ========  ===========  =================  ========
-2.0               >=3.9     >=2023.4.0   >=2.13.3           >=2022
-2.1               >=3.9     >=2023.4.0   >=2.13.3, <=3.0.8  >=2022
-2.2               >=3.9     >=2023.4.0   >=2.13.3           >=2022
+2.0.z             >=3.9     >=2023.4.0   >=2.13.3           >=2022
+2.1.z             >=3.9     >=2023.4.0   >=2.13.3, <=3.0.8  >=2022
+2.2.z             >=3.9     >=2023.4.0   >=2.13.3           >=2022
 ================  ========  ===========  =================  ========
 
 .. note::
