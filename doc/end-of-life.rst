@@ -2,6 +2,11 @@
 Versioning and End-of-Life Policy
 =======================================================================
 
+Important information
+-------------------------
+
+The current release, ``v2.3``, does not support anymore python 3.9.
+
 Purpose
 -------
 
