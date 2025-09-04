@@ -8,8 +8,9 @@ Important Information
 Conda no longer supports Python 3.9, so the upcoming toolbox release (``v2.3``) cannot be installed via conda when using Python 3.9.
 
 .. warning::
+   :class: big-warning
 
-      ``v1`` is **no longer supported** and should be replaced with ``v2``.
+   ``v1`` is **no longer supported** and should be replaced with ``v2``.
 
 Purpose
 -------

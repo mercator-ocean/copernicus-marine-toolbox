@@ -16,3 +16,13 @@ a:hover,
 a:visited:hover {
     color: var(--color-brand-primary);
 }
+
+.big-warning {
+    font-size: 1.3em;           /* 1em = normal size, 1.3em = 30% bigger */
+    padding: 25px;              /* Space between border and text */
+    border: 4px solid #d32f2f;  /* 4px thick, solid line, dark red color */
+    background-color: #ffebee;   /* Very light red background */
+    margin: 20px 0;             /* 20px space above/below, 0 left/right */
+    border-radius: 8px;         /* Rounds the corners */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Drop shadow effect */
+}
