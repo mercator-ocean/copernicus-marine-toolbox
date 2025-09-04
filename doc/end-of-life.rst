@@ -2,10 +2,14 @@
 Versioning and End-of-Life Policy
 =======================================================================
 
-Important information
+Important Information
 -------------------------
 
-The current release, ``v2.3``, does not support anymore python 3.9.
+Conda no longer supports Python 3.9, so the upcoming toolbox release (``v2.3``) cannot be installed via conda when using Python 3.9.
+
+.. warning::
+
+      ``v1`` is **no longer supported** and should be replaced with ``v2``.
 
 Purpose
 -------
@@ -33,10 +37,9 @@ Example: ``2.1.4`` → major=2, minor=1, patch=4.
 Support Policy
 --------------
 
-- Only the **latest minor/patch** in a major branch is supported.
-- After EOL, no further fixes, updates, or security patches will be released.
+Patches will be applied to the latest minor version of supported major versions.
 
-``v1`` is **no longer supported** and should be replaced with ``v2``.
+If you detect a bug, first update to the latest minor version of your current major version, if it is still supported. Otherwise, update to the next major version if possible. If the bug persists, please report it, and a bugfix will be applied to that minor version.
 
 ----
 
@@ -46,15 +49,9 @@ Release and End-of-Life Timeline
 +---------------------+--------------+----------------+-------------------+------------------------------------------------------+
 | Version             | Release Date | End of Support | Latest version    |Notes                                                 |
 +=====================+==============+================+===================+======================================================+
-| 1.x                 | 2023-06      | 2025-07        | 1.3.6             | **[OBSOLETE]** First public release of new toolbox |
+| 1.x                 | 2023-06      | 2025-07        | 1.3.6             | **[OBSOLETE]** First public release of new toolbox   |
 +---------------------+--------------+----------------+-------------------+------------------------------------------------------+
-| 2.0                 | 2025-01      | TBD            | 2.0.1             | Major release with new features and improvements     |
-+---------------------+--------------+----------------+-------------------+------------------------------------------------------+
-| 2.1                 | 2025-05      | TBD            | 2.1.3             | New important features                               |
-+---------------------+--------------+----------------+-------------------+------------------------------------------------------+
-| 2.2                 | 2025-07      | TBD            | 2.2.1             | Current stable version                               |
-+---------------------+--------------+----------------+-------------------+------------------------------------------------------+
-| 2.3                 | 2025-09      | TBD            | Not yet released  | Coming soon                                          |
+| 2.x                 | 2025-01      | TBD            | 2.2.2             | Current stable version                               |
 +---------------------+--------------+----------------+-------------------+------------------------------------------------------+
 
 
