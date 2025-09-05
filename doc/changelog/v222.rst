@@ -3,10 +3,10 @@ Release 2.2.2
 
 Patch release with a bug fix.
 
-General
---------
+Subset
+------
 
 Fixes
 ^^^^^
 
-* Fixed an issue where errors where not handled properly when using ``zarr<3.0.0``. This increases stability of the Toolbox.
+* Fixed an issue where errors where not handled properly when using ``zarr<3.0.0``.
