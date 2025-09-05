@@ -16,3 +16,18 @@ a:hover,
 a:visited:hover {
     color: var(--color-brand-primary);
 }
+
+.big-warning {
+    font-size: 1.1em;
+    padding: 16px 20px;
+    border: 1px solid;                    /* Will use theme's border color */
+    margin: 16px 0;
+    border-radius: 3px;
+    border-left: 3px solid;               /* Accent border */
+    filter: brightness(0.95) contrast(1.05);  /* Subtle enhancement */
+}
+
+.big-warning .admonition-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
