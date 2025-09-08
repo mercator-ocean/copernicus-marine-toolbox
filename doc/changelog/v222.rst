@@ -9,4 +9,4 @@ Subset
 Fixes
 ^^^^^
 
-* Fixed an issue where errors where not handled properly when using ``zarr<3.0.0``.
+* Fixed an issue where errors were not handled properly when using ``zarr<3.0.0``.
