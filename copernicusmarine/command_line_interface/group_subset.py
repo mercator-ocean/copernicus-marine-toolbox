@@ -508,12 +508,22 @@ def subset(
         )
         included_fields = build_query(set(queryable_fields), ResponseSubset)
 
-    for response in responses:
+    if isinstance(responses, ResponseSubset):
         blank_logger.info(
-            response.model_dump_json(
+            responses.model_dump_json(
                 indent=2,
                 include=included_fields,
                 exclude_none=True,
                 exclude_unset=True,
             )
         )
+    else:
+        for response in responses:
+            blank_logger.info(
+                response.model_dump_json(
+                    indent=2,
+                    include=included_fields,
+                    exclude_none=True,
+                    exclude_unset=True,
+                )
+            )

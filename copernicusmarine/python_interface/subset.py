@@ -71,7 +71,7 @@ def subset(
     raise_if_updating: bool = False,
     platform_ids: Optional[List[str]] = None,
     split_on: Optional[SplitOnOption] = None,
-) -> list[ResponseSubset]:
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     """
     Extract a subset of data from a specified dataset using given parameters.
 

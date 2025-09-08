@@ -89,7 +89,7 @@ def download_dataset(
     skip_existing: bool,
     dataset_chunking: Optional[DatasetChunking],
     split_on: Optional[SplitOnOption],
-) -> list[ResponseSubset]:
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     if chunk_size_limit and dataset_chunking:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service=service,
@@ -171,7 +171,7 @@ def download_dataset(
         ],
         len(datasets),
     )
-    return responses
+    return responses if split_on else responses[0]
 
 
 def create_groups_from_split_option(
@@ -256,7 +256,7 @@ def download_splitted_dataset(
 
     logger.info("Starting download. Please wait...")
     if "day_str" in part_dataset.coords:
-        part_dataset.drop("day_str")
+        part_dataset.drop_vars("day_str")
     if disable_progress_bar:
         _save_dataset_locally(
             part_dataset,
@@ -294,7 +294,7 @@ def download_zarr(
     axis_coordinate_id_mapping: dict[str, str],
     chunk_size_limit: int,
     dataset_chunking: Optional[DatasetChunking],
-) -> list[ResponseSubset]:
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     geographical_parameters = subset_request.get_geographical_parameters(
         axis_coordinate_id_mapping, is_original_grid
     )

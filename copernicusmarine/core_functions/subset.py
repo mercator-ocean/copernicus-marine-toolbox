@@ -3,7 +3,7 @@ import json
 import logging
 import pathlib
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
@@ -81,7 +81,7 @@ def subset_function(
     chunk_size_limit: int,
     raise_if_updating: bool,
     split_on: Optional[SplitOnOption],
-) -> list[ResponseSubset]:
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     marine_datastore_config = get_config_and_check_version_subset(staging)
     if staging:
         logger.warning(
