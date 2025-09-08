@@ -79,18 +79,17 @@ class TestCFCompliance:
         start_datetime="2022-01-01T00:00:00",
         end_datetime="2022-01-05T00:00:00",
     ) -> ResponseSubset:
-        responses = subset(
+        response = subset(
             dataset_id=dataset_id,
             variables=[variable],
             output_directory=tmp_path,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
         )
-        for response in responses:
-            assert (response.file_path).exists()
-            main_checks_when_file_is_downloaded(
-                response.file_path, response.model_dump()
-            )
+        assert (response.file_path).exists()
+        main_checks_when_file_is_downloaded(
+            response.file_path, response.model_dump()
+        )
         return response
 
     def then_it_is_cf_compliant(
