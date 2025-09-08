@@ -1,0 +1,50 @@
+name: Add Message for PRs
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches:
+      - main
+      - release/**
+
+jobs:
+  check-pr-title:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add message warning markdown if title does not match
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const body = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+
+            const additionLines = [
+              "### New PR",
+              "",
+              "To merge a new PR, make sure you have done the following checks:",
+              "",
+              "- [ ] Done all the corresponding code reviews",
+              "- [ ] Added tests (if needed)",
+              "- [ ] Added the new feature to the documentation (if needed)",
+              "- [ ] If there are dependencies changes, update the eol page and the installation page",
+              "- [ ] Included the change in the changelog page",
+            ];
+            const addition = additionLines.join('\n');
+
+            const containsTarget = title.toLowerCase().includes("Copernicus Marine".toLowerCase());
+
+            if (!containsTarget && !body.includes(additionLines[0])) {
+              const updatedBody = `${body}\n\n${addition}`;
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                body: updatedBody
+              });
+              core.info("Message warning markdown added to PR.");
+            } else {
+              core.info("Title is 'Copernicus Marine' or markdown already exists.");
+            }

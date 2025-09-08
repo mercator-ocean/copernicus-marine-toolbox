@@ -29,6 +29,7 @@ jobs:
               "- [ ] Version correctly updated in the Pyproject",
               "- [ ] Changelog updated with the new version",
               "- [ ] Target a branch with name 'main' or 'release/**'",
+              "- [ ] Update accordingly the EOL page",
               "",
               "If not, please update 'main' branch or this PR if you are not targeting the 'main' branch.",
             ];
