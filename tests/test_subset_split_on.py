@@ -38,6 +38,9 @@ class TestSubsetSplitOn:
             end_datetime="2023-05-10",
         )
         assert isinstance(res, ResponseSubset)
+        assert os.path.exists(
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2023-01-01-2023-05-01.nc"
+        )
 
     @mock.patch(
         "requests.Session.get",
