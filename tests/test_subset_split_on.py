@@ -17,7 +17,7 @@ error_message = (
 )
 
 
-class TestSubsetUpdatingDate:
+class TestSubsetSplitOn:
     @pytest.fixture(autouse=True)
     def cleanup_files(monkeypatch):
         yield
