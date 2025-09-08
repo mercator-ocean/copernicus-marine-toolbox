@@ -1,18 +1,8 @@
-class MinimumLongitudeGreaterThanMaximumLongitude(Exception):
-    """
-    Exception raised when the minimum longitude is greater than the maximum longitude.
-
-    Please make sure the minimum longitude is less or equal than the maximum longitude.
-    """
-
-    pass
-
-
 class VariableDoesNotExistInTheDataset(Exception):
     """
     Exception raised when the variable does not exist in the dataset.
 
-    Please sure the variable exists in the dataset
+    Please make sure the variable exists in the dataset
     and/or that you use the standard name.
     """
 
@@ -20,11 +10,6 @@ class VariableDoesNotExistInTheDataset(Exception):
         super().__init__(
             f"The variable '{variable}' is neither a variable or a standard name in"
             f" the dataset."
-        )
-        self.__setattr__(
-            "custom_exception_message",
-            f"The variable '{variable}' is neither a variable or a standard name in "
-            f"the dataset.",
         )
 
 
@@ -38,7 +23,6 @@ class CoordinatesOutOfDatasetBounds(Exception):
 
     def __init__(self, message: str):
         super().__init__(message)
-        self.__setattr__("custom_exception_message", message)
 
 
 class NetCDFCompressionNotAvailable(Exception):
@@ -138,7 +122,7 @@ class MutuallyExclusiveArguments(Exception):
 class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
     """
     Exception raised when using longitude and latitude subset on
-    a original grid dataset.
+    an original grid dataset.
 
     The options ``--maximum-longitude``, ``--minimum-longitude``,
     ``--maximum-latitude`` and ``--minimum-latitude`` cannot be
@@ -246,8 +230,7 @@ class ServiceDoesNotExistForCommand(Exception):
         command_name: str,
         available_services: list[str],
     ):
-        super().__init__()
-        self.__setattr__(
+        super().__init__(
             "custom_exception_message",
             f"Service {requested_service_name} "
             f"does not exist for command {command_name}. "

@@ -16,7 +16,6 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
-    MinimumLongitudeGreaterThanMaximumLongitude,
     ServiceNotSupported,
     VariableDoesNotExistInTheDataset,
 )
@@ -283,11 +282,6 @@ def x_axis_selection(
     maximum_x = longitude_parameters.maximum_x
     if minimum_x is not None and maximum_x is not None:
         if longitude_parameters.coordinate_id == "longitude":
-            if minimum_x > maximum_x:
-                raise MinimumLongitudeGreaterThanMaximumLongitude(
-                    "--minimum-longitude option must be smaller "
-                    "or equal to --maximum-longitude"
-                )
             if maximum_x - minimum_x >= 360:
                 if maximum_x != 180:
                     shift_window = True
@@ -670,15 +664,6 @@ def check_dataset_subset_bounds(
         coordinate, _, _ = all_coordinates[coordinate_id]
         minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
         if coordinate_id == "longitude":
-            if (
-                dataset_subset.minimum_x is not None
-                and dataset_subset.maximum_x is not None
-                and dataset_subset.minimum_x > dataset_subset.maximum_x
-            ):
-                raise MinimumLongitudeGreaterThanMaximumLongitude(
-                    "--minimum-longitude option must be smaller "
-                    "or equal to --maximum-longitude"
-                )
             user_minimum_coordinate_value = (
                 longitude_modulus(dataset_subset.minimum_x)
                 if dataset_subset.minimum_x is not None
@@ -767,56 +752,122 @@ def _check_coordinate_overlap(
     dataset_maximum_coordinate_value: Union[float, datetime],
     is_strict: bool,
 ) -> None:
-    message = (
-        f"Some of your subset selection "
-        f"[{user_minimum_coordinate_value}, {user_maximum_coordinate_value}] "
+    prefix_message = "Some of your subset selection "
+    suffix_message = (
         f"for the {dimension} dimension exceed the dataset coordinates "
         f"[{dataset_minimum_coordinate_value}, "
         f"{dataset_maximum_coordinate_value}]"
     )
+    message = (
+        f"{prefix_message}"
+        f"[{user_minimum_coordinate_value}, {user_maximum_coordinate_value}] "
+        f"{suffix_message}"
+    )
+
+    # Because for some sparse datasets the axes are decreasing
+    # Probably will be fixed in the future on STAC
     if dataset_maximum_coordinate_value < dataset_minimum_coordinate_value:
         dataset_maximum_coordinate_value, dataset_minimum_coordinate_value = (
             dataset_minimum_coordinate_value,
             dataset_maximum_coordinate_value,
         )
+    longitude_overlap, longitude_request_contained = True, True
     if dimension == "longitude":
         if dataset_minimum_coordinate_value == -180:
             dataset_maximum_coordinate_value = 180
-        if dataset_maximum_coordinate_value == 180:
+        elif dataset_maximum_coordinate_value == 180:
             dataset_minimum_coordinate_value = -180
-    if user_maximum_coordinate_value < dataset_minimum_coordinate_value:
+        (
+            longitude_overlap,
+            longitude_request_contained,
+        ) = _check_longitude_overlap_and_contained(
+            user_minimum_coordinate_value,
+            user_maximum_coordinate_value,
+            dataset_minimum_coordinate_value,
+            dataset_maximum_coordinate_value,
+        )
+    if (
+        user_maximum_coordinate_value < dataset_minimum_coordinate_value
+        and not longitude_overlap
+    ):
         if user_minimum_coordinate_value == dataset_minimum_coordinate_value:
             message = (
-                f"Some of your subset selection "
+                f"{prefix_message}"
                 f"({dimension} < {user_maximum_coordinate_value}) "
-                f"for the {dimension} dimension exceed the dataset coordinates "
-                f"[{dataset_minimum_coordinate_value}, "
-                f"{dataset_maximum_coordinate_value}]"
-            )
-        raise CoordinatesOutOfDatasetBounds(message)
-    elif user_minimum_coordinate_value > dataset_maximum_coordinate_value:
-        if user_maximum_coordinate_value == dataset_maximum_coordinate_value:
-            message = (
-                f"Some of your subset selection "
-                f"({dimension} > {user_minimum_coordinate_value}) "
-                f"for the {dimension} dimension exceed the dataset coordinates "
-                f"[{dataset_minimum_coordinate_value}, "
-                f"{dataset_maximum_coordinate_value}]"
+                f"{suffix_message}"
             )
         raise CoordinatesOutOfDatasetBounds(message)
     elif (
-        (
-            user_minimum_coordinate_value < dataset_minimum_coordinate_value
-            and user_maximum_coordinate_value
-            > dataset_maximum_coordinate_value
-        )
-        or user_minimum_coordinate_value < dataset_minimum_coordinate_value
+        user_minimum_coordinate_value > dataset_maximum_coordinate_value
+        and not longitude_overlap
+    ):
+        if user_maximum_coordinate_value == dataset_maximum_coordinate_value:
+            message = (
+                f"{prefix_message}"
+                f"({dimension} > {user_minimum_coordinate_value}) "
+                f"{suffix_message}"
+            )
+        raise CoordinatesOutOfDatasetBounds(message)
+    elif (
+        user_minimum_coordinate_value < dataset_minimum_coordinate_value
         or user_maximum_coordinate_value > dataset_maximum_coordinate_value
+        or not longitude_request_contained
     ):
         if is_strict:
             raise CoordinatesOutOfDatasetBounds(message)
         else:
             logger.warning(message)
+
+
+def _check_longitude_overlap_and_contained(
+    user_minimum_coordinate_value: float,
+    user_maximum_coordinate_value: float,
+    dataset_minimum_coordinate_value: float,
+    dataset_maximum_coordinate_value: float,
+) -> tuple[bool, bool]:
+    """
+    Longitude is a special case because it wraps around.
+
+    Example: This request would be valid and not contained:
+        user_minimum_coordinate_value = 179
+        user_maximum_coordinate_value = -44
+        dataset_minimum_coordinate_value = -45
+        dataset_maximum_coordinate_value = 12
+
+    Returns: tuple of two booleans:
+        - first boolean indicates if the request overlaps with the dataset range
+        - second boolean indicates if the request is contained within the dataset range
+    """  # noqa: E501
+    if user_minimum_coordinate_value > user_maximum_coordinate_value:
+        eastern_contained = (
+            dataset_minimum_coordinate_value <= user_minimum_coordinate_value
+        ) and (dataset_maximum_coordinate_value >= 180)
+        western_contained = (dataset_minimum_coordinate_value <= -180) and (
+            dataset_maximum_coordinate_value >= user_maximum_coordinate_value
+        )
+
+        # Dataset overlaps if intersects [user_min, 180] ∪ [-180, user_max]
+        return (
+            dataset_maximum_coordinate_value >= user_minimum_coordinate_value
+            or dataset_minimum_coordinate_value
+            <= user_maximum_coordinate_value,
+            eastern_contained and western_contained,
+        )
+    else:
+        return (
+            not (
+                user_maximum_coordinate_value
+                < dataset_minimum_coordinate_value
+                or dataset_maximum_coordinate_value
+                < user_minimum_coordinate_value
+            ),
+            (
+                user_minimum_coordinate_value
+                >= dataset_minimum_coordinate_value
+                and user_maximum_coordinate_value
+                <= dataset_maximum_coordinate_value
+            ),
+        )
 
 
 def _get_minimun_maximum_dataset(

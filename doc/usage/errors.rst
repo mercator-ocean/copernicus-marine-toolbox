@@ -20,8 +20,6 @@ Custom errors
 
 .. autoclass:: copernicusmarine.CouldNotConnectToAuthenticationSystem()
 
-.. autoclass:: copernicusmarine.MinimumLongitudeGreaterThanMaximumLongitude()
-
 .. autoclass:: copernicusmarine.VariableDoesNotExistInTheDataset()
 
 .. autoclass:: copernicusmarine.CoordinatesOutOfDatasetBounds()
