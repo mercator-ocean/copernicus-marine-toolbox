@@ -2,7 +2,7 @@ class VariableDoesNotExistInTheDataset(Exception):
     """
     Exception raised when the variable does not exist in the dataset.
 
-    Please sure the variable exists in the dataset
+    Please make sure the variable exists in the dataset
     and/or that you use the standard name.
     """
 
@@ -122,7 +122,7 @@ class MutuallyExclusiveArguments(Exception):
 class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
     """
     Exception raised when using longitude and latitude subset on
-    a original grid dataset.
+    an original grid dataset.
 
     The options ``--maximum-longitude``, ``--minimum-longitude``,
     ``--maximum-latitude`` and ``--minimum-latitude`` cannot be
