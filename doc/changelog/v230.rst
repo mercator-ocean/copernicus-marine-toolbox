@@ -1,50 +1,53 @@
 Release 2.3.0
-====================
+=============
 
-This release introduces some new features and improvements.
+This release introduces new features and improvements.
 
 General
---------
+-------
 
-New features
-^^^^^^^^^^^^^^^
+New Features
+^^^^^^^^^^^^
 
-* Increased the resilience when parsing or fetching the metadata. Make the ``describe`` more robust and consequently the ``subset`` and ``get`` commands as well.
-* Improved the documentation page "Polygons Extractor Using the Copernicus Marine Toolbox" in the "Usage and technical details section". It should be clearer and should use less dependencies. See :ref:`"Polygons Extractor" <polygons-based-data-selection>`.
+* Increased resilience when parsing or fetching metadata. The ``describe`` command is now more robust, and consequently so are the ``subset`` and ``get`` commands.
+* Improved the documentation page *Polygons Extractor Using the Copernicus Marine Toolbox* in the *Usage and Technical Details* section. It is now clearer and requires fewer dependencies. See :ref:`Polygons Extractor <polygons-based-data-selection>`.
+* Added a :ref:`Versioning and End-of-Life Policy <versioning-and-end-of-life-policy>` page to the documentation for better clarity on the support timeline of the Toolbox.
 
 Fixes
 ^^^^^
 
-* Update the :ref:`installation page <installation-page-domains>` of the documentation with a more up to date link to test the connection to the servers domain.
+* Updated the :ref:`Installation page <installation-page-domains>` in the documentation with a more up-to-date link to test the connection to the server domains.
 
 Subset
 ------
 
-New features
-^^^^^^^^^^^^^^^
+New Features
+^^^^^^^^^^^^
 
-* Inverting the order of the arguments in the ``subset`` for minimum and maximum values will now raise. It should help users to avoid mistakes and have a more consistent behavior.
-* Request around the antemeridian line (180 degrees longitude) can now be done by requesting a minimum value higher than the maximum value (except for sparse datasets). The Toolbox will automatically shift the window to the left or right of the antemeridian line, depending on the requested area. Check the :ref:`subset documentation <about-longitude-range>` for more details.
+* Inverting the order of the arguments for minimum and maximum values in ``subset`` will now raise an error. Except for the longitude, it raises a warning (see item below). This helps users avoid mistakes and ensures more consistent behavior.
+* Requests across the antemeridian line (180° longitude) can now be made by specifying a minimum value greater than the maximum value (except for sparse datasets). The Toolbox will automatically shift the window to the left or right of the antemeridian line, depending on the requested area. See the :ref:`Subset documentation <about-longitude-range>` for details.
+* Subset results now preserve more attributes, as the Toolbox passes through attributes from the server data. Previously, only a whitelisted set of attributes was included.
 
 Fixes
 ^^^^^
 
-* Fixed an issue where the ``valid_range`` attribute for some variables of some netcdf files was not in the correct format and hence not CF-compliant. The Toolbox now checks the format of the ``valid_range`` attribute and converts it to the same type as the data.
-* Fixed an issue where we would not raise an error when the requested file format was not supported for sparse datasets. The Toolbox now raises a ``WrongFormatRequested`` exception when the requested format is not supported by the dataset.
-* Changed the result of the ``--create-template`` option to have the consistent type with the Command Line Interface.
+* Fixed an issue where the ``valid_range`` attribute in some NetCDF files was not in the correct format and therefore not CF-compliant. The Toolbox now ensures the ``valid_range`` attribute matches the data type.
+* Fixed an issue where no error was raised when an unsupported file format was requested for sparse datasets. The Toolbox now raises a ``WrongFormatRequested`` exception in this case.
+* Changed the result of the ``--create-template`` option to have a consistent type with the Command Line Interface.
+* Fixed an issue where some attributes were missing when variables were explicitly specified in a subset request. Results should now be consistent.
 
 Describe
-----------
+--------
 
 New Features
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
-* Add a flag :ref:`this section <raise_on_error>` to the `describe` command to raise an error when the fetching or parsing fails. Default is set to ``False``.
+* Added a flag (:ref:`see here <raise_on_error>`) to the ``describe`` command to raise an error when fetching or parsing fails. Default is ``False``.
 
 Get
-------
+---
 
 New Features
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
-* Removed the incompatibility of ``sync`` option and ``no_directories`` option. Now, they can be used together.
+* Removed the incompatibility between the ``sync`` option and the ``no_directories`` option. They can now be used together.

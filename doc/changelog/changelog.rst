@@ -16,12 +16,13 @@ The toolbox follows the `Semantic Versioning <https://semver.org/>`_ scheme.
 
 .. toctree::
 
-    v2
-    v201
-    v210
-    v211
-    v212
-    v213
-    v220
-    v221
     v230
+    v222
+    v221
+    v220
+    v213
+    v212
+    v211
+    v210
+    v201
+    v2
