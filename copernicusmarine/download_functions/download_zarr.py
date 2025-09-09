@@ -37,6 +37,7 @@ from copernicusmarine.core_functions.models import (
     DatasetChunking,
     FileStatus,
     ResponseSubset,
+    SplitOnOption,
     StatusCode,
     StatusMessage,
 )
@@ -44,6 +45,7 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
     get_unique_filepath,
+    run_concurrently,
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -86,7 +88,8 @@ def download_dataset(
     chunk_size_limit: int,
     skip_existing: bool,
     dataset_chunking: Optional[DatasetChunking],
-) -> ResponseSubset:
+    split_on: Optional[SplitOnOption],
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     if chunk_size_limit and dataset_chunking:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service=service,
@@ -116,15 +119,6 @@ def download_dataset(
     if depth_parameters.vertical_axis == "elevation":
         axis_coordinate_id_mapping["z"] = "elevation"
 
-    filename = get_filename(
-        output_filename,
-        dataset,
-        dataset_id,
-        file_format,
-        axis_coordinate_id_mapping,
-        geographical_parameters,
-    )
-    output_path = pathlib.Path(output_directory, filename)
     final_result_size_estimation = get_approximation_size_final_result(
         dataset, axis_coordinate_id_mapping
     )
@@ -135,23 +129,112 @@ def download_dataset(
     else:
         data_needed_approximation = None
 
+    datasets = [("", dataset)]
+
+    if file_format == "netcdf" and split_on:
+        if split_on == "variable":
+            datasets = [
+                (str(var), dataset[var].to_dataset())
+                for var in dataset.data_vars
+            ]
+        else:
+            datasets = list(create_groups_from_split_option(dataset, split_on))
+
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
 
-    if not overwrite and not skip_existing:
-        output_path = get_unique_filepath(
-            filepath=output_path,
-        )
     logger.debug(f"Xarray Dataset: {dataset}")
+    # Ideally, should we set a fixed limit for the number of concurrent requests?
+    responses = run_concurrently(
+        download_splitted_dataset,
+        [
+            (
+                output_filename,
+                dataset,
+                subdataset[1],
+                subdataset[0],
+                dataset_id,
+                file_format,
+                axis_coordinate_id_mapping,
+                geographical_parameters,
+                output_directory,
+                disable_progress_bar,
+                netcdf_compression_level,
+                netcdf3_compatible,
+                overwrite,
+                skip_existing,
+                dry_run,
+                final_result_size_estimation,
+                data_needed_approximation,
+            )
+            for subdataset in datasets
+        ],
+        len(datasets),
+    )
+    return responses if split_on else responses[0]
+
+
+def create_groups_from_split_option(
+    dataset: xarray.Dataset, split_on: SplitOnOption
+):
+    if split_on == "season":
+        return dataset.groupby("time.season")
+
+    if split_on == "year":
+        return dataset.groupby("time.year")
+
+    if split_on == "day":
+        group_name = "%Y-%m-%d"
+    elif split_on == "month":
+        group_name = "%Y-%m"
+    elif split_on == "hour":
+        group_name = "%Y-%m-%d_%H"
+
+    return dataset.assign_coords(
+        day_str=("time", dataset.time.dt.strftime(group_name).data)
+    ).groupby("day_str")
+
+
+def download_splitted_dataset(
+    output_filename: Optional[str],
+    source_dataset: xarray.Dataset,
+    part_dataset: xarray.Dataset,
+    key: str,
+    dataset_id: str,
+    file_format: FileFormat,
+    axis_coordinate_id_mapping: dict[str, str],
+    geographical_parameters: GeographicalParameters,
+    output_directory: pathlib.Path,
+    disable_progress_bar: bool,
+    netcdf_compression_level: int,
+    netcdf3_compatible: bool,
+    overwrite: bool,
+    skip_existing: bool,
+    dry_run: bool,
+    final_result_size_estimation: Optional[float],
+    data_needed_approximation: Optional[float],
+) -> ResponseSubset:
+    filename = get_filename(
+        output_filename,
+        key,
+        source_dataset,
+        dataset_id,
+        file_format,
+        axis_coordinate_id_mapping,
+        geographical_parameters,
+    )
+
+    output_path = pathlib.Path(output_directory, filename)
+
     response = ResponseSubset(
         file_path=output_path,
         output_directory=output_directory,
         filename=output_path.name,
         file_size=final_result_size_estimation,
         data_transfer_size=data_needed_approximation,
-        variables=list(dataset.data_vars),
+        variables=list(part_dataset.data_vars),
         coordinates_extent=get_dataset_coordinates_extent(
-            dataset, axis_coordinate_id_mapping
+            part_dataset, axis_coordinate_id_mapping
         ),
         status=StatusCode.SUCCESS,
         message=StatusMessage.SUCCESS,
@@ -162,14 +245,21 @@ def download_dataset(
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
         return response
-    elif skip_existing and os.path.exists(output_path):
+    if skip_existing and os.path.exists(output_path):
         response.file_status = FileStatus.IGNORED
         return response
 
+    if not overwrite and not skip_existing:
+        output_path = get_unique_filepath(
+            filepath=output_path,
+        )
+
     logger.info("Starting download. Please wait...")
+    if "day_str" in part_dataset.coords:
+        part_dataset.drop_vars("day_str")
     if disable_progress_bar:
         _save_dataset_locally(
-            dataset,
+            part_dataset,
             output_path,
             netcdf_compression_level,
             netcdf3_compatible,
@@ -177,11 +267,12 @@ def download_dataset(
     else:
         with TqdmCallback():
             _save_dataset_locally(
-                dataset,
+                part_dataset,
                 output_path,
                 netcdf_compression_level,
                 netcdf3_compatible,
             )
+
     logger.info(f"Successfully downloaded to {output_path}")
     if overwrite:
         response.status = StatusCode.SUCCESS
@@ -203,7 +294,7 @@ def download_zarr(
     axis_coordinate_id_mapping: dict[str, str],
     chunk_size_limit: int,
     dataset_chunking: Optional[DatasetChunking],
-) -> ResponseSubset:
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     geographical_parameters = subset_request.get_geographical_parameters(
         axis_coordinate_id_mapping, is_original_grid
     )
@@ -254,6 +345,7 @@ def download_zarr(
         chunk_size_limit=chunk_size_limit,
         skip_existing=subset_request.skip_existing,
         dataset_chunking=dataset_chunking,
+        split_on=subset_request.split_on,
     )
     return response
 

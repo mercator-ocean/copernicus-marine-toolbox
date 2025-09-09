@@ -19,6 +19,7 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
+    SplitOnOption,
     VerticalAxis,
 )
 from copernicusmarine.core_functions.utils import datetime_parser
@@ -75,6 +76,7 @@ class SubsetRequest(BaseModel):
     netcdf3_compatible: bool = False
     dry_run: bool = False
     raise_if_updating: bool = False
+    split_on: Optional[SplitOnOption] = None
 
     def update(self, new_dict: dict):
         filtered_dict = {
