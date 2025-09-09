@@ -1,0 +1,12 @@
+Release 2.2.2
+==============
+
+Patch release with a bug fix.
+
+Subset
+------
+
+Fixes
+^^^^^
+
+* Fixed an issue where errors were not handled properly when using ``zarr<3.0.0``.
