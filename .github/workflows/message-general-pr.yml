@@ -22,19 +22,19 @@ jobs:
             const prNumber = context.payload.pull_request.number;
 
             const additionLines = [
-              "### New PR",
+              "### Pull Request Checklist",
               "",
-              "To merge a new PR, make sure you have done the following checks:",
+              "Before merging this PR, ensure you have completed the following:",
               "",
-              "- [ ] Done all the corresponding code reviews",
-              "- [ ] Added tests (if needed)",
-              "- [ ] Added the new feature to the documentation (if needed)",
-              "- [ ] If there are dependencies changes, update the eol page and the installation page",
-              "- [ ] Included the change in the changelog page",
+              "- [ ] Requested code reviews",
+              "- [ ] Added tests with adequate coverage",
+              "- [ ] Updated relevant documentation",
+              "- [ ] Updated the changelog",
+              "- [ ] Updated end-of-life table (if applicable)",
             ];
             const addition = additionLines.join('\n');
 
-            const containsTarget = title.toLowerCase().includes("Copernicus Marine".toLowerCase());
+            const containsTarget = title.toLowerCase().includes("copernicus marine");
 
             if (!containsTarget && !body.includes(additionLines[0])) {
               const updatedBody = `${body}\n\n${addition}`;
