@@ -46,5 +46,5 @@ jobs:
               });
               core.info("Message warning markdown added to PR.");
             } else {
-              core.info("Title is 'Copernicus Marine' or markdown already exists.");
+              core.info("Title contains 'Copernicus Marine' or markdown already exists.");
             }
