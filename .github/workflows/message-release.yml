@@ -35,7 +35,7 @@ jobs:
             ];
             const addition = additionLines.join('\n');
 
-            const containsTarget = title.toLowerCase().includes("Copernicus Marine Toolbox Release".toLowerCase());
+            const containsTarget = title.toLowerCase().includes("copernicus marine toolbox release");
 
             if (containsTarget && !body.includes(additionLines[0])) {
               const updatedBody = `${body}\n\n${addition}`;
