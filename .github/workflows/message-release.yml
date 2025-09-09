@@ -29,12 +29,13 @@ jobs:
               "- [ ] Version correctly updated in the Pyproject",
               "- [ ] Changelog updated with the new version",
               "- [ ] Target a branch with name 'main' or 'release/**'",
+              "- [ ] End-of-life table updated",
               "",
               "If not, please update 'main' branch or this PR if you are not targeting the 'main' branch.",
             ];
             const addition = additionLines.join('\n');
 
-            const containsTarget = title.toLowerCase().includes("Copernicus Marine Toolbox Release".toLowerCase());
+            const containsTarget = title.toLowerCase().includes("copernicus marine toolbox release");
 
             if (containsTarget && !body.includes(additionLines[0])) {
               const updatedBody = `${body}\n\n${addition}`;
