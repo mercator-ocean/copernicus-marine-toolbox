@@ -1,8 +1,5 @@
-import glob
 import os
 from unittest import mock
-
-import pytest
 
 from copernicusmarine import subset
 from copernicusmarine.core_functions.models import ResponseSubset
@@ -18,154 +15,225 @@ error_message = (
 
 
 class TestSubsetSplitOn:
-    @pytest.fixture(autouse=True)
-    def cleanup_files(monkeypatch):
-        yield
-        files = glob.glob(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m*"
-        )
-        for f in files:
-            os.remove(f)
-
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_no_split(self, snapshot):
+    def test_no_split(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2023-01-01",
             end_datetime="2023-05-10",
+            output_directory=tmp_path,
         )
         assert isinstance(res, ResponseSubset)
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2023-01-01-2023-05-01.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2023-01-01-2023-05-01.nc",
+            )
         )
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_split_on_year(self, snapshot):
+    def test_split_on_year(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2023-05-10",
             split_on="year",
+            output_directory=tmp_path,
         )
         assert isinstance(res, list)
         assert len(res) == 2
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023.nc",
+            )
         )
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_split_on_season(self, snapshot):
+    def test_split_on_season(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2023-05-10",
             split_on="season",
+            output_directory=tmp_path,
         )
         assert isinstance(res, list)
         assert len(res) == 4
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_DJF.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_DJF.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_MAM.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_MAM.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_JJA.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_JJA.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_SON.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_SON.nc",
+            )
         )
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_split_on_month(self, snapshot):
+    def test_split_on_month(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2023-05-10",
             split_on="month",
+            output_directory=tmp_path,
         )
         assert isinstance(res, list)
         assert len(res) == 17
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-01.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-01.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-02.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-02.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-03.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-03.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-04.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-04.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-05.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-05.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-06.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-06.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-07.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-07.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-08.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-08.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-09.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-09.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-10.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-10.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-11.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-11.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-12.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-12.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-01.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-01.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-02.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-02.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-03.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-03.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-04.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2023-04.nc",
+            )
         )
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-05.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_2022-05.nc",
+            )
         )
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_split_on_variable(self, snapshot):
+    def test_split_on_variable(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2023-05-10",
             split_on="variable",
+            output_directory=tmp_path,
         )
         assert isinstance(res, list)
         assert len(res) == 1
         assert os.path.exists(
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_chl.nc"
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_chl.nc",
+            )
         )
