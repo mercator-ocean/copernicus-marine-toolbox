@@ -25,6 +25,7 @@ New features
 
 * Inverting the order of the arguments in the ``subset`` for minimum and maximum values will now raise. It should help users to avoid mistakes and have a more consistent behavior.
 * Request around the antemeridian line (180 degrees longitude) can now be done by requesting a minimum value higher than the maximum value (except for sparse datasets). The Toolbox will automatically shift the window to the left or right of the antemeridian line, depending on the requested area. Check the :ref:`subset documentation <about-longitude-range>` for more details.
+* Added a new option ``--split-on`` to the `subset` command to split the output files based on time or variables when subsetting in netcdf format. See :ref:`subset usage page <subset-split-on>` for more details.
 
 Fixes
 ^^^^^

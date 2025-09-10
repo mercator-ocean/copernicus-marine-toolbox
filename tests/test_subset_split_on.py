@@ -225,7 +225,7 @@ class TestSubsetSplitOn:
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
-            end_datetime="2023-05-10",
+            end_datetime="2022-12-31",
             split_on="variable",
             output_directory=tmp_path,
         )
@@ -234,6 +234,72 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-05-01_chl.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2022-12-01_chl.nc",
+            )
+        )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_split_on_day(self, tmp_path):
+        res = subset(
+            dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
+            start_datetime="2022-01-01",
+            end_datetime="2023-01-10",
+            split_on="day",
+            output_directory=tmp_path,
+        )
+        assert isinstance(res, list)
+        assert len(res) == 13
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-01-01_2022-01-01.nc",
+            )
+        )
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-01-01_2022-02-01.nc",
+            )
+        )
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-01-01_2023-01-01.nc",
+            )
+        )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_split_on_hour(self, tmp_path):
+        res = subset(
+            dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
+            start_datetime="2022-01-01",
+            end_datetime="2023-01-10",
+            split_on="hour",
+            output_directory=tmp_path,
+        )
+        assert isinstance(res, list)
+        assert len(res) == 13
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-01-01_2022-01-01_00.nc",
+            )
+        )
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-01-01_2022-02-01_00.nc",
+            )
+        )
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2023-01-01_2023-01-01_00.nc",
             )
         )
