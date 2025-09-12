@@ -1,11 +1,7 @@
 import os
-from unittest import mock
 
 from copernicusmarine import subset
 from copernicusmarine.core_functions.models import ResponseSubset
-from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata import (  # noqa: E501
-    mocked_stac_requests_get,
-)
 
 error_message = (
     "The dataset cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m"
@@ -15,10 +11,6 @@ error_message = (
 
 
 class TestSubsetSplitOn:
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_no_split(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
@@ -34,10 +26,6 @@ class TestSubsetSplitOn:
             )
         )
 
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_split_on_year(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
@@ -61,10 +49,6 @@ class TestSubsetSplitOn:
             )
         )
 
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_split_on_season(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
@@ -100,10 +84,6 @@ class TestSubsetSplitOn:
             )
         )
 
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_split_on_month(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
@@ -217,10 +197,6 @@ class TestSubsetSplitOn:
             )
         )
 
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_split_on_variable(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
@@ -238,10 +214,6 @@ class TestSubsetSplitOn:
             )
         )
 
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_split_on_day(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
@@ -271,10 +243,6 @@ class TestSubsetSplitOn:
             )
         )
 
-    @mock.patch(
-        "requests.Session.get",
-        side_effect=mocked_stac_requests_get,
-    )
     def test_split_on_hour(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",

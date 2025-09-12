@@ -8,6 +8,7 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 import xarray
 import zarr
+from xarray.core.groupby import DatasetGroupBy
 
 if zarr.__version__.startswith("2"):
     from zarr.storage import DirectoryStore
@@ -151,8 +152,8 @@ def download_dataset(
             (
                 output_filename,
                 dataset,
-                subdataset[1],
-                subdataset[0],
+                groupedDataset,
+                key,
                 dataset_id,
                 file_format,
                 axis_coordinate_id_mapping,
@@ -167,7 +168,7 @@ def download_dataset(
                 final_result_size_estimation,
                 data_needed_approximation,
             )
-            for subdataset in datasets
+            for key, groupedDataset in datasets
         ],
         len(datasets),
     )
@@ -176,7 +177,7 @@ def download_dataset(
 
 def create_groups_from_split_option(
     dataset: xarray.Dataset, split_on: SplitOnOption
-):
+) -> DatasetGroupBy:
     if split_on == "season":
         return dataset.groupby("time.season")
 
