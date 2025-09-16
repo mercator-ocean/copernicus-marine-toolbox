@@ -128,8 +128,7 @@ class TestSubsetSplitOn:
             split_on="variable",
             output_directory=tmp_path,
         )
-        assert isinstance(res, list)
-        assert len(res) == 1
+        assert isinstance(res, ResponseSubset)
         assert os.path.exists(
             os.path.join(
                 tmp_path,

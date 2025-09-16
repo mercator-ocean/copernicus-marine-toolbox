@@ -8,7 +8,6 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 import xarray
 import zarr
-from xarray.core.groupby import DatasetGroupBy
 
 if zarr.__version__.startswith("2"):
     from zarr.storage import DirectoryStore
@@ -124,20 +123,16 @@ def download_dataset(
     if depth_parameters.vertical_axis == "elevation":
         axis_coordinate_id_mapping["z"] = "elevation"
 
-    datasets = [("", dataset)]
+    keys = [""]
 
     if file_format == "netcdf" and split_on:
         if split_on == "variable":
-            datasets = [
-                (str(var), dataset[var].to_dataset())
-                for var in dataset.data_vars
-            ]
+            keys = [str(var) for var in dataset.data_vars]
             if variables:
-                datasets = [
-                    (key, ds) for key, ds in datasets if key in variables
-                ]
+                keys = [key for key in keys if key in variables]
         else:
-            datasets = list(create_groups_from_split_option(dataset, split_on))
+            all_keys, _ = get_date_keys(dataset, split_on)
+            keys = all_keys.unique().astype(str).tolist()
 
     if not output_directory.is_dir():
         pathlib.Path.mkdir(output_directory, parents=True)
@@ -173,10 +168,10 @@ def download_dataset(
                 "dataset_chunking": dataset_chunking,
             }
         )
-        for key, _ in datasets
+        for key in keys
     ]
 
-    if len(datasets) == 1:
+    if len(keys) == 1:
         if disable_progress_bar:
             response = download_splitted_dataset(**down_params[0])
         else:
@@ -202,27 +197,21 @@ def download_dataset(
     return responses if split_on else responses[0]
 
 
-def create_groups_from_split_option(
+def get_date_keys(
     dataset: xarray.Dataset, split_on: SplitOnOption
-) -> DatasetGroupBy:
-    return create_day_str_coord(dataset, split_on).groupby("day_str")
-
-
-def create_day_str_coord(
-    dataset: xarray.Dataset, split_on: SplitOnOption
-) -> xarray.Dataset:
+) -> Tuple[pd.PeriodIndex, str]:
     if split_on == "year":
-        group_key = "%Y"
+        group_key = "Y"
     elif split_on == "month":
-        group_key = "%Y-%m"
+        group_key = "M"
     elif split_on == "day":
-        group_key = "%Y-%m-%d"
+        group_key = "D"
     elif split_on == "hour":
-        group_key = "%Y-%m-%d_%H"
+        group_key = "h"
 
-    return dataset.assign_coords(
-        day_str=("time", dataset.time.dt.strftime(group_key).data)
-    )
+    time_index = pd.to_datetime(dataset["time"].values)
+
+    return time_index.to_period(group_key), group_key
 
 
 def download_splitted_dataset(
@@ -273,8 +262,10 @@ def download_splitted_dataset(
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
 
     if split_on and split_on != "variable":
-        dataset = create_day_str_coord(dataset, split_on)
-        dataset = dataset.where(dataset.day_str == key, drop=True)
+        dataset_keys, time_format = get_date_keys(dataset, split_on)
+        target_period = pd.Period(key, freq=time_format)
+        mask = dataset_keys == target_period
+        dataset = dataset.isel(time=mask)
 
     filename = get_filename(
         output_filename,
