@@ -1,3 +1,4 @@
+import json
 import logging
 import pathlib
 from typing import List, Optional, Union
@@ -517,7 +518,7 @@ def subset(
                 exclude_unset=True,
             )
         )
-    else:
+    elif len(responses) <= 10:
         for response in responses:
             blank_logger.info(
                 response.model_dump_json(
@@ -527,3 +528,18 @@ def subset(
                     exclude_unset=True,
                 )
             )
+    else:
+        res = {
+            "num_files_downloaded": len(responses),
+            "total_size": sum(
+                response.file_size if response.file_size is not None else 0
+                for response in responses
+            ),
+            "data_transfer_size": sum(
+                response.data_transfer_size
+                if response.data_transfer_size is not None
+                else 0
+                for response in responses
+            ),
+        }
+        blank_logger.info(json.dumps(res, indent=2))

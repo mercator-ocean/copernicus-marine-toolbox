@@ -58,6 +58,7 @@ from copernicusmarine.download_functions.subset_parameters import (
 )
 from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
+    DownloadParams,
     FileFormat,
     get_approximation_size_data_downloaded,
     get_approximation_size_final_result,
@@ -123,16 +124,6 @@ def download_dataset(
     if depth_parameters.vertical_axis == "elevation":
         axis_coordinate_id_mapping["z"] = "elevation"
 
-    final_result_size_estimation = get_approximation_size_final_result(
-        dataset, axis_coordinate_id_mapping
-    )
-    if dataset_chunking:
-        data_needed_approximation = get_approximation_size_data_downloaded(
-            dataset, dataset_chunking
-        )
-    else:
-        data_needed_approximation = None
-
     datasets = [("", dataset)]
 
     if file_format == "netcdf" and split_on:
@@ -152,42 +143,62 @@ def download_dataset(
         pathlib.Path.mkdir(output_directory, parents=True)
 
     logger.debug(f"Xarray Dataset: {dataset}")
-    # Ideally, should we set a fixed limit for the number of concurrent requests?
-    responses = run_multiprocessors(
-        download_splitted_dataset,
-        [
-            (
-                output_filename,
-                key,
-                split_on,
-                dataset_id,
-                file_format,
-                axis_coordinate_id_mapping,
-                geographical_parameters,
-                output_directory,
-                disable_progress_bar,
-                netcdf_compression_level,
-                netcdf3_compatible,
-                overwrite,
-                skip_existing,
-                dry_run,
-                username,
-                password,
-                dataset_url,
-                variables if split_on != "variable" else [key],
-                temporal_parameters,
-                depth_parameters,
-                coordinates_selection_method,
-                final_result_size_estimation,
-                data_needed_approximation,
-                chunk_size_limit,
-                service,
-                dataset_chunking,
+    logger.info("Starting download. Please wait...")
+
+    down_params = [
+        DownloadParams(
+            {
+                "output_filename": output_filename,
+                "key": key,
+                "split_on": split_on,
+                "dataset_id": dataset_id,
+                "file_format": file_format,
+                "axis_coordinate_id_mapping": axis_coordinate_id_mapping,
+                "geographical_parameters": geographical_parameters,
+                "output_directory": output_directory,
+                "netcdf_compression_level": netcdf_compression_level,
+                "netcdf3_compatible": netcdf3_compatible,
+                "overwrite": overwrite,
+                "skip_existing": skip_existing,
+                "dry_run": dry_run,
+                "username": username,
+                "password": password,
+                "dataset_url": dataset_url,
+                "variables": variables if split_on != "variable" else [key],
+                "temporal_parameters": temporal_parameters,
+                "depth_parameters": depth_parameters,
+                "coordinates_selection_method": coordinates_selection_method,
+                "chunk_size_limit": chunk_size_limit,
+                "service": service,
+                "dataset_chunking": dataset_chunking,
+            }
+        )
+        for key, _ in datasets
+    ]
+
+    if len(datasets) == 1:
+        if disable_progress_bar:
+            response = download_splitted_dataset(**down_params[0])
+        else:
+            with TqdmCallback():
+                response = download_splitted_dataset(**down_params[0])
+        logger.info(f"Successfully downloaded to {response.file_path}")
+        return response
+
+    if disable_progress_bar:
+        responses = run_multiprocessors(
+            download_splitted_dataset,
+            [tuple(d.values()) for d in down_params],
+            COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
+        )
+    else:
+        with TqdmCallback():
+            responses = run_multiprocessors(
+                download_splitted_dataset,
+                [tuple(d.values()) for d in down_params],
+                COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
             )
-            for key, _ in datasets
-        ],
-        COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
-    )
+    logger.info(f"Successfully downloaded to {responses[0].file_path}")
     return responses if split_on else responses[0]
 
 
@@ -216,14 +227,13 @@ def create_day_str_coord(
 
 def download_splitted_dataset(
     output_filename: Optional[str],
-    time_key: Optional[str],
+    key: Optional[str],
     split_on: Optional[SplitOnOption],
     dataset_id: str,
     file_format: FileFormat,
     axis_coordinate_id_mapping: dict[str, str],
     geographical_parameters: GeographicalParameters,
     output_directory: pathlib.Path,
-    disable_progress_bar: bool,
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
     overwrite: bool,
@@ -236,8 +246,6 @@ def download_splitted_dataset(
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    final_result_size_estimation: Optional[float],
-    data_needed_approximation: Optional[float],
     chunk_size_limit: int,
     service: CopernicusMarineService,
     dataset_chunking: Optional[DatasetChunking] = None,
@@ -266,7 +274,7 @@ def download_splitted_dataset(
 
     if split_on and split_on != "variable":
         dataset = create_day_str_coord(dataset, split_on)
-        dataset = dataset.where(dataset.day_str == time_key, drop=True)
+        dataset = dataset.where(dataset.day_str == key, drop=True)
 
     filename = get_filename(
         output_filename,
@@ -276,6 +284,16 @@ def download_splitted_dataset(
         axis_coordinate_id_mapping,
         geographical_parameters,
     )
+
+    final_result_size_estimation = get_approximation_size_final_result(
+        dataset, axis_coordinate_id_mapping
+    )
+    if dataset_chunking:
+        data_needed_approximation = get_approximation_size_data_downloaded(
+            dataset, dataset_chunking
+        )
+    else:
+        data_needed_approximation = None
 
     output_path = pathlib.Path(output_directory, filename)
 
@@ -307,26 +325,15 @@ def download_splitted_dataset(
             filepath=output_path,
         )
 
-    logger.info("Starting download. Please wait...")
     if "day_str" in dataset.coords:
         dataset.drop_vars("day_str")
-    if disable_progress_bar:
-        _save_dataset_locally(
-            dataset,
-            output_path,
-            netcdf_compression_level,
-            netcdf3_compatible,
-        )
-    else:
-        with TqdmCallback():
-            _save_dataset_locally(
-                dataset,
-                output_path,
-                netcdf_compression_level,
-                netcdf3_compatible,
-            )
+    _save_dataset_locally(
+        dataset,
+        output_path,
+        netcdf_compression_level,
+        netcdf3_compatible,
+    )
 
-    logger.info(f"Successfully downloaded to {output_path}")
     if overwrite:
         response.status = StatusCode.SUCCESS
         response.message = StatusMessage.SUCCESS

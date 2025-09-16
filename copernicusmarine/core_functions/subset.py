@@ -14,6 +14,7 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from copernicusmarine.core_functions.exceptions import (
     ServiceNotSupported,
+    SplitNotAvailableForFormat,
     WrongFormatRequested,
 )
 from copernicusmarine.core_functions.marine_datastore_config import (
@@ -185,6 +186,13 @@ def subset_function(
                     requested_format=subset_request.file_format,
                     supported_formats=["netcdf", "zarr"],
                 )
+            if (
+                subset_request.file_format != "netcdf"
+                and subset_request.split_on
+            ):
+                raise SplitNotAvailableForFormat(
+                    requested_format=subset_request.file_format
+                )
             logger.debug(
                 f"Downloading data in {subset_request.file_format} format."
             )
@@ -212,6 +220,10 @@ def subset_function(
                 raise WrongFormatRequested(
                     requested_format=subset_request.file_format,
                     supported_formats=["parquet", "csv"],
+                )
+            if subset_request.split_on:
+                raise SplitNotAvailableForFormat(
+                    requested_format=subset_request.file_format
                 )
             logger.debug(
                 f"Downloading data in {subset_request.file_format} format."
