@@ -19,13 +19,19 @@ class TestSubsetSplitOn:
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2023-01-01",
             end_datetime="2023-05-10",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             output_directory=tmp_path,
         )
         assert isinstance(res, ResponseSubset)
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2023-01-01-2023-05-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2023-01-01-2023-05-01.nc",
             )
         )
 
@@ -35,6 +41,12 @@ class TestSubsetSplitOn:
             start_datetime="2022-01-01",
             end_datetime="2023-05-10",
             split_on="year",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             output_directory=tmp_path,
             disable_progress_bar=True,
         )
@@ -42,7 +54,7 @@ class TestSubsetSplitOn:
         assert len(res) == 2
         ds_2022_path = os.path.join(
             tmp_path,
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2022-12-01.nc",
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc",
         )
         assert os.path.exists(ds_2022_path)
         ds_2022 = xarray.open_dataset(ds_2022_path)
@@ -58,7 +70,7 @@ class TestSubsetSplitOn:
 
         ds_2023_path = os.path.join(
             tmp_path,
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2023-01-01-2023-05-01.nc",
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2023-01-01-2023-05-01.nc",
         )
         assert os.path.exists(ds_2023_path)
 
@@ -78,6 +90,12 @@ class TestSubsetSplitOn:
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2022-04-01",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             split_on="month",
             output_directory=tmp_path,
         )
@@ -86,25 +104,25 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-02-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-03-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-04-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc",
             )
         )
 
@@ -113,6 +131,12 @@ class TestSubsetSplitOn:
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2022-12-31",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             split_on="variable",
             output_directory=tmp_path,
             disable_progress_bar=True,
@@ -121,7 +145,7 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2022-12-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc",
             )
         )
 
@@ -130,6 +154,12 @@ class TestSubsetSplitOn:
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2022-12-31",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             split_on="variable",
             output_directory=tmp_path,
         )
@@ -137,7 +167,7 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2022-12-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc",
             )
         )
 
@@ -193,6 +223,12 @@ class TestSubsetSplitOn:
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2022-04-01",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             split_on="day",
             output_directory=tmp_path,
         )
@@ -201,26 +237,26 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-02-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-03-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc",
             )
         )
 
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-04-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc",
             )
         )
 
@@ -229,6 +265,12 @@ class TestSubsetSplitOn:
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
             end_datetime="2023-01-10",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
             split_on="hour",
             output_directory=tmp_path,
         )
@@ -237,18 +279,18 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01.nc",
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
             )
         )
