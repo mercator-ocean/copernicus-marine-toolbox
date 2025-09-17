@@ -83,8 +83,14 @@ class TestRequestFiles:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            "Service not available: Available services for dataset: []"
-        ) in self.output.stderr
+            (
+                """
+            Service not available: Available services for dataset:
+            ['geoseries', 'timeseries']
+            """
+            )
+            in self.output.stderr
+        )
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
         filepath = get_path_to_request_file(
