@@ -29,11 +29,13 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_COORDINATES_SELECTION_METHODS,
     DEFAULT_FILE_FORMATS,
+    DEFAULT_SPLIT_ON_OPTIONS,
     DEFAULT_VERTICAL_AXES,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
     ResponseSubset,
+    SplitOnOption,
     VerticalAxis,
 )
 from copernicusmarine.core_functions.subset import (
@@ -343,6 +345,12 @@ def cli_subset() -> None:
     is_flag=True,
     help=documentation_utils.SUBSET["RAISE_IF_UPDATING_HELP"],
 )
+@click.option(
+    "--split-on",
+    type=click.Choice(DEFAULT_SPLIT_ON_OPTIONS),
+    default=None,
+    help=documentation_utils.SUBSET["SPLIT_ON_HELP"],
+)
 @force_download_option
 @log_exception_and_exit
 def subset(
@@ -391,6 +399,7 @@ def subset(
     staging: bool,
     raise_if_updating: bool,
     force_download: bool,
+    split_on: Optional[SplitOnOption],
 ):
     if log_level == "QUIET":
         logger.disabled = True
@@ -435,7 +444,7 @@ def subset(
             " the options -x, -X, -y, -Y to be in m/km, not in degrees."
         )
 
-    response = subset_function(
+    responses = subset_function(
         dataset_id=dataset_id,
         force_dataset_version=dataset_version,
         force_dataset_part=dataset_part,
@@ -479,6 +488,7 @@ def subset(
         netcdf3_compatible=netcdf3_compatible,
         chunk_size_limit=chunk_size_limit,
         raise_if_updating=raise_if_updating,
+        split_on=split_on,
     )
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))
@@ -498,11 +508,22 @@ def subset(
         )
         included_fields = build_query(set(queryable_fields), ResponseSubset)
 
-    blank_logger.info(
-        response.model_dump_json(
-            indent=2,
-            include=included_fields,
-            exclude_none=True,
-            exclude_unset=True,
+    if isinstance(responses, ResponseSubset):
+        blank_logger.info(
+            responses.model_dump_json(
+                indent=2,
+                include=included_fields,
+                exclude_none=True,
+                exclude_unset=True,
+            )
         )
-    )
+    else:
+        for response in responses:
+            blank_logger.info(
+                response.model_dump_json(
+                    indent=2,
+                    include=included_fields,
+                    exclude_none=True,
+                    exclude_unset=True,
+                )
+            )

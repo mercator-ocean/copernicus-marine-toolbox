@@ -258,3 +258,20 @@ class ServiceNotAvailable(Exception):
     """
 
     pass
+
+
+class SplitNotAvailableForFormat(Exception):
+    """
+    Exception raised when the split on files option is used with
+    a file format that does not support it.
+
+    Please make sure to use the split on files option only with
+    NetCDF file format.
+    """
+
+    def __init__(self, requested_format: str):
+        super().__init__(
+            f"The split on files option is not available for "
+            f"the requested format '{requested_format}'. "
+            f"Please use it only with 'netcdf' format."
+        )

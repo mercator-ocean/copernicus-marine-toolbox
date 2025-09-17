@@ -3,7 +3,7 @@ import json
 import logging
 import pathlib
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
@@ -14,6 +14,7 @@ from copernicusmarine.core_functions.credentials_utils import (
 )
 from copernicusmarine.core_functions.exceptions import (
     ServiceNotSupported,
+    SplitNotAvailableForFormat,
     WrongFormatRequested,
 )
 from copernicusmarine.core_functions.marine_datastore_config import (
@@ -23,6 +24,7 @@ from copernicusmarine.core_functions.models import (
     CommandType,
     CoordinatesSelectionMethod,
     ResponseSubset,
+    SplitOnOption,
     VerticalAxis,
 )
 from copernicusmarine.core_functions.request_structure import (
@@ -79,7 +81,8 @@ def subset_function(
     netcdf3_compatible: bool,
     chunk_size_limit: int,
     raise_if_updating: bool,
-) -> ResponseSubset:
+    split_on: Optional[SplitOnOption],
+) -> Union[ResponseSubset, list[ResponseSubset]]:
     marine_datastore_config = get_config_and_check_version_subset(staging)
     if staging:
         logger.warning(
@@ -130,6 +133,7 @@ def subset_function(
         "netcdf3_compatible": netcdf3_compatible,
         "dry_run": dry_run,
         "raise_if_updating": raise_if_updating,
+        "split_on": split_on,
     }
     subset_request.update(request_update_dict)
     username, password = get_and_check_username_password(
@@ -182,10 +186,17 @@ def subset_function(
                     requested_format=subset_request.file_format,
                     supported_formats=["netcdf", "zarr"],
                 )
+            if (
+                subset_request.file_format != "netcdf"
+                and subset_request.split_on
+            ):
+                raise SplitNotAvailableForFormat(
+                    requested_format=subset_request.file_format
+                )
             logger.debug(
                 f"Downloading data in {subset_request.file_format} format."
             )
-            response = download_zarr(
+            return download_zarr(
                 username=username,
                 password=password,
                 subset_request=subset_request,
@@ -210,6 +221,10 @@ def subset_function(
                     requested_format=subset_request.file_format,
                     supported_formats=["parquet", "csv"],
                 )
+            if subset_request.split_on:
+                raise SplitNotAvailableForFormat(
+                    requested_format=subset_request.file_format
+                )
             logger.debug(
                 f"Downloading data in {subset_request.file_format} format."
             )
@@ -223,18 +238,16 @@ def subset_function(
                     "is not supported for sparse data. "
                     "Using 'inside' by default."
                 )
-            response = download_sparse(
-                username=username,
-                subset_request=subset_request,
-                metadata_url=retrieval_service.metadata_url,
-                service=retrieval_service.service,
-                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
-                product_doi=retrieval_service.product_doi,
-                disable_progress_bar=disable_progress_bar,
+            return download_sparse(
+                username,
+                subset_request,
+                retrieval_service.metadata_url,
+                retrieval_service.service,
+                retrieval_service.axis_coordinate_id_mapping,
+                retrieval_service.product_doi,
+                disable_progress_bar,
             )
-    else:
-        raise ServiceNotSupported(retrieval_service.service_name)
-    return response
+    raise ServiceNotSupported(retrieval_service.service_name)
 
 
 def create_subset_template() -> None:

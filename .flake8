@@ -22,3 +22,4 @@ per-file-ignores =
     conf.py: E501
     # test files
     test_several_metadata_catalogues.py: E501
+    test_subset_split_on.py: E501

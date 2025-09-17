@@ -272,3 +272,24 @@ For more context and examples, check the  :ref:`Original-grid page <stereographi
 .. note:
 
   When using these options, the dataset part should be set to originalGrid: ``--dataset-part originalGrid``.
+
+.. _subset-split-on:
+
+Option ``--split-on``
+"""""""""""""""""""""""""""""""""""""""""""""
+
+The ``--split-on`` option allows you, when the output format is netcdf, to split the subsetted dataset into multiple files based on a specific dimension. This option enables parallel downloading. This can be useful for managing large datasets and improving performance.
+
+The following split options are available: ``year``, ``month``, ``day``, ``hour``, ``variable``.
+
+.. code-block:: python
+      response = copernicusmarine.subset(
+          dataset_id=dataset_id,
+          start_datetime="2021-01-01",
+          end_datetime="2025-01-03",
+          split_on="year",
+      )
+
+      ## this will create one file per year in the selected time range, here: dataset_id_2021-01-01-2021-12-31.nc, dataset_id_2022-01-01-2022-12-31.nc, dataset_id_2023-01-01-2023-12-31.nc, dataset_id_2024-01-01-2024-12-31.nc, dataset_id_2025-01-01-2025-12-31.nc
+
+You can configure the maximum number of parallel processes setting the ``COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES`` environment variable. By default, it is set to ``number_of_cores - 1``.
