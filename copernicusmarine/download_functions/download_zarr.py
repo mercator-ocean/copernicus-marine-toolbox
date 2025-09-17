@@ -315,9 +315,6 @@ def download_splitted_dataset(
         output_path = get_unique_filepath(
             filepath=output_path,
         )
-
-    if "day_str" in dataset.coords:
-        dataset.drop_vars("day_str")
     _save_dataset_locally(
         dataset,
         output_path,

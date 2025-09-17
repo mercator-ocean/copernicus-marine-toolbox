@@ -36,6 +36,7 @@ class TestSubsetSplitOn:
             end_datetime="2023-05-10",
             split_on="year",
             output_directory=tmp_path,
+            disable_progress_bar=True,
         )
         assert isinstance(res, list)
         assert len(res) == 2
@@ -107,7 +108,24 @@ class TestSubsetSplitOn:
             )
         )
 
-    def test_split_on_variable(self, tmp_path):
+    def test_split_on_variable_without_progress_bar(self, tmp_path):
+        res = subset(
+            dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
+            start_datetime="2022-01-01",
+            end_datetime="2022-12-31",
+            split_on="variable",
+            output_directory=tmp_path,
+            disable_progress_bar=True,
+        )
+        assert isinstance(res, ResponseSubset)
+        assert os.path.exists(
+            os.path.join(
+                tmp_path,
+                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_19.89W-13.00E_40.07N-65.00N_0.00-5000.00m_2022-01-01-2022-12-01.nc",
+            )
+        )
+
+    def test_split_on_variable_with_progress_bar(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
