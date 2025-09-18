@@ -84,7 +84,7 @@ class CustomS3StoreZarrV3(Store):
         ]
 
     async def exists(self, key: str) -> bool:
-        return await self.get(key, default_buffer_prototype()) is not None
+        return (await self.get(key, default_buffer_prototype())) is not None
 
     def supports_writes(self) -> bool:
         return False
