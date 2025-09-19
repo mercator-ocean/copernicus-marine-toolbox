@@ -36,6 +36,7 @@ Fixes
 * Fixed an issue where no error was raised when an unsupported file format was requested for sparse datasets. The Toolbox now raises a ``WrongFormatRequested`` exception in this case.
 * Changed the result of the ``--create-template`` option to have a consistent type with the Command Line Interface.
 * Fixed an issue where some attributes were missing when variables were explicitly specified in a subset request. Results should now be consistent.
+* Fixed a bug where using ``zarr>=3`` would be slower due to blocking operations in a loop. The Toolbox now uses non-blocking operations to improve performance.
 
 Describe
 --------
