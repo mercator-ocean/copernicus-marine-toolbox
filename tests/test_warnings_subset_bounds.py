@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from json import loads
 
+import pytest
+
 from copernicusmarine import CoordinatesOutOfDatasetBounds, subset
 from tests.test_utils import execute_in_terminal
 
@@ -220,16 +222,17 @@ class TestWarningsSubsetBounds:
         assert int(elevation_coordinates_extent["minimum"]) == -47
         assert int(elevation_coordinates_extent["maximum"]) == 0
 
-    def test_error_coordinates_out_of_dataset_bounds(self):
-        try:
+    def test_error_coordinates_out_of_dataset_bounds(self, tmp_path):
+
+        with pytest.raises(CoordinatesOutOfDatasetBounds) as e:
             _ = subset(
                 dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
                 start_datetime=datetime.today() + timedelta(10),
                 end_datetime=datetime.today()
                 + timedelta(days=10, hours=23, minutes=59),
+                output_directory=tmp_path,
             )
-        except CoordinatesOutOfDatasetBounds as e:
-            assert "Some of your subset selection" in e.__str__()
+        assert "Some of your subset selection" in e.__str__()
 
     def when_i_request_a_dataset_with_coordinates_selection_method_option(
         self, coordinates_selection_method

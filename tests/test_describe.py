@@ -3,6 +3,8 @@ import re
 from json import loads
 from unittest import mock
 
+import pytest
+
 from copernicusmarine import (
     CopernicusMarineCatalogue,
     CopernicusMarineServiceNames,
@@ -93,14 +95,12 @@ class TestDescribe:
         self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
-            try:
+            with pytest.raises(Exception):
                 describe(
                     raise_on_error=True,
                     product_id="NWSHELF_MULTIYEAR_BGC_004_011",
                 )
-                assert False, "Expected an exception to be raised"
-            except Exception:
-                assert "Stopping describe" in caplog.text
+            assert "Stopping describe" in caplog.text
 
     @mock.patch(
         "requests.Session.get",
@@ -110,17 +110,14 @@ class TestDescribe:
         self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
-            try:
+            with pytest.raises(Exception):
                 describe(
                     raise_on_error=True,
                     product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024",
                 )
-                assert False, "Expected an exception to be raised"
-            except Exception:
-                assert (
-                    "Failed to fetch or parse JSON for dataset URL:"
-                    in caplog.text
-                )
+            assert (
+                "Failed to fetch or parse JSON for dataset URL:" in caplog.text
+            )
 
     @mock.patch(
         "requests.Session.get",
@@ -130,18 +127,15 @@ class TestDescribe:
         self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
-            try:
+            with pytest.raises(Exception):
                 describe(
                     raise_on_error=True,
                     product_id="UNAVAILABLE_PRODUCT",
                 )
-                assert False, "Expected an exception to be raised"
-            except Exception:
-                assert (
-                    "Failed to fetch or parse JSON for product URL:"
-                    in caplog.text
-                )
-                assert "UNAVAILABLE_PRODUCT" in caplog.text
+            assert (
+                "Failed to fetch or parse JSON for product URL:" in caplog.text
+            )
+            assert "UNAVAILABLE_PRODUCT" in caplog.text
 
     @mock.patch(
         "requests.Session.get",
@@ -151,14 +145,12 @@ class TestDescribe:
         self, mocked_requests, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
-            try:
+            with pytest.raises(Exception):
                 describe(
                     raise_on_error=True,
                     product_id="PRODUCT_W_ERRORS",
                 )
-                assert False, "Expected an exception to be raised"
-            except Exception:
-                assert "Error while parsing product" in caplog.text
+            assert "Error while parsing product" in caplog.text
 
     @mock.patch(
         "requests.Session.get",

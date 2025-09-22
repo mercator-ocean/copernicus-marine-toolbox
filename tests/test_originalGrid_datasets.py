@@ -2,6 +2,7 @@ import pathlib
 import random
 from json import loads
 
+import pytest
 import xarray
 
 from copernicusmarine import open_dataset, read_dataframe, subset
@@ -197,7 +198,7 @@ class TestOriginalGridDatasets:
         )
 
     def test_originalGrid_error_with_open_dataset(self):
-        try:
+        with pytest.raises(Exception) as e:
             _ = open_dataset(
                 dataset_id="cmems_mod_arc_phy_my_topaz4_P1Y",
                 dataset_part="originalGrid",
@@ -210,13 +211,12 @@ class TestOriginalGridDatasets:
                 coordinates_selection_method="outside",
             )
             assert 1 == 0
-        except Exception as e:
-            assert str(e) == (
-                "You cannot specify longitude and latitude when using the "
-                "'originalGrid' dataset part. Try using "
-                "``--minimum-x``, ``--maximum-x``, ``--minimum-y`` "
-                "and ``--maximum-y``."
-            )
+        assert (
+            "You cannot specify longitude and latitude when using the "
+            "'originalGrid' dataset part. Try using "
+            "``--minimum-x``, ``--maximum-x``, ``--minimum-y`` "
+            "and ``--maximum-y``."
+        ) in str(e.value)
 
     def test_originalGrid_alias_work(self):
         command = [
