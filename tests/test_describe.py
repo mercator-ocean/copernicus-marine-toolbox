@@ -4,6 +4,7 @@ from json import loads
 from unittest import mock
 
 import pytest
+from pydantic import ValidationError
 
 from copernicusmarine import (
     CopernicusMarineCatalogue,
@@ -144,8 +145,9 @@ class TestDescribe:
     def test_describe_with_raise_on_error_product_w_errors(
         self, mocked_requests, caplog
     ):
+
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
-            with pytest.raises(Exception):
+            with pytest.raises(ValidationError):
                 describe(
                     raise_on_error=True,
                     product_id="PRODUCT_W_ERRORS",

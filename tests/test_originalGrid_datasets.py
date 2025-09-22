@@ -210,7 +210,6 @@ class TestOriginalGridDatasets:
                 end_datetime="2020",
                 coordinates_selection_method="outside",
             )
-            assert 1 == 0
         assert (
             "You cannot specify longitude and latitude when using the "
             "'originalGrid' dataset part. Try using "

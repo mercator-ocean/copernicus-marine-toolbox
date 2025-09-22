@@ -771,7 +771,7 @@ def _check_coordinate_overlap(
             dataset_minimum_coordinate_value,
             dataset_maximum_coordinate_value,
         )
-    longitude_overlap, longitude_request_contained = False, False
+    longitude_overlap, longitude_request_contained = False, True
     if dimension == "longitude":
         if dataset_minimum_coordinate_value == -180:
             dataset_maximum_coordinate_value = 180
