@@ -231,6 +231,7 @@ class TestWarningsSubsetBounds:
                 end_datetime=datetime.today()
                 + timedelta(days=10, hours=23, minutes=59),
                 output_directory=tmp_path,
+                dry_run=True,
             )
         assert "Some of your subset selection" in e.__str__()
 
