@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pytest
 import responses
 
 from copernicusmarine import login
@@ -457,8 +458,5 @@ class TestLogin:
             status=503,
         )
 
-        try:
+        with pytest.raises(CouldNotConnectToAuthenticationSystem):
             login(username="toto", password="lololo")
-            assert False, "should raise before"
-        except CouldNotConnectToAuthenticationSystem:
-            pass

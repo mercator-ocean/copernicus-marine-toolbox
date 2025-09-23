@@ -122,10 +122,6 @@ class TestCommandLineSplitOn:
             "--split-on",
             "year",
             "--dry-run",
-            "-t",
-            "2020-01-01",
-            "-T",
-            "2023-05-01",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode != 0

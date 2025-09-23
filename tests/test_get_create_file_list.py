@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from copernicusmarine import get
 from tests.test_utils import execute_in_terminal
 
@@ -52,16 +54,16 @@ class TestGetCreateFileList:
             )
 
     def test_get_create_file_list_without_extension_raises_python(self):
-        try:
+        with pytest.raises(AssertionError) as e:
             get(
                 dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
                 create_file_list="hello",
+                dry_run=True,
             )
-        except AssertionError as e:
-            assert (
-                str(e)
-                == "Download file list must be a '.txt' or '.csv' file. "
-            )
+        assert (
+            str(e.value)
+            == "Download file list must be a '.txt' or '.csv' file. "
+        )
 
     def test_get_create_file_list_python(self):
         get(
