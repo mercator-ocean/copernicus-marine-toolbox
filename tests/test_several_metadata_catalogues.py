@@ -1,5 +1,6 @@
 import logging
 
+import pytest
 import responses
 from requests.exceptions import HTTPError
 
@@ -69,19 +70,15 @@ class TestSeveralMetadataCatalogues:
             status=400,
         )
 
-        try:
+        with pytest.raises(HTTPError) as e:
             get(dataset_id=dataset_id, dry_run=True, staging=True)
-        except HTTPError as e:
-            assert "400" in str(e)
+        assert "400" in str(e)
 
     def test_raises_when_wrong_dataset_id(self):
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m_wrong"
 
-        try:
+        with pytest.raises(DatasetNotFound):
             get(dataset_id=dataset_id, dry_run=True, staging=True)
-            assert False, "Should raise DatasetNotFound"
-        except DatasetNotFound:
-            pass
 
     def test_describe_works(self):
         full_describe = describe(staging=True)
@@ -128,17 +125,11 @@ class TestSeveralMetadataCatalogues:
         )
 
     def test_describe_fails_wrong_ids(self):
-        try:
+        with pytest.raises(ProductNotFound):
             describe(product_id="WRONG_PRODUCT_ID")
-            assert False, "Should raise ProductNotFound"
-        except ProductNotFound:
-            pass
 
-        try:
+        with pytest.raises(DatasetNotFound):
             describe(dataset_id="WRONG_DATASET_ID")
-            assert False, "Should raise DatasetNotFound"
-        except DatasetNotFound:
-            pass
 
     @responses.activate
     def test_describe_fails_for_any_error(self):
@@ -149,11 +140,9 @@ class TestSeveralMetadataCatalogues:
             json=None,
             status=400,
         )
-        try:
+        with pytest.raises(HTTPError) as e:
             describe(staging=True)
-            assert False, "Should raise HTTPError"
-        except HTTPError:
-            pass
+        assert "400" in str(e.value)
 
     @responses.activate
     def test_cdn_works_on_prod(self, caplog):
