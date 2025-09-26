@@ -169,6 +169,7 @@ def download_dataset(
                 "chunk_size_limit": chunk_size_limit,
                 "service": service,
                 "dataset_chunking": dataset_chunking,
+                "disable_progress_bar": disable_progress_bar,
             }
         )
         for key in keys
@@ -269,7 +270,8 @@ def download_splitted_dataset(
     coordinates_selection_method: CoordinatesSelectionMethod,
     chunk_size_limit: int,
     service: CopernicusMarineService,
-    dataset_chunking: Optional[DatasetChunking] = None,
+    dataset_chunking: Optional[DatasetChunking],
+    disable_progress_bar: bool,
 ) -> ResponseSubset:
     if chunk_size_limit and dataset_chunking:
         optimum_dask_chunking = get_optimum_dask_chunking(
@@ -348,17 +350,25 @@ def download_splitted_dataset(
             filepath=output_path,
         )
     current = current_process()
-    with TqdmCallback(
-        position=current._identity[0] if current._identity else 0,
-        leave=False,
-        desc=key,
-    ):
+    if disable_progress_bar:
         _save_dataset_locally(
             dataset,
             output_path,
             netcdf_compression_level,
             netcdf3_compatible,
         )
+    else:
+        with TqdmCallback(
+            position=current._identity[0] if current._identity else 0,
+            leave=False,
+            desc=key,
+        ):
+            _save_dataset_locally(
+                dataset,
+                output_path,
+                netcdf_compression_level,
+                netcdf3_compatible,
+            )
 
     dataset.close()
 

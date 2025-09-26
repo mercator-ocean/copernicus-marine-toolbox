@@ -444,3 +444,4 @@ class DownloadParams(TypedDict):
     chunk_size_limit: int
     service: CopernicusMarineService
     dataset_chunking: Optional[DatasetChunking]
+    disable_progress_bar: bool
