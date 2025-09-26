@@ -154,8 +154,8 @@ def subset(
 
     Returns
     -------
-    ResponseSubset
-        A description of the downloaded data and its destination.
+    Union[ResponseSubset, list[ResponseSubset]]
+        A description of the downloaded data and its destination. When using the ``split_on`` option and if there are more than one file, a list of descriptions is returned, one for each file generated.
 
     """  # noqa
     if overwrite:

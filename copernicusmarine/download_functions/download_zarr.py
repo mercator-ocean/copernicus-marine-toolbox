@@ -3,9 +3,11 @@ import os
 import pathlib
 import warnings
 from copy import deepcopy
+from multiprocessing import current_process
 from typing import Optional, Tuple, Union
 
 import pandas as pd
+import psutil
 import xarray
 import zarr
 
@@ -138,7 +140,8 @@ def download_dataset(
         pathlib.Path.mkdir(output_directory, parents=True)
 
     logger.debug(f"Xarray Dataset: {dataset}")
-    logger.info("Starting download. Please wait...")
+    if not dry_run:
+        logger.info("Starting download. Please wait...")
 
     down_params = [
         DownloadParams(
@@ -171,27 +174,56 @@ def download_dataset(
         for key in keys
     ]
 
+    total_size_estimation = get_approximation_size_final_result(
+        dataset, axis_coordinate_id_mapping
+    )
+
+    per_key_size_estimation = total_size_estimation / len(keys)
+
+    logger.debug(f"Total size estimation: {total_size_estimation} MB")
+    logger.debug(f"Per key size estimation: {per_key_size_estimation} MB")
+
+    dataset.close()
+
     if len(keys) == 1:
-        if disable_progress_bar:
-            response = download_splitted_dataset(**down_params[0])
-        else:
-            with TqdmCallback():
-                response = download_splitted_dataset(**down_params[0])
-        logger.info(f"Successfully downloaded to {response.file_path}")
+        response = download_splitted_dataset(**down_params[0])
+        if not dry_run:
+            logger.info(f"Successfully downloaded to {response.file_path}")
         return response
+
+    num_processes = COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES
+    available_memory = psutil.virtual_memory().available / (1024**2)  # in MB
+
+    logger.debug(f"Available memory: {available_memory} MB")
+
+    logger.debug(
+        f"Estimated required memory: {num_processes * per_key_size_estimation} MB"
+    )
+
+    if num_processes * per_key_size_estimation > available_memory:
+        num_processes = max(
+            1, int(available_memory // per_key_size_estimation)
+        )
+        logger.warning(
+            "The estimated memory required "
+            "exceeds the available memory, "
+            f"lowering the number of processes to {num_processes}"
+        )
+
+    logger.debug(f"Number of processes: {num_processes}")
 
     if disable_progress_bar:
         responses = run_multiprocessors(
             download_splitted_dataset,
             [tuple(d.values()) for d in down_params],
-            COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
+            num_processes,
         )
     else:
-        with TqdmCallback():
+        with TqdmCallback(desc="Total", leave=True):
             responses = run_multiprocessors(
                 download_splitted_dataset,
                 [tuple(d.values()) for d in down_params],
-                COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
+                num_processes,
             )
     logger.info(f"Successfully downloaded to {responses[0].file_path}")
     return responses if split_on else responses[0]
@@ -315,12 +347,20 @@ def download_splitted_dataset(
         output_path = get_unique_filepath(
             filepath=output_path,
         )
-    _save_dataset_locally(
-        dataset,
-        output_path,
-        netcdf_compression_level,
-        netcdf3_compatible,
-    )
+    current = current_process()
+    with TqdmCallback(
+        position=current._identity[0] if current._identity else 0,
+        leave=False,
+        desc=key,
+    ):
+        _save_dataset_locally(
+            dataset,
+            output_path,
+            netcdf_compression_level,
+            netcdf3_compatible,
+        )
+
+    dataset.close()
 
     if overwrite:
         response.status = StatusCode.SUCCESS

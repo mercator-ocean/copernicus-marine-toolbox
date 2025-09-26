@@ -85,6 +85,38 @@ class TestSubsetSplitOn:
         )
         ds_2023.close()
 
+    def test_split_on_year_with_one_year(self, tmp_path):
+        res = subset(
+            dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
+            start_datetime="2022-01-01",
+            end_datetime="2022-12-31",
+            split_on="year",
+            minimum_latitude=45,
+            maximum_latitude=50,
+            minimum_longitude=-10,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=100,
+            output_directory=tmp_path,
+            disable_progress_bar=True,
+        )
+        assert isinstance(res, ResponseSubset)
+        ds_2022_path = os.path.join(
+            tmp_path,
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc",
+        )
+        assert os.path.exists(ds_2022_path)
+        ds_2022 = xarray.open_dataset(ds_2022_path)
+        assert (
+            ds_2022.time.min().item()
+            == dt.fromisoformat("2022-01-01T00:00:00Z").timestamp() * 1e9
+        )
+        assert (
+            ds_2022.time.max().item()
+            == dt.fromisoformat("2022-12-01T00:00:00Z").timestamp() * 1e9
+        )
+        ds_2022.close()
+
     def test_split_on_month(self, tmp_path):
         res = subset(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
