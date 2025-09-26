@@ -228,31 +228,28 @@ class TestSubset:
                 )
 
     def test_file_format_option(self):
-        response = subset(
+        self.response = subset(
             dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
             start_datetime="2023-11-01T00:00:00",
             dry_run=True,
         )
-        assert response.filename.endswith(".nc")
+        assert self.response.filename.endswith(".nc")
 
-        response = subset(
+        self.response = subset(
             dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
             start_datetime="2023-11-25T00:00:00",
             file_format=None,
             dry_run=True,
         )
-        assert response.filename.endswith(".csv")
+        assert self.response.filename.endswith(".csv")
 
-        try:
-            response = subset(
+        with pytest.raises(WrongFormatRequested):
+            self.response = subset(
                 dataset_id="cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
                 start_datetime="2023-11-01T00:00:00",
                 file_format="parquet",
                 dry_run=True,
             )
-            assert False
-        except WrongFormatRequested:
-            pass
 
     def flatten_request_dict(
         self, request_dict: dict[str, Optional[Union[str, Path]]]
