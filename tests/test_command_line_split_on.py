@@ -150,7 +150,7 @@ class TestCommandLineSplitOn:
             "-Y",
             "35.0",
             "-z",
-            "0.5",
+            "0.6",
             "-Z",
             "2",
             "--split-on",
