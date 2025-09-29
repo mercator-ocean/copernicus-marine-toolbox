@@ -26,13 +26,12 @@ class TestSubsetSplitOn:
             minimum_depth=0,
             maximum_depth=100,
             output_directory=tmp_path,
+            dry_run=True,
         )
         assert isinstance(res, ResponseSubset)
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2023-01-01-2023-05-01.nc",
-            )
+        assert (
+            res.filename
+            == "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2023-01-01-2023-05-01.nc"
         )
 
     def test_split_on_year(self, tmp_path):
@@ -130,32 +129,26 @@ class TestSubsetSplitOn:
             maximum_depth=100,
             split_on="month",
             output_directory=tmp_path,
+            dry_run=True,
         )
         assert isinstance(res, list)
         assert len(res) == 4
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
-            )
+        filenames = list(f.filename for f in res)
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc"
+            in filenames
         )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc",
-            )
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc"
+            in filenames
         )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc",
-            )
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc"
+            in filenames
         )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc",
-            )
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc"
+            in filenames
         )
 
     def test_split_on_variable_without_progress_bar(self, tmp_path):
@@ -172,13 +165,12 @@ class TestSubsetSplitOn:
             split_on="variable",
             output_directory=tmp_path,
             disable_progress_bar=True,
+            dry_run=True,
         )
         assert isinstance(res, ResponseSubset)
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc",
-            )
+        assert (
+            res.filename
+            == "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc"
         )
 
     def test_split_on_variable_with_progress_bar(self, tmp_path):
@@ -194,13 +186,12 @@ class TestSubsetSplitOn:
             maximum_depth=100,
             split_on="variable",
             output_directory=tmp_path,
+            dry_run=True,
         )
         assert isinstance(res, ResponseSubset)
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc",
-            )
+        assert (
+            res.filename
+            == "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01-2022-12-01.nc"
         )
 
     def test_split_on_multi_variables(self, tmp_path):
@@ -263,33 +254,29 @@ class TestSubsetSplitOn:
             maximum_depth=100,
             split_on="day",
             output_directory=tmp_path,
+            dry_run=True,
         )
         assert isinstance(res, list)
         assert len(res) == 4
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
-            )
-        )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc",
-            )
-        )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc",
-            )
+        filenames = list(f.filename for f in res)
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc"
+            in filenames
         )
 
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc",
-            )
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc"
+            in filenames
+        )
+
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc"
+            in filenames
+        )
+
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc"
+            in filenames
         )
 
     def test_split_on_hour(self, tmp_path):
@@ -308,21 +295,8 @@ class TestSubsetSplitOn:
         )
         assert isinstance(res, list)
         assert len(res) == 13
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
-            )
-        )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
-            )
-        )
-        assert os.path.exists(
-            os.path.join(
-                tmp_path,
-                "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc",
-            )
+        filenames = list(f.filename for f in res)
+        assert (
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc"
+            in filenames
         )
