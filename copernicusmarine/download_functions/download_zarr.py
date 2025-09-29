@@ -179,10 +179,7 @@ def download_dataset(
         dataset, axis_coordinate_id_mapping
     )
 
-    per_key_size_estimation = total_size_estimation / len(keys)
-
     logger.debug(f"Total size estimation: {total_size_estimation} MB")
-    logger.debug(f"Per key size estimation: {per_key_size_estimation} MB")
 
     dataset.close()
 
@@ -191,6 +188,10 @@ def download_dataset(
         if not dry_run:
             logger.info(f"Successfully downloaded to {response.file_path}")
         return response
+
+    per_key_size_estimation = total_size_estimation / len(keys)
+
+    logger.debug(f"Per key size estimation: {per_key_size_estimation} MB")
 
     num_processes = COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES
     available_memory = psutil.virtual_memory().available / (1024**2)  # in MB
