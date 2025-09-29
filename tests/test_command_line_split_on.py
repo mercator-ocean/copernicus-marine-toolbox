@@ -152,7 +152,7 @@ class TestCommandLineSplitOn:
             "-z",
             "0.6",
             "-Z",
-            "2",
+            "2000",
             "--split-on",
             "year",
             "--dry-run",
@@ -164,7 +164,7 @@ class TestCommandLineSplitOn:
 
         env = {
             **os.environ,
-            "COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES": "10000",
+            "COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES": "60",
         }
         self.output = execute_in_terminal(command, env=env)
         assert self.output.returncode == 0
