@@ -209,7 +209,10 @@ def download_dataset(
         logger.warning(
             "The estimated memory required "
             "exceeds the available memory, "
-            f"lowering the number of processes to {num_processes}"
+            f"lowering the number of parallel processes to {num_processes}."
+            " To avoid this message, you can set the "
+            "COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES "
+            "environment variable."
         )
 
     logger.debug(f"Number of processes: {num_processes}")
