@@ -161,6 +161,7 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
 - `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.4.2 or later)
+- `psutil <https://pypi.org/project/psutil/>` (7.1.0 or later)
 
 
 The Copernicus Marine Toolbox uses the xarray library to handle the data when using the ``subset`` command in the majority of cases.
