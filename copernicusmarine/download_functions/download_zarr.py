@@ -199,7 +199,7 @@ def download_dataset(
     logger.debug(f"Available memory: {available_memory} MB")
 
     logger.debug(
-        f"Estimated required memory: {num_processes * per_key_size_estimation} MB"
+        f"Estimated required total memory: {num_processes * per_key_size_estimation} MB"
     )
 
     if num_processes * per_key_size_estimation > available_memory:
