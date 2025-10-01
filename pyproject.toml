@@ -1,6 +1,6 @@
 [project]
 name = "copernicusmarine"
-version = "2.3.0b2"
+version = "2.3.0b1"
 description = "Command line interface and Python API for accessing Copernicus Marine data and related services."
 authors = [{ name = "Copernicus Marine User Support", email = "servicedesk.cmems@mercator-ocean.eu" }]
 readme = "README.md"
@@ -25,7 +25,6 @@ numpy = ">=1.23.0"
 pydantic = "^2.9.1"
 h5netcdf = "^1.4.0"
 arcosparse = "^0.4.2"
-psutil = "^7.1.0"
 
 [project.scripts]
 copernicusmarine = 'copernicusmarine.command_line_interface.copernicus_marine:command_line_interface'

@@ -382,7 +382,7 @@ def _get_coordinate_extent(
 
 def get_approximation_size_final_result(
     dataset: xarray.Dataset, axis_coordinate_id_mapping: dict[str, str]
-) -> float:
+) -> Optional[float]:
     coordinates_size = 1
     variables_size = 0
     baseline_size = 0.013
@@ -444,4 +444,3 @@ class DownloadParams(TypedDict):
     chunk_size_limit: int
     service: CopernicusMarineService
     dataset_chunking: Optional[DatasetChunking]
-    disable_progress_bar: bool
