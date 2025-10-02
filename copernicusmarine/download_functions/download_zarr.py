@@ -285,6 +285,8 @@ def download_splitted_dataset(
             chunk_size_limit=chunk_size_limit,
             axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         )
+    else:
+        optimum_dask_chunking = None
     dataset = open_dataset_from_arco_series(
         username=username,
         password=password,
