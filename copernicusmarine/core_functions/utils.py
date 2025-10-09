@@ -177,14 +177,14 @@ def run_multiprocessors(
     tdqm_bar_configuration: dict = {},
 ) -> list[_T]:
     out = []
-    try:
-        with tqdm(
-            total=len(function_arguments),
-            **tdqm_bar_configuration,
-        ) as pbar:
-            with concurrent.futures.ProcessPoolExecutor(
-                max_workers=max_concurrent_requests,
-            ) as executor:
+    with tqdm(
+        total=len(function_arguments),
+        **tdqm_bar_configuration,
+    ) as pbar:
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=max_concurrent_requests,
+        ) as executor:
+            try:
                 future_to_url = (
                     executor.submit(func, *function_argument)
                     for function_argument in function_arguments
@@ -193,13 +193,13 @@ def run_multiprocessors(
                     data = future.result()
                     out.append(data)
                     pbar.update(1)
-        return out
-    except KeyboardInterrupt:
-        logger.warning(
-            "Terminating all parallel processes, this could take a while..."
-        )
-        executor.shutdown(wait=False, cancel_futures=True)
-        raise
+                return out
+            except KeyboardInterrupt:
+                logger.warning(
+                    "Terminating all parallel processes, this could take a while..."
+                )
+                executor.shutdown(wait=False, cancel_futures=True)
+                raise
 
 
 # Example data_path

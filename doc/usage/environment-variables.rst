@@ -113,9 +113,9 @@ It can be set this way:
 - on **UNIX** platforms: ``export PROXY_HTTPS="http://user"``
 - on **Windows** platforms: ``set PROXY_HTTPS="http://user"``
 
-``COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES``
+``COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES``
 ----------------------------------
 
 When using the ``--split-on`` option of the ``subset`` command, this will set the maximum number of parallel processes to use. By default, it is set to ``number_of_cores - 1``.
-The value might be overridden by the application if the estimated memory usage exceeds available RAM.
+The value must be an integer greater than 0. The value might be overridden by the application if the estimated memory usage exceeds available RAM.
 See :ref:`documentation about split option <subset-split-on>`.

@@ -278,7 +278,7 @@ For more context and examples, check the  :ref:`Original-grid page <stereographi
 Option ``--split-on``
 """""""""""""""""""""""""""""""""""""""""""""
 
-.. warning::
+.. note::
   This option is only available when the output format is netcdf (so not for sparse datasets).
 
 The ``--split-on`` option allows you, when the output format is netcdf, to split the subsetted dataset into multiple files based on a specific dimension. This option enables parallel downloading. This can be useful for managing large datasets and improving performance.
@@ -300,14 +300,15 @@ The following split options are available: ``year``, ``month``, ``day``, ``hour`
   # this will create one file per variable in the selected variables, here 24, named as if the --variable option was used for each variable
   # e.g. cmems_mod_glo_phy-all_my_0.25deg_P1D-m_mlotst_cglo_9.00W-7.00W_34.00N-38.00N_2022-01-01-2023-05-01.nc, cmems_mod_glo_phy-all_my_0.25deg_P1D-m_thetao_cglo_9.00W-7.00W_34.00N-38.00N_0.51-1.56m_2022-01-01-2023-05-01.nc
 
-Resource usage and process control
+.. warning::
+  Resource usage and process control
 
-The downloader automatically launches several parallel worker processes equal to the number of CPU cores minus one.
-All available system memory at startup is divided evenly among these workers to maximize performance without exceeding RAM limits.
+  The downloader automatically launches several parallel worker processes equal to the number of available CPU cores minus one.
+  All available system memory at startup is divided evenly among these workers to maximize performance without exceeding RAM limits.
 
-To limit RAM use, you can reduce the number of CPU used with the environment variable 'COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES'.
-If the set value (or the default value) multiplied by the estimated size of one file exceeds the available RAM, the application will override this value and reduce the number of workers accordingly.
+  To limit RAM use, you can reduce the number of CPU used with the environment variable ``COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES``.
+  If the set value (or the default value) multiplied by the estimated size of one file exceeds the available RAM, the application will override this value and reduce the number of workers accordingly.
 
-Because the downloader runs multiple subprocesses, stopping it requires two Ctrl+C or a Ctrl+Z.
+  Because the downloader runs multiple subprocesses, stopping it requires two Ctrl+C.
 
-You can configure the maximum number of parallel processes setting the ``COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES`` environment variable. By default, it is set to ``number_of_cores - 1``.
+You can configure the maximum number of parallel processes setting the ``COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES`` environment variable. By default, it is set to ``number_of_cores - 1``.

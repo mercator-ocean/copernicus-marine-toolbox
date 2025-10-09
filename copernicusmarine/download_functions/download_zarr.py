@@ -32,7 +32,7 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
+    COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES,
 )
 from copernicusmarine.core_functions.exceptions import (
     NetCDFCompressionNotAvailable,
@@ -193,7 +193,7 @@ def download_dataset(
 
     logger.debug(f"Per key size estimation: {per_key_size_estimation} MB")
 
-    num_processes = COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES
+    num_processes = COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES
     available_memory = psutil.virtual_memory().available / (1024**2)  # in MB
 
     logger.debug(f"Available memory: {available_memory} MB")
@@ -211,7 +211,7 @@ def download_dataset(
             "exceeds the available memory, "
             f"lowering the number of parallel processes to {num_processes}."
             " To avoid this message, you can set the "
-            "COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES "
+            "COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES "
             "environment variable."
         )
 
