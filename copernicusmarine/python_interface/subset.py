@@ -150,7 +150,7 @@ def subset(
     platform_ids : List[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
     split_on : SplitOnOption, optional
-        When subsetting to netCDF, allows to split the output file by variable or by time. This option also enables parallel downloading for netCDF.
+        When subsetting to netCDF, allows to split the output file by variable or by time. This option also enables parallel downloading for netCDF. See :ref:`split-on option <subset-split-on>` in the documentation.
 
     Returns
     -------
