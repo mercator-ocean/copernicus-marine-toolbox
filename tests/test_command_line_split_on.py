@@ -163,7 +163,7 @@ class TestCommandLineSplitOn:
 
     #     env = {
     #         **os.environ,
-    #         "COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES": "60",
+    #         "COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES": "60",
     #     }
     #     self.output = execute_in_terminal(command, env=env)
     #     assert self.output.returncode == 0

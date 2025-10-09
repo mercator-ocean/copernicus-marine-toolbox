@@ -32,7 +32,7 @@ from copernicusmarine.catalogue_parser.models import (
 )
 from copernicusmarine.core_functions import custom_open_zarr
 from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES,
+    COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES,
 )
 from copernicusmarine.core_functions.exceptions import (
     NetCDFCompressionNotAvailable,
@@ -193,7 +193,7 @@ def download_dataset(
 
     logger.debug(f"Per key size estimation: {per_key_size_estimation} MB")
 
-    num_processes = COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES
+    num_processes = COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES
     available_memory = psutil.virtual_memory().available / (1024**2)  # in MB
 
     logger.debug(f"Available memory: {available_memory} MB")
@@ -204,32 +204,28 @@ def download_dataset(
 
     if num_processes * per_key_size_estimation > available_memory:
         num_processes = max(
-            1, int(available_memory // per_key_size_estimation)
+            1, int(available_memory // per_key_size_estimation) - 1
         )
         logger.warning(
             "The estimated memory required "
             "exceeds the available memory, "
             f"lowering the number of parallel processes to {num_processes}."
             " To avoid this message, you can set the "
-            "COPERNICUSMARINE_SPLIT_MAXIMUM_PROCESSES "
+            "COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES "
             "environment variable."
         )
 
     logger.debug(f"Number of processes: {num_processes}")
 
-    if disable_progress_bar:
-        responses = run_multiprocessors(
-            download_splitted_dataset,
-            [tuple(d.values()) for d in down_params],
-            num_processes,
-        )
-    else:
-        with TqdmCallback(desc="Total", leave=True):
-            responses = run_multiprocessors(
-                download_splitted_dataset,
-                [tuple(d.values()) for d in down_params],
-                num_processes,
-            )
+    responses = run_multiprocessors(
+        download_splitted_dataset,
+        [tuple(d.values()) for d in down_params],
+        num_processes,
+        tdqm_bar_configuration={
+            "disable": disable_progress_bar,
+            "desc": f"{split_on}s",
+        },
+    )
     logger.info(f"Successfully downloaded to {responses[0].file_path}")
     return responses if split_on else responses[0]
 
@@ -354,25 +350,18 @@ def download_splitted_dataset(
             filepath=output_path,
         )
     current = current_process()
-    if disable_progress_bar:
+    with TqdmCallback(
+        position=current._identity[0] if current._identity else 0,
+        leave=False,
+        desc=key,
+        disable=disable_progress_bar,
+    ):
         _save_dataset_locally(
             dataset,
             output_path,
             netcdf_compression_level,
             netcdf3_compatible,
         )
-    else:
-        with TqdmCallback(
-            position=current._identity[0] if current._identity else 0,
-            leave=False,
-            desc=key,
-        ):
-            _save_dataset_locally(
-                dataset,
-                output_path,
-                netcdf_compression_level,
-                netcdf3_compatible,
-            )
 
     dataset.close()
 
