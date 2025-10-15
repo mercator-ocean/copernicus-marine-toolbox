@@ -318,6 +318,7 @@ def _build_filename_and_output_path(
     )
     if not subset_request.overwrite and not subset_request.skip_existing:
         output_path = get_unique_filepath(output_path)
+        filename = pathlib.Path(output_path.name)
     return filename, output_path
 
 
