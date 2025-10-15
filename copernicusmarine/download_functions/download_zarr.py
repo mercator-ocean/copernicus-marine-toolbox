@@ -362,6 +362,7 @@ def download_splitted_dataset(
         _save_dataset_locally(
             dataset,
             output_path,
+            file_format,
             netcdf_compression_level,
             netcdf3_compatible,
         )
@@ -692,23 +693,27 @@ def _get_optimum_factors(
 def _save_dataset_locally(
     dataset: xarray.Dataset,
     output_path: pathlib.Path,
+    file_format: FileFormat,
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
-):
-    if output_path.suffix == ".zarr":
-        if netcdf_compression_level > 0:
-            raise NetCDFCompressionNotAvailable(
-                "--netcdf-compression-level option cannot be used when "
-                "writing to ZARR"
-            )
-        _download_dataset_as_zarr(dataset, output_path)
-    else:
+) -> None:
+    if file_format == "netcdf":
         _download_dataset_as_netcdf(
             dataset,
             output_path,
             netcdf_compression_level,
             netcdf3_compatible,
         )
+        return
+    if netcdf_compression_level > 0 or netcdf3_compatible:
+        raise NetCDFCompressionNotAvailable(
+            "--netcdf-compression-level option cannot be used when "
+            "writing to ZARR or CSV format."
+        )
+    if file_format == "zarr":
+        _download_dataset_as_zarr(dataset, output_path)
+    elif file_format == "csv":
+        _download_dataset_as_csv(dataset, output_path)
 
 
 def _download_dataset_as_zarr(
@@ -772,3 +777,11 @@ def _download_dataset_as_netcdf(
         format=xarray_download_format,
         engine=engine,
     )
+
+
+def _download_dataset_as_csv(
+    dataset: xarray.Dataset, output_path: pathlib.Path
+):
+    logger.debug("Writing dataset to CSV")
+    df = dataset.to_dataframe()
+    df.to_csv(output_path)
