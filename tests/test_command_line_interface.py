@@ -2,10 +2,10 @@ import datetime
 import fnmatch
 import itertools
 import logging
+import math
 import os
 import pathlib
 import re
-from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 from typing import List, Literal, Optional, Union
@@ -42,32 +42,6 @@ class TestCommandLineInterface:
     # Test on subset requests #
     # -------------------------#
 
-    @dataclass(frozen=True)
-    class SubsetServiceToTest:
-        name: str
-        subpath: str
-        dataset_url: str
-
-    GEOSERIES = SubsetServiceToTest(
-        "geoseries",
-        "download_zarr",
-        (
-            "https://s3.waw3-1.cloudferro.com/mdl-arco-time/arco/"
-            "GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/timeChunked.zarr"
-        ),
-    )
-    TIMESERIES = SubsetServiceToTest(
-        "timeseries",
-        "download_zarr",
-        (
-            "https://s3.waw2-1.cloudferro.com/swift/v1/"
-            "AUTH_04a16d35c9e7451fa5894a700508c003/mdl-arco-geo/"
-            "arco/GLOBAL_ANALYSISFORECAST_PHY_001_024/"
-            "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m_202211/geoChunked.zarr"
-        ),
-    )
-
     def flatten_request_dict(
         self, request_dict: dict[str, Optional[Union[str, Path]]]
     ) -> List:
@@ -79,9 +53,7 @@ class TestCommandLineInterface:
         flatten_list = list(filter(lambda x: x is not None, flatten_list))
         return flatten_list
 
-    def _test_subset_functionnalities(
-        self, subset_service_to_test: SubsetServiceToTest, tmp_path
-    ):
+    def test_subset_functionnalities(self, tmp_path):
         self.base_request_dict = {
             "--dataset-id": "cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m",
             "--variable": "so",
@@ -91,31 +63,13 @@ class TestCommandLineInterface:
             "--maximum-latitude": "0.1",
             "--minimum-longitude": "0.2",
             "--maximum-longitude": "0.3",
-            "--service": subset_service_to_test.name,
             "--output-directory": tmp_path,
         }
-        self.check_default_subset_request(
-            subset_service_to_test.subpath, tmp_path
-        )
         self.check_subset_request_with_dataset_not_in_catalog()
-        self.check_subset_request_with_no_subsetting()
-
-    def check_default_subset_request(self, function_name, tmp_path):
-        folder = pathlib.Path(tmp_path, function_name)
-        if not folder.is_dir():
-            pathlib.Path.mkdir(folder, parents=True)
-
-        command = [
-            "copernicusmarine",
-            "subset",
-        ] + self.flatten_request_dict(self.base_request_dict)
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
+        self.check_subset_request_with_no_subsetting(tmp_path)
 
     def check_subset_request_with_dataset_not_in_catalog(self):
         self.base_request_dict["--dataset-id"] = "FAKE_ID"
-        self.base_request_dict.pop("--dataset-url")
 
         unknown_dataset_request = [
             "copernicusmarine",
@@ -124,18 +78,19 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(unknown_dataset_request)
         assert (
-            "Key error: The requested dataset 'FAKE_ID' was not found in the "
-            "catalogue, you can use 'copernicusmarine describe "
-            "--include-datasets --contains <search_token>' to find datasets"
+            "Dataset not found: FAKE_ID Please check "
+            "that the dataset exists and the input datasetID is correct"
         ) in self.output.stderr
 
-    def check_subset_request_with_no_subsetting(self):
+    def check_subset_request_with_no_subsetting(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
             "subset",
             "-i",
             f"{dataset_id}",
+            "-o",
+            f"{tmp_path}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -220,23 +175,6 @@ class TestCommandLineInterface:
     # -------------------------#
     # Test on get requests #
     # -------------------------#
-
-    def test_get_original_files_functionality(
-        self, tmp_path
-    ):  # TODO: check this test and what does it do
-        command = [
-            "copernicusmarine",
-            "get",
-            "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
-            "--output-directory",
-            f"{tmp_path}",
-            "--dry-run",
-        ]
-
-        self.output = execute_in_terminal(command)
-        assert self.output.returncode == 0
-
     def test_get_download_s3_without_regex(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
@@ -278,7 +216,7 @@ class TestCommandLineInterface:
 
     def test_get_something_and_skip_existing(self, tmp_path):
         self.when_get_by_default_returns_status_message(tmp_path)
-        self.and_I_do_skip_existing(tmp_path)
+        self.and_i_do_skip_existing(tmp_path)
 
     def when_get_by_default_returns_status_message(self, tmp_path):
         filter_option = "*_200[123]*.nc"
@@ -300,7 +238,7 @@ class TestCommandLineInterface:
         assert returned_value["status"]
         assert returned_value["message"]
 
-    def and_I_do_skip_existing(self, tmp_path):
+    def and_i_do_skip_existing(self, tmp_path):
         filter_option = "*_200[123]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
@@ -368,7 +306,7 @@ class TestCommandLineInterface:
             assert not os.path.exists(get_file["file_path"])
 
     def test_get_can_choose_return_fields(self, tmp_path):
-        filter = "*_200[123]*.nc"
+        filter_ = "*_200[123]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
@@ -376,7 +314,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--filter",
-            f"{filter}",
+            f"{filter_}",
             "--output-directory",
             f"{tmp_path}",
             "-r",
@@ -555,8 +493,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--service",
-            f"{self.GEOSERIES.name}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -569,7 +505,7 @@ class TestCommandLineInterface:
         assert is_file
 
     def test_get_download_s3_with_wildcard_filter(self, tmp_path):
-        filter = "*_200[123]*.nc"
+        filter_ = "*_200[123]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
@@ -577,7 +513,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--filter",
-            f"{filter}",
+            f"{filter_}",
             "--output-directory",
             f"{tmp_path}",
         ]
@@ -588,7 +524,7 @@ class TestCommandLineInterface:
         assert len(downloaded_files) == 3
 
         for filename in downloaded_files:
-            assert fnmatch.fnmatch(filename, filter)
+            assert fnmatch.fnmatch(filename, filter_)
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
         filter_option = "*_200[45]*.nc"
@@ -638,10 +574,10 @@ class TestCommandLineInterface:
     # TODO: separate tests for each service
     # SUBSET, GET, DESCRIBE
     def test_subset_error_when_forced_service_does_not_exist(self):
-        self.when_I_run_copernicus_marine_subset_forcing_a_service_not_available()
-        self.then_I_got_a_clear_output_with_available_service_for_subset()
+        self.when_i_run_copernicus_marine_subset_forcing_a_service_not_available()
+        self.then_i_got_a_clear_output_with_available_service_for_subset()
 
-    def when_I_run_copernicus_marine_subset_forcing_a_service_not_available(
+    def when_i_run_copernicus_marine_subset_forcing_a_service_not_available(
         self,
     ):
         command = [
@@ -657,7 +593,7 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(command)
 
-    def then_I_got_a_clear_output_with_available_service_for_subset(self):
+    def then_i_got_a_clear_output_with_available_service_for_subset(self):
         assert (
             "Service unavailable-service does not exist for command subset. "
             "Possible services: ['arco-geo-series', 'geoseries', "
@@ -665,7 +601,7 @@ class TestCommandLineInterface:
             "'arco-platform-series', 'platformseries']"
         ) in self.output.stderr
 
-    def when_I_request_subset_dataset_with_zarr_service(
+    def when_i_request_subset_dataset_with_zarr_service(
         self,
         tmp_path,
         vertical_axis: Literal["depth", "elevation"] = "depth",
@@ -705,7 +641,7 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(command)
 
-    def then_I_have_correct_sign_for_depth_coordinates_values(
+    def then_i_have_correct_sign_for_depth_coordinates_values(
         self, output_path, sign
     ):
         filepath = pathlib.Path(output_path, "data.zarr")
@@ -719,7 +655,7 @@ class TestCommandLineInterface:
             assert dataset.elevation.min() >= -10
             assert dataset.elevation.max() <= 0
 
-    def then_I_have_correct_attribute_value(
+    def then_i_have_correct_attribute_value(
         self, output_path, dimention_name, attribute_value
     ):
         filepath = pathlib.Path(output_path, "data.zarr")
@@ -728,22 +664,22 @@ class TestCommandLineInterface:
         assert dataset[dimention_name].attrs["positive"] == attribute_value
 
     def test_conversion_between_elevation_and_depth(self, tmp_path):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path, "depth")
-        self.then_I_have_correct_sign_for_depth_coordinates_values(
+        self.when_i_request_subset_dataset_with_zarr_service(tmp_path, "depth")
+        self.then_i_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "positive"
         )
-        self.then_I_have_correct_attribute_value(tmp_path, "depth", "down")
+        self.then_i_have_correct_attribute_value(tmp_path, "depth", "down")
 
     def test_force_no_conversion_between_elevation_and_depth(self, tmp_path):
-        self.when_I_request_subset_dataset_with_zarr_service(
+        self.when_i_request_subset_dataset_with_zarr_service(
             tmp_path, "elevation"
         )
-        self.then_I_have_correct_sign_for_depth_coordinates_values(
+        self.then_i_have_correct_sign_for_depth_coordinates_values(
             tmp_path, "negative"
         )
-        self.then_I_have_correct_attribute_value(tmp_path, "elevation", "up")
+        self.then_i_have_correct_attribute_value(tmp_path, "elevation", "up")
 
-    def when_I_run_copernicus_marine_command_using_no_directories_option(
+    def when_i_run_copernicus_marine_command_using_no_directories_option(
         self, tmp_path, output_directory=None
     ):
         download_folder = (
@@ -752,7 +688,7 @@ class TestCommandLineInterface:
             else str(Path(tmp_path) / Path(output_directory))
         )
 
-        filter = "*_200[12]*.nc"
+        filter_ = "*_200[12]*.nc"
         dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
         command = [
             "copernicusmarine",
@@ -760,7 +696,7 @@ class TestCommandLineInterface:
             "-i",
             f"{dataset_id}",
             "--filter",
-            f"{filter}",
+            f"{filter_}",
             "--output-directory",
             f"{download_folder}",
             "--no-directories",
@@ -784,18 +720,16 @@ class TestCommandLineInterface:
             else Path(tmp_path) / Path(output_directory)
         )
 
-        downloaded_files = list(
-            map(lambda path: path.name, download_folder.iterdir())
-        )
+        downloaded_files = [path.name for path in download_folder.iterdir()]
 
         assert set(expected_files).issubset(downloaded_files)
 
     def test_no_directories_option_original_files(self, tmp_path):
-        self.when_I_run_copernicus_marine_command_using_no_directories_option(
+        self.when_i_run_copernicus_marine_command_using_no_directories_option(
             tmp_path
         )
         self.then_files_are_created_without_tree_folder(tmp_path)
-        self.when_I_run_copernicus_marine_command_using_no_directories_option(
+        self.when_i_run_copernicus_marine_command_using_no_directories_option(
             tmp_path, output_directory="test"
         )
         self.then_files_are_created_without_tree_folder(
@@ -803,10 +737,10 @@ class TestCommandLineInterface:
         )
 
     def test_default_service_for_subset_command(self):
-        self.when_I_run_copernicus_marine_subset_with_default_service()
-        self.then_I_can_see_the_arco_geo_series_service_is_choosen()
+        self.when_i_run_copernicus_marine_subset_with_default_service()
+        self.then_i_can_see_the_arco_geo_series_service_is_choosen()
 
-    def when_I_run_copernicus_marine_subset_with_default_service(
+    def when_i_run_copernicus_marine_subset_with_default_service(
         self,
     ):
         command = [
@@ -823,7 +757,7 @@ class TestCommandLineInterface:
 
         self.output = execute_in_terminal(command)
 
-    def then_I_can_see_the_arco_geo_series_service_is_choosen(self):
+    def then_i_can_see_the_arco_geo_series_service_is_choosen(self):
         assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_get_2023_08_original_files(self):
@@ -841,9 +775,7 @@ class TestCommandLineInterface:
         assert self.output.returncode == 0
         assert "No data to download" not in self.output.stderr
 
-    def test_subset_with_chunking(
-        self, tmp_path
-    ):  # TODO: it says subset with chunking but looks kind of 'normal'
+    def test_subset_with_dataset_sensitive_to_chunking(self, tmp_path):
         command = [
             "copernicusmarine",
             "subset",
@@ -916,10 +848,10 @@ class TestCommandLineInterface:
         )
 
     def test_subset_create_template(self):
-        self.when_created_is_created()
+        self.when_template_is_created()
         self.and_it_runs_correctly()
 
-    def when_created_is_created(self):
+    def when_template_is_created(self):
         command = ["copernicusmarine", "subset", "--create-template"]
 
         self.output = execute_in_terminal(command)
@@ -970,7 +902,7 @@ class TestCommandLineInterface:
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
 
-    def test_error_log_for_variable_that_does_not_exist(self):
+    def test_error_log_for_variable_does_not_exist(self):
         command = [
             "copernicusmarine",
             "subset",
@@ -987,7 +919,7 @@ class TestCommandLineInterface:
             "variable or a standard name in the dataset" in self.output.stderr
         )
 
-    def test_error_log_for_service_that_does_not_exist(self):
+    def test_error_log_for_service_does_not_exist(self):
         command = [
             "copernicusmarine",
             "subset",
@@ -1008,7 +940,7 @@ class TestCommandLineInterface:
             in self.output.stderr
         )
 
-    def then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
+    def then_i_can_read_copernicusmarine_version_in_the_dataset_attributes(
         self, filepath
     ):
         dataset = xarray.open_dataset(filepath, engine="zarr")
@@ -1017,8 +949,8 @@ class TestCommandLineInterface:
     def test_copernicusmarine_version_in_dataset_attributes_with_arco(
         self, tmp_path
     ):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path)
-        self.then_I_can_read_copernicusmarine_version_in_the_dataset_attributes(
+        self.when_i_request_subset_dataset_with_zarr_service(tmp_path)
+        self.then_i_can_read_copernicusmarine_version_in_the_dataset_attributes(
             tmp_path / "data.zarr"
         )
 
@@ -1049,8 +981,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--service",
-            f"{self.GEOSERIES.name}",
         ]
 
         self.output = execute_in_terminal(command)
@@ -1091,8 +1021,6 @@ class TestCommandLineInterface:
             f"{tmp_path}",
             "-f",
             f"{output_filename}",
-            "--service",
-            f"{self.GEOSERIES.name}",
             "--log-level",
             "DEBUG",
         ]
@@ -1188,7 +1116,7 @@ class TestCommandLineInterface:
         assert self.output.returncode == 0
         assert expected_filepath.is_dir()
 
-    def then_I_can_read_dataset_size_in_the_response(self):
+    def then_i_can_read_dataset_size_in_the_response(self):
         response_subset = loads(self.output.stdout)
         assert "file_size" in response_subset
         assert "data_transfer_size" in response_subset
@@ -1198,8 +1126,8 @@ class TestCommandLineInterface:
     def test_dataset_size_is_displayed_when_downloading_with_arco_service(
         self, tmp_path
     ):
-        self.when_I_request_subset_dataset_with_zarr_service(tmp_path)
-        self.then_I_can_read_dataset_size_in_the_response()
+        self.when_i_request_subset_dataset_with_zarr_service(tmp_path)
+        self.then_i_can_read_dataset_size_in_the_response()
 
     def test_dataset_has_always_every_dimensions(self, tmp_path):
         output_filename = "data.nc"
@@ -1488,7 +1416,7 @@ class TestCommandLineInterface:
         assert dataset.uo.encoding["contiguous"] is False
         assert dataset.uo.encoding["shuffle"] is True
 
-    def test_subset_approximation_of_big_data_that_needs_to_be_downloaded(
+    def test_subset_approximation_of_big_data_needs_to_be_downloaded(
         self,
     ):
         command = [
@@ -1662,7 +1590,7 @@ class TestCommandLineInterface:
         assert output_netcdf_format.returncode == 0
         assert output_netcdf_format.stdout == "classic\n"
 
-    def test_that_requested_interval_fully_included_with_coords_sel_method_outside(
+    def test_requested_interval_fully_included_with_coords_sel_method_outside(
         self, tmp_path
     ):
         output_filename = "output.nc"
@@ -1721,7 +1649,7 @@ class TestCommandLineInterface:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_that_requested_interval_is_correct_with_coords_sel_method_inside(
+    def test_requested_interval_is_correct_with_coords_sel_method_inside(
         self, tmp_path
     ):
         output_filename = "output.nc"
@@ -1780,7 +1708,7 @@ class TestCommandLineInterface:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) <= datetime.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_that_requested_interval_is_correct_with_coords_sel_method_nearest(
+    def test_requested_interval_is_correct_with_coords_sel_method_nearest(
         self, tmp_path
     ):
         output_filename = "output.nc"
@@ -1827,12 +1755,12 @@ class TestCommandLineInterface:
 
         dataset = xarray.open_dataset(Path(tmp_path, output_filename))
 
-        assert dataset.longitude.values.min() == 0.083343505859375
-        assert dataset.longitude.max().values == 1.583343505859375
-        assert dataset.latitude.values.min() == 0.0
-        assert dataset.latitude.values.max() == 1.0833358764648438
-        assert dataset.depth.values.min() == 29.444730758666992
-        assert dataset.depth.values.max() == 47.37369155883789
+        assert math.isclose(dataset.longitude.values.min(), 0.083343505859375)
+        assert math.isclose(dataset.longitude.max().values, 1.583343505859375)
+        assert math.isclose(dataset.latitude.values.min(), 0.0)
+        assert math.isclose(dataset.latitude.values.max(), 1.0833358764648438)
+        assert math.isclose(dataset.depth.values.min(), 29.444730758666992)
+        assert math.isclose(dataset.depth.values.max(), 47.37369155883789)
         assert datetime.datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) == datetime.datetime.strptime("2023-01-01", "%Y-%m-%d")
@@ -1979,9 +1907,7 @@ class TestCommandLineInterface:
         self.output = execute_in_terminal(command, timeout_second=timeout)
         assert self.output.returncode == 0
 
-    def test_that_requested_interval_is_correct_w_weird_windowing(
-        self, tmp_path
-    ):
+    def test_requested_interval_is_correct_w_weird_windowing(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = -180.001
         max_longitude = -178.001
@@ -2086,3 +2012,45 @@ class TestCommandLineInterface:
         assert response["coordinates_extent"][1]["maximum"] <= max_latitude
         assert response["coordinates_extent"][3]["minimum"] <= min_depth
         assert response["coordinates_extent"][3]["maximum"] <= max_depth
+
+    def test_requested_formats_subset_gridded_dataset(self):
+        # zarr done in another test
+        self.command_base = [
+            "copernicusmarine",
+            "subset",
+            "-i",
+            "cmems_obs-sst_glo_phy_l3s_pir_P1D-m",
+            "-t",
+            "2023-01-01T00:00:00",
+            "-T",
+            "2023-01-01T23:59:59",
+            "--dry-run",
+            "--log-level",
+            "DEBUG",
+        ]
+        output = execute_in_terminal(self.command_base)
+        assert output.returncode == 0
+        assert "in netcdf format" in output.stderr
+        response = loads(output.stdout)
+        assert response["filename"].endswith(".nc")
+
+        wrong_command = self.command_base + [
+            "--file-format",
+            "csv",
+        ]
+        output = execute_in_terminal(wrong_command)
+        assert output.returncode == 1
+        assert "Wrong format requested" in output.stderr
+
+        very_wrong_command = self.command_base + [
+            "--file-format",
+            "lkdjflkjsf",
+        ]
+        output = execute_in_terminal(very_wrong_command)
+        # click error is a return code 2
+        assert output.returncode == 2
+        assert (
+            "Invalid value for '--file-format': "
+            "'lkdjflkjsf' is not one of 'netcdf', 'zarr', 'csv', 'parquet'."
+            in output.stderr
+        )

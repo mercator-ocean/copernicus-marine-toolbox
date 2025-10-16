@@ -25,7 +25,10 @@ from copernicusmarine.core_functions.marine_datastore_config import (
     MarineDataStoreConfig,
 )
 from copernicusmarine.core_functions.models import CommandType, DatasetChunking
-from copernicusmarine.core_functions.request_structure import SubsetRequest
+from copernicusmarine.core_functions.request_structure import (
+    GetRequest,
+    SubsetRequest,
+)
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     next_or_raise_exception,
@@ -134,10 +137,9 @@ def _get_first_available_service_name(
 
 
 def _select_service_by_priority(
+    request: Union[SubsetRequest, GetRequest],
     dataset_version_part: CopernicusMarinePart,
     command_type: CommandType,
-    dataset_subset: Optional[SubsetRequest],
-    platform_ids_subset: bool,
 ) -> tuple[CopernicusMarineService, Optional[DatasetChunking]]:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
@@ -149,6 +151,7 @@ def _select_service_by_priority(
     first_available_service = dataset_version_part.get_service_by_service_name(
         service_name=first_available_service_name
     )
+    subset_request = request if isinstance(request, SubsetRequest) else None
     if (
         CopernicusMarineServiceNames.GEOSERIES
         in dataset_available_service_names
@@ -160,13 +163,12 @@ def _select_service_by_priority(
             CommandType.OPEN_DATASET,
             CommandType.READ_DATAFRAME,
         ]
-        and dataset_subset is not None
-    ):
+    ) and subset_request:
         if (
             first_available_service.service_format
             == CopernicusMarineServiceFormat.SQLITE
         ):
-            if platform_ids_subset:
+            if subset_request.platform_ids:
                 try:
                     return (
                         dataset_version_part.get_service_by_service_name(
@@ -179,7 +181,7 @@ def _select_service_by_priority(
 
             return first_available_service, None
         best_arco_service_type, dataset_chunking = _get_best_arco_service_type(
-            dataset_subset,
+            subset_request,
             dataset_version_part,
         )
         return (
@@ -209,65 +211,50 @@ class RetrievalService:
 
 
 def get_retrieval_service(
-    dataset_id: str,
-    force_dataset_version_label: Optional[str],
-    force_dataset_part_label: Optional[str],
-    force_service_name_or_short_name: Optional[str],
+    request: Union[SubsetRequest, GetRequest],
     command_type: CommandType,
-    dataset_subset: Optional[SubsetRequest],
     marine_datastore_config: MarineDataStoreConfig,
-    platform_ids_subset: bool = False,
 ) -> RetrievalService:
     dataset_metadata = get_dataset_metadata(
-        dataset_id, marine_datastore_config
+        request.dataset_id,
+        marine_datastore_config,
     )
     if not dataset_metadata:
         raise KeyError(
-            f"The requested dataset '{dataset_id}' was not found in the catalogue,"
-            " you can use 'copernicusmarine describe -r datasets "
-            "--contains <search_token>' to find datasets"
+            f"The requested dataset '{request.dataset_id}' was not found in "
+            "the catalogue, you can use 'copernicusmarine describe "
+            "-r datasets --contains <search_token>' to find datasets"
         )
     force_service_name: Optional[CopernicusMarineServiceNames] = (
-        _service_name_from_string(
-            force_service_name_or_short_name, command_type
-        )
-        if force_service_name_or_short_name
+        _service_name_from_string(request.force_service, command_type)
+        if isinstance(request, SubsetRequest) and request.force_service
         else None
     )
     product_doi = dataset_metadata.digital_object_identifier
-
     return _get_retrieval_service_from_dataset(
         dataset=dataset_metadata,
-        force_dataset_version_label=force_dataset_version_label,
-        force_dataset_part_label=force_dataset_part_label,
+        request=request,
         force_service_name=force_service_name,
         command_type=command_type,
-        dataset_subset=dataset_subset,
-        platform_ids_subset=platform_ids_subset,
         product_doi=product_doi,
     )
 
 
 def _get_retrieval_service_from_dataset(
     dataset: CopernicusMarineDataset,
-    force_dataset_version_label: Optional[str],
-    force_dataset_part_label: Optional[str],
+    request: Union[SubsetRequest, GetRequest],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
-    dataset_subset: Optional[SubsetRequest],
-    platform_ids_subset: bool,
     product_doi: Optional[str],
 ) -> RetrievalService:
-    dataset_version = dataset.get_version(force_dataset_version_label)
+    dataset_version = dataset.get_version(request.force_dataset_version)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
     return _get_retrieval_service_from_dataset_version(
         dataset_id=dataset.dataset_id,
         dataset_version=dataset_version,
-        force_dataset_part_label=force_dataset_part_label,
+        request=request,
         force_service_name=force_service_name,
         command_type=command_type,
-        dataset_subset=dataset_subset,
-        platform_ids_subset=platform_ids_subset,
         product_doi=product_doi,
     )
 
@@ -275,14 +262,12 @@ def _get_retrieval_service_from_dataset(
 def _get_retrieval_service_from_dataset_version(
     dataset_id: str,
     dataset_version: CopernicusMarineVersion,
-    force_dataset_part_label: Optional[str],
+    request: Union[SubsetRequest, GetRequest],
     force_service_name: Optional[CopernicusMarineServiceNames],
     command_type: CommandType,
-    dataset_subset: Optional[SubsetRequest],
-    platform_ids_subset: bool,
     product_doi: Optional[str],
 ) -> RetrievalService:
-    dataset_part = dataset_version.get_part(force_dataset_part_label)
+    dataset_part = dataset_version.get_part(request.force_dataset_part)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
     if dataset_part.retired_date:
         _warning_dataset_will_be_deprecated(
@@ -296,25 +281,18 @@ def _get_retrieval_service_from_dataset_version(
         )
 
     # check that the dataset is not being updated
-    if dataset_part.arco_updating_start_date:
+    if dataset_part.arco_updating_start_date and isinstance(
+        request, SubsetRequest
+    ):
         updating_date = datetime_parser(dataset_part.arco_updating_start_date)
-        if not dataset_subset or (
-            dataset_subset
-            and (
-                not dataset_subset.end_datetime
-                or (
-                    dataset_subset.end_datetime
-                    and dataset_subset.end_datetime > updating_date
-                )
-            )
-        ):
+        if not request.end_datetime or request.end_datetime > updating_date:
             error_message = _warning_dataset_updating(
                 dataset_id=dataset_id,
                 dataset_version=dataset_version,
                 dataset_part=dataset_part,
             )
             logger.warning(error_message)
-            if dataset_subset and dataset_subset.raise_if_updating:
+            if request.raise_if_updating:
                 raise DatasetUpdating(error_message)
 
     service = None
@@ -333,10 +311,9 @@ def _get_retrieval_service_from_dataset_version(
             service = None
     if not service:
         service, dataset_chunking = _select_service_by_priority(
+            request=request,
             dataset_version_part=dataset_part,
             command_type=command_type,
-            dataset_subset=dataset_subset,
-            platform_ids_subset=platform_ids_subset,
         )
     if (
         command_type
@@ -348,9 +325,9 @@ def _get_retrieval_service_from_dataset_version(
         and service.service_format != CopernicusMarineServiceFormat.SQLITE
     ):
         logger.debug(f'Selected service: "{service.service_name}"')
-        if dataset_subset and not dataset_chunking:
+        if isinstance(request, SubsetRequest) and not dataset_chunking:
             dataset_chunking = get_dataset_chunking(
-                dataset_subset,
+                request,
                 service.service_name,
                 dataset_part,
             )

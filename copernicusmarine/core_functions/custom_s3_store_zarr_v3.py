@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 from typing import AsyncIterator, Iterable, Optional, Union
@@ -54,6 +55,8 @@ class CustomS3StoreZarrV3(Store):
         prototype: BufferPrototype,
         byte_range: Union[ByteRequest, None] = None,
     ) -> Union[Buffer, None]:
+        loop = asyncio.get_running_loop()
+
         def fn():
             full_key = f"{self._root_path}/{key}"
             try:
@@ -63,16 +66,12 @@ class CustomS3StoreZarrV3(Store):
                 res = resp["Body"].read()
                 return prototype.buffer.from_bytes(res)
             except botocore.exceptions.ClientError as e:
-                https_status_code: int = e.response["ResponseMetadata"][
-                    "HTTPStatusCode"
-                ]
-                if https_status_code == 404 or https_status_code == 403:
-                    # means the object does not exist
+                status = e.response["ResponseMetadata"]["HTTPStatusCode"]
+                if status in (404, 403):
                     return None
-                else:
-                    raise e
+                raise
 
-        return self.with_retries(fn)
+        return await loop.run_in_executor(None, self.with_retries, fn)
 
     async def get_partial_values(
         self,
@@ -85,7 +84,7 @@ class CustomS3StoreZarrV3(Store):
         ]
 
     async def exists(self, key: str) -> bool:
-        return self.get(key, default_buffer_prototype()) is not None
+        return (await self.get(key, default_buffer_prototype())) is not None
 
     def supports_writes(self) -> bool:
         return False
