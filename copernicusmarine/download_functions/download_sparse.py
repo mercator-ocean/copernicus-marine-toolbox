@@ -298,27 +298,24 @@ def _build_filename_and_output_path(
     variables: list[str],
     platform_ids: list[str],
     axis_coordinate_id_mapping: dict[str, str],
-) -> tuple[pathlib.Path, pathlib.Path]:
+) -> tuple[str, pathlib.Path]:
     extension_file = get_file_extension(subset_request.file_format)
-    filename = pathlib.Path(
-        subset_request.output_filename
-        or build_filename_from_request(
-            request=subset_request,
-            variables=variables,
-            platform_ids=platform_ids,
-            axis_coordinate_id_mapping=axis_coordinate_id_mapping,
-        )
+    filename = subset_request.output_filename or build_filename_from_request(
+        request=subset_request,
+        variables=variables,
+        platform_ids=platform_ids,
+        axis_coordinate_id_mapping=axis_coordinate_id_mapping,
     )
 
-    if filename.suffix != extension_file:
-        filename = pathlib.Path(f"{filename}{extension_file}")
+    if pathlib.Path(filename).suffix != extension_file:
+        filename = f"{filename}{extension_file}"
     output_path = pathlib.Path(
         subset_request.output_directory,
         filename,
     )
     if not subset_request.overwrite and not subset_request.skip_existing:
         output_path = get_unique_filepath(output_path)
-        filename = pathlib.Path(output_path.name)
+        filename = output_path.name
     return filename, output_path
 
 
@@ -337,7 +334,7 @@ def _get_response_subset(
     return ResponseSubset(
         file_path=output_path,
         output_directory=subset_request.output_directory,
-        filename=str(filename),
+        filename=filename,
         file_size=None,
         data_transfer_size=None,
         variables=variables,

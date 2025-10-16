@@ -148,9 +148,9 @@ class TestOverwriteOutputData:
                 ).name
             )
         else:
-            print(self.response_json)
             raise ValueError(
-                "Response JSON does not contain 'file_path' or 'files' keys."
+                "Response JSON does not contain 'file_path' or 'files' keys -"
+                f" Response JSON: {self.response_json}"
             )
 
     def request_data_download(
