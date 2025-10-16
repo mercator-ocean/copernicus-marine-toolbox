@@ -324,6 +324,11 @@ def download_splitted_dataset(
 
     output_path = pathlib.Path(output_directory, filename)
 
+    if not overwrite and not skip_existing:
+        output_path = get_unique_filepath(
+            filepath=output_path,
+        )
+
     response = ResponseSubset(
         file_path=output_path,
         output_directory=output_directory,
@@ -347,10 +352,6 @@ def download_splitted_dataset(
         response.file_status = FileStatus.IGNORED
         return response
 
-    if not overwrite and not skip_existing:
-        output_path = get_unique_filepath(
-            filepath=output_path,
-        )
     current = current_process()
     with TqdmCallback(
         position=current._identity[0] if current._identity else 0,

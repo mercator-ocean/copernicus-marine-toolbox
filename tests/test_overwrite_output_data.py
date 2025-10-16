@@ -1,4 +1,5 @@
 import pathlib
+from json import loads
 from pathlib import Path
 from typing import Optional
 
@@ -104,6 +105,7 @@ class TestOverwriteOutputData:
             ).exists()
             is True
         )
+
         assert (
             pathlib.Path(
                 self.tmp_path,
@@ -113,6 +115,43 @@ class TestOverwriteOutputData:
             ).exists()
             is True
         )
+        self.check_responses_has_expected_file_path(counter)
+
+    def check_responses_has_expected_file_path(self, counter):
+        if "file_path" in self.response_json:
+            assert pathlib.Path(
+                self.response_json["file_path"]
+            ) == pathlib.Path(
+                self.tmp_path,
+                self.expected_downloaded_filepath_with_counter(
+                    counter=counter
+                ),
+            )
+            assert (
+                self.response_json["filename"]
+                == self.expected_downloaded_filepath_with_counter(
+                    counter=counter
+                ).name
+            )
+        elif "files" in self.response_json:
+            file_response = self.response_json["files"][0]
+            assert pathlib.Path(file_response["file_path"]) == pathlib.Path(
+                self.tmp_path,
+                self.expected_downloaded_filepath_with_counter(
+                    counter=counter
+                ),
+            )
+            assert (
+                file_response["filename"]
+                == self.expected_downloaded_filepath_with_counter(
+                    counter=counter
+                ).name
+            )
+        else:
+            raise ValueError(
+                "Response JSON does not contain 'file_path' or 'files' keys -"
+                f" Response JSON: {self.response_json}"
+            )
 
     def request_data_download(
         self,
@@ -167,13 +206,13 @@ class TestOverwriteOutputData:
                 "-f",
                 f"{filename}",
             ]
-
+        full_command.extend(["-r", "all"])
         if overwrite_option:
             full_command.append("--overwrite")
 
         self.output = execute_in_terminal(full_command)
         assert self.output.returncode == 0, self.output.stderr
-
+        self.response_json = loads(self.output.stdout)
         if command == "get":
             if service == "original-files":
                 last_modification_time = (

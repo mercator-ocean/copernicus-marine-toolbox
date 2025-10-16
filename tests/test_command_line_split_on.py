@@ -107,28 +107,18 @@ class TestCommandLineSplitOn:
             "subset",
             "-i",
             "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
-            "-x",
-            "-9.0",
-            "-X",
-            "-8.0",
-            "-y",
-            "34.0",
-            "-Y",
-            "35.0",
-            "-z",
-            "0.5",
-            "-Z",
-            "2",
+            "--dataset-part",
+            "history",
             "--split-on",
             "year",
             "--dry-run",
             "-t",
-            "2025-09-01",
+            "2020-09-01",
             "-T",
-            "2025-09-15",
+            "2020-09-15",
         ]
         self.output = execute_in_terminal(command)
-        assert self.output.returncode != 0
+        assert self.output.returncode == 1
         assert (
             "The split on files option is not available for the requested format 'csv'"
             in self.output.stderr
