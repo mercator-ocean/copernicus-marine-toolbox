@@ -50,6 +50,7 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
     get_unique_filepath,
+    human_readable_size_mb,
     run_multiprocessors,
 )
 from copernicusmarine.download_functions.subset_parameters import (
@@ -59,10 +60,11 @@ from copernicusmarine.download_functions.subset_parameters import (
 )
 from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
-    DownloadParams,
+    DownloadParameters,
     FileFormat,
     get_approximation_size_data_downloaded,
     get_approximation_size_final_result,
+    get_approximation_size_final_result_csv,
     get_dataset_coordinates_extent,
     get_filename,
     timestamp_or_datestring_to_datetime,
@@ -143,8 +145,8 @@ def download_dataset(
     if not dry_run:
         logger.info("Starting download. Please wait...")
 
-    down_params = [
-        DownloadParams(
+    download_parameters = [
+        DownloadParameters(
             {
                 "output_filename": output_filename,
                 "key": key,
@@ -175,16 +177,35 @@ def download_dataset(
         for key in keys
     ]
 
-    total_size_estimation = get_approximation_size_final_result(
-        dataset, axis_coordinate_id_mapping
+    total_size_estimation = (
+        get_approximation_size_final_result(
+            dataset, axis_coordinate_id_mapping
+        )
+        if file_format != "csv"
+        else get_approximation_size_final_result_csv(dataset)
     )
-
-    logger.debug(f"Total size estimation: {total_size_estimation} MB")
+    if file_format == "csv" and total_size_estimation > 1000:
+        non_csv_size_estimation = get_approximation_size_final_result(
+            dataset, axis_coordinate_id_mapping
+        )
+        logger.warning(
+            "The estimated size of the final CSV output is "
+            f"{human_readable_size_mb(total_size_estimation)}. "
+            "Generating such a large file may result in high memory "
+            "consumption and significant storage requirements. "
+            f"The same data in NetCDF or Zarr format is estimated at "
+            f"{human_readable_size_mb(non_csv_size_estimation)}. Using "
+            "these formats is recommended for large or complex datasets."
+        )
+    logger.debug(
+        "Total size estimation: "
+        f"{human_readable_size_mb(total_size_estimation)}"
+    )
 
     dataset.close()
 
     if len(keys) == 1:
-        response = download_splitted_dataset(**down_params[0])
+        response = save_dataset(**download_parameters[0])
         if not dry_run:
             logger.info(f"Successfully downloaded to {response.file_path}")
         return response
@@ -218,8 +239,8 @@ def download_dataset(
     logger.debug(f"Number of processes: {num_processes}")
 
     responses = run_multiprocessors(
-        download_splitted_dataset,
-        [tuple(d.values()) for d in down_params],
+        save_dataset,
+        [tuple(d.values()) for d in download_parameters],
         num_processes,
         tdqm_bar_configuration={
             "disable": disable_progress_bar,
@@ -247,7 +268,7 @@ def get_date_keys(
     return time_index.to_period(group_key), group_key
 
 
-def download_splitted_dataset(
+def save_dataset(
     output_filename: Optional[str],
     key: Optional[str],
     split_on: Optional[SplitOnOption],

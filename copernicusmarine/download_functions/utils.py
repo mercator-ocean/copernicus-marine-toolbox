@@ -3,6 +3,7 @@ import pathlib
 from datetime import datetime
 from typing import Any, Optional, TypedDict, Union
 
+import numpy as np
 import xarray
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineService
@@ -399,6 +400,19 @@ def get_approximation_size_final_result(
     return estimate_size
 
 
+def get_approximation_size_final_result_csv(
+    dataset: xarray.Dataset,
+) -> float:
+    n_rows = np.prod([dataset.sizes[dim] for dim in dataset.dims])
+    n_columns = len(dataset.data_vars) + len(dataset.dims)
+
+    bytes_per_value = 12
+
+    csv_size_bytes = n_rows * n_columns * bytes_per_value
+    csv_size_mb = csv_size_bytes / (1024**2)
+    return csv_size_mb
+
+
 def get_approximation_size_data_downloaded(
     dataset: xarray.Dataset,
     dataset_chunking: DatasetChunking,
@@ -420,7 +434,7 @@ def get_approximation_size_data_downloaded(
     return download_estimated_size
 
 
-class DownloadParams(TypedDict):
+class DownloadParameters(TypedDict):
     output_filename: Optional[str]
     key: Optional[str]
     split_on: Optional[SplitOnOption]
