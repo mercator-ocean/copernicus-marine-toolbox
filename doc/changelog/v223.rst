@@ -1,7 +1,7 @@
 Release 2.2.3
 ==============
 
-Patch that fixes some performance issues and should provide a more consistent behavior.
+Patch that fixes some performance issues and provides more consistent behavior for subset operations and template creation.
 
 Subset
 ------
