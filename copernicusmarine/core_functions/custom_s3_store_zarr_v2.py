@@ -7,7 +7,6 @@ import botocore.config
 import botocore.exceptions
 import botocore.session
 
-# import threading
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
 )
@@ -29,20 +28,16 @@ class CustomS3StoreZarrV2(MutableMapping):
         self._bucket = bucket
         self._endpoint = endpoint
         self._copernicus_marine_username = copernicus_marine_username
-        # self.client, _ = get_configured_boto3_session(
-        #     endpoint,
-        #     ["GetObject", "HeadObject", "ListObjectsV2"],
-        #     copernicus_marine_username,
-        # )
 
         self.number_of_retries = number_of_retries
         self.initial_retry_wait_seconds = initial_retry_wait_seconds
 
-        # self._client_local = threading.local()
         self._client = None
 
     def __getstate__(self):
-        """Ensure boto3 client isn't pickled."""
+        """
+        Ensure boto3 client isn't pickled.
+        """
         st = self.__dict__.copy()
         st["_client"] = None
         return st
@@ -52,9 +47,8 @@ class CustomS3StoreZarrV2(MutableMapping):
         self._client = None
 
     def _get_client(self):
-        """Lazily create boto3 client (once per worker)."""
         if self._client is None:
-            logger.info("Creating new boto3 client")
+            logger.debug("Creating new boto3 client")
             client, _ = get_configured_boto3_session(
                 self._endpoint,
                 ["GetObject", "HeadObject", "ListObjectsV2"],
@@ -63,15 +57,10 @@ class CustomS3StoreZarrV2(MutableMapping):
             self._client = client
         return self._client
 
-    # @property
-    # def client(self):
-    #     return self._get_client()
-
     def __getitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
             try:
-                # logger.info(f"Fetching S3 object")
                 resp = self._get_client().get_object(
                     Bucket=self._bucket, Key=full_key
                 )
@@ -87,7 +76,6 @@ class CustomS3StoreZarrV2(MutableMapping):
 
         def fn():
             try:
-                # logger.info(f"Checking if S3 object exists")
                 self._get_client().head_object(
                     Bucket=self._bucket, Key=full_key
                 )
