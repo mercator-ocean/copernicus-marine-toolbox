@@ -68,8 +68,9 @@ class CustomS3StoreZarrV3(Store):
             isinstance(value, CustomS3StoreZarrV3)
             and self._root_path == value._root_path
             and self._bucket == value._bucket
-            and self._get_client().meta.endpoint_url
-            == value.client.meta.endpoint_url
+            and self._endpoint == value._endpoint
+            and self._copernicus_marine_username
+            == value._copernicus_marine_username
         )
 
     async def get(
