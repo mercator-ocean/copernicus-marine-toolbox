@@ -1,0 +1,14 @@
+Release 2.2.3
+==============
+
+Patch that fixes some performance issues and should provide a more consistent behavior.
+
+Subset
+------
+
+Fixes
+^^^^^
+
+* Fixed a bug where using ``zarr>=3`` would be slower due to blocking operations in a loop. The Toolbox now uses non-blocking operations to improve performance.
+* Fixed an issue where we would not raise an error when the requested file format was not supported for sparse datasets. The Toolbox now raises a ``WrongFormatRequested`` exception when the requested format is not supported by the dataset.
+* Changed the result of the ``--create-template`` option to have the consistent type with the Command Line Interface.
