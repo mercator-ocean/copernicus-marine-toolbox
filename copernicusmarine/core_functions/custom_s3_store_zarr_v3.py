@@ -31,14 +31,36 @@ class CustomS3StoreZarrV3(Store):
         super().__init__(**kwargs)
         self._root_path = root_path.lstrip("/")
         self._bucket = bucket
-        self.client, _ = get_configured_boto3_session(
-            endpoint,
-            ["GetObject", "HeadObject", "ListObjectsV2"],
-            copernicus_marine_username,
-        )
+        self._endpoint = endpoint
+        self._copernicus_marine_username = copernicus_marine_username
 
         self.number_of_retries = number_of_retries
         self.initial_retry_wait_seconds = initial_retry_wait_seconds
+
+        self._client = None
+
+    def _get_client(self):
+        if self._client is None:
+            logger.debug("Creating new boto3 client")
+            client, _ = get_configured_boto3_session(
+                self._endpoint,
+                ["GetObject", "HeadObject", "ListObjectsV2"],
+                self._copernicus_marine_username,
+            )
+            self._client = client
+        return self._client
+
+    def __getstate__(self):
+        """
+        Ensure boto3 client isn't pickled.
+        """
+        st = self.__dict__.copy()
+        st["_client"] = None
+        return st
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._client = None
 
     def __eq__(self, value: object) -> bool:
         """Equality comparison."""
@@ -46,7 +68,9 @@ class CustomS3StoreZarrV3(Store):
             isinstance(value, CustomS3StoreZarrV3)
             and self._root_path == value._root_path
             and self._bucket == value._bucket
-            and self.client.meta.endpoint_url == value.client.meta.endpoint_url
+            and self._endpoint == value._endpoint
+            and self._copernicus_marine_username
+            == value._copernicus_marine_username
         )
 
     async def get(
@@ -60,7 +84,7 @@ class CustomS3StoreZarrV3(Store):
         def fn():
             full_key = f"{self._root_path}/{key}"
             try:
-                resp = self.client.get_object(
+                resp = self._get_client().get_object(
                     Bucket=self._bucket, Key=full_key
                 )
                 res = resp["Body"].read()
@@ -114,7 +138,7 @@ class CustomS3StoreZarrV3(Store):
         keys = []
         cursor = self._root_path
         while True:
-            resp = self.client.list_objects_v2(
+            resp = self._get_client().list_objects_v2(
                 Bucket=self._bucket,
                 Prefix=self._root_path + prefix,
                 StartAfter=cursor,
