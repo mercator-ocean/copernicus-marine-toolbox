@@ -7,6 +7,7 @@ import botocore.config
 import botocore.exceptions
 import botocore.session
 
+# import threading
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
 )
@@ -26,20 +27,52 @@ class CustomS3StoreZarrV2(MutableMapping):
     ):
         self._root_path = root_path.lstrip("/")
         self._bucket = bucket
-        self.client, _ = get_configured_boto3_session(
-            endpoint,
-            ["GetObject", "HeadObject", "ListObjectsV2"],
-            copernicus_marine_username,
-        )
+        self._endpoint = endpoint
+        self._copernicus_marine_username = copernicus_marine_username
+        # self.client, _ = get_configured_boto3_session(
+        #     endpoint,
+        #     ["GetObject", "HeadObject", "ListObjectsV2"],
+        #     copernicus_marine_username,
+        # )
 
         self.number_of_retries = number_of_retries
         self.initial_retry_wait_seconds = initial_retry_wait_seconds
+
+        # self._client_local = threading.local()
+        self._client = None
+
+    def __getstate__(self):
+        """Ensure boto3 client isn't pickled."""
+        st = self.__dict__.copy()
+        st["_client"] = None
+        return st
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._client = None
+
+    def _get_client(self):
+        """Lazily create boto3 client (once per worker)."""
+        if self._client is None:
+            logger.info("Creating new boto3 client")
+            client, _ = get_configured_boto3_session(
+                self._endpoint,
+                ["GetObject", "HeadObject", "ListObjectsV2"],
+                self._copernicus_marine_username,
+            )
+            self._client = client
+        return self._client
+
+    # @property
+    # def client(self):
+    #     return self._get_client()
 
     def __getitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
             try:
-                resp = self.client.get_object(
+                # logger.info(f"Fetching S3 object")
+                resp = self._get_client().get_object(
                     Bucket=self._bucket, Key=full_key
                 )
                 res = resp["Body"].read()
@@ -54,7 +87,10 @@ class CustomS3StoreZarrV2(MutableMapping):
 
         def fn():
             try:
-                self.client.head_object(Bucket=self._bucket, Key=full_key)
+                # logger.info(f"Checking if S3 object exists")
+                self._get_client().head_object(
+                    Bucket=self._bucket, Key=full_key
+                )
                 return True
             except botocore.exceptions.ClientError as e:
                 if "404" in str(e) or "403" in str(e):
@@ -67,7 +103,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         def fn():
             full_key = f"{self._root_path}/{key}"
             final_headers = headers if headers is not None else {}
-            self.client.put_object(
+            self._get_client().put_object(
                 Bucket=self._bucket, Key=full_key, Body=value, **final_headers
             )
 
@@ -76,7 +112,7 @@ class CustomS3StoreZarrV2(MutableMapping):
     def __delitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
-            self.client.delete_object(Bucket=self._bucket, Key=full_key)
+            self._get_client().delete_object(Bucket=self._bucket, Key=full_key)
 
         return self.with_retries(fn)
 
@@ -88,7 +124,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         keys = []
         cursor = self._root_path
         while True:
-            resp = self.client.list_objects_v2(
+            resp = self._get_client().list_objects_v2(
                 Bucket=self._bucket, Prefix=self._root_path, StartAfter=cursor
             )
             entries = resp.get("Contents", [])
@@ -116,7 +152,7 @@ class CustomS3StoreZarrV2(MutableMapping):
             objects = list(
                 map(lambda k: {"Key": f"{self._root_path}/{k}"}, some_keys)
             )
-            self.client.delete_objects(
+            self._get_client().delete_objects(
                 Bucket=self._bucket, Delete={"Objects": objects}
             )
             idx += 1000
