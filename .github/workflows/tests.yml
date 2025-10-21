@@ -32,11 +32,11 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-            python-version: '3.13'
+            python-version: '3.14'
       - name: Install and configure Poetry
         run: |
-          python3.13 -m pip install poetry
-          python3.13 -m poetry config virtualenvs.in-project true
+          python3.14 -m pip install poetry
+          python3.14 -m poetry config virtualenvs.in-project true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
@@ -46,20 +46,20 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt install build-essential -y
-          python3.13 -m poetry install --no-interaction --no-root
+          python3.14 -m poetry install --no-interaction --no-root
       - name: Install ncdump dependency
         run: sudo apt-get install netcdf-bin
       - name: Install library
-        run: python3.13 -m poetry install --no-interaction --with dev
+        run: python3.14 -m poetry install --no-interaction --with dev
       - name: Run tests
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
         run: |
           if [ "${{ matrix.coverage}}" == "fast-and-without-coverage" ]; then
-            python3.13 -m poetry run make run-quick-tests
+            python3.14 -m poetry run make run-quick-tests
           else
-            python3.13 -m poetry run make run-cov-tests
+            python3.14 -m poetry run make run-cov-tests
           fi
       - name: Upload coverage reports to Codecov
         if: matrix.coverage == 'with-coverage'
