@@ -1,7 +1,7 @@
 Release 2.2.4
 ==============
 
-Patch release and minor improvements.
+Patch release with minor improvements and bug fixes.
 
 Subset
 ------
