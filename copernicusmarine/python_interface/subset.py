@@ -108,9 +108,9 @@ def subset(
     maximum_y : float, optional
         Maximum y-axis value for the subset. The units are considered in length (m, 100km...).
     minimum_depth : float, optional
-        Minimum depth for the subset. Requires a positive float (or 0).
+        Minimum depth for the subset.
     maximum_depth : float, optional
-        Maximum depth for the subset. Requires a positive float (or 0).
+        Maximum depth for the subset.
     vertical_axis : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
     start_datetime : Union[datetime, str], optional

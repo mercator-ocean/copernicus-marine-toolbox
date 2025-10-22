@@ -189,12 +189,8 @@ SUBSET: dict[str, str] = {
         "Maximum y-axis value for the subset. "
         "The units are considered in length (m, 100km...)."
     ),
-    "MINIMUM_DEPTH_HELP": (
-        "Minimum depth for the subset. Requires a positive float (or 0)."
-    ),
-    "MAXIMUM_DEPTH_HELP": (
-        "Maximum depth for the subset. Requires a positive float (or 0)."
-    ),
+    "MINIMUM_DEPTH_HELP": ("Minimum depth for the subset."),
+    "MAXIMUM_DEPTH_HELP": ("Maximum depth for the subset."),
     "VERTICAL_AXIS_HELP": (
         "Consolidate the vertical dimension (the z-axis) as requested: depth with "
         "descending positive values, elevation with ascending positive values. "
