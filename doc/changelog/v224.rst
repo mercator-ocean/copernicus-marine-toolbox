@@ -1,0 +1,17 @@
+Release 2.2.4
+==============
+
+Patch release with minor improvements and bug fixes.
+
+Subset
+------
+
+New Features
+^^^^^^^^^^^^
+
+* Release the constraint on ``--minimum-depth`` and ``--maximum-depth`` arguments in the ``subset`` command to allow negative values in the Command Line Interface. Negative values were already supported in the Python API.
+
+Fixes
+^^^^^
+
+*

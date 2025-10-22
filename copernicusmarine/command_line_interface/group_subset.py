@@ -179,13 +179,13 @@ def cli_subset() -> None:
 @click.option(
     "--minimum-depth",
     "-z",
-    type=click.FloatRange(min=0),
+    type=float,
     help=documentation_utils.SUBSET["MINIMUM_DEPTH_HELP"],
 )
 @click.option(
     "--maximum-depth",
     "-Z",
-    type=click.FloatRange(min=0),
+    type=float,
     help=documentation_utils.SUBSET["MAXIMUM_DEPTH_HELP"],
 )
 @click.option(
