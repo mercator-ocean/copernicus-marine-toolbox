@@ -32,6 +32,9 @@ from copernicusmarine.core_functions.models import (  # TimeExtent,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
+from copernicusmarine.core_functions.temporary_file_helper import (
+    TemporaryPathSaver,
+)
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
     datetime_to_isoformat,
@@ -137,10 +140,11 @@ def download_sparse(
 
     if subset_request.output_directory:
         subset_request.output_directory.mkdir(parents=True, exist_ok=True)
-    if subset_request.file_format == "parquet":
-        df.to_parquet(output_path, index=False)
-    else:
-        df.to_csv(output_path, index=False)
+    with TemporaryPathSaver(output_path) as tmp_path:
+        if subset_request.file_format == "parquet":
+            df.to_parquet(tmp_path, index=False)
+        else:
+            df.to_csv(tmp_path, index=False)
 
     return response
 
