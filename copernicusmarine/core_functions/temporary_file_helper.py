@@ -1,3 +1,4 @@
+import os
 import pathlib
 import shutil
 import tempfile
@@ -28,11 +29,12 @@ class TemporaryPathSaver:
             self.tmp_path = self.dir_path / tmp_name
             self.tmp_path.mkdir(parents=True, exist_ok=False)
         else:
-            _, tmp_filename = tempfile.mkstemp(
+            fd, tmp_filename = tempfile.mkstemp(
                 prefix=f"{self.base_name}.",
                 suffix=self.suffix,
                 dir=self.dir_path,
             )
+            os.close(fd)
             self.tmp_path = pathlib.Path(tmp_filename)
         self._active = True
         return self.tmp_path
