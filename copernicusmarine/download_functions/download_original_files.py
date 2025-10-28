@@ -561,6 +561,9 @@ def _list_files_on_marine_data_lake_s3(
         endpoint_url, ["ListObjectsV2"], username
     )
 
+    if not prefix.endswith("/"):
+        prefix += "/"
+
     paginator = s3_client.get_paginator("list_objects")
     page_iterator = paginator.paginate(
         Bucket=bucket,
