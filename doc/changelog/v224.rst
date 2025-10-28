@@ -14,4 +14,11 @@ New Features
 Fixes
 ^^^^^
 
-*
+
+Get
+----
+
+Fixes
+^^^^^
+
+* Fixed an issue where we would list more files than necessary if a dataset ID started with the same characters as another dataset ID when using the ``get`` command.
