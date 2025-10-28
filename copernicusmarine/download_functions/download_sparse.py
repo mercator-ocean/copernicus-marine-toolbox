@@ -32,7 +32,7 @@ from copernicusmarine.core_functions.models import (  # TimeExtent,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
-from copernicusmarine.core_functions.temporary_file_helper import (
+from copernicusmarine.core_functions.temporary_path_saver import (
     TemporaryPathSaver,
 )
 from copernicusmarine.core_functions.utils import (

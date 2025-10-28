@@ -11,7 +11,7 @@ import psutil
 import xarray
 import zarr
 
-from copernicusmarine.core_functions.temporary_file_helper import (
+from copernicusmarine.core_functions.temporary_path_saver import (
     TemporaryPathSaver,
 )
 
