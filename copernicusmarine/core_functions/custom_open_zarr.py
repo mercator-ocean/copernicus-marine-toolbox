@@ -31,7 +31,11 @@ def open_zarr(
             root_path=root_path,
             copernicus_marine_username=copernicus_marine_username,
         )
-        return xarray.open_zarr(store, **kwargs)
+        return xarray.open_zarr(
+            store,
+            **kwargs,
+            decode_timedelta=True,
+        )
     else:
         from copernicusmarine.core_functions.custom_s3_store_zarr_v3 import (
             CustomS3StoreZarrV3,
@@ -45,4 +49,9 @@ def open_zarr(
             copernicus_marine_username=copernicus_marine_username,
             read_only=True,
         )
-        return xarray.open_zarr(store, **kwargs, zarr_format=2)
+        return xarray.open_zarr(
+            store,
+            **kwargs,
+            zarr_format=2,
+            decode_timedelta=True,
+        )
