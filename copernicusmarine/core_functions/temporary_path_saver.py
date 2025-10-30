@@ -19,38 +19,58 @@ class TemporaryPathSaver:
         self.base_name = self.output_path.name
         self.is_zarr = self.output_path.suffix == ".zarr"
 
-        self.tmp_path: Optional[pathlib.Path] = None
+        self.temp_path: Optional[pathlib.Path] = None
 
     def __enter__(self) -> pathlib.Path:
         if self.is_zarr:
-            rand_suffix = uuid.uuid4().hex[:8]
-            tmp_name = f"{self.base_name}.{rand_suffix}"
-            self.tmp_path = self.dir_path / tmp_name
-            self.tmp_path.mkdir(parents=True, exist_ok=False)
+            self.temp_path = self.mkstemp_directory(
+                prefix=f"{self.base_name}.",
+                dir=self.dir_path,
+            )
         else:
-            fd, tmp_filename = tempfile.mkstemp(
+            fd, temp_filename = tempfile.mkstemp(
                 prefix=f"{self.base_name}.",
                 dir=self.dir_path,
             )
             os.close(fd)
-            self.tmp_path = pathlib.Path(tmp_filename)
-        return self.tmp_path
+            self.temp_path = pathlib.Path(temp_filename)
+        return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Clean up temporary file/directory on exception
         if exc_type is not None:
-            if self.tmp_path:
-                if self.tmp_path.is_dir():
-                    shutil.rmtree(self.tmp_path, ignore_errors=True)
-                elif self.tmp_path.exists():
-                    self.tmp_path.unlink(missing_ok=True)
+            if self.temp_path:
+                if self.temp_path.is_dir():
+                    shutil.rmtree(self.temp_path, ignore_errors=True)
+                elif self.temp_path.exists():
+                    self.temp_path.unlink(missing_ok=True)
             return False
 
         if self.is_zarr:
             if self.output_path.exists():
                 shutil.rmtree(self.output_path)
-            self.tmp_path.rename(self.output_path)
+            self.temp_path.rename(self.output_path)
         else:
-            shutil.move(str(self.tmp_path), str(self.output_path))
+            shutil.move(str(self.temp_path), str(self.output_path))
 
         return False
+
+    def mkstemp_directory(
+        self, prefix: str, dir: pathlib.Path
+    ) -> pathlib.Path:
+        """
+        Retrying to avoid collision.
+        """
+        for _ in range(5):
+            rand_suffix = uuid.uuid4().hex[:8]
+            temp_name = f"{prefix}{rand_suffix}"
+            temp_path = dir / temp_name
+            try:
+                temp_path.mkdir(parents=True, exist_ok=False)
+                return temp_path
+            except FileExistsError:
+                continue
+        else:
+            raise FileExistsError(
+                "Could not create a unique temporary directory after 5 attempts"
+            )
