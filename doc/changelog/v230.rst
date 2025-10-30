@@ -29,6 +29,7 @@ New Features
 * Requests across the antemeridian line (180° longitude) can now be made by specifying a minimum value greater than the maximum value (except for sparse datasets). The Toolbox will automatically shift the window to the left or right of the antemeridian line, depending on the requested area. See the :ref:`Subset documentation <about-longitude-range>` for details.
 * Subset results now preserve more attributes, as the Toolbox passes through attributes from the server data. Previously, only a whitelisted set of attributes was included.
 * Added a new option ``--split-on`` to the `subset` command to split the output files based on time or variables when subsetting in netcdf format. See :ref:`subset usage page <subset-split-on>` for more details.
+* The Toolbox now creates a temporary file when subsetting data to avoid keeping incomplete files if an error occurs during the subsetting process.
 
 Fixes
 ^^^^^

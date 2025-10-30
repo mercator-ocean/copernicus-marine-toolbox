@@ -11,6 +11,10 @@ import psutil
 import xarray
 import zarr
 
+from copernicusmarine.core_functions.temporary_path_saver import (
+    TemporaryPathSaver,
+)
+
 if zarr.__version__.startswith("2"):
     from zarr.storage import DirectoryStore
 
@@ -695,20 +699,21 @@ def _save_dataset_locally(
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ):
-    if output_path.suffix == ".zarr":
-        if netcdf_compression_level > 0:
-            raise NetCDFCompressionNotAvailable(
-                "--netcdf-compression-level option cannot be used when "
-                "writing to ZARR"
+    with TemporaryPathSaver(output_path) as temp_path:
+        if output_path.suffix == ".zarr":
+            if netcdf_compression_level > 0:
+                raise NetCDFCompressionNotAvailable(
+                    "--netcdf-compression-level option cannot be used when "
+                    "writing to ZARR"
+                )
+            _download_dataset_as_zarr(dataset, temp_path)
+        else:
+            _download_dataset_as_netcdf(
+                dataset,
+                temp_path,
+                netcdf_compression_level,
+                netcdf3_compatible,
             )
-        _download_dataset_as_zarr(dataset, output_path)
-    else:
-        _download_dataset_as_netcdf(
-            dataset,
-            output_path,
-            netcdf_compression_level,
-            netcdf3_compatible,
-        )
 
 
 def _download_dataset_as_zarr(
