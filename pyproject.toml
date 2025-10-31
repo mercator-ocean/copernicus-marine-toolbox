@@ -44,7 +44,7 @@ freezegun = "^1.5.1"
 toml = "^0.10.2"
 syrupy = "^4.8.1"
 numpydoc = "^1.8.0"
-netcdf4 = "^1.4.1, <=1.7.2"
+netcdf4 = "^1.4.1, <=1.7.1"
 pytest-xdist = "^3.7.0"
 compliance-checker = { version = "^5.1.1", python = ">3.10, <3.14", markers = "sys_platform != 'win32'"}
 pytest-cov = "^6.1.1"
