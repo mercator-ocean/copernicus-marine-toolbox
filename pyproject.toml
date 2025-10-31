@@ -11,7 +11,7 @@ documentation = "https://toolbox-docs.marine.copernicus.eu/"
 
 [tool.poetry.dependencies]
 python = ">=3.9"
-click = ">=8.0.4,!=8.2.0,<=8.3.0"
+click = ">=8.0.4,!=8.2.0,<8.3.0"
 requests = ">=2.27.1"
 setuptools = ">=68.2.2"
 xarray = ">=2023.4.0"
@@ -49,6 +49,7 @@ pytest-xdist = "^3.7.0"
 compliance-checker = { version = "^5.1.1", python = ">3.10, <3.14", markers = "sys_platform != 'win32'"}
 pytest-cov = "^6.1.1"
 responses = "^0.25.7"
+pytest = "^8.4.2"
 
 [build-system]
 requires = ["poetry-core"]
