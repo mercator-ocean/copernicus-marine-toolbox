@@ -147,7 +147,7 @@ Dependencies
 The Copernicus Marine Toolbox has the following dependencies:
 
 - `Python <https://www.python.org/>`__ (3.9 or later)
-- `click <https://click.palletsprojects.com/>`__ (8.0.4 or later, :ref:`different from 8.2.0 <click-issue>`)
+- `click <https://click.palletsprojects.com/>`__ (8.0.4 to lower than 8.3.0, :ref:`different from 8.2.0 <click-issue>`)
 - `requests <https://docs.python-requests.org/en/latest/>`__ (2.27.1 or later)
 - `setuptools <https://setuptools.pypa.io/en/latest/>`__ (68.2.2 or later)
 - `xarray <https://xarray.pydata.org/>`__ (2023.4.0 or later)
@@ -197,10 +197,14 @@ and ``h5netcdf`` library as the backend.
 
     The docker image of the Toolbox should already have the ``netcdf4`` library installed.
 
+There is an incompatiblity with the use of netcdf and h5py for linux systems, related to this `issue <https://github.com/Unidata/netcdf4-python/issues/1438>`_ . For the moment we can recommend not to update those libraries beyond versions ``netcdf4<=1.7.2`` if you are on linux systems and using the netcdf4 backend.
+
 .. _click-issue:
 
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
+
+We have also restricted the versions of click to lower than 8.3.0 are there seems to be an error understanding optional flags. Hopefully we will be able to release the constraint soon.
 
 .. _installation-page-domains:
 
