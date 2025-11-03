@@ -1,5 +1,5 @@
 dependencies:
-  - python==3.14
+  - python==3.13
   - poetry==2.2.1
   - git==2.44.0
   - pip==24.0
