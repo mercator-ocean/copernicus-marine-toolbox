@@ -3,6 +3,12 @@ Release 2.2.4
 
 Patch release with minor improvements and bug fixes.
 
+General
+--------
+
+* Made some documentation updates regarding new dependencies versions.
+* Made sure that the toolbox works with python 3.14.
+
 Subset
 ------
 
