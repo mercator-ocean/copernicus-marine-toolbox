@@ -163,6 +163,8 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.4.2 or later)
 - `psutil <https://pypi.org/project/psutil/>` (7.1.0 or later)
 
+xarray and numpy compatibility issues
+--------------------------------------------
 
 The Copernicus Marine Toolbox uses the xarray library to handle the data when using the ``subset`` command in the majority of cases.
 There are some compatibility issues with the latest versions of xarray and numpy:
@@ -174,6 +176,9 @@ For ``zarr>=3.0.0``:
 
 - If you want to use ``zarr>=v3``, you need to use ``xarray>=2025.3.0``.
 - If you want to use ``zarr>=3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
+
+h5netcdf, netcdf4 and h5py libraries
+--------------------------------------------
 
 Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
 and ``h5netcdf`` library as the backend.
@@ -200,6 +205,8 @@ and ``h5netcdf`` library as the backend.
 There is an incompatiblity with the use of netcdf and h5py for linux systems, related to this `issue <https://github.com/Unidata/netcdf4-python/issues/1438>`_ . For the moment we can recommend not to update those libraries beyond versions ``netcdf4<=1.7.2`` if you are on linux systems and using the netcdf4 backend.
 
 .. _click-issue:
+click versions restrictions
+-----------------------------
 
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
