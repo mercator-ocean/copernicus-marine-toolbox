@@ -177,7 +177,7 @@ For ``zarr>=3.0.0``:
 - If you want to use ``zarr>=v3``, you need to use ``xarray>=2025.3.0``.
 - If you want to use ``zarr>=3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
 
-h5netcdf, netcdf4 and h5py libraries
+h5netcdf, netcdf4 and h5py details
 --------------------------------------------
 
 Also to convert subsetted data to NetCDF format the toolbox uses the `xarray.Dataset.to_netcdf <https://docs.xarray.dev/en/latest/generated/xarray.Dataset.to_netcdf.html>`_
@@ -202,7 +202,7 @@ and ``h5netcdf`` library as the backend.
 
     The docker image of the Toolbox should already have the ``netcdf4`` library installed.
 
-There is an incompatiblity with the use of netcdf and h5py for linux systems, related to this `issue <https://github.com/Unidata/netcdf4-python/issues/1438>`_ . For the moment we can recommend not to update those libraries beyond versions ``netcdf4<=1.7.2`` if you are on linux systems and using the netcdf4 backend.
+There is an incompatiblity with the use of netcdf4 and h5py for linux systems, related to this `issue <https://github.com/Unidata/netcdf4-python/issues/1438>`_ . For the moment we can recommend not to update those libraries beyond versions ``netcdf4<=1.7.2`` if you are on linux systems and using the netcdf4 backend.
 
 .. _click-issue:
 click versions restrictions
