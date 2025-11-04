@@ -33,8 +33,9 @@ def open_zarr(
         )
         return xarray.open_zarr(
             store,
-            **kwargs,
+            decode_times=True,
             decode_timedelta=True,
+            **kwargs,
         )
     else:
         from copernicusmarine.core_functions.custom_s3_store_zarr_v3 import (
@@ -51,7 +52,8 @@ def open_zarr(
         )
         return xarray.open_zarr(
             store,
-            **kwargs,
-            zarr_format=2,
+            decode_times=True,
             decode_timedelta=True,
+            zarr_format=2,
+            **kwargs,
         )
