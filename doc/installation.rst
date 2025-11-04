@@ -204,7 +204,7 @@ There is an incompatiblity with the use of netcdf and h5py for linux systems, re
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
 
-We have also restricted the versions of click to lower than 8.3.0 are there seems to be an error understanding optional flags. Hopefully we will be able to release the constraint soon. Please check this `click issue <https://github.com/pallets/click/issues/3084>`_ for more information.
+We have also restricted the versions of click to lower than 8.3.0 as there seems to be an error with optional flags. Hopefully, we will be able to release the constraint soon. Please check this `click issue <https://github.com/pallets/click/issues/3084>`_ for more information.
 
 .. _installation-page-domains:
 
