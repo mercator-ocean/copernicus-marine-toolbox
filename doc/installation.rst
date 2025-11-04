@@ -147,7 +147,7 @@ Dependencies
 The Copernicus Marine Toolbox has the following dependencies:
 
 - `Python <https://www.python.org/>`__ (3.9 or later)
-- `click <https://click.palletsprojects.com/>`__ (8.0.4 to lower than 8.3.0, :ref:`different from 8.2.0 <click-issue>`)
+- `click <https://click.palletsprojects.com/>`__ (8.0.4 or lower than 8.3.0, :ref:`different from 8.2.0 <click-issue>`)
 - `requests <https://docs.python-requests.org/en/latest/>`__ (2.27.1 or later)
 - `setuptools <https://setuptools.pypa.io/en/latest/>`__ (68.2.2 or later)
 - `xarray <https://xarray.pydata.org/>`__ (2023.4.0 or later)
