@@ -21,6 +21,7 @@ New Features
 Fixes
 ^^^^^
 
+* Fixed an issue where the Toolbox wouldn't work with Dask distributed. The Toolbox is now compatible with Dask distributed setups.
 
 Get
 ----
