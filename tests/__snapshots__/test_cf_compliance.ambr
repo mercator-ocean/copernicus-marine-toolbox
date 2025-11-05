@@ -3,10 +3,10 @@
   'cmems_mod_nws_bgc-pft_my_7km-3D-pico_P1M-m'
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.1
-  168
+  180
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.2
-  169
+  181
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.3
   list([
@@ -20,10 +20,10 @@
   'cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m'
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.1
-  182
+  193
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.2
-  183
+  194
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.3
   list([
@@ -37,13 +37,19 @@
   'cmems_obs-sst_glo_phy_l3s_pir_P1D-m'
 # ---
 # name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.1
-  215
+  226
 # ---
 # name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.2
-  217
+  231
 # ---
 # name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.3
   list([
+    '§2.5.1. Missing data, valid and actual range of data',
+    list([
+      "The coordinate variable 'time' must not have the _FillValue attribute.",
+      "The coordinate variable 'latitude' must not have the _FillValue attribute.",
+      "The coordinate variable 'longitude' must not have the _FillValue attribute.",
+    ]),
     '§7.3 Cell Methods',
     list([
       "sea_surface_temperature's cell_methods name component lat does not match a dimension, area or auxiliary coordinate",
