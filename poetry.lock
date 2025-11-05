@@ -2505,7 +2505,6 @@ files = [
 [package.dependencies]
 wcwidth = "*"
 
-
 [[package]]
 name = "ptyprocess"
 version = "0.7.0"
@@ -2649,7 +2648,6 @@ files = [
     {file = "pyarrow-22.0.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:f633074f36dbc33d5c05b5dc75371e5660f1dbf9c8b1d95669def05e5425989c"},
     {file = "pyarrow-22.0.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:4c19236ae2402a8663a2c8f21f1870a03cc57f0bef7e4b6eb3238cc82944de80"},
     {file = "pyarrow-22.0.0-cp314-cp314t-win_amd64.whl", hash = "sha256:0c34fe18094686194f204a3b1787a27456897d8a2d62caf84b61e8dfbc0252ae"},
-    {file = "pyarrow-22.0.0.tar.gz", hash = "sha256:3d600dc583260d845c7d8a6db540339dd883081925da2bd1c5cb808f720b3cd9"},
 ]
 
 [[package]]
@@ -4313,4 +4311,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "14e7467297b0cb844050434e02449632d6e329b832fe83e61c25ed96ed08c399"
+content-hash = "0d73947506606fea22646986684e26e7b9b493b4e2d1f84313c00ab0940a1900"
