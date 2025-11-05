@@ -3,6 +3,13 @@ Release 2.2.4
 
 Patch release with minor improvements and bug fixes.
 
+General
+--------
+
+* Made some documentation updates regarding new dependencies versions.
+* Made sure that the Toolbox works with Python 3.14.
+* Limit some click and netcdf4 versions due to compatibility issues.
+
 Subset
 ------
 
