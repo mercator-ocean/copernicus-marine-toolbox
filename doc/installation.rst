@@ -24,12 +24,12 @@ Alternatively, you can use a binary.
 .. note::
 
     Note that the use of ``netcdf4=1.7.3`` with linux systems can lead to issues.
-    See :ref:`later on this page <_netcdf4-issue>` for more details.
+    See :ref:`later on this page <netcdf4-issue>` for more details.
 
 .. note::
 
     Note that some click versions are also restricted due to issues.
-    See :ref:`later on this page <_click-issue>` for more details.
+    See :ref:`later on this page <click-issue>` for more details.
 
 Via pip
 **************
