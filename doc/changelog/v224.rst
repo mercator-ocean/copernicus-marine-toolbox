@@ -6,9 +6,9 @@ Patch release with minor improvements and bug fixes.
 General
 --------
 
-* Made some documentation updates regarding new dependencies versions.
-* Made sure that the Toolbox works with Python 3.14.
-* Limit some click and netcdf4 versions due to compatibility issues.
+* Added explicit support for Python 3.14.
+* Added constraint on ``click`` versions. See documentation :ref:`about click <click-issue>`.
+* Added documentation about issues with ``netcdf4==1.7.3`` on Linux systems. See documentation :ref:`about netcdf4 <netcdf4-issue>`.
 
 Subset
 ------
@@ -16,7 +16,7 @@ Subset
 New Features
 ^^^^^^^^^^^^
 
-* Release the constraint on ``--minimum-depth`` and ``--maximum-depth`` arguments in the ``subset`` command to allow negative values in the Command Line Interface. Negative values were already supported in the Python API.
+* Released the constraint on ``--minimum-depth`` and ``--maximum-depth`` arguments in the ``subset`` command to allow negative values in the Command Line Interface. Negative values were already supported in the Python API.
 
 Fixes
 ^^^^^
