@@ -3,6 +3,6 @@ FROM python:3.12.2
 ARG VERSION
 
 RUN pip install copernicusmarine==$VERSION
-RUN pip install netcdf4
+RUN pip install netcdf4<=1.7.2
 
 ENTRYPOINT [ "copernicusmarine" ]

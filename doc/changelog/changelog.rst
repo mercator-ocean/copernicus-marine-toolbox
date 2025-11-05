@@ -26,3 +26,4 @@ The toolbox follows the `Semantic Versioning <https://semver.org/>`_ scheme.
     v221
     v222
     v223
+    v224
