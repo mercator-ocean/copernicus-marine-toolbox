@@ -37,6 +37,7 @@ Fixes
 * Fixed an issue where the ``valid_range`` attribute in some NetCDF files was not in the correct format and therefore not CF-compliant. The Toolbox now ensures the ``valid_range`` attribute matches the data type.
 * Fixed an issue where some attributes were missing when variables were explicitly specified in a subset request. Results should now be consistent.
 * Fixed an issue where the Toolbox wouldn't work with Dask distributed. The Toolbox is now compatible with Dask distributed setups.
+* Fixed a deprecation warning from `xarray <https://docs.xarray.dev/en/v2025.03.0/whats-new.html#id20>`_.
 
 Describe
 --------
