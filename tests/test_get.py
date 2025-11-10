@@ -479,3 +479,15 @@ class TestGet:
         assert datetime.fromtimestamp(os.path.getmtime(output_file)) > (
             five_minutes_ago
         )
+
+    def test_static_are_correclty_printed_in_get(self):
+        command = [
+            "copernicusmarine",
+            "get",
+            "-i",
+            "cmems_mod_glo_phy_anfc_0.083deg_static",
+            "--dry-run",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        assert """"number_of_files_to_download": 1""" in self.output.stdout
