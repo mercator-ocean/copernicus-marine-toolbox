@@ -563,10 +563,10 @@ def _list_files_on_marine_data_lake_s3(
 
     if not prefix.endswith("/"):
         try:
-            s3_client.head_object(Bucket=bucket, Key=prefix + "/")
-            prefix += "/"
+            s3_client.head_object(Bucket=bucket, Key=prefix)
+
         except ClientError:
-            pass
+            prefix += "/"
 
     paginator = s3_client.get_paginator("list_objects")
     page_iterator = paginator.paginate(
