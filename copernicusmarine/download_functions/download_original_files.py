@@ -546,11 +546,18 @@ def _list_files_on_marine_data_lake_s3(
     disable_progress_bar: bool,
 ) -> list[tuple[str, int, datetime, str]]:
     s3_client, _ = get_configured_boto3_session(
-        endpoint_url, ["ListObjectsV2"], username
+        endpoint_url, ["ListObjectsV2", "HeadObject"], username
     )
 
     if not prefix.endswith("/"):
-        prefix += "/"
+        try:
+            s3_client.head_object(Bucket=bucket, Key=prefix)
+        except ClientError as e:
+            error_code = e.response.get("Error", {}).get("Code")
+            if error_code == "404" or error_code == "NoSuchKey":
+                prefix += "/"
+            else:
+                raise
 
     paginator = s3_client.get_paginator("list_objects")
     page_iterator = paginator.paginate(
