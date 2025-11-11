@@ -1,0 +1,12 @@
+Release 2.2.5
+==============
+
+Patch that fixes some issues when accessing static and OMI datasets.
+
+Get
+------
+
+Fixes
+^^^^^
+
+* Fixed a bug where we would not download static or OMI datasets when using the ``get`` command that was introduced in v2.2.4.

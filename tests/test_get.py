@@ -490,4 +490,6 @@ class TestGet:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert """"number_of_files_to_download": 1""" in self.output.stdout
+        response_get = loads(self.output.stdout)
+        assert len(response_get["files"]) == 1
+        assert response_get["number_of_files_to_download"] == 1
