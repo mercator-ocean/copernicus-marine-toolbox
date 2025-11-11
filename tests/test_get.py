@@ -480,7 +480,7 @@ class TestGet:
             five_minutes_ago
         )
 
-    def test_static_are_correclty_printed_in_get(self):
+    def test_static_are_correctly_printed_in_get(self):
         command = [
             "copernicusmarine",
             "get",
