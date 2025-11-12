@@ -5,7 +5,7 @@
   "maximum_longitude": 0.1,
   "minimum_latitude": 0.0,
   "minimum_longitude": 0.0,
-  "service": "arco-time-series",
+  "service": "platformseries",
   "start_datetime": "2021-01-01",
   "variables": [
     "thetao"
