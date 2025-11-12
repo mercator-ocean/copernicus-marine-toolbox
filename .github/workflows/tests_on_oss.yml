@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, windows-latest]
+        os: [macos-14, windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     defaults:
@@ -30,7 +30,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-            python-version: '3.13'
+          python-version: "3.13"
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
         with:
