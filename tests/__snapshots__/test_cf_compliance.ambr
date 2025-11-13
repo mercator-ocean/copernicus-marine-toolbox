@@ -3,10 +3,10 @@
   'cmems_mod_nws_bgc-pft_my_7km-3D-pico_P1M-m'
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.1
-  180
+  172
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.2
-  181
+  172
 # ---
 # name: TestCFCompliance.test_subset_open_cfcompliant.3
   list([
@@ -16,10 +16,10 @@
   'cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m'
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.1
-  193
+  146
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.2
-  194
+  147
 # ---
 # name: TestCFCompliance.test_subset_with_warns_cfcompliant.3
   list([
