@@ -309,6 +309,27 @@ GET: dict[str, str] = {
     ),
 }
 
+SUBSET_SPLIT_ON: dict[str, str] = {
+    "SPLIT_ON_DESCRIPTION_HELP": (
+        "Extract a subset of data from a specified dataset using given parameters "
+        "and split the output files based on variable names, time intervals or both. "
+        "By default, sequentially download the data.\n\n"
+        "The datasetID is required and can be found via the ``describe`` command. "
+        "Accept all the arguments from the subset."
+    ),
+    "SPLIT_ON_SHORT_HELP": "Extract a subset of data and split the output files.",
+    "ON_VARIABLES_HELP": (
+        "If True, split the output files based on variable names, by default False."
+    ),
+    "ON_TIME_HELP": (
+        "If provided, split the output files based on specified time intervals, "
+        "by default None."
+    ),
+    "CONCURRENT_PROCESSES_HELP": (
+        "Number of concurrent processes to use for downloading data, "
+        "by default None. Should be greater or equal to 1."
+    ),
+}
 
 SUBSET.update(SHARED)
 GET.update(SHARED)

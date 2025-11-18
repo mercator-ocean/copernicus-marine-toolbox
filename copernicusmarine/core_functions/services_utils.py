@@ -227,8 +227,8 @@ def get_retrieval_service(
             "-r datasets --contains <search_token>' to find datasets"
         )
     force_service_name: Optional[CopernicusMarineServiceNames] = (
-        _service_name_from_string(request.force_service, command_type)
-        if isinstance(request, SubsetRequest) and request.force_service
+        _service_name_from_string(request.service, command_type)
+        if isinstance(request, SubsetRequest) and request.service
         else None
     )
     product_doi = dataset_metadata.digital_object_identifier
@@ -248,7 +248,7 @@ def _get_retrieval_service_from_dataset(
     command_type: CommandType,
     product_doi: Optional[str],
 ) -> RetrievalService:
-    dataset_version = dataset.get_version(request.force_dataset_version)
+    dataset_version = dataset.get_version(request.dataset_version)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
     return _get_retrieval_service_from_dataset_version(
         dataset_id=dataset.dataset_id,
@@ -268,7 +268,7 @@ def _get_retrieval_service_from_dataset_version(
     command_type: CommandType,
     product_doi: Optional[str],
 ) -> RetrievalService:
-    dataset_part = dataset_version.get_part(request.force_dataset_part)
+    dataset_part = dataset_version.get_part(request.dataset_part)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
     if dataset_part.retired_date:
         _warning_dataset_will_be_deprecated(

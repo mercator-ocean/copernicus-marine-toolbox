@@ -1,17 +1,28 @@
 import fnmatch
+import importlib.util
+import json
 import logging
 import pathlib
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from json import load
-from typing import Any, Optional, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar, Union
 
+import pandas as pd
+from dateutil.tz import UTC
 from pydantic import BaseModel, ValidationError, field_validator
 
+from copernicusmarine.core_functions.credentials_utils import (
+    get_and_check_username_password,
+)
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     log_deprecated_message,
+)
+from copernicusmarine.core_functions.exceptions import (
+    LonLatSubsetNotAvailableInOriginalGridDatasets,
+    MutuallyExclusiveArguments,
+    XYNotAvailableInNonOriginalGridDatasets,
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
@@ -19,7 +30,6 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
-    SplitOnOption,
     VerticalAxis,
 )
 from copernicusmarine.core_functions.utils import datetime_parser
@@ -30,6 +40,7 @@ from copernicusmarine.download_functions.subset_parameters import (
     XParameters,
     YParameters,
 )
+from copernicusmarine.versioner import __version__ as copernicusmarine_version
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -49,9 +60,9 @@ SubsetRequest_ = TypeVar("SubsetRequest_", bound="SubsetRequest")
 
 class SubsetRequest(BaseModel):
     dataset_id: str
-    dataset_url: Optional[str] = None
-    force_dataset_version: Optional[str] = None
-    force_dataset_part: Optional[str] = None
+    username: str
+    dataset_version: Optional[str] = None
+    dataset_part: Optional[str] = None
     variables: Optional[list[str]] = None
     minimum_x: Optional[float] = None
     maximum_x: Optional[float] = None
@@ -68,7 +79,7 @@ class SubsetRequest(BaseModel):
     )
     output_filename: Optional[str] = None
     file_format: FileFormat = DEFAULT_FILE_FORMAT
-    force_service: Optional[str] = None
+    service: Optional[str] = None
     output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
     skip_existing: bool = False
@@ -76,32 +87,46 @@ class SubsetRequest(BaseModel):
     netcdf3_compatible: bool = False
     dry_run: bool = False
     raise_if_updating: bool = False
-    split_on: Optional[SplitOnOption] = None
+    disable_progress_bar: bool = False
+    staging: bool = False
+    chunk_size_limit: int = -1
 
-    def update(self, new_dict: dict):
+    def update(self, new_dict: dict) -> "SubsetRequest":
         filtered_dict = {
-            key: value for key, value in new_dict.items() if value is not None
+            key: value
+            for key, value in new_dict.items()
+            if value is not None
+            and not (isinstance(value, str) and value == "")
         }
-        for key, value in filtered_dict.items():
-            if isinstance(value, (list, tuple)) and not value:
-                continue
-            setattr(self, key, value)
+        data = self.model_dump()
+        data.update(filtered_dict)
+        return self.model_validate(data)
 
     @field_validator("start_datetime", "end_datetime", mode="before")
     @classmethod
-    def parse_datetime(cls, v):
+    def parse_datetime(
+        cls, v: Optional[Union[datetime, pd.Timestamp, str]]
+    ) -> Optional[datetime]:
         if v is None or v == "":
             return None
         if isinstance(v, str):
             return datetime_parser(v)
-        return v
+        if isinstance(v, pd.Timestamp):
+            return v.to_pydatetime().astimezone(UTC)
+        return v.astimezone(UTC)
 
     @classmethod
     def from_file(
-        cls: Type[SubsetRequest_], filepath: pathlib.Path
+        cls: Type[SubsetRequest_],
+        filepath: pathlib.Path,
+        username: Optional[str] = None,
     ) -> SubsetRequest_:
         with open(filepath) as json_file:
-            json_content = load(json_file)
+            json_content = json.load(json_file)
+        if username:
+            json_content["username"] = username
+        json_content.pop("credentials_file", None)
+        json_content.pop("password", None)
         transformed_data = cls._transform_deprecated_options(json_content)
         try:
             return cls(**transformed_data)
@@ -176,6 +201,7 @@ class SubsetRequest(BaseModel):
 
 def convert_motu_api_request_to_structure(
     motu_api_request: str,
+    username: str,
 ) -> SubsetRequest:
     prefix = "python -m motuclient "
     string = motu_api_request.replace(prefix, "").replace("'", "")
@@ -194,9 +220,7 @@ def convert_motu_api_request_to_structure(
             motu_api_request_dict[arg] = value
     subset_request = SubsetRequest(
         dataset_id="",
-        output_directory=pathlib.Path("."),
-        output_filename=None,
-        force_service=None,
+        username=username,
     )
     conversion_dict = {
         "product-id": "dataset_id",
@@ -210,7 +234,7 @@ def convert_motu_api_request_to_structure(
         "date-max": "end_datetime",
         "variable": "variables",
     }
-    subset_request.update(
+    subset_request = subset_request.update(
         {
             conversion_dict[key]: value
             for key, value in motu_api_request_dict.items()
@@ -220,12 +244,259 @@ def convert_motu_api_request_to_structure(
     return subset_request
 
 
+def create_subset_request(
+    dataset_id: Optional[str] = None,
+    dataset_version: Optional[str] = None,
+    dataset_part: Optional[str] = None,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+    variables: Optional[list[str]] = None,
+    minimum_depth: Optional[float] = None,
+    maximum_depth: Optional[float] = None,
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
+    start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    platform_ids: Optional[list[str]] = None,
+    coordinates_selection_method: CoordinatesSelectionMethod = (
+        DEFAULT_COORDINATES_SELECTION_METHOD
+    ),
+    output_filename: Optional[str] = None,
+    file_format: Optional[FileFormat] = None,
+    service: Optional[str] = None,
+    request_file: Optional[pathlib.Path] = None,
+    output_directory: Optional[pathlib.Path] = None,
+    credentials_file: Optional[pathlib.Path] = None,
+    motu_api_request: Optional[str] = None,
+    overwrite: bool = False,
+    skip_existing: bool = False,
+    dry_run: bool = False,
+    disable_progress_bar: bool = False,
+    staging: bool = False,
+    netcdf_compression_level: int = 0,
+    netcdf3_compatible: bool = False,
+    chunk_size_limit: int = 0,
+    raise_if_updating: bool = False,
+    minimum_longitude: Optional[float] = None,
+    maximum_longitude: Optional[float] = None,
+    minimum_latitude: Optional[float] = None,
+    maximum_latitude: Optional[float] = None,
+    alias_min_x: Optional[float] = None,
+    alias_max_x: Optional[float] = None,
+    alias_min_y: Optional[float] = None,
+    alias_max_y: Optional[float] = None,
+    minimum_x: Optional[float] = None,
+    maximum_x: Optional[float] = None,
+    minimum_y: Optional[float] = None,
+    maximum_y: Optional[float] = None,
+) -> SubsetRequest:
+    if staging:
+        logger.warning(
+            "Detecting staging flag for subset command. "
+            "Data will come from the staging environment."
+        )
+
+    if overwrite:
+        if skip_existing:
+            raise MutuallyExclusiveArguments("overwrite", "skip_existing")
+    if request_file and not username and not credentials_file:
+        with open(request_file) as json_file:
+            json_content = json.load(json_file)
+        if "username" in json_content:
+            username = json_content["username"]
+        if "password" in json_content:
+            password = json_content["password"]
+        if "credentials_file" in json_content:
+            credentials_file = pathlib.Path(json_content["credentials_file"])
+
+    username, password = get_and_check_username_password(
+        username,
+        password,
+        credentials_file,
+    )
+    subset_request = SubsetRequest(
+        dataset_id=dataset_id or "",
+        username=username,
+    )
+    if request_file:
+        subset_request = SubsetRequest.from_file(
+            request_file, username=username
+        )
+    if motu_api_request:
+        motu_api_subset_request = convert_motu_api_request_to_structure(
+            motu_api_request, username=username
+        )
+        subset_request = subset_request.update(
+            motu_api_subset_request.__dict__
+        )
+    if not subset_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a subset request.")
+    if netcdf3_compatible:
+        documentation_url = (
+            f"https://toolbox-docs.marine.copernicus.eu"
+            f"/en/v{copernicusmarine_version}/installation.html#dependencies"
+        )
+        assert importlib.util.find_spec("netCDF4"), (
+            "To enable the NETCDF3_COMPATIBLE option, the 'netCDF4' "
+            f"package is required. "
+            f"Please see {documentation_url}."
+        )
+    (
+        minimum_x_axis,
+        maximum_x_axis,
+        minimum_y_axis,
+        maximum_y_axis,
+    ) = get_geographical_inputs(
+        minimum_longitude,
+        maximum_longitude,
+        minimum_latitude,
+        maximum_latitude,
+        minimum_x,
+        maximum_x,
+        minimum_y,
+        maximum_y,
+        dataset_part,
+    )
+    if dataset_part == "originalGrid" and (
+        alias_max_x is not None
+        or alias_min_x is not None
+        or alias_max_y is not None
+        or alias_min_y is not None
+    ):
+        logger.debug(
+            "Because you are using an originalGrid dataset, we are considering"
+            " the options -x, -X, -y, -Y to be in m/km, not in degrees."
+        )
+
+    request_update_dict = {
+        "dataset_version": dataset_version,
+        "dataset_part": dataset_part,
+        "variables": variables,
+        "minimum_x": (
+            minimum_x_axis if minimum_x_axis is not None else alias_min_x
+        ),
+        "maximum_x": (
+            maximum_x_axis if maximum_x_axis is not None else alias_max_x
+        ),
+        "minimum_y": (
+            minimum_y_axis if minimum_y_axis is not None else alias_min_y
+        ),
+        "maximum_y": (
+            maximum_y_axis if maximum_y_axis is not None else alias_max_y
+        ),
+        "minimum_depth": minimum_depth,
+        "maximum_depth": maximum_depth,
+        "vertical_axis": vertical_axis,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "platform_ids": platform_ids,
+        "coordinates_selection_method": coordinates_selection_method,
+        "output_filename": output_filename,
+        "file_format": file_format,
+        "service": service,
+        "output_directory": output_directory,
+        "netcdf_compression_level": netcdf_compression_level,
+        "netcdf3_compatible": netcdf3_compatible,
+        "dry_run": dry_run,
+        "raise_if_updating": raise_if_updating,
+        "disable_progress_bar": disable_progress_bar,
+        "staging": staging,
+        "chunk_size_limit": chunk_size_limit,
+        "skip_existing": skip_existing,
+        "overwrite": overwrite,
+    }
+    subset_request = subset_request.update(request_update_dict)
+
+    return subset_request
+
+
+def get_geographical_inputs(
+    minimum_longitude: Optional[float],
+    maximum_longitude: Optional[float],
+    minimum_latitude: Optional[float],
+    maximum_latitude: Optional[float],
+    minimum_x: Optional[float],
+    maximum_x: Optional[float],
+    minimum_y: Optional[float],
+    maximum_y: Optional[float],
+    dataset_part: Optional[str],
+) -> tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+    """
+    Returns the geographical selection of the user.
+
+    Parameters
+    ----------
+    minimum_longitude : float
+        Minimum longitude of the area of interest. For lat/lon datasets.
+    maximum_longitude : float
+        Maximum longitude of the area of interest. For lat/lon datasets.
+    minimum_latitude : float
+        Minimum latitude of the area of interest. For lat/lon datasets.
+    maximum_latitude : float
+        Maximum latitude of the area of interest. For lat/lon datasets.
+    minimum_x : float
+        Minimum x coordinate of the area of interest. For "originalGrid" datasets.
+    maximum_x : float
+        Maximum x coordinate of the area of interest. For "originalGrid" datasets.
+    minimum_y : float
+        Minimum y coordinate of the area of interest. For "originalGrid" datasets.
+    maximum_y : float
+        Maximum y coordinate of the area of interest. For "originalGrid" datasets.
+    dataset_part : str
+        The part of the dataset to be used. If "originalGrid", the x and y coordinates
+        should be the inputs.
+
+    Returns
+    -------
+    tuple[Optional[float], Optional[float], Optional[float], Optional[float]]
+        The geographical selection of the user. (minimum_x_axis, maximum_x_axis, minimum_y_axis, maximum_y_axis).
+
+    Raises
+    ------
+
+    LonLatSubsetNotAvailableInOriginalGridDatasets
+        If the dataset is "originalGrid" and the user tries to use lat/lon coordinates.
+    XYNotAvailableInNonOriginalGridDatasets
+        If the dataset is not "originalGrid" and the user tries to use x/y coordinates.
+    """  # noqa: E501
+
+    if dataset_part == "originalGrid":
+        if (
+            minimum_longitude is not None
+            or maximum_longitude is not None
+            or minimum_latitude is not None
+            or maximum_latitude is not None
+        ):
+            raise LonLatSubsetNotAvailableInOriginalGridDatasets
+        else:
+            return (
+                minimum_x,
+                maximum_x,
+                minimum_y,
+                maximum_y,
+            )
+    else:
+        if (
+            minimum_x is not None
+            or maximum_x is not None
+            or minimum_y is not None
+            or maximum_y is not None
+        ):
+            raise XYNotAvailableInNonOriginalGridDatasets
+        else:
+            return (
+                minimum_longitude,
+                maximum_longitude,
+                minimum_latitude,
+                maximum_latitude,
+            )
+
+
 @dataclass
 class GetRequest:
     dataset_id: str
     dataset_url: Optional[str] = None
-    force_dataset_version: Optional[str] = None
-    force_dataset_part: Optional[str] = None
+    dataset_version: Optional[str] = None
+    dataset_part: Optional[str] = None
     no_directories: bool = False
     output_directory: str = "."
     overwrite: bool = False
@@ -266,7 +537,7 @@ class GetRequest:
         self.__dict__.update(type_enforced_dict)
 
     def from_file(self, filepath: pathlib.Path):
-        json_file = load(open(filepath))
+        json_file = json.load(open(filepath))
         json_with_mapped_options = {}
         for key, val in json_file.items():
             if key in MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS:
@@ -288,66 +559,6 @@ class GetRequest:
                 file_list_regex, full_regex
             )
         self.regex = full_regex
-
-
-@dataclass
-class LoadRequest:
-    dataset_id: str
-    dataset_url: Optional[str] = None
-    force_dataset_version: Optional[str] = None
-    force_dataset_part: Optional[str] = None
-    username: Optional[str] = None
-    password: Optional[str] = None
-    variables: Optional[list[str]] = None
-    platform_ids: Optional[list[str]] = None
-    geographical_parameters: GeographicalParameters = field(
-        default_factory=GeographicalParameters
-    )
-    temporal_parameters: TemporalParameters = field(
-        default_factory=TemporalParameters
-    )
-    depth_parameters: DepthParameters = field(default_factory=DepthParameters)
-    coordinates_selection_method: CoordinatesSelectionMethod = (
-        DEFAULT_COORDINATES_SELECTION_METHOD
-    )
-    force_service: Optional[str] = None
-    credentials_file: Optional[pathlib.Path] = None
-    disable_progress_bar: bool = False
-
-    def update_attributes(self, axis_coordinate_id_mapping: dict):
-        self.geographical_parameters.x_axis_parameters.coordinate_id = (
-            axis_coordinate_id_mapping.get("x", "")
-        )
-        self.geographical_parameters.y_axis_parameters.coordinate_id = (
-            axis_coordinate_id_mapping.get("y", "")
-        )
-        self.temporal_parameters.coordinate_id = (
-            axis_coordinate_id_mapping.get("t", "")
-        )
-        self.depth_parameters.coordinate_id = axis_coordinate_id_mapping.get(
-            "z", ""
-        )
-
-    def to_subset_request(self) -> SubsetRequest:
-        return SubsetRequest(
-            dataset_id=self.dataset_id,
-            dataset_url=self.dataset_url,
-            force_dataset_version=self.force_dataset_version,
-            force_dataset_part=self.force_dataset_part,
-            variables=self.variables,
-            platform_ids=self.platform_ids,
-            minimum_x=self.geographical_parameters.x_axis_parameters.minimum_x,
-            maximum_x=self.geographical_parameters.x_axis_parameters.maximum_x,
-            minimum_y=self.geographical_parameters.y_axis_parameters.minimum_y,
-            maximum_y=self.geographical_parameters.y_axis_parameters.maximum_y,
-            minimum_depth=self.depth_parameters.minimum_depth,
-            maximum_depth=self.depth_parameters.maximum_depth,
-            vertical_axis=self.depth_parameters.vertical_axis,
-            start_datetime=self.temporal_parameters.start_datetime,
-            end_datetime=self.temporal_parameters.end_datetime,
-            coordinates_selection_method=self.coordinates_selection_method,
-            force_service=self.force_service,
-        )
 
 
 def filter_to_regex(filter: str) -> str:

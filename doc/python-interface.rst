@@ -3,4 +3,4 @@ Python interface
 =================
 
 .. automodule:: copernicusmarine
-   :members: subset, get, describe, open_dataset, read_dataframe, login
+   :members: subset, get, describe, open_dataset, read_dataframe, login, subset_split_on

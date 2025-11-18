@@ -3,7 +3,7 @@ from numpydoc.docscrape import FunctionDoc
 import copernicusmarine
 from copernicusmarine.core_functions import documentation_utils
 
-LIST_OF_EXCEPTIONS = ["username", "password"]
+LIST_OF_EXCEPTIONS = ["username", "password", "**kwargs"]
 
 
 class TestDocumentation:
@@ -145,4 +145,17 @@ class TestDocumentation:
 
             assert text_read_dataframe["Parameters"][i].desc == [
                 documentation_utils.SUBSET[name_of_variable.upper() + "_HELP"]
+            ]
+
+    def test_subset_split_on(self):
+        text_subset_split_on = FunctionDoc(copernicusmarine.subset_split_on)
+
+        for i in range(len(text_subset_split_on["Parameters"])):
+            name_of_variable = text_subset_split_on["Parameters"][i].name
+            if name_of_variable in LIST_OF_EXCEPTIONS:
+                continue
+            assert text_subset_split_on["Parameters"][i].desc == [
+                documentation_utils.SUBSET_SPLIT_ON[
+                    name_of_variable.upper() + "_HELP"
+                ]
             ]

@@ -75,9 +75,9 @@ def get_function(
     # In order to not overload arguments with default values
     # TODO is this really useful?
     if force_dataset_version:
-        get_request.force_dataset_version = force_dataset_version
+        get_request.dataset_version = force_dataset_version
     if force_dataset_part:
-        get_request.force_dataset_part = force_dataset_part
+        get_request.dataset_part = force_dataset_part
     if no_directories:
         get_request.no_directories = no_directories
     if overwrite:
@@ -93,7 +93,7 @@ def get_function(
         )
     if sync or sync_delete:
         get_request.sync = True
-        if not get_request.force_dataset_version:
+        if not get_request.dataset_version:
             raise ValueError(
                 "Sync requires to set a dataset version. "
                 "Please use --dataset-version option."

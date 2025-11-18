@@ -33,8 +33,8 @@ DEFAULT_VERTICAL_AXES = list(get_args(VerticalAxis))
 GeoSpatialProjection = Literal["lonlat", "originalGrid"]
 DEFAULT_GEOSPATIAL_PROJECTION: GeoSpatialProjection = "lonlat"
 
-SplitOnOption = Literal["hour", "day", "month", "year", "variable"]
-DEFAULT_SPLIT_ON_OPTIONS = list(get_args(SplitOnOption))
+SplitOnTimeOption = Literal["hour", "day", "month", "year"]
+DEFAULT_SPLIT_ON_TIME_OPTIONS = list(get_args(SplitOnTimeOption))
 
 
 class ChunkType(str, Enum):

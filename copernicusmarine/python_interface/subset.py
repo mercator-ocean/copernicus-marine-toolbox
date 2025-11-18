@@ -8,24 +8,21 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
 )
-from copernicusmarine.core_functions.exceptions import (
-    MutuallyExclusiveArguments,
-)
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
     ResponseSubset,
-    SplitOnOption,
     VerticalAxis,
 )
+from copernicusmarine.core_functions.request_structure import (
+    create_subset_request,
+)
 from copernicusmarine.core_functions.subset import subset_function
-from copernicusmarine.core_functions.utils import get_geographical_inputs
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
-from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
@@ -70,8 +67,7 @@ def subset(
     chunk_size_limit: int = -1,
     raise_if_updating: bool = False,
     platform_ids: Optional[List[str]] = None,
-    split_on: Optional[SplitOnOption] = None,
-) -> Union[ResponseSubset, list[ResponseSubset]]:
+) -> ResponseSubset:
     """
     Extract a subset of data from a specified dataset using given parameters.
 
@@ -149,87 +145,64 @@ def subset(
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     platform_ids : List[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
-    split_on : SplitOnOption, optional
-        When subsetting to netCDF, allows to split the output file by variable or by time. This option also enables parallel downloading for netCDF. See :ref:`split-on option <subset-split-on>` in the documentation.
 
     Returns
     -------
-    Union[ResponseSubset, list[ResponseSubset]]
-        A description of the downloaded data and its destination. When using the ``split_on`` option and if there are more than one file, a list of descriptions is returned, one for each file generated.
-
+    ResponseSubset
+        A description of the downloaded data and its destination.
     """  # noqa
-    if overwrite:
-        if skip_existing:
-            raise MutuallyExclusiveArguments("overwrite", "skip_existing")
-
-    request_file = pathlib.Path(request_file) if request_file else None
-    output_directory = (
-        pathlib.Path(output_directory) if output_directory else None
-    )
-    credentials_file = (
-        pathlib.Path(credentials_file) if credentials_file else None
-    )
 
     if variables is not None:
         _check_type(variables, list, "variables")
     if platform_ids is not None:
         _check_type(platform_ids, list, "platform_ids")
 
-    start_datetime = homogenize_datetime(start_datetime)
-    end_datetime = homogenize_datetime(end_datetime)
-
-    (
-        minimum_x_axis,
-        maximum_x_axis,
-        minimum_y_axis,
-        maximum_y_axis,
-    ) = get_geographical_inputs(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
+    subset_request = create_subset_request(
+        dataset_id=dataset_id,
+        dataset_version=dataset_version,
+        dataset_part=dataset_part,
+        username=username,
+        password=password,
+        variables=variables,
+        minimum_longitude=minimum_longitude,
+        maximum_longitude=maximum_longitude,
+        minimum_latitude=minimum_latitude,
+        maximum_latitude=maximum_latitude,
+        minimum_depth=minimum_depth,
+        maximum_depth=maximum_depth,
+        vertical_axis=vertical_axis,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
+        minimum_x=minimum_x,
+        maximum_x=maximum_x,
+        minimum_y=minimum_y,
+        maximum_y=maximum_y,
+        coordinates_selection_method=coordinates_selection_method,
+        output_filename=output_filename,
+        file_format=file_format,
+        service=service,
+        request_file=(pathlib.Path(request_file) if request_file else None),
+        output_directory=(
+            pathlib.Path(output_directory) if output_directory else None
+        ),
+        credentials_file=(
+            pathlib.Path(credentials_file) if credentials_file else None
+        ),
+        motu_api_request=motu_api_request,
+        overwrite=overwrite,
+        skip_existing=skip_existing,
+        dry_run=dry_run,
+        disable_progress_bar=disable_progress_bar,
+        staging=staging,
+        netcdf_compression_level=netcdf_compression_level,
+        netcdf3_compatible=netcdf3_compatible,
+        chunk_size_limit=chunk_size_limit,
+        raise_if_updating=raise_if_updating,
+        platform_ids=platform_ids,
     )
 
     return subset_function(
-        dataset_id,
-        dataset_version,
-        dataset_part,
-        username,
-        password,
-        variables,
-        minimum_x_axis,
-        maximum_x_axis,
-        minimum_y_axis,
-        maximum_y_axis,
-        minimum_depth,
-        maximum_depth,
-        vertical_axis,
-        start_datetime,
-        end_datetime,
-        platform_ids,
-        coordinates_selection_method,
-        output_filename,
-        file_format,
-        service,
-        request_file,
-        output_directory,
-        credentials_file,
-        motu_api_request,
-        overwrite,
-        skip_existing,
-        dry_run,
-        disable_progress_bar,
-        staging,
-        netcdf_compression_level,
-        netcdf3_compatible,
-        chunk_size_limit,
-        raise_if_updating,
-        split_on,
+        subset_request=subset_request,
     )
 
 

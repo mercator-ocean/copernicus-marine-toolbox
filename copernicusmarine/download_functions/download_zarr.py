@@ -3,11 +3,8 @@ import os
 import pathlib
 import warnings
 from copy import deepcopy
-from multiprocessing import current_process
 from typing import Optional, Tuple, Union
 
-import pandas as pd
-import psutil
 import xarray
 import zarr
 
@@ -35,9 +32,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineService,
 )
 from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES,
-)
 from copernicusmarine.core_functions.exceptions import (
     NetCDFCompressionNotAvailable,
 )
@@ -46,7 +40,6 @@ from copernicusmarine.core_functions.models import (
     DatasetChunking,
     FileStatus,
     ResponseSubset,
-    SplitOnOption,
     StatusCode,
     StatusMessage,
 )
@@ -54,7 +47,6 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
     get_unique_filepath,
-    run_multiprocessors,
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -63,8 +55,6 @@ from copernicusmarine.download_functions.subset_parameters import (
 )
 from copernicusmarine.download_functions.subset_xarray import subset
 from copernicusmarine.download_functions.utils import (
-    DownloadParams,
-    FileFormat,
     get_approximation_size_data_downloaded,
     get_approximation_size_final_result,
     get_dataset_coordinates_extent,
@@ -75,109 +65,91 @@ from copernicusmarine.download_functions.utils import (
 logger = logging.getLogger("copernicusmarine")
 
 
-def download_dataset(
-    username: str,
-    password: str,
-    dataset_id: str,
-    geographical_parameters: GeographicalParameters,
-    temporal_parameters: TemporalParameters,
-    depth_parameters: DepthParameters,
-    coordinates_selection_method: CoordinatesSelectionMethod,
-    axis_coordinate_id_mapping: dict[str, str],
+def get_dataset_and_parameters(
+    subset_request: SubsetRequest,
     dataset_url: str,
-    output_directory: pathlib.Path,
-    output_filename: Optional[str],
-    file_format: FileFormat,
-    variables: Optional[list[str]],
-    disable_progress_bar: bool,
-    netcdf_compression_level: int,
-    netcdf3_compatible: bool,
+    axis_coordinate_id_mapping: dict[str, str],
     service: CopernicusMarineService,
-    dry_run: bool,
-    overwrite: bool,
-    chunk_size_limit: int,
-    skip_existing: bool,
     dataset_chunking: Optional[DatasetChunking],
-    split_on: Optional[SplitOnOption],
-) -> Union[ResponseSubset, list[ResponseSubset]]:
-    if chunk_size_limit and dataset_chunking:
+    is_original_grid: bool,
+    dataset_valid_start_date: Optional[Union[str, int, float]],
+) -> tuple[xarray.Dataset, GeographicalParameters, DepthParameters]:
+    if dataset_valid_start_date:
+        minimum_start_date = timestamp_or_datestring_to_datetime(
+            dataset_valid_start_date
+        )
+        if (
+            not subset_request.start_datetime
+            or subset_request.start_datetime < minimum_start_date
+        ):
+            subset_request.start_datetime = minimum_start_date
+
+    if subset_request.chunk_size_limit and dataset_chunking:
         optimum_dask_chunking = get_optimum_dask_chunking(
             service=service,
-            variables=variables,
+            variables=subset_request.variables,
             dataset_chunking=dataset_chunking,
-            chunk_size_limit=chunk_size_limit,
+            chunk_size_limit=subset_request.chunk_size_limit,
             axis_coordinate_id_mapping=axis_coordinate_id_mapping,
         )
     else:
         optimum_dask_chunking = None
 
     logger.debug(f"Dask chunking selected: {optimum_dask_chunking}")
+    geographical_parameters = subset_request.get_geographical_parameters(
+        axis_coordinate_id_mapping, is_original_grid
+    )
+    depth_parameters = subset_request.get_depth_parameters(
+        axis_coordinate_id_mapping,
+    )
     dataset = open_dataset_from_arco_series(
-        username=username,
-        password=password,
+        username=subset_request.username,
         dataset_url=dataset_url,
-        variables=variables,
+        variables=subset_request.variables,
         geographical_parameters=geographical_parameters,
-        temporal_parameters=temporal_parameters,
+        temporal_parameters=subset_request.get_temporal_parameters(
+            axis_coordinate_id_mapping,
+        ),
         depth_parameters=depth_parameters,
-        coordinates_selection_method=coordinates_selection_method,
+        coordinates_selection_method=subset_request.coordinates_selection_method,
         optimum_dask_chunking=optimum_dask_chunking,
     )
 
     dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
+    return dataset, geographical_parameters, depth_parameters
 
+
+def download_zarr(
+    subset_request: SubsetRequest,
+    dataset_url: str,
+    dataset_valid_start_date: Optional[Union[str, int, float]],
+    service: CopernicusMarineService,
+    axis_coordinate_id_mapping: dict[str, str],
+    dataset_chunking: Optional[DatasetChunking],
+    is_original_grid: bool,
+    tdqm_configuration: dict,
+) -> ResponseSubset:
+    (
+        dataset,
+        geographical_parameters,
+        depth_parameters,
+    ) = get_dataset_and_parameters(
+        subset_request=subset_request,
+        dataset_url=dataset_url,
+        axis_coordinate_id_mapping=axis_coordinate_id_mapping,
+        service=service,
+        dataset_chunking=dataset_chunking,
+        is_original_grid=is_original_grid,
+        dataset_valid_start_date=dataset_valid_start_date,
+    )
     if depth_parameters.vertical_axis == "elevation":
         axis_coordinate_id_mapping["z"] = "elevation"
 
-    keys = [""]
-
-    if file_format == "netcdf" and split_on:
-        if split_on == "variable":
-            keys = [str(var) for var in dataset.data_vars]
-            if variables:
-                keys = [key for key in keys if key in variables]
-        else:
-            all_keys, _ = get_date_keys(dataset, split_on)
-            keys = all_keys.unique().astype(str).tolist()
-
-    if not output_directory.is_dir():
-        pathlib.Path.mkdir(output_directory, parents=True)
+    if not subset_request.output_directory.is_dir():
+        pathlib.Path.mkdir(subset_request.output_directory, parents=True)
 
     logger.debug(f"Xarray Dataset: {dataset}")
-    if not dry_run:
-        logger.info("Starting download. Please wait...")
-
-    down_params = [
-        DownloadParams(
-            {
-                "output_filename": output_filename,
-                "key": key,
-                "split_on": split_on,
-                "dataset_id": dataset_id,
-                "file_format": file_format,
-                "axis_coordinate_id_mapping": axis_coordinate_id_mapping,
-                "geographical_parameters": geographical_parameters,
-                "output_directory": output_directory,
-                "netcdf_compression_level": netcdf_compression_level,
-                "netcdf3_compatible": netcdf3_compatible,
-                "overwrite": overwrite,
-                "skip_existing": skip_existing,
-                "dry_run": dry_run,
-                "username": username,
-                "password": password,
-                "dataset_url": dataset_url,
-                "variables": variables if split_on != "variable" else [key],
-                "temporal_parameters": temporal_parameters,
-                "depth_parameters": depth_parameters,
-                "coordinates_selection_method": coordinates_selection_method,
-                "chunk_size_limit": chunk_size_limit,
-                "service": service,
-                "dataset_chunking": dataset_chunking,
-                "disable_progress_bar": disable_progress_bar,
-            }
-        )
-        for key in keys
-    ]
+    logger.debug("Starting download. Please wait...")
 
     total_size_estimation = get_approximation_size_final_result(
         dataset, axis_coordinate_id_mapping
@@ -187,131 +159,11 @@ def download_dataset(
 
     dataset.close()
 
-    if len(keys) == 1:
-        response = download_splitted_dataset(**down_params[0])
-        if not dry_run:
-            logger.info(f"Successfully downloaded to {response.file_path}")
-        return response
-
-    per_key_size_estimation = total_size_estimation / len(keys)
-
-    logger.debug(f"Per key size estimation: {per_key_size_estimation} MB")
-
-    num_processes = COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES
-    available_memory = psutil.virtual_memory().available / (1024**2)  # in MB
-
-    logger.debug(f"Available memory: {available_memory} MB")
-
-    logger.debug(
-        f"Estimated required memory: {num_processes * per_key_size_estimation} MB"
-    )
-
-    if num_processes * per_key_size_estimation > available_memory:
-        num_processes = max(
-            1, int(available_memory // per_key_size_estimation) - 1
-        )
-        logger.warning(
-            "The estimated memory required "
-            "exceeds the available memory, "
-            f"lowering the number of parallel processes to {num_processes}."
-            " To avoid this message, you can set the "
-            "COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES "
-            "environment variable."
-        )
-
-    logger.debug(f"Number of processes: {num_processes}")
-
-    responses = run_multiprocessors(
-        download_splitted_dataset,
-        [tuple(d.values()) for d in down_params],
-        num_processes,
-        tdqm_bar_configuration={
-            "disable": disable_progress_bar,
-            "desc": f"{split_on}s",
-        },
-    )
-    logger.info(f"Successfully downloaded to {responses[0].file_path}")
-    return responses if split_on else responses[0]
-
-
-def get_date_keys(
-    dataset: xarray.Dataset, split_on: SplitOnOption
-) -> Tuple[pd.PeriodIndex, str]:
-    if split_on == "year":
-        group_key = "Y"
-    elif split_on == "month":
-        group_key = "M"
-    elif split_on == "day":
-        group_key = "D"
-    elif split_on == "hour":
-        group_key = "h"
-
-    time_index = pd.to_datetime(dataset["time"].values)
-
-    return time_index.to_period(group_key), group_key
-
-
-def download_splitted_dataset(
-    output_filename: Optional[str],
-    key: Optional[str],
-    split_on: Optional[SplitOnOption],
-    dataset_id: str,
-    file_format: FileFormat,
-    axis_coordinate_id_mapping: dict[str, str],
-    geographical_parameters: GeographicalParameters,
-    output_directory: pathlib.Path,
-    netcdf_compression_level: int,
-    netcdf3_compatible: bool,
-    overwrite: bool,
-    skip_existing: bool,
-    dry_run: bool,
-    username: str,
-    password: str,
-    dataset_url: str,
-    variables: Optional[list[str]],
-    temporal_parameters: TemporalParameters,
-    depth_parameters: DepthParameters,
-    coordinates_selection_method: CoordinatesSelectionMethod,
-    chunk_size_limit: int,
-    service: CopernicusMarineService,
-    dataset_chunking: Optional[DatasetChunking],
-    disable_progress_bar: bool,
-) -> ResponseSubset:
-    if chunk_size_limit and dataset_chunking:
-        optimum_dask_chunking = get_optimum_dask_chunking(
-            service=service,
-            variables=variables,
-            dataset_chunking=dataset_chunking,
-            chunk_size_limit=chunk_size_limit,
-            axis_coordinate_id_mapping=axis_coordinate_id_mapping,
-        )
-    else:
-        optimum_dask_chunking = None
-    dataset = open_dataset_from_arco_series(
-        username=username,
-        password=password,
-        dataset_url=dataset_url,
-        variables=variables,
-        geographical_parameters=geographical_parameters,
-        temporal_parameters=temporal_parameters,
-        depth_parameters=depth_parameters,
-        coordinates_selection_method=coordinates_selection_method,
-        optimum_dask_chunking=optimum_dask_chunking,
-    )
-
-    dataset = add_copernicusmarine_version_in_dataset_attributes(dataset)
-
-    if split_on and split_on != "variable":
-        dataset_keys, time_format = get_date_keys(dataset, split_on)
-        target_period = pd.Period(key, freq=time_format)
-        mask = dataset_keys == target_period
-        dataset = dataset.isel(time=mask)
-
     filename = get_filename(
-        output_filename,
+        subset_request.output_filename,
         dataset,
-        dataset_id,
-        file_format,
+        subset_request.dataset_id,
+        subset_request.file_format,
         axis_coordinate_id_mapping,
         geographical_parameters,
     )
@@ -326,16 +178,16 @@ def download_splitted_dataset(
     else:
         data_needed_approximation = None
 
-    output_path = pathlib.Path(output_directory, filename)
+    output_path = pathlib.Path(subset_request.output_directory, filename)
 
-    if not overwrite and not skip_existing:
+    if not subset_request.overwrite and not subset_request.skip_existing:
         output_path = get_unique_filepath(
             filepath=output_path,
         )
 
     response = ResponseSubset(
         file_path=output_path,
-        output_directory=output_directory,
+        output_directory=subset_request.output_directory,
         filename=output_path.name,
         file_size=final_result_size_estimation,
         data_transfer_size=data_needed_approximation,
@@ -348,31 +200,25 @@ def download_splitted_dataset(
         file_status=FileStatus.DOWNLOADED,
     )
 
-    if dry_run:
+    if subset_request.dry_run:
         response.status = StatusCode.DRY_RUN
         response.message = StatusMessage.DRY_RUN
         return response
-    if skip_existing and os.path.exists(output_path):
+    if subset_request.skip_existing and os.path.exists(output_path):
         response.file_status = FileStatus.IGNORED
         return response
 
-    current = current_process()
-    with TqdmCallback(
-        position=current._identity[0] if current._identity else 0,
-        leave=False,
-        desc=key,
-        disable=disable_progress_bar,
-    ):
+    with TqdmCallback(**tdqm_configuration):
         _save_dataset_locally(
             dataset,
             output_path,
-            netcdf_compression_level,
-            netcdf3_compatible,
+            subset_request.netcdf_compression_level,
+            subset_request.netcdf3_compatible,
         )
 
     dataset.close()
 
-    if overwrite:
+    if subset_request.overwrite:
         response.status = StatusCode.SUCCESS
         response.message = StatusMessage.SUCCESS
         response.file_status = FileStatus.OVERWRITTEN
@@ -380,77 +226,8 @@ def download_splitted_dataset(
     return response
 
 
-def download_zarr(
-    username: str,
-    password: str,
-    subset_request: SubsetRequest,
-    dataset_id: str,
-    disable_progress_bar: bool,
-    dataset_valid_start_date: Optional[Union[str, int, float]],
-    service: CopernicusMarineService,
-    is_original_grid: bool,
-    axis_coordinate_id_mapping: dict[str, str],
-    chunk_size_limit: int,
-    dataset_chunking: Optional[DatasetChunking],
-) -> Union[ResponseSubset, list[ResponseSubset]]:
-    geographical_parameters = subset_request.get_geographical_parameters(
-        axis_coordinate_id_mapping, is_original_grid
-    )
-    if dataset_valid_start_date:
-        minimum_start_date = timestamp_or_datestring_to_datetime(
-            dataset_valid_start_date
-        )
-        if (
-            not subset_request.start_datetime
-            or subset_request.start_datetime < minimum_start_date
-        ):
-            subset_request.start_datetime = minimum_start_date
-
-    temporal_parameters = subset_request.get_temporal_parameters(
-        axis_coordinate_id_mapping
-    )
-    depth_parameters = subset_request.get_depth_parameters(
-        axis_coordinate_id_mapping
-    )
-    dataset_url = str(subset_request.dataset_url)
-    output_directory = (
-        subset_request.output_directory
-        if subset_request.output_directory
-        else pathlib.Path(".")
-    )
-    variables = subset_request.variables
-
-    response = download_dataset(
-        username=username,
-        password=password,
-        dataset_id=dataset_id,
-        geographical_parameters=geographical_parameters,
-        temporal_parameters=temporal_parameters,
-        depth_parameters=depth_parameters,
-        coordinates_selection_method=subset_request.coordinates_selection_method,
-        axis_coordinate_id_mapping=axis_coordinate_id_mapping,
-        dataset_url=dataset_url,
-        output_directory=output_directory,
-        output_filename=subset_request.output_filename,
-        file_format=subset_request.file_format,
-        variables=variables,
-        disable_progress_bar=disable_progress_bar,
-        overwrite=subset_request.overwrite,
-        netcdf_compression_level=subset_request.netcdf_compression_level,
-        netcdf3_compatible=subset_request.netcdf3_compatible,
-        dry_run=subset_request.dry_run,
-        service=service,
-        chunk_size_limit=chunk_size_limit,
-        skip_existing=subset_request.skip_existing,
-        dataset_chunking=dataset_chunking,
-        split_on=subset_request.split_on,
-    )
-    return response
-
-
 def open_dataset_from_arco_series(
     username: str,
-    password: str,
     dataset_url: str,
     variables: Optional[list[str]],
     geographical_parameters: GeographicalParameters,
@@ -485,31 +262,6 @@ def open_dataset_from_arco_series(
     elif optimum_dask_chunking:
         dataset = dataset.chunk(optimum_dask_chunking)
     return dataset
-
-
-def read_dataframe_from_arco_series(
-    username: str,
-    password: str,
-    dataset_url: str,
-    variables: Optional[list[str]],
-    geographical_parameters: GeographicalParameters,
-    temporal_parameters: TemporalParameters,
-    depth_parameters: DepthParameters,
-    coordinates_selection_method: CoordinatesSelectionMethod,
-    optimum_dask_chunking: Optional[dict[str, int]],
-) -> pd.DataFrame:
-    dataset = open_dataset_from_arco_series(
-        username=username,
-        password=password,
-        dataset_url=dataset_url,
-        variables=variables,
-        geographical_parameters=geographical_parameters,
-        temporal_parameters=temporal_parameters,
-        depth_parameters=depth_parameters,
-        coordinates_selection_method=coordinates_selection_method,
-        optimum_dask_chunking=optimum_dask_chunking,
-    )
-    return dataset.to_dataframe()
 
 
 def get_coordinates_dask_and_zarr_chunks_info(

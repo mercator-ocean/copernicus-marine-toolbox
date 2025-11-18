@@ -58,6 +58,7 @@ class OtherOptionsPassedWithCreateTemplate(Exception):
 def assert_cli_args_are_not_set_except_create_template(
     context: Context,
 ) -> None:
+    # TODO: check how I handle the create template with spliton
     for key in context.params:
         if key not in ["create_template", "log_level"]:
             parameter_source = context.get_parameter_source(key)

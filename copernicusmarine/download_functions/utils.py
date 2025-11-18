@@ -12,7 +12,7 @@ from copernicusmarine.core_functions.models import (
     DatasetChunking,
     FileFormat,
     GeographicalExtent,
-    SplitOnOption,
+    SplitOnTimeOption,
     TimeExtent,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
@@ -423,7 +423,7 @@ def get_approximation_size_data_downloaded(
 class DownloadParams(TypedDict):
     output_filename: Optional[str]
     key: Optional[str]
-    split_on: Optional[SplitOnOption]
+    split_on: Optional[SplitOnTimeOption]
     dataset_id: str
     file_format: FileFormat
     axis_coordinate_id_mapping: dict[str, str]

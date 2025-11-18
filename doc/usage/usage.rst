@@ -10,6 +10,7 @@ Usage and technical details
     get-usage
     shared-options
     network-configuration
+    subset-split-on-usage
     errors
     environment-variables
     subset_using_polygons
