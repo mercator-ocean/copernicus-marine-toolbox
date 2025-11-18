@@ -262,7 +262,7 @@
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_is_as_expected
   list([
-    'Usage: copernicusmarine subset [OPTIONS]',
+    'Usage: copernicusmarine subset [OPTIONS] COMMAND [ARGS]...',
     '',
     '  Extract a subset of data from a specified dataset using given parameters.',
     '',
@@ -431,13 +431,10 @@
     '                                  the subset interval requested overpasses the',
     '                                  updating start date of the dataset.',
     '                                  Otherwise, a simple warning is displayed.',
-    '  --split-on [hour|day|month|year|variable]',
-    '                                  When subsetting to netCDF, allows to split',
-    '                                  the output file by variable or by time. This',
-    '                                  option also enables parallel downloading for',
-    '                                  netCDF. See :ref:`split-on option <subset-',
-    '                                  split-on>` in the documentation.',
     '  -h, --help                      Show this message and exit.',
+    '',
+    'Commands:',
+    '  split-on  Extract a subset of data and split the output files.',
     '',
     '',
     '    Examples:',
@@ -451,6 +448,31 @@
     '        copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 ',
     '',
     '    ',
+    '',
+  ])
+# ---
+# name: TestHelpCommandLineInterface.test_help_from_subset_split_on_is_as_expected
+  list([
+    'Usage: copernicusmarine subset split-on [OPTIONS]',
+    '',
+    '  Extract a subset of data from a specified dataset using given parameters and',
+    '  split the output files based on variable names, time intervals or both. By',
+    '  default, sequentially download the data.',
+    '',
+    '  The datasetID is required and can be found via the ``describe`` command.',
+    '  Accept all the arguments from the subset.',
+    '',
+    'Options:',
+    '  --on-variables                  If True, split the output files based on',
+    '                                  variable names, by default False.',
+    '  --on-time [hour|day|month|year]',
+    '                                  If provided, split the output files based on',
+    '                                  specified time intervals, by default None.',
+    '  --concurrent-processes INTEGER RANGE',
+    '                                  Number of concurrent processes to use for',
+    '                                  downloading data, by default None. Should be',
+    '                                  greater or equal to 1.  [x>=1]',
+    '  -h, --help                      Show this message and exit.',
     '',
   ])
 # ---

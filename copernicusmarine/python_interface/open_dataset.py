@@ -12,29 +12,16 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_AXIS,
-    CommandType,
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
-from copernicusmarine.core_functions.request_structure import LoadRequest
-from copernicusmarine.core_functions.utils import get_geographical_inputs
-from copernicusmarine.download_functions.download_zarr import (
-    open_dataset_from_arco_series,
-)
-from copernicusmarine.download_functions.subset_parameters import (
-    DepthParameters,
-    GeographicalParameters,
-    TemporalParameters,
-    XParameters,
-    YParameters,
+from copernicusmarine.core_functions.open_dataset import open_dataset_function
+from copernicusmarine.core_functions.request_structure import (
+    create_subset_request,
 )
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
-from copernicusmarine.python_interface.load_utils import (
-    load_data_object_from_load_request,
-)
-from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
@@ -64,7 +51,9 @@ def open_dataset(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    raise_if_updating: bool = False,
     chunk_size_limit: int = -1,
+    staging: bool = False,
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using 'lazy-loading' mode from a Copernicus Marine data source.
@@ -119,83 +108,58 @@ def open_dataset(
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
+    raise_if_updating : bool, optional
+        If True, raise an error if the dataset is currently being updated. Default is False.
     chunk_size_limit : int, default -1
         Limit the size of the chunks in the dask array. Default is set to -1 which behaves similarly to 'chunks=auto' from ``xarray``. Positive integer values and '-1' are accepted. This is an experimental feature.
-
+    staging : bool, optional
+        If True, use the staging environment to load the dataset. Default is False.
     Returns
     -------
     xarray.Dataset
         The loaded xarray dataset.
     """  # noqa
-    start_datetime = homogenize_datetime(start_datetime)
-    end_datetime = homogenize_datetime(end_datetime)
+    if variables is not None:
+        _check_type(variables, list, "variables")
+
     credentials_file = (
         pathlib.Path(credentials_file) if credentials_file else None
     )
 
-    (
-        minimum_x_axis,
-        maximum_x_axis,
-        minimum_y_axis,
-        maximum_y_axis,
-    ) = get_geographical_inputs(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
-    )
-
-    geographicalparameters = GeographicalParameters(
-        y_axis_parameters=YParameters(
-            minimum_y=minimum_y_axis,
-            maximum_y=maximum_y_axis,
-            coordinate_id=(
-                "y" if dataset_part == "originalGrid" else "latitude"
-            ),
-        ),
-        x_axis_parameters=XParameters(
-            minimum_x=minimum_x_axis,
-            maximum_x=maximum_x_axis,
-            coordinate_id=(
-                "x" if dataset_part == "originalGrid" else "longitude"
-            ),
-        ),
-        projection=(
-            "originalGrid" if dataset_part == "originalGrid" else "lonlat"
-        ),
-    )
-
-    load_request = LoadRequest(
+    subset_request = create_subset_request(
         dataset_id=dataset_id,
-        force_dataset_version=dataset_version,
-        force_dataset_part=dataset_part,
+        dataset_version=dataset_version,
+        dataset_part=dataset_part,
         username=username,
         password=password,
         variables=variables,
-        geographical_parameters=geographicalparameters,
-        temporal_parameters=TemporalParameters(
-            start_datetime=start_datetime,
-            end_datetime=end_datetime,
-        ),
-        depth_parameters=DepthParameters(
-            minimum_depth=minimum_depth,
-            maximum_depth=maximum_depth,
-            vertical_axis=vertical_axis,
-        ),
+        minimum_longitude=minimum_longitude,
+        maximum_longitude=maximum_longitude,
+        minimum_latitude=minimum_latitude,
+        maximum_latitude=maximum_latitude,
+        minimum_depth=minimum_depth,
+        maximum_depth=maximum_depth,
+        vertical_axis=vertical_axis,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
+        minimum_x=minimum_x,
+        maximum_x=maximum_x,
+        minimum_y=minimum_y,
+        maximum_y=maximum_y,
         coordinates_selection_method=coordinates_selection_method,
-        force_service=service,
-        credentials_file=credentials_file,
+        service=service,
+        credentials_file=(
+            pathlib.Path(credentials_file) if credentials_file else None
+        ),
+        staging=staging,
+        chunk_size_limit=chunk_size_limit,
+        raise_if_updating=raise_if_updating,
+    )
+    return open_dataset_function(
+        subset_request=subset_request,
     )
 
-    dataset = load_data_object_from_load_request(
-        load_request,
-        open_dataset_from_arco_series,
-        chunks_factor_size_limit=chunk_size_limit,
-        command_type=CommandType.OPEN_DATASET,
-    )
-    return dataset
+
+def _check_type(value, expected_type: type, name: str):
+    if not isinstance(value, expected_type):
+        raise TypeError(f"{name} must be of type {expected_type.__name__}")
