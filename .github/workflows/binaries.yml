@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-22.04, macos-14-large, ubuntu-24.04]
+        os: [macos-latest, ubuntu-22.04, macos-15-intel, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -46,7 +46,7 @@ jobs:
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
             ARCH="macos-arm64"
-          elif [ "${{ matrix.os }}" == "macos-14-large" ]; then
+          elif [ "${{ matrix.os }}" == "macos-15-intel" ]; then
             ARCH="macos-x86_64"
           elif [ "${{ matrix.os }}" == "ubuntu-22.04" ]; then
             ARCH="linux-glibc-2.35"
