@@ -300,6 +300,7 @@ class TestSubset:
             f"{dataset_id}",
             "-o",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)

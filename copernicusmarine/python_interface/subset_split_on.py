@@ -41,13 +41,11 @@ def subset_split_on(
     on_variables : bool, optional
         If True, split the output files based on variable names, by default False.
     on_time : Optional[SplitOnTimeOption], optional
-        If provided, split the output files based on specified time intervals,
-        by default None.
+        If provided, split the output files based on specified time intervals, by default None.
     concurrent_processes : Optional[int], optional
         Number of concurrent processes to use for downloading data, by default None. Should be greater or equal to 1.
     **kwargs
-        Additional keyword arguments for subset request creation.
-        See :class:`copernicusmarine.subset` for detailed accepted parameters.
+        Additional keyword arguments for subset request creation. See :class:`copernicusmarine.subset` for detailed accepted parameters.
 
 
     Returns

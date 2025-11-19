@@ -110,13 +110,11 @@ def read_dataframe(
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     raise_if_updating : bool, optional
-        If True, raise an error if the dataset is being updated, by default False.
+        If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
     platform_ids : List[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
-    staging : bool, optional
-        If True, use the staging environment, by default False.
 
     Returns
     -------

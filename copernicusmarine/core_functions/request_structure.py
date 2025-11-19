@@ -46,9 +46,6 @@ logger = logging.getLogger("copernicusmarine")
 
 
 MAPPING_REQUEST_FILES_AND_REQUEST_OPTIONS: dict[str, str] = {
-    "dataset_version": "force_dataset_version",
-    "dataset_part": "force_dataset_part",
-    "service": "force_service",
     "maximum_latitude": "maximum_y",
     "minimum_latitude": "minimum_y",
     "maximum_longitude": "maximum_x",
@@ -96,9 +93,13 @@ class SubsetRequest(BaseModel):
             key: value
             for key, value in new_dict.items()
             if value is not None
-            and not (isinstance(value, str) and value == "")
+            and not (isinstance(value, (list, tuple, str)) and not value)
         }
-        data = self.model_dump()
+        data = self.model_dump(
+            exclude_defaults=True,
+            exclude_unset=True,
+            exclude_none=True,
+        )
         data.update(filtered_dict)
         return self.model_validate(data)
 
@@ -389,24 +390,37 @@ def create_subset_request(
         "start_datetime": start_datetime,
         "end_datetime": end_datetime,
         "platform_ids": platform_ids,
-        "coordinates_selection_method": coordinates_selection_method,
         "output_filename": output_filename,
         "file_format": file_format,
         "service": service,
         "output_directory": output_directory,
-        "netcdf_compression_level": netcdf_compression_level,
-        "netcdf3_compatible": netcdf3_compatible,
-        "dry_run": dry_run,
-        "raise_if_updating": raise_if_updating,
-        "disable_progress_bar": disable_progress_bar,
-        "staging": staging,
         "chunk_size_limit": chunk_size_limit,
-        "skip_existing": skip_existing,
-        "overwrite": overwrite,
     }
-    subset_request = subset_request.update(request_update_dict)
+    # To be able to distiguish between set and unset values
+    if skip_existing:
+        request_update_dict["skip_existing"] = skip_existing
+    if overwrite:
+        request_update_dict["overwrite"] = overwrite
+    if netcdf_compression_level:
+        request_update_dict[
+            "netcdf_compression_level"
+        ] = netcdf_compression_level
+    if netcdf3_compatible:
+        request_update_dict["netcdf3_compatible"] = netcdf3_compatible
+    if coordinates_selection_method != DEFAULT_COORDINATES_SELECTION_METHOD:
+        request_update_dict[
+            "coordinates_selection_method"
+        ] = coordinates_selection_method
+    if raise_if_updating:
+        request_update_dict["raise_if_updating"] = raise_if_updating
+    if dry_run:
+        request_update_dict["dry_run"] = dry_run
+    if staging:
+        request_update_dict["staging"] = staging
+    if disable_progress_bar:
+        request_update_dict["disable_progress_bar"] = disable_progress_bar
 
-    return subset_request
+    return subset_request.update(request_update_dict)
 
 
 def get_geographical_inputs(
