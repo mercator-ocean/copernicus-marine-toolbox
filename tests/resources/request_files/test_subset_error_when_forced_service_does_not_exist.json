@@ -1,13 +1,13 @@
 {
   "dataset_id": "cmems_obs-si_glo_phy-drift-south_my_l4_P1D-m",
   "end_datetime": "2021-01-02",
-  "maximum_latitude": 0.1,
+  "maximum_latitude": -50,
   "maximum_longitude": 0.1,
-  "minimum_latitude": 0.0,
+  "minimum_latitude": -60,
   "minimum_longitude": 0.0,
   "service": "platformseries",
   "start_datetime": "2021-01-01",
   "variables": [
-    "thetao"
+    "shear"
   ]
 }

@@ -63,10 +63,10 @@ from copernicusmarine.python_interface.open_dataset import (
 from copernicusmarine.python_interface.read_dataframe import (
     read_dataframe,
 )
-from copernicusmarine.python_interface.split_on import (
+from copernicusmarine.python_interface.subset import subset
+from copernicusmarine.python_interface.subset_split_on import (
     subset_split_on,
 )
-from copernicusmarine.python_interface.subset import subset
 from copernicusmarine.versioner import __version__
 
 __all__ = [

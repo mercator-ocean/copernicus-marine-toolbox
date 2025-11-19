@@ -109,11 +109,10 @@ def open_dataset(
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     raise_if_updating : bool, optional
-        If True, raise an error if the dataset is currently being updated. Default is False.
+        If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     chunk_size_limit : int, default -1
         Limit the size of the chunks in the dask array. Default is set to -1 which behaves similarly to 'chunks=auto' from ``xarray``. Positive integer values and '-1' are accepted. This is an experimental feature.
-    staging : bool, optional
-        If True, use the staging environment to load the dataset. Default is False.
+
     Returns
     -------
     xarray.Dataset
