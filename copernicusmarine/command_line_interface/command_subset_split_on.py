@@ -3,6 +3,7 @@ import logging
 from typing import Optional, Union
 
 import click
+from click import Context
 
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
@@ -61,14 +62,12 @@ DEFAULT_FIELDS_TO_INCLUDE = {
 @click.pass_context
 @log_exception_and_exit
 def split_on(
-    ctx,
+    context: Context,
     on_variables: bool,
     on_time: Optional[SplitOnTimeOption],
     concurrent_processes: Optional[int],
 ):
-    """Function description"""
-    logger.debug(f"Splitting on {on_variables}.")
-    subset_request = ctx.obj.get("subset_request")
+    subset_request = context.obj.get("subset_request")
     responses = subset_split_on_function(
         on_variables=on_variables,
         on_time=on_time,
@@ -76,7 +75,7 @@ def split_on(
         concurrent_processes=concurrent_processes,
     )
 
-    response_fields: Optional[str] = ctx.obj.get("response_fields")
+    response_fields: Optional[str] = context.obj.get("response_fields")
     dry_run: bool = subset_request.dry_run
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))

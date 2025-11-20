@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import datetime
 from typing import Optional, Union
 
@@ -23,6 +22,7 @@ from copernicusmarine.core_functions.models import (
     SplitOnTimeOption,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
+from copernicusmarine.core_functions.services_utils import RetrievalService
 from copernicusmarine.core_functions.subset import (
     download_zarr_or_sparse,
     retrieve_metadata_and_check_request,
@@ -30,6 +30,9 @@ from copernicusmarine.core_functions.subset import (
 from copernicusmarine.core_functions.utils import (
     run_multiprocessors,
     timestamp_or_datestring_to_datetime,
+)
+from copernicusmarine.download_functions.utils import (
+    build_filename_from_request,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -81,46 +84,63 @@ def subset_split_on_function(
             requested_variables=set(subset_request.variables or []),
         )
     new_parameters: list[dict[str, Union[list[str], datetime]]] = []
-    parameters_to_exclude = set()
     if time_keys and variables:
-        new_parameters = [
-            {
-                "variables": [var],
-                "start_datetime": start,
-                "end_datetime": end,
-            }
-            for var in variables
-            for start, end in time_keys
-        ]
-        parameters_to_exclude = {"variables", "start_datetime", "end_datetime"}
+        (
+            _,
+            variables_with_time_dimension,
+            _,
+        ) = retrieval_service.dataset_part.get_coordinates().get(
+            "time", (None, [], None)  # type: ignore
+        )
+        for variable in variables:
+            if variable in variables_with_time_dimension:
+                for start, end in time_keys:
+                    new_parameters.append(
+                        {
+                            "variables": [variable],
+                            "start_datetime": start,
+                            "end_datetime": end,
+                        }
+                    )
+            else:
+                new_parameters.append({"variables": [variable]})
     elif time_keys:
         new_parameters = [
             {"start_datetime": start, "end_datetime": end}
             for start, end in time_keys
         ]
-        parameters_to_exclude = {"start_datetime", "end_datetime"}
     elif variables:
         new_parameters = [{"variables": [var]} for var in variables]
-        parameters_to_exclude = {"variables"}
-    download_function_parameters = [
+    dataset_variables = [
+        variable.short_name for variable in retrieval_service.service.variables
+    ]
+    download_function_parameters: list[
+        tuple[SubsetRequest, RetrievalService, dict]
+    ] = [
         (
-            SubsetRequest(
-                **{
-                    "disable_progress_bar": True,
-                    **subset_request.model_dump(
-                        exclude_unset=True,
-                        exclude_defaults=True,
-                        exclude_none=True,
-                        exclude=parameters_to_exclude,
-                    ),
-                }
-            ).update(split_on_parameter),
+            _update_output_filename(
+                SubsetRequest(
+                    **{
+                        "disable_progress_bar": True,
+                        **subset_request.model_dump(
+                            exclude_unset=True,
+                            exclude_defaults=True,
+                            exclude_none=True,
+                            exclude=set(split_on_parameter.keys()),
+                        ),
+                    }
+                ).update(split_on_parameter),
+                dataset_variables=dataset_variables,
+                on_time=on_time,
+                on_variables=on_variables,
+                axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
+            ),
             retrieval_service,
             {
-                "disable": subset_request.disable_progress_bar
-                or concurrent_processes,
+                "disable": subset_request.disable_progress_bar,
                 "desc": name_progress_bar(split_on_parameter),
                 "leave": False,
+                "position": 1,
             },
         )
         for split_on_parameter in new_parameters
@@ -131,17 +151,15 @@ def subset_split_on_function(
         responses = run_multiprocessors(
             func=download_zarr_or_sparse,
             function_arguments=download_function_parameters,
-            max_concurrent_requests=concurrent_processes
-            or (os.cpu_count() or 2),
+            max_concurrent_requests=concurrent_processes,
             tdqm_bar_configuration={
                 "disable": subset_request.disable_progress_bar,
                 "desc": "Downloading Files",
             },
         )
-        return responses
     else:
         with tqdm(
-            total=len(new_parameters),
+            total=len(download_function_parameters),
             disable=subset_request.disable_progress_bar,
             desc="Downloading Files",
         ) as pbar:
@@ -202,7 +220,10 @@ def get_split_time_keys_from_metadata(
                 minimum_index = i
                 break
         else:
-            minimum_index = len(values_datetime) - 1
+            raise ValueError(
+                f"Start datetime: {start_datetime} is after "
+                "the maximum time available in the dataset."
+            )
         if (
             coordinate_selection_method == "outside"
             and values_datetime[minimum_index] > start_datetime
@@ -220,7 +241,10 @@ def get_split_time_keys_from_metadata(
                 maximum_index = i
                 break
         else:
-            maximum_index = 0
+            raise ValueError(
+                f"End datetime: {end_datetime} is before "
+                "the minimum time available in the dataset."
+            )
         if (
             coordinate_selection_method == "outside"
             and values_datetime[maximum_index] < end_datetime
@@ -250,7 +274,7 @@ def group_per_frequency(
 ):
     df = pd.DataFrame({"time": datetimes})
     if time_frequence == "hour":
-        groups = df.groupby(df["time"].dt.floor("H"))
+        groups = df.groupby(df["time"].dt.floor("h"))
     elif time_frequence == "day":
         groups = df.groupby(df["time"].dt.date)
     elif time_frequence == "month":
@@ -294,3 +318,80 @@ def name_progress_bar(
             message += " - "
         message += f"{split_on_parameter['variables'][0]}"
     return message
+
+
+def _update_output_filename(
+    subset_request: SubsetRequest,
+    on_time: Optional[SplitOnTimeOption],
+    on_variables: bool,
+    dataset_variables: list[str],
+    axis_coordinate_id_mapping: dict[str, str],
+) -> SubsetRequest:
+    if subset_request.output_filename:
+        parsed_filename = subset_request.output_filename.split(".")
+        suffix = _get_split_on_suffix(
+            subset_request,
+            on_time=on_time,
+            on_variables=on_variables,
+        )
+        if len(parsed_filename) == 1:
+            return subset_request.update(
+                {"output_filename": subset_request.output_filename + suffix}
+            )
+        else:
+            return subset_request.update(
+                {
+                    "output_filename": (
+                        ".".join(parsed_filename[:-1])
+                        + suffix
+                        + "."
+                        + parsed_filename[-1]
+                    )
+                }
+            )
+    filename = build_filename_from_request(
+        subset_request,
+        subset_request.variables or dataset_variables,
+        platform_ids=subset_request.platform_ids or [],
+        axis_coordinate_id_mapping=axis_coordinate_id_mapping,
+        time_format=_get_best_time_format(on_time) if on_time else None,
+    )
+    return subset_request.update({"output_filename": filename})
+
+
+def _get_split_on_suffix(
+    subset_request: SubsetRequest,
+    on_time: Optional[SplitOnTimeOption],
+    on_variables: bool,
+) -> str:
+    suffix = "_"
+    if on_time:
+        time_format = _get_best_time_format(on_time) if on_time else ""
+        if subset_request.start_datetime:
+            suffix += f"{subset_request.start_datetime.strftime(time_format)}"
+        if subset_request.end_datetime and (
+            not subset_request.start_datetime
+            or subset_request.end_datetime.strftime(time_format)
+            != subset_request.start_datetime.strftime(time_format)
+        ):
+            if suffix:
+                suffix += "_"
+            suffix += f"{subset_request.end_datetime.strftime(time_format)}"
+    if on_variables and subset_request.variables:
+        if suffix:
+            suffix += "_"
+        suffix += f"{subset_request.variables[0]}"
+    return suffix
+
+
+def _get_best_time_format(
+    time_option: SplitOnTimeOption,
+) -> str:
+    if time_option == "hour":
+        return "%Y-%m-%dT%H:%M:%S"
+    elif time_option == "day":
+        return "%Y-%m-%d"
+    elif time_option == "month":
+        return "%Y-%m"
+    elif time_option == "year":
+        return "%Y"

@@ -16,6 +16,7 @@ when the hardware resources are limited.
 
         copernicusmarine subset [SUBSET-OPTIONS] split-on [OPTIONS]
 
+    Set all the options for the ``subset`` **before** the ``split-on`` command.
     For more information about the ``subset`` module, please refer to :ref:`subset-page`.
 
 .. warning::
@@ -29,23 +30,22 @@ This can be useful for managing large datasets and improving performance.
 
 The following split options are available:
 
-* On variables: creates one file per variable. The selected variabled are the intersection of the dataset variables and the requested variables.
+* On variables: creates one file per variable. The selected variables are the intersection of the dataset variables and the requested variables.
 * On time dimension: creates one file per time unit in the selected time range. Available frequencies are: ``year``, ``month``, ``day``, ``hour``.
 
 .. code-block:: python
 
   response = copernicusmarine.subset_split_on(
       dataset_id="cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
-      dataset_id=dataset_id,
       start_datetime="2021-01-01",
       end_datetime="2025-01-03",
       on_time="year",
-      maximum_latitude=20,
       minimum_latitude=19,
-      maximum_longitude=20,
+      maximum_latitude=20,
       minimum_longitude=19,
-      maximum_depth=1,
+      maximum_longitude=20,
       minimum_depth=0,
+      maximum_depth=1,
   )
   # this will create one file per year in the selected time range, here: dataset_id_2021-01-01-2021-12-31.nc, dataset_id_2022-01-01-2022-12-31.nc, dataset_id_2023-01-01-2023-12-31.nc
 

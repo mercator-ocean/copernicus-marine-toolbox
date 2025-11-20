@@ -3,6 +3,7 @@ import logging
 import sys
 
 import click
+from click import Context
 
 from copernicusmarine.core_functions.deprecated_options import (
     log_deprecated_message,
@@ -19,7 +20,7 @@ class CustomDeprecatedClickOption(click.Option):
 
 
 class CustomClickOptionsCommand(click.Command):
-    def make_parser(self, ctx):
+    def make_parser(self, ctx: Context):
         parser = super().make_parser(ctx)
 
         # get the parser options
@@ -81,6 +82,7 @@ class CustomClickOptionsGroup(click.Group):
         argv = sys.argv[1:]
         ctx.meta["help_for"] = None
         if target in argv:
+            ctx.meta["command"] = target
             idx = argv.index(target)
             after = argv[idx + 1 :]
             help_flags = {"-h", "--help"}

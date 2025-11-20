@@ -12,7 +12,6 @@ New Features
 * Increased resilience when parsing or fetching metadata. The ``describe`` command is now more robust, and consequently so are the ``subset`` and ``get`` commands.
 * Improved the documentation page *Polygons Extractor Using the Copernicus Marine Toolbox* in the *Usage and Technical Details* section. It is now clearer and requires fewer dependencies. See :ref:`Polygons Extractor <polygons-based-data-selection>`.
 * Added a :ref:`Versioning and End-of-Life Policy <versioning-and-end-of-life-policy>` page to the documentation for better clarity on the support timeline of the Toolbox.
-* Added new dependency, ``psutil``. See :ref:`installation page <installation-page-dependencies>` for the list of dependencies.
 
 Fixes
 ^^^^^
@@ -30,7 +29,7 @@ New Features
 * Inverting the order of the arguments for minimum and maximum values in ``subset`` will now raise an error. Except for the longitude, it raises a warning (see item below). This helps users avoid mistakes and ensures more consistent behavior.
 * Requests across the antemeridian line (180° longitude) can now be made by specifying a minimum value greater than the maximum value (except for sparse datasets). The Toolbox will automatically shift the window to the left or right of the antemeridian line, depending on the requested area. See the :ref:`Subset documentation <about-longitude-range>` for details.
 * Subset results now preserve more attributes, as the Toolbox passes through attributes from the server data. Previously, only a whitelisted set of attributes was included.
-* Added a new option ``--split-on`` to the `subset` command to split the output files based on time or variables when subsetting in netcdf format. See :ref:`subset usage page <subset-split-on>` for more details.
+* Added a new command ``split-on`` to the `subset` command to split the output files based on time or variables when subsetting. See :ref:`subset usage page <subset-split-on>` for more details.
 * The Toolbox now creates a temporary file when subsetting data to avoid keeping incomplete files if an error occurs during the subsetting process.
 
 Fixes

@@ -3,6 +3,7 @@ import pathlib
 from typing import List, Optional, Union
 
 import click
+from click import Context
 
 from copernicusmarine.command_line_interface.command_subset_split_on import (
     split_on,
@@ -351,7 +352,7 @@ def cli_subset():
 @click.pass_context
 @log_exception_and_exit
 def subset(
-    ctx,
+    context: Context,
     dataset_id: str,
     dataset_version: Optional[str],
     dataset_part: Optional[str],
@@ -398,7 +399,7 @@ def subset(
     raise_if_updating: bool,
     force_download: bool,
 ):
-    if ctx.meta["help_for"] == "split-on":
+    if context.meta["help_for"] == "split-on":
         return
     if log_level == "QUIET":
         logger.disabled = True
@@ -410,9 +411,7 @@ def subset(
         logger.debug("DEBUG mode activated")
 
     if create_template:
-        assert_cli_args_are_not_set_except_create_template(
-            click.get_current_context()
-        )
+        assert_cli_args_are_not_set_except_create_template(context)
         create_subset_template()
         return
 
@@ -460,10 +459,10 @@ def subset(
         alias_max_y=alias_max_y,
     )
 
-    if ctx.invoked_subcommand is not None:
-        ctx.ensure_object(dict)
-        ctx.obj["subset_request"] = subset_request
-        ctx.obj["response_fields"] = response_fields
+    if context.invoked_subcommand is not None:
+        context.ensure_object(dict)
+        context.obj["subset_request"] = subset_request
+        context.obj["response_fields"] = response_fields
 
         return
 
