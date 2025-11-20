@@ -64,6 +64,9 @@ from copernicusmarine.python_interface.read_dataframe import (
     read_dataframe,
 )
 from copernicusmarine.python_interface.subset import subset
+from copernicusmarine.python_interface.subset_split_on import (
+    subset_split_on,
+)
 from copernicusmarine.versioner import __version__
 
 __all__ = [
@@ -118,4 +121,5 @@ __all__ = [
     "open_dataset",
     "read_dataframe",
     "subset",
+    "subset_split_on",
 ]

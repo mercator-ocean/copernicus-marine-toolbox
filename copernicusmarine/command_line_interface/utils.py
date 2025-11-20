@@ -58,6 +58,11 @@ class OtherOptionsPassedWithCreateTemplate(Exception):
 def assert_cli_args_are_not_set_except_create_template(
     context: Context,
 ) -> None:
+    if context.meta.get("command") == "split-on":
+        raise NotImplementedError(
+            "Request files cannot be used with the split-on "
+            "command options."
+        )
     for key in context.params:
         if key not in ["create_template", "log_level"]:
             parameter_source = context.get_parameter_source(key)

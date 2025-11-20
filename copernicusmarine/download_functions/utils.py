@@ -12,7 +12,7 @@ from copernicusmarine.core_functions.models import (
     DatasetChunking,
     FileFormat,
     GeographicalExtent,
-    SplitOnOption,
+    SplitOnTimeOption,
     TimeExtent,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
@@ -131,6 +131,7 @@ def _build_filename_from_dataset(
                 if max_time_coordinate is not None
                 else None
             ),
+            None,
         )
     filename = "_".join(
         filter(
@@ -148,9 +149,11 @@ def build_filename_from_request(
     variables: list[str],
     platform_ids: list[str],
     axis_coordinate_id_mapping: dict[str, str],
+    time_format: Optional[str] = None,
 ) -> str:
     """
     In the sparse dataset case we don't have the dataset to build the filename from.
+    Also, used for the split-on where we need more precise timestamp handling.
     """  # noqa
 
     dataset_variables = "-".join(variables)
@@ -195,7 +198,7 @@ def build_filename_from_request(
     datetimes = None
     if "t" in axis_coordinate_id_mapping:
         datetimes = _format_datetimes(
-            request.start_datetime, request.end_datetime
+            request.start_datetime, request.end_datetime, time_format
         )
     filename = "_".join(
         filter(
@@ -324,17 +327,20 @@ def _format_depths(
 
 
 def _format_datetimes(
-    minimum_datetime: Optional[datetime], maximum_datetime: Optional[datetime]
+    minimum_datetime: Optional[datetime],
+    maximum_datetime: Optional[datetime],
+    time_format: Optional[str],
 ) -> str:
+    time_format = time_format or "%Y-%m-%d"
     if minimum_datetime is None or maximum_datetime is None:
         return ""
     else:
         if minimum_datetime == maximum_datetime:
-            formatted_datetime = f"{minimum_datetime.strftime('%Y-%m-%d')}"
+            formatted_datetime = f"{minimum_datetime.strftime(time_format)}"
         else:
             formatted_datetime = (
-                f"{minimum_datetime.strftime('%Y-%m-%d')}-"
-                f"{maximum_datetime.strftime('%Y-%m-%d')}"
+                f"{minimum_datetime.strftime(time_format)}-"
+                f"{maximum_datetime.strftime(time_format)}"
             )
         return formatted_datetime
 
@@ -423,7 +429,7 @@ def get_approximation_size_data_downloaded(
 class DownloadParams(TypedDict):
     output_filename: Optional[str]
     key: Optional[str]
-    split_on: Optional[SplitOnOption]
+    split_on: Optional[SplitOnTimeOption]
     dataset_id: str
     file_format: FileFormat
     axis_coordinate_id_mapping: dict[str, str]

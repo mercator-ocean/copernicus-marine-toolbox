@@ -12,7 +12,6 @@ from copernicusmarine.core_functions.models import (
     ChunkType,
     CoordinateChunking,
     DatasetChunking,
-    SplitOnOption,
     VariableChunking,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
@@ -224,17 +223,6 @@ def _extract_requested_min_max(
     axis_coordinate_id_mapping: dict[str, str],
 ) -> tuple[Optional[float], Optional[float]]:
     if coordinate.coordinate_id in axis_coordinate_id_mapping.get("t", ""):
-        if subset_request.split_on and subset_request.split_on != "variable":
-            (coordinate_min, _) = _get_coordinate_extreme(coordinate)
-            if coordinate_min is not None:
-                fake_min = coordinate_min
-                fake_max = (
-                    coordinate_min
-                    + _get_period_length_from_split_option(
-                        subset_request.split_on
-                    )
-                )
-                return fake_min, fake_max
         temporal_selection = t_axis_selection(
             subset_request.get_temporal_parameters(
                 axis_coordinate_id_mapping=axis_coordinate_id_mapping
@@ -340,15 +328,3 @@ def _get_coordinate_extreme(
         coordinate_minimum_value,
         coordinate_maximum_value,
     )
-
-
-def _get_period_length_from_split_option(split_on: SplitOnOption) -> float:
-    if split_on == "hour":
-        return 3600 * 1e3
-    if split_on == "day":
-        return 24 * 3600 * 1e3
-    if split_on == "month":
-        return 24 * 30 * 3600 * 1e3
-    if split_on == "year":
-        return 24 * 365 * 3600 * 1e3
-    return 0
