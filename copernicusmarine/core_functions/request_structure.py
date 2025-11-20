@@ -396,7 +396,7 @@ def create_subset_request(
         "output_directory": output_directory,
         "chunk_size_limit": chunk_size_limit,
     }
-    # To be able to distiguish between set and unset values
+    # To be able to distinguish between set and unset values
     if skip_existing:
         request_update_dict["skip_existing"] = skip_existing
     if overwrite:

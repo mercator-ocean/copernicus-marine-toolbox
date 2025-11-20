@@ -1,0 +1,59 @@
+# serializer version: 1
+# name: TestCFCompliance.test_subset_open_cfcompliant
+  'cmems_mod_nws_bgc-pft_my_7km-3D-pico_P1M-m'
+# ---
+# name: TestCFCompliance.test_subset_open_cfcompliant.1
+  180
+# ---
+# name: TestCFCompliance.test_subset_open_cfcompliant.2
+  181
+# ---
+# name: TestCFCompliance.test_subset_open_cfcompliant.3
+  list([
+    '§2.3 Naming Conventions',
+    list([
+      'global attribute netcdf-version-id should begin with a letter and be composed of letters, digits, and underscores',
+    ]),
+  ])
+# ---
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant
+  'cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m'
+# ---
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant.1
+  193
+# ---
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant.2
+  194
+# ---
+# name: TestCFCompliance.test_subset_with_warns_cfcompliant.3
+  list([
+    '§2.6 Attributes',
+    list([
+      '§2.6.1 Conventions global attribute does not contain "CF-1.6"',
+    ]),
+  ])
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant
+  'cmems_obs-sst_glo_phy_l3s_pir_P1D-m'
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.1
+  226
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.2
+  231
+# ---
+# name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.3
+  list([
+    '§2.5.1. Missing data, valid and actual range of data',
+    list([
+      "The coordinate variable 'time' must not have the _FillValue attribute.",
+      "The coordinate variable 'latitude' must not have the _FillValue attribute.",
+      "The coordinate variable 'longitude' must not have the _FillValue attribute.",
+    ]),
+    '§7.3 Cell Methods',
+    list([
+      "sea_surface_temperature's cell_methods name component lat does not match a dimension, area or auxiliary coordinate",
+      "sea_surface_temperature's cell_methods name component lon does not match a dimension, area or auxiliary coordinate",
+    ]),
+  ])
+# ---

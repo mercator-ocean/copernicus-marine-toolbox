@@ -1,10 +1,6 @@
 import pathlib
 from typing import Optional
 
-from copernicusmarine.core_functions.deprecated_options import (
-    DEPRECATED_OPTIONS,
-    deprecated_python_option,
-)
 from copernicusmarine.core_functions.models import (
     ResponseSubset,
     SplitOnTimeOption,
@@ -20,7 +16,6 @@ from copernicusmarine.python_interface.exception_handler import (
 )
 
 
-@deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def subset_split_on(
     on_variables: bool = False,

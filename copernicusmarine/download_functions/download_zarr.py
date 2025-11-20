@@ -3,6 +3,7 @@ import os
 import pathlib
 import warnings
 from copy import deepcopy
+from multiprocessing import current_process
 from typing import Optional, Tuple, Union
 
 import xarray
@@ -208,7 +209,12 @@ def download_zarr(
         response.file_status = FileStatus.IGNORED
         return response
 
-    with TqdmCallback(**tdqm_configuration):
+    current = current_process()
+    if "position" not in tdqm_configuration and current._identity:
+        tdqm_configuration["position"] = current._identity[0]
+    with TqdmCallback(
+        **tdqm_configuration,
+    ):
         _save_dataset_locally(
             dataset,
             output_path,

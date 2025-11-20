@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 import xarray
 
@@ -28,23 +29,34 @@ class TestSubsetSplitOn:
             maximum_depth=1,
             output_directory=tmp_path,
             disable_progress_bar=True,
-            # dry_run=True,
         )
         assert isinstance(res, list)
         assert len(res) == 2
         ds_2022_path = res[0].file_path
         assert os.path.exists(ds_2022_path)
         ds_2022 = xarray.open_dataset(ds_2022_path)
-        assert ds_2022.time.min().item() == 1640995200000000000
-        assert ds_2022.time.max().item() == 1669852800000000000
+        assert (
+            ds_2022.time.min().item()
+            == datetime.fromisoformat("2022-01-01T00:00:00Z").timestamp() * 1e9
+        )
+        assert (
+            ds_2022.time.max().item()
+            == datetime.fromisoformat("2022-12-01T00:00:00Z").timestamp() * 1e9
+        )
         ds_2022.close()
 
         ds_2023_path = res[1].file_path
         assert os.path.exists(ds_2023_path)
 
         ds_2023 = xarray.open_dataset(ds_2023_path)
-        assert ds_2023.time.min().item() == 1672531200000000000
-        assert ds_2023.time.max().item() == 1682899200000000000
+        assert (
+            ds_2023.time.min().item()
+            == datetime.fromisoformat("2023-01-01T00:00:00Z").timestamp() * 1e9
+        )
+        assert (
+            ds_2023.time.max().item()
+            == datetime.fromisoformat("2023-05-01T00:00:00Z").timestamp() * 1e9
+        )
         ds_2023.close()
 
     def test_split_on_year_with_one_year(self, tmp_path):
@@ -66,8 +78,14 @@ class TestSubsetSplitOn:
         ds_2022_path = res[0].file_path
         assert os.path.exists(ds_2022_path)
         ds_2022 = xarray.open_dataset(ds_2022_path)
-        assert ds_2022.time.min().item() == 1640995200000000000
-        assert ds_2022.time.max().item() == 1669852800000000000
+        assert (
+            ds_2022.time.min().item()
+            == datetime.fromisoformat("2022-01-01T00:00:00Z").timestamp() * 1e9
+        )
+        assert (
+            ds_2022.time.max().item()
+            == datetime.fromisoformat("2022-12-01T00:00:00Z").timestamp() * 1e9
+        )
         ds_2022.close()
 
     def test_split_on_month(self, tmp_path):
@@ -88,12 +106,11 @@ class TestSubsetSplitOn:
         assert isinstance(res, list)
         assert len(res) == 4
         filenames = [f.filename for f in res]
-        print(filenames)
         for period in [
-            "2022-01-01",
-            "2022-02-01",
-            "2022-03-01",
-            "2022-04-01",
+            "2022-01",
+            "2022-02",
+            "2022-03",
+            "2022-04",
         ]:
             assert any(period in filename for filename in filenames)
 
@@ -117,28 +134,34 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_thetao_cglo_9.75W-9.50W_34.00N-35.00N_5.14m_2022-01-01-2022-02-10.nc",
+                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_siconc_glor_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01-2022-02-10.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_siconc_glor_9.75W-9.50W_34.00N-35.00N_2022-01-01-2022-02-10.nc",
+                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_thetao_cglo_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01-2022-02-10.nc",
             )
         )
         path_vo_cglo = os.path.join(
             tmp_path,
-            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_vo_cglo_9.75W-9.50W_34.00N-35.00N_5.14m_2022-01-01-2022-02-10.nc",
+            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_vo_cglo_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01-2022-02-10.nc",
         )
         assert os.path.exists(path_vo_cglo)
         ds_vo_cglo = xarray.open_dataset(path_vo_cglo)
-        assert ds_vo_cglo.time.min().item() == 1640995200000000000
-        assert ds_vo_cglo.time.max().item() == 1644451200000000000
+        assert (
+            ds_vo_cglo.time.min().item()
+            == datetime.fromisoformat("2022-01-01T00:00:00Z").timestamp() * 1e9
+        )
+        assert (
+            ds_vo_cglo.time.max().item()
+            == datetime.fromisoformat("2022-02-10T00:00:00Z").timestamp() * 1e9
+        )
         assert len(ds_vo_cglo.data_vars) == 1
         assert "vo_cglo" in ds_vo_cglo.data_vars
         ds_vo_cglo.close()
 
-    def test_split_on_day(self, tmp_path):
+    def test_split_on_day_monthly_dataset(self, tmp_path):
         res = subset_split_on(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
@@ -157,30 +180,54 @@ class TestSubsetSplitOn:
         assert len(res) == 4
         filenames = [f.filename for f in res]
         assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-01-01.nc"
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-01-01.nc"
             in filenames
         )
 
         assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-02-01.nc"
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-02-01.nc"
             in filenames
         )
 
         assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-03-01.nc"
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-03-01.nc"
             in filenames
         )
 
         assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_9.89W-0.00W_45.00N-49.93N_0.00-100.00m_2022-04-01.nc"
+            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-04-01.nc"
+            in filenames
+        )
+
+    def test_split_on_day(self, tmp_path):
+        res = subset_split_on(
+            dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+            start_datetime="2024-01-01",
+            end_datetime="2024-01-05",
+            minimum_latitude=49,
+            maximum_latitude=50,
+            minimum_longitude=-1,
+            maximum_longitude=0,
+            minimum_depth=0,
+            maximum_depth=1,
+            on_time="day",
+            output_directory=tmp_path,
+            dry_run=True,
+        )
+        assert isinstance(res, list)
+        assert len(res) == 5
+        filenames = [f.filename for f in res]
+        print(filenames)
+        assert (
+            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_1.00W-0.00E_49.00N-50.00N_2024-01-01.nc"
             in filenames
         )
 
     def test_split_on_hour(self, tmp_path):
         res = subset_split_on(
-            dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
-            start_datetime="2022-01-01",
-            end_datetime="2023-01-10",
+            dataset_id="cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
+            start_datetime="2024-01-01T00:00:00",
+            end_datetime="2024-01-01T5:05:00",
             minimum_latitude=49,
             maximum_latitude=50,
             minimum_longitude=-1,
@@ -191,11 +238,10 @@ class TestSubsetSplitOn:
             output_directory=tmp_path,
             dry_run=True,
         )
-        assert isinstance(res, list)
-        assert len(res) == 13
+        assert len(res) == 6
         filenames = [f.filename for f in res]
         assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_0.89W-0.00W_49.00N-49.93N_0.00m_2022-01-01.nc"
+            "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_so-thetao-uo-vo-zos_1.00W-0.00E_49.00N-50.00N_0.00-1.00m_2024-01-01T00:00:00.nc"
             in filenames
         )
 

@@ -12,7 +12,6 @@ from copernicusmarine.core_functions.models import (
     ChunkType,
     CoordinateChunking,
     DatasetChunking,
-    SplitOnTimeOption,
     VariableChunking,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
@@ -329,15 +328,3 @@ def _get_coordinate_extreme(
         coordinate_minimum_value,
         coordinate_maximum_value,
     )
-
-
-def _get_period_length_from_split_option(split_on: SplitOnTimeOption) -> float:
-    if split_on == "hour":
-        return 3600 * 1e3
-    if split_on == "day":
-        return 24 * 3600 * 1e3
-    if split_on == "month":
-        return 24 * 30 * 3600 * 1e3
-    if split_on == "year":
-        return 24 * 365 * 3600 * 1e3
-    return 0
