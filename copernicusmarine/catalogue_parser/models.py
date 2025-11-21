@@ -625,6 +625,9 @@ class CopernicusMarineDataset(BaseModel):
         for version in self.versions:
             if version.label == wanted_version:
                 return version
+            # comment to raise awareness: do we want to return the first version, right?
+            # that means the list will be sorted before calling this function!
+            # I will delete this comment after confirmation
             elif not force_version:
                 return version
         raise DatasetVersionNotFound(self)
@@ -794,7 +797,10 @@ class DatasetVersionNotFound(Exception):
     """
 
     def __init__(self, dataset: CopernicusMarineDataset):
-        message = f"No version found for dataset {dataset.dataset_id}"
+        message = (
+            f"The specified version cannot be "
+            f"found for dataset {dataset.dataset_id}"
+        )
         super().__init__(message)
 
 
