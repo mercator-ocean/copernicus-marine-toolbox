@@ -623,10 +623,9 @@ class CopernicusMarineDataset(BaseModel):
     ) -> CopernicusMarineVersion:
         if not force_version:
             return self.versions[0]
-        elif force_version:
-            for version in self.versions:
-                if version.label == force_version:
-                    return version
+        for version in self.versions:
+            if version.label == force_version:
+                 return version
         raise DatasetVersionNotFound(self, force_version)
 
     def sort_versions(self) -> None:
