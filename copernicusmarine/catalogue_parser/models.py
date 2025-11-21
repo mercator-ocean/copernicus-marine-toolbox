@@ -621,15 +621,12 @@ class CopernicusMarineDataset(BaseModel):
     def get_version(
         self, force_version: Optional[str]
     ) -> CopernicusMarineVersion:
-        wanted_version = force_version or VERSION_DEFAULT
-        for version in self.versions:
-            if version.label == wanted_version:
-                return version
-            # comment to raise awareness: do we want to return the first version, right?
-            # that means the list will be sorted before calling this function!
-            # I will delete this comment after confirmation
-            elif not force_version:
-                return version
+        if not force_version:
+            return self.versions[0]
+        elif force_version:
+            for version in self.versions:
+                if version.label == force_version:
+                    return version
         raise DatasetVersionNotFound(self)
 
     def sort_versions(self) -> None:
