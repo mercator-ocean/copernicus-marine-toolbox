@@ -231,7 +231,7 @@ For example, if ``arco_updated_date=="2025-03-26T08:50:15.873Z"``, it means that
 
 ``arco_updating_start_date`` refers to the segment of the data currently being updated. The datasets are updated by temporal segments, starting from a certain date and continuing to the end of the dataset. This value marks the start of the temporal segment being updated.
 For example, if ``arco_updating_start_date=="1990-05-16T08:50:15.873Z"`` it means that the dataset is being updated starting from the 16th of May 1990.
-See `the raise-if-updating <raise-if-updating>`_ option to be sure your requested data is up-to-date.
+See :ref:`the raise-if-updating <raise-if-updating>` option to be sure your requested data is up-to-date.
 
 .. warning::
 
