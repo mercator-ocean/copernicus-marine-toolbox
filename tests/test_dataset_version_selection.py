@@ -48,8 +48,9 @@ class TestDatasetVersionSelection:
         assert self.output.returncode == 1
         assert (
             "Dataset version not found: The specified version"
-            " cannot be found for dataset "
-            "cmems_mod_blk_wav_anfc_2.5km_PT1H-i" in self.output.stderr
+            " 'default' cannot be found for dataset "
+            "cmems_mod_blk_wav_anfc_2.5km_PT1H-i.\n"
+            "Available versions are: ['202411']." in self.output.stderr
         )
 
     def test_subset_when_dataset_has_only_a_default_version(self):
@@ -99,9 +100,10 @@ class TestDatasetVersionSelection:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
-            "Dataset version not found: The specified "
-            "version cannot be found for dataset"
-            " cmems_mod_blk_wav_anfc_2.5km_PT1H-i" in self.output.stderr
+            "Dataset version not found: The specified version"
+            " 'default' cannot be found for dataset "
+            "cmems_mod_blk_wav_anfc_2.5km_PT1H-i.\n"
+            "Available versions are: ['202411']." in self.output.stderr
         )
 
     def test_dataset_version_is_specifiable_in_python_with_get(self, caplog):
