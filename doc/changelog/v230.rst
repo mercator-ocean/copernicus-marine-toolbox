@@ -18,6 +18,8 @@ Fixes
 ^^^^^
 
 * Updated the :ref:`Installation page <installation-page-domains>` in the documentation with a more up-to-date link to test the connection to the server domains.
+* Updated the output of DatasetVersionNotFound to be more descriptive.
+* Some minor documentation fixes and improvements.
 
 Subset
 ------
