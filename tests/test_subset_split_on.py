@@ -30,7 +30,6 @@ class TestSubsetSplitOn:
             output_directory=tmp_path,
             disable_progress_bar=True,
         )
-        assert isinstance(res, list)
         assert len(res) == 2
         ds_2022_path = res[0].file_path
         assert os.path.exists(ds_2022_path)
@@ -103,7 +102,6 @@ class TestSubsetSplitOn:
             output_directory=tmp_path,
             dry_run=True,
         )
-        assert isinstance(res, list)
         assert len(res) == 4
         filenames = [f.filename for f in res]
         for period in [
@@ -129,7 +127,6 @@ class TestSubsetSplitOn:
             on_variables=True,
             output_directory=tmp_path,
         )
-        assert isinstance(res, list)
         assert len(res) == 3
         assert os.path.exists(
             os.path.join(
@@ -176,7 +173,6 @@ class TestSubsetSplitOn:
             output_directory=tmp_path,
             dry_run=True,
         )
-        assert isinstance(res, list)
         assert len(res) == 4
         filenames = [f.filename for f in res]
         assert (
@@ -214,10 +210,8 @@ class TestSubsetSplitOn:
             output_directory=tmp_path,
             dry_run=True,
         )
-        assert isinstance(res, list)
         assert len(res) == 5
         filenames = [f.filename for f in res]
-        print(filenames)
         assert (
             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_1.00W-0.00E_49.00N-50.00N_2024-01-01.nc"
             in filenames
@@ -363,3 +357,46 @@ class TestSubsetSplitOn:
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
+
+    def test_different_coordinates_sel_method(self, tmp_path):
+        subset_split_on_args = {
+            "dataset_id": "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+            "start_datetime": "2024-01-03T23:59:59",
+            "end_datetime": "2024-01-04T23:59:59",
+            "on_time": "day",
+            "output_directory": tmp_path,
+            "dry_run": True,
+        }
+        res = subset_split_on(
+            **subset_split_on_args,
+            coordinates_selection_method="inside",
+        )
+        assert len(res) == 1
+
+        res = subset_split_on(
+            **subset_split_on_args,
+            coordinates_selection_method="outside",
+        )
+        assert len(res) == 3
+
+        res = subset_split_on(
+            **subset_split_on_args,
+            coordinates_selection_method="nearest",
+        )
+        assert len(res) == 2
+
+    def test_split_on_time_and_variables(self, tmp_path):
+        res = subset_split_on(
+            dataset_id="cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+            start_datetime="2022-01-01",
+            end_datetime="2022-01-03",
+            variables=["sithick_cglo", "thetao_oras"],
+            on_time="day",
+            on_variables=True,
+            output_directory=tmp_path,
+            dry_run=True,
+        )
+        assert len(res) == 6
+        filenames = [f.filename for f in res]
+        assert len([name for name in filenames if "sithick_cglo" in name]) == 3
+        assert len([name for name in filenames if "thetao_oras" in name]) == 3

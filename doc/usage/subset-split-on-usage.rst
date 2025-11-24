@@ -62,7 +62,6 @@ The Toolbox uses Python's ``concurrent.futures.ProcessPoolExecutor`` to manage p
 
   response = copernicusmarine.subset_split_on(
       dataset_id="cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
-      dataset_id=dataset_id,
       start_datetime="2021-01-01",
       end_datetime="2025-01-03",
       on_time="year",
