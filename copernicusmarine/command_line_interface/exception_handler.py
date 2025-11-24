@@ -3,7 +3,7 @@ from functools import wraps
 from itertools import chain
 from re import finditer
 from sys import exit
-from typing import Callable
+from typing import Any, Callable
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -19,7 +19,7 @@ def log_exception_debug(exception: Exception):
     _log_exception(logger.debug, exception)
 
 
-def log_exception_and_exit(function: Callable):
+def log_exception_and_exit(function: Callable) -> Any:
     @wraps(function)
     def wrapper(*args, **kwargs):
         try:

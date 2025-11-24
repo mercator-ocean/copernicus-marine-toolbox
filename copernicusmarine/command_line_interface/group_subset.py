@@ -3,7 +3,11 @@ import pathlib
 from typing import List, Optional, Union
 
 import click
+from click import Context
 
+from copernicusmarine.command_line_interface.command_subset_split_on import (
+    split_on,
+)
 from copernicusmarine.command_line_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -18,7 +22,7 @@ from copernicusmarine.command_line_interface.utils import (
 )
 from copernicusmarine.core_functions import documentation_utils
 from copernicusmarine.core_functions.click_custom_class import (
-    CustomClickOptionsCommand,
+    CustomClickOptionsGroup,
     CustomDeprecatedClickOption,
 )
 from copernicusmarine.core_functions.fields_query_builder import (
@@ -29,22 +33,19 @@ from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_COORDINATES_SELECTION_METHODS,
     DEFAULT_FILE_FORMATS,
-    DEFAULT_SPLIT_ON_OPTIONS,
     DEFAULT_VERTICAL_AXES,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
     FileFormat,
     ResponseSubset,
-    SplitOnOption,
     VerticalAxis,
+)
+from copernicusmarine.core_functions.request_structure import (
+    create_subset_request,
 )
 from copernicusmarine.core_functions.subset import (
     create_subset_template,
     subset_function,
-)
-from copernicusmarine.core_functions.utils import (
-    datetime_parser,
-    get_geographical_inputs,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -59,13 +60,14 @@ DEFAULT_FIELDS_TO_INCLUDE = {
 
 
 @click.group()
-def cli_subset() -> None:
+def cli_subset():
+    """Subset command group holder (for CommandCollection)."""
     pass
 
 
-@cli_subset.command(
+@click.group(
     "subset",
-    cls=CustomClickOptionsCommand,
+    cls=CustomClickOptionsGroup,
     short_help="Download subsets of datasets as NetCDF files or Zarr stores.",
     help=documentation_utils.SUBSET["SUBSET_DESCRIPTION_HELP"]
     + "See :ref:`describe <cli-describe>`."
@@ -84,6 +86,7 @@ def cli_subset() -> None:
 
         copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 \n
     """,  # noqa
+    invoke_without_command=True,
 )
 @click.option(
     "--dataset-id",
@@ -345,15 +348,11 @@ def cli_subset() -> None:
     is_flag=True,
     help=documentation_utils.SUBSET["RAISE_IF_UPDATING_HELP"],
 )
-@click.option(
-    "--split-on",
-    type=click.Choice(DEFAULT_SPLIT_ON_OPTIONS),
-    default=None,
-    help=documentation_utils.SUBSET["SPLIT_ON_HELP"],
-)
 @force_download_option
+@click.pass_context
 @log_exception_and_exit
 def subset(
+    context: Context,
     dataset_id: str,
     dataset_version: Optional[str],
     dataset_part: Optional[str],
@@ -399,8 +398,9 @@ def subset(
     staging: bool,
     raise_if_updating: bool,
     force_download: bool,
-    split_on: Optional[SplitOnOption],
 ):
+    if context.meta["help_for"] == "split-on":
+        return
     if log_level == "QUIET":
         logger.disabled = True
         logger.setLevel(level="CRITICAL")
@@ -411,70 +411,28 @@ def subset(
         logger.debug("DEBUG mode activated")
 
     if create_template:
-        assert_cli_args_are_not_set_except_create_template(
-            click.get_current_context()
-        )
+        assert_cli_args_are_not_set_except_create_template(context)
         create_subset_template()
         return
 
-    (
-        minimum_x_axis,
-        maximum_x_axis,
-        minimum_y_axis,
-        maximum_y_axis,
-    ) = get_geographical_inputs(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
-    )
-    if dataset_part == "originalGrid" and (
-        alias_max_x is not None
-        or alias_min_x is not None
-        or alias_max_y is not None
-        or alias_min_y is not None
-    ):
-        logger.debug(
-            "Because you are using an originalGrid dataset, we are considering"
-            " the options -x, -X, -y, -Y to be in m/km, not in degrees."
-        )
-
-    responses = subset_function(
+    subset_request = create_subset_request(
         dataset_id=dataset_id,
-        force_dataset_version=dataset_version,
-        force_dataset_part=dataset_part,
+        dataset_version=dataset_version,
+        dataset_part=dataset_part,
         username=username,
         password=password,
         variables=variables,
-        minimum_x=(
-            minimum_x_axis if minimum_x_axis is not None else alias_min_x
-        ),
-        maximum_x=(
-            maximum_x_axis if maximum_x_axis is not None else alias_max_x
-        ),
-        minimum_y=(
-            minimum_y_axis if minimum_y_axis is not None else alias_min_y
-        ),
-        maximum_y=(
-            maximum_y_axis if maximum_y_axis is not None else alias_max_y
-        ),
         minimum_depth=minimum_depth,
         maximum_depth=maximum_depth,
         vertical_axis=vertical_axis,
-        start_datetime=(
-            datetime_parser(start_datetime) if start_datetime else None
-        ),
-        end_datetime=datetime_parser(end_datetime) if end_datetime else None,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
         platform_ids=platform_ids,
         coordinates_selection_method=coordinates_selection_method,
+        staging=staging,
         output_filename=output_filename,
         file_format=file_format,
-        force_service=service,
+        service=service,
         request_file=request_file,
         output_directory=output_directory,
         credentials_file=credentials_file,
@@ -483,13 +441,33 @@ def subset(
         skip_existing=skip_existing,
         dry_run=dry_run,
         disable_progress_bar=disable_progress_bar,
-        staging=staging,
         netcdf_compression_level=netcdf_compression_level,
         netcdf3_compatible=netcdf3_compatible,
         chunk_size_limit=chunk_size_limit,
         raise_if_updating=raise_if_updating,
-        split_on=split_on,
+        minimum_longitude=minimum_longitude,
+        maximum_longitude=maximum_longitude,
+        minimum_latitude=minimum_latitude,
+        maximum_latitude=maximum_latitude,
+        minimum_x=minimum_x,
+        maximum_x=maximum_x,
+        minimum_y=minimum_y,
+        maximum_y=maximum_y,
+        alias_min_x=alias_min_x,
+        alias_max_x=alias_max_x,
+        alias_min_y=alias_min_y,
+        alias_max_y=alias_max_y,
     )
+
+    if context.invoked_subcommand is not None:
+        context.ensure_object(dict)
+        context.obj["subset_request"] = subset_request
+        context.obj["response_fields"] = response_fields
+
+        return
+
+    responses = subset_function(subset_request)
+
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))
     elif dry_run:
@@ -508,22 +486,16 @@ def subset(
         )
         included_fields = build_query(set(queryable_fields), ResponseSubset)
 
-    if isinstance(responses, ResponseSubset):
-        blank_logger.info(
-            responses.model_dump_json(
-                indent=2,
-                include=included_fields,
-                exclude_none=True,
-                exclude_unset=True,
-            )
+    blank_logger.info(
+        responses.model_dump_json(
+            indent=2,
+            include=included_fields,
+            exclude_none=True,
+            exclude_unset=True,
         )
-    else:
-        for response in responses:
-            blank_logger.info(
-                response.model_dump_json(
-                    indent=2,
-                    include=included_fields,
-                    exclude_none=True,
-                    exclude_unset=True,
-                )
-            )
+    )
+
+
+subset.add_command(split_on)
+
+cli_subset.add_command(subset)

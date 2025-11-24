@@ -48,10 +48,3 @@ PROXY_HTTP = os.getenv("HTTP_PROXY", "")
 COPERNICUSMARINE_CONFIG_URL = os.getenv(
     "COPERNICUSMARINE_CONFIG_URL",
 )
-
-COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES = int(
-    os.getenv(
-        "COPERNICUSMARINE_SPLIT_ON_PARALLEL_PROCESSES",
-        (os.cpu_count() or 2) - 1,
-    )
-)

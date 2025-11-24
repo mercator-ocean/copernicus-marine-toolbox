@@ -335,7 +335,6 @@ def _x_axis_subset(
 def t_axis_selection(
     temporal_parameters: TemporalParameters,
 ) -> Union[slice, datetime, None]:
-
     start_datetime = (
         temporal_parameters.start_datetime.astimezone(UTC).replace(tzinfo=None)
         if temporal_parameters.start_datetime

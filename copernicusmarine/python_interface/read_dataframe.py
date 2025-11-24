@@ -11,29 +11,18 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_AXIS,
-    CommandType,
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
-from copernicusmarine.core_functions.request_structure import LoadRequest
-from copernicusmarine.core_functions.utils import get_geographical_inputs
-from copernicusmarine.download_functions.download_zarr import (
-    read_dataframe_from_arco_series,
+from copernicusmarine.core_functions.read_dataframe import (
+    read_dataframe_function,
 )
-from copernicusmarine.download_functions.subset_parameters import (
-    DepthParameters,
-    GeographicalParameters,
-    TemporalParameters,
-    XParameters,
-    YParameters,
+from copernicusmarine.core_functions.request_structure import (
+    create_subset_request,
 )
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
-from copernicusmarine.python_interface.load_utils import (
-    load_data_object_from_load_request,
-)
-from copernicusmarine.python_interface.utils import homogenize_datetime
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
@@ -63,8 +52,10 @@ def read_dataframe(
     ),
     service: Optional[str] = None,
     credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    raise_if_updating: bool = False,
     disable_progress_bar: bool = False,
     platform_ids: Optional[List[str]] = None,
+    staging: bool = False,
 ) -> pd.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
@@ -118,6 +109,8 @@ def read_dataframe(
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
+    raise_if_updating : bool, optional
+        If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
     platform_ids : List[str], optional
@@ -129,77 +122,47 @@ def read_dataframe(
         A DataFrame containing the loaded Copernicus Marine data.
     """  # noqa
 
-    start_datetime = homogenize_datetime(start_datetime)
-    end_datetime = homogenize_datetime(end_datetime)
-    credentials_file = (
-        pathlib.Path(credentials_file) if credentials_file else None
-    )
+    if variables is not None:
+        _check_type(variables, list, "variables")
+    if platform_ids is not None:
+        _check_type(platform_ids, list, "platform_ids")
 
-    (
-        minimum_x_axis,
-        maximum_x_axis,
-        minimum_y_axis,
-        maximum_y_axis,
-    ) = get_geographical_inputs(
-        minimum_longitude,
-        maximum_longitude,
-        minimum_latitude,
-        maximum_latitude,
-        minimum_x,
-        maximum_x,
-        minimum_y,
-        maximum_y,
-        dataset_part,
-    )
-
-    geographicalparameters = GeographicalParameters(
-        y_axis_parameters=YParameters(
-            minimum_y=minimum_y_axis,
-            maximum_y=maximum_y_axis,
-            coordinate_id=(
-                "y" if dataset_part == "originalGrid" else "latitude"
-            ),
-        ),
-        x_axis_parameters=XParameters(
-            minimum_x=minimum_x_axis,
-            maximum_x=maximum_x_axis,
-            coordinate_id=(
-                "x" if dataset_part == "originalGrid" else "longitude"
-            ),
-        ),
-        projection=(
-            "originalGrid" if dataset_part == "originalGrid" else "lonlat"
-        ),
-    )
-
-    load_request = LoadRequest(
+    subset_request = create_subset_request(
         dataset_id=dataset_id,
-        force_dataset_version=dataset_version,
-        force_dataset_part=dataset_part,
+        dataset_version=dataset_version,
+        dataset_part=dataset_part,
         username=username,
         password=password,
         variables=variables,
-        platform_ids=platform_ids,
-        geographical_parameters=geographicalparameters,
-        temporal_parameters=TemporalParameters(
-            start_datetime=start_datetime,
-            end_datetime=end_datetime,
-        ),
+        minimum_longitude=minimum_longitude,
+        maximum_longitude=maximum_longitude,
+        minimum_latitude=minimum_latitude,
+        maximum_latitude=maximum_latitude,
+        minimum_depth=minimum_depth,
+        maximum_depth=maximum_depth,
+        vertical_axis=vertical_axis,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
+        minimum_x=minimum_x,
+        maximum_x=maximum_x,
+        minimum_y=minimum_y,
+        maximum_y=maximum_y,
         coordinates_selection_method=coordinates_selection_method,
-        depth_parameters=DepthParameters(
-            minimum_depth=minimum_depth,
-            maximum_depth=maximum_depth,
-            vertical_axis=vertical_axis,
+        service=service,
+        credentials_file=(
+            pathlib.Path(credentials_file) if credentials_file else None
         ),
-        force_service=service,
-        credentials_file=credentials_file,
         disable_progress_bar=disable_progress_bar,
+        staging=staging,
+        raise_if_updating=raise_if_updating,
+        platform_ids=platform_ids,
     )
 
-    dataset = load_data_object_from_load_request(
-        load_request,
-        read_dataframe_from_arco_series,
-        chunks_factor_size_limit=0,
-        command_type=CommandType.READ_DATAFRAME,
+    return read_dataframe_function(
+        subset_request=subset_request,
     )
-    return dataset
+
+
+def _check_type(value, expected_type: type, name: str):
+    if not isinstance(value, expected_type):
+        raise TypeError(f"{name} must be of type {expected_type.__name__}")

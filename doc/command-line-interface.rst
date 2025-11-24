@@ -32,3 +32,9 @@ Command line interface
     :prog: login
     :nested: short
     :commands: login
+
+.. _cli-split-on:
+.. click:: copernicusmarine.command_line_interface.group_subset:split_on
+    :prog: split_on
+    :nested: short
+    :commands: split_on
