@@ -625,7 +625,7 @@ class CopernicusMarineDataset(BaseModel):
             return self.versions[0]
         for version in self.versions:
             if version.label == force_version:
-                 return version
+                return version
         raise DatasetVersionNotFound(self, force_version)
 
     def sort_versions(self) -> None:
@@ -800,9 +800,10 @@ class DatasetVersionNotFound(Exception):
                 f"The specified version '{force_version}' cannot be "
                 f"found for dataset {dataset.dataset_id}."
             )
-            message += f"\nAvailable versions are: {
-            [version.label for version in dataset.versions]
-            }."
+            message += (
+                "\nAvailable versions are: "
+                f"{[version.label for version in dataset.versions]}."
+            )
         else:
             message = f"No version found for dataset {dataset.dataset_id}."
         super().__init__(message)
