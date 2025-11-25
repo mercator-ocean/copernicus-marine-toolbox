@@ -6,6 +6,8 @@ from tests.test_utils import execute_in_terminal
 
 BINARY = os.getenv("BINARY_NAME")
 
+# run binaries tests too!
+
 
 class TestBasicCommandsBinaries:
     def test_help(self):
