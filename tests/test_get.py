@@ -13,6 +13,8 @@ from tests.test_utils import execute_in_terminal, get_all_files_in_folder_tree
 
 logger = logging.getLogger()
 
+# run tests
+
 
 class TestGet:
     def test_get_download_s3_without_regex(self, tmp_path):
