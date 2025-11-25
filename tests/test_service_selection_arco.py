@@ -3,7 +3,7 @@ from tests.test_utils import execute_in_terminal
 
 class TestArcoServiceSelection:
     def test_with_no_geographical_nor_temporal_subset(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",
@@ -23,7 +23,7 @@ class TestArcoServiceSelection:
         assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_only_geographical_subset(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",
@@ -51,7 +51,7 @@ class TestArcoServiceSelection:
         assert 'Selected service: "arco-time-series"' in self.output.stderr
 
     def test_with_only_temporal_subset(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",
@@ -77,7 +77,7 @@ class TestArcoServiceSelection:
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_geo_point(
         self,
     ):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",
@@ -111,7 +111,7 @@ class TestArcoServiceSelection:
     def test_with_a_mix_of_geographical_and_temporal_subset_with_single_temporal_point(
         self,
     ):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",
@@ -143,7 +143,7 @@ class TestArcoServiceSelection:
         assert 'Selected service: "arco-geo-series"' in self.output.stderr
 
     def test_with_a_mix_of_geographical_and_temporal_subset(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",

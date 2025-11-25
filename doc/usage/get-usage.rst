@@ -10,7 +10,7 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    copernicusmarine get --dataset-id needs_to_be_changed
 
 **Returns:**
 
@@ -84,7 +84,7 @@ The ``--filter`` option allows specifying a Unix shell-style wildcard pattern to
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --filter "*01yav_200[0-2]*"
+    copernicusmarine get --dataset-id needs_to_be_changed --filter "*01yav_200[0-2]*"
 
 Option ``--regex`` allows specifying a regular expression for more advanced file selection.
 
@@ -92,7 +92,7 @@ Option ``--regex`` allows specifying a regular expression for more advanced file
 
 .. code-block:: bash
 
-    copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --regex ".*01yav_20(00|01|02).*.nc"
+    copernicusmarine get -i needs_to_be_changed --regex ".*01yav_20(00|01|02).*.nc"
 
 About ``--file-list`` option
 -----------------------------

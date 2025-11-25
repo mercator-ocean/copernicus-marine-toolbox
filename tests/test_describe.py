@@ -626,4 +626,7 @@ class TestDescribe:
 
     def test_describe_function_with_contains(self):
         nwshelf_catalog = describe(contains=["NWSHELF"])
-        assert len(nwshelf_catalog.products) == 7
+        assert (
+            len([product.product_id for product in nwshelf_catalog.products])
+            == 8
+        )

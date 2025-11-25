@@ -93,7 +93,7 @@ This option allows you to specify request parameters in a provided JSON file, wh
   .. code-block:: text
 
     {
-        "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+        "dataset_id": "needs_to_be_changed",
         "dataset_version": null,
         "dataset_part": null,
         "username": null,

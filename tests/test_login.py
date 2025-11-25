@@ -32,7 +32,7 @@ def get_environment_without_crendentials():
 
 class TestLogin:
     def test_process_is_stopped_when_credentials_are_invalid(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
 
         command = [
             "copernicusmarine",
@@ -55,7 +55,7 @@ class TestLogin:
     def test_login_is_prompt_when_configuration_file_doest_not_exist(
         self, tmp_path
     ):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
         credentials_file = Path(tmp_path, "i_do_not_exist")
 
         environment_without_crendentials = (

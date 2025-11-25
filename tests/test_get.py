@@ -17,7 +17,7 @@ logger = logging.getLogger()
 # i dont know but something
 class TestGet:
     def test_get_download_s3_without_regex(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -34,7 +34,7 @@ class TestGet:
 
     def test_get_download_s3_with_regex(self, tmp_path):
         regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -61,7 +61,7 @@ class TestGet:
 
     def when_get_by_default_returns_status_message(self, tmp_path):
         filter_option = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -81,7 +81,7 @@ class TestGet:
 
     def and_i_do_skip_existing(self, tmp_path):
         filter_option = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -103,7 +103,7 @@ class TestGet:
         start_path = (
             f"{tmp_path}/"
             f"IBI_MULTIYEAR_PHY_005_002/"
-            f"cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/"
+            f"cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m_202211/"
             f"CMEMS_v5r1_IBI_PHY_MY_NL_01yav_"
         )
         assert os.path.exists(
@@ -115,7 +115,7 @@ class TestGet:
         assert returned_value["total_size"] == 0
 
     def test_get_download_with_dry_run_option(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -148,7 +148,7 @@ class TestGet:
 
     def test_get_can_choose_return_fields(self, tmp_path):
         filter_ = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-mld_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -174,7 +174,7 @@ class TestGet:
             assert "https://" in get_file["https_url"]
 
     def test_get_wrong_input_response_fields_warning_and_error(self):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-mld_my_0.027deg_P1Y-m"
         response_fields = "https_url, wrong_field"
         command = [
             "copernicusmarine",
@@ -204,7 +204,7 @@ class TestGet:
 
     def test_get_download_s3_with_wildcard_filter(self, tmp_path):
         filter_ = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -227,7 +227,7 @@ class TestGet:
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
         filter_option = "*_200[45]*.nc"
         regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -254,7 +254,7 @@ class TestGet:
 
     def test_get_download_no_files(self):
         regex = "toto"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -279,7 +279,7 @@ class TestGet:
         )
 
         filter_ = "*_200[12]*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -373,7 +373,7 @@ class TestGet:
 
     def test_get_download_file_list(self, tmp_path):
         regex = ".*_(2001|2002|2003).*.nc"
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -438,7 +438,7 @@ class TestGet:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "cmems_mod_ibi_phy-sal_my_0.027deg_P1Y-m",
             "--staging",
             "--log-level",
             "DEBUG",
@@ -454,7 +454,7 @@ class TestGet:
         get_result = get(
             username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
             password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
-            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            dataset_id="cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m",
             output_directory=tmp_path,
         )
         assert get_result is not None

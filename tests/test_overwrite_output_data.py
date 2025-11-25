@@ -24,7 +24,7 @@ class TestOverwriteOutputData:
         self.filename = "data.nc"
         self.tmp_path = tmp_path
         self.expected_downloaded_filepath = pathlib.Path(
-            "IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc"  # noqa
+            "IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-sal_my_0.027deg_P1Y-m_202211/CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20120101_20121231_R20221101_RE01.nc"  # noqa
         )
         self._test_download_with_overwrite_option()
         self._test_download_without_overwrite_option()
@@ -169,7 +169,7 @@ class TestOverwriteOutputData:
                 "copernicusmarine",
                 f"{command}",
                 "-i",
-                "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+                "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m",
                 "--regex",
                 ".*20120101.*",
                 "-o",

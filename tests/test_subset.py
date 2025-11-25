@@ -292,7 +292,7 @@ class TestSubset:
         ) in self.output.stderr
 
     def check_subset_request_with_no_subsetting(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-mld_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "subset",
@@ -418,7 +418,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m",
             "--variable",
             "thetao",
             "--minimum-longitude",
@@ -440,7 +440,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m",
             "--variable",
             "thetao",
             "--minimum-longitude",
@@ -471,7 +471,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m",
             "--variable",
             "thetao",
             "--minimum-longitude",
@@ -711,7 +711,7 @@ class TestSubset:
         )
 
     def test_subset_filter_by_standard_name(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m"
         output_filename = "data.zarr"
 
         command = [
@@ -757,7 +757,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "-i",
-            "med-cmcc-cur-rean-h",
+            "cmems_mod_med_phy-cur_my_4.2km_PT1H-m",
             "-x",
             "3.08",
             "-X",
@@ -786,7 +786,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "-i",
-            "med-cmcc-cur-rean-h",
+            "cmems_mod_med_phy-cur_my_4.2km_PT1H-m",
             "-x",
             "3.08",
             "-X",
@@ -808,7 +808,7 @@ class TestSubset:
             "-o",
             f"{tmp_path}",
         ]
-        expected_dataset_id = "med-cmcc-cur-rean-h"
+        expected_dataset_id = "cmems_mod_med_phy-cur_my_4.2km_PT1H-m"
         expected_variables = "uo-vo"
         expected_longitude = "3.08E-3.17E"
         expected_latitude = "42.94N-45.98N"
@@ -904,7 +904,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "-i",
-            "med-cmcc-cur-rean-h",
+            "cmems_mod_med_phy-cur_my_4.2km_PT1H-m",
             "-x",
             "3.08",
             "-X",
@@ -1018,7 +1018,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "-i",
-            "blksea_omi_circulation_rim_current_index",
+            "omi_circulation_boundary_blksea_rim_current_index",
             "-v",
             "BSRCI",
             "-o",
@@ -1086,7 +1086,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "-i",
-            "med-cmcc-cur-rean-h",
+            "cmems_mod_med_phy-cur_my_4.2km_PT1H-m",
             "-x",
             "3.08",
             "-X",
@@ -1358,8 +1358,8 @@ class TestSubset:
         max_latitude = 50
         min_depth = 1.1
         max_depth = 2.3
-        start_datetime = "2023-01-01T00:00:00"
-        end_datetime = "2023-01-03T23:04:00"
+        start_datetime = "2024-01-01T00:00:00"
+        end_datetime = "2024-01-03T23:04:00"
         command = [
             "copernicusmarine",
             "subset",
@@ -1415,7 +1415,7 @@ class TestSubset:
             "copernicusmarine",
             "subset",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+            "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m",
             "--variable",
             "thetao",
             "--staging",
@@ -1630,7 +1630,7 @@ class TestSubset:
         )
 
     def test_log_level_debug(self, tmp_path):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-mld_my_0.027deg_P1Y-m"
         output_filename = "data.zarr"
 
         command = [
@@ -1708,7 +1708,7 @@ class TestSubset:
         assert output_netcdf_format.stdout == "classic\n"
 
     def test_invert_min_max_raises_error_or_warning(self, caplog):
-        dataset_id = "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-sal_my_0.027deg_P1Y-m"
         with pytest.raises(
             ValueError,
             match="Minimum latitude greater than maximum latitude",

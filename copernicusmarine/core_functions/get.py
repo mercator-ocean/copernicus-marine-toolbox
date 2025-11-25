@@ -171,7 +171,7 @@ def create_get_template() -> None:
     with open(filename, "w") as output_file:
         json.dump(
             {
-                "dataset_id": "cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m",
+                "dataset_id": "cmems_mod_ibi_phy-mld_my_0.027deg_P1Y-m",
                 "dataset_version": None,
                 "dataset_part": None,
                 "username": None,
