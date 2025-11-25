@@ -6,7 +6,7 @@ from tests.test_utils import execute_in_terminal
 
 BINARY = os.getenv("BINARY_NAME")
 
-# run binaries tests too!
+# something else
 
 
 class TestBasicCommandsBinaries:
