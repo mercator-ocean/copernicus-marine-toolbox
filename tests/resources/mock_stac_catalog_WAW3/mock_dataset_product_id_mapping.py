@@ -352,7 +352,7 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "cmems_mod_ibi_phy_my_0.083deg-2D_PT1H-m": "IBI_MULTIYEAR_PHY_005_002",
     "cmems_mod_ibi_phy_my_0.083deg-3D-climatology_P1M-m": "IBI_MULTIYEAR_PHY_005_002",
     "cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m": "IBI_MULTIYEAR_PHY_005_002",
-    "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m": "IBI_MULTIYEAR_PHY_005_002",
+    "cmems_mod_ibi_phy-wflux_my_0.027deg_P1M-m": "IBI_MULTIYEAR_PHY_005_002",
     "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m": "IBI_MULTIYEAR_PHY_005_002",
     "cmems_mod_ibi_phy_my_0.083deg-3D_static": "IBI_MULTIYEAR_PHY_005_002",
     "cmems_mod_ibi_phy_myint-hflux_0.083deg_P1D-m": "IBI_MULTIYEAR_PHY_005_002",

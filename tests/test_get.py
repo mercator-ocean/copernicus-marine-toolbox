@@ -14,7 +14,6 @@ from tests.test_utils import execute_in_terminal, get_all_files_in_folder_tree
 logger = logging.getLogger()
 
 
-# i dont know but something
 class TestGet:
     def test_get_download_s3_without_regex(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
@@ -30,7 +29,7 @@ class TestGet:
         self.output = execute_in_terminal(command)
         downloaded_files = get_all_files_in_folder_tree(folder=tmp_path)
         assert self.output.returncode == 0
-        assert len(downloaded_files) == 31
+        assert len(downloaded_files) == 30
 
     def test_get_download_s3_with_regex(self, tmp_path):
         regex = ".*_(2001|2002|2003).*.nc"
@@ -81,7 +80,7 @@ class TestGet:
 
     def and_i_do_skip_existing(self, tmp_path):
         filter_option = "*_200[123]*.nc"
-        dataset_id = "cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m"
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m"
         command = [
             "copernicusmarine",
             "get",
@@ -103,14 +102,14 @@ class TestGet:
         start_path = (
             f"{tmp_path}/"
             f"IBI_MULTIYEAR_PHY_005_002/"
-            f"cmems_mod_ibi_phy-ssh_my_0.027deg_P1Y-m_202211/"
-            f"CMEMS_v5r1_IBI_PHY_MY_NL_01yav_"
+            f"cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m_202511/"
+            f"CMEMS_v6r1_IBI_PHY_MY_NL_01yav_temp_"
         )
         assert os.path.exists(
-            start_path + "20010101_20011231_R20221101_RE01.nc"
+            start_path + "20010101_20011231_R20251125_RE01.nc"
         )
         assert not os.path.exists(
-            start_path + "20010101_20011231_R20221101_RE01_(1).nc"
+            start_path + "20010101_20011231_R20251125_RE01_(1).nc"
         )
         assert returned_value["total_size"] == 0
 
@@ -300,8 +299,8 @@ class TestGet:
         self, tmp_path, output_directory=None
     ):
         expected_files = [
-            "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc",
-            "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc",
+            "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_temp_20010101_20011231_R20251125_RE01.nc",
+            "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_temp_20020101_20021231_R20251125_RE01.nc",
         ]
 
         download_folder = (
@@ -397,15 +396,15 @@ class TestGet:
             lines = file.read().splitlines()
             assert len(lines) == 3
             assert (
-                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20010101_20011231_R20221101_RE01.nc"
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20010101_20011231_R20251125_RE01.nc"
                 in lines[0]
             )
             assert (
-                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20020101_20021231_R20221101_RE01.nc"
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20020101_20021231_R20251125_RE01.nc"
                 in lines[1]
             )
             assert (
-                "CMEMS_v5r1_IBI_PHY_MY_NL_01yav_20030101_20031231_R20221101_RE01.nc"
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20030101_20031231_R20251125_RE01.nc"
                 in lines[2]
             )
 

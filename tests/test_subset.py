@@ -420,7 +420,7 @@ class TestSubset:
             "--dataset-id",
             "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m",
             "--variable",
-            "thetao",
+            "vo",
             "--minimum-longitude",
             "-9.9",
             "--maximum-longitude",
@@ -448,9 +448,9 @@ class TestSubset:
             "--maximum-longitude",
             "-9.6",
             "-t",
-            "2023",
+            "2021",
             "-T",
-            "2023",
+            "2021",
             "-y",
             "55",
             "-Y",
@@ -720,7 +720,7 @@ class TestSubset:
             "--dataset-id",
             f"{dataset_id}",
             "--variable",
-            "sea_water_potential_temperature",
+            "zos",
             "--minimum-longitude",
             "-9.9",
             "--maximum-longitude",
@@ -742,7 +742,7 @@ class TestSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         assert (
-            "thetao"
+            "zos"
             in xarray.open_zarr(f"{tmp_path}/{output_filename}").variables
         )
         response = loads(self.output.stdout)
@@ -1405,10 +1405,10 @@ class TestSubset:
         assert dataset.elevation.values.min() <= -2.3  # our limit
         assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.strptime("2023-01-01", "%Y-%m-%d")
+        ) <= datetime.strptime("2024-01-01", "%Y-%m-%d")
         assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.strptime("2023-01-03", "%Y-%m-%d")
+        ) >= datetime.strptime("2024-01-03", "%Y-%m-%d")
 
     def test_subset_goes_to_staging(self):
         command = [
@@ -1639,7 +1639,7 @@ class TestSubset:
             "--dataset-id",
             f"{dataset_id}",
             "--variable",
-            "sea_water_potential_temperature",
+            "mlotst",
             "--minimum-longitude",
             "-9.9",
             "--maximum-longitude",

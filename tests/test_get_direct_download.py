@@ -191,7 +191,7 @@ class TestGetDirectDownload:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            "cmems_mod_ibi_phy-wcur_my_0.027deg_P1M-m",
             "--file-list",
             DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS,
             "-o",
@@ -205,8 +205,9 @@ class TestGetDirectDownload:
         )
         to_check = FileToCheck(
             "/IBI_MULTIYEAR_PHY_005_002/"
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/"
-            "2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20211001_20211031_R20230101_RE01.nc"
+            "cmems_mod_ibi_phy-wcur_my_0.027deg_P1M-m_202511/"
+            "2025/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_wcur_20250701"
+            "_20250731_R20251125_IN01.nc"
         ).get_path()
         assert os.path.exists(f"{tmp_path}{to_check}")
         assert self.output.returncode == 0

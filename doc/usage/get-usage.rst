@@ -40,14 +40,14 @@ If the user inputs a filename that ends in ``.txt``, it will contain only the fu
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.txt
+    copernicusmarine get --dataset-id needs-to-be-updated-monthly --filter "*2021*" --create-file-list selected_files_for_2021.txt
 
 The content of ``selected_files_for_2021.txt`` would be:
 
 .. code-block:: text
 
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/needs-to-be-updated-monthly_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/needs-to-be-updated-monthly_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
     [...]
 
 If the user inputs a filename that ends in ``.csv``, it will contain columns separated by a comma: ``filename``, ``size`` (in Bytes), ``last_modified_datetime``, and ``etag``. It is **not** directly compatible with the ``--file-list`` option and would require post-processing.
@@ -56,14 +56,14 @@ If the user inputs a filename that ends in ``.csv``, it will contain columns sep
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.csv
+    copernicusmarine get --dataset-id needs-to-be-updated-monthly --filter "*2021*" --create-file-list selected_files_for_2021.csv
 
 The content of ``selected_files_for_2021.csv`` would be:
 
 .. code-block:: text
 
     filename,size,last_modified_datetime,etag
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc,12295906,2023-11-12 23:47:05.466000+00:00,"e8a7e564f676a08bf601bcdeaebdc563"
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/needs-to-be-updated-monthly_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc,12295906,2023-11-12 23:47:05.466000+00:00,"e8a7e564f676a08bf601bcdeaebdc563"
     [...]
 
 About ``--sync`` option
@@ -124,8 +124,8 @@ By default, the ``get`` functionality lists all files on the remote server to se
 
 .. code-block:: text
 
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/needs-to-be-updated-monthly_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/needs-to-be-updated-monthly_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/needs-to-be-updated-monthly_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc
 
 Note that a path to a file can include wildcards or regular expressions.
