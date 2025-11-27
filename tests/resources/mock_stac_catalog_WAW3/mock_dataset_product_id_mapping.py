@@ -305,7 +305,7 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "cmems_mod_glo_phy_my_0.083deg_P1M-m": "GLOBAL_MULTIYEAR_PHY_001_030",
     "cmems_mod_glo_phy_my_0.083deg_static": "GLOBAL_MULTIYEAR_PHY_001_030",
     "cmems_mod_glo_phy_myint_0.083deg_P1D-m": "GLOBAL_MULTIYEAR_PHY_001_030",
-    "cmems_mod_glo_phy_myint_0.083deg_P1M-m": "GLOBAL_MULTIYEAR_PHY_001_030",
+    "cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m": "GLOBAL_MULTIYEAR_PHY_001_030",
     "cmems_mod_glo_wav_anfc_0.083deg_PT3H-i": "GLOBAL_ANALYSISFORECAST_WAV_001_027",
     "cmems_mod_glo_wav_my_0.2deg-climatology_P1M-m": "GLOBAL_MULTIYEAR_WAV_001_032",
     "cmems_mod_glo_wav_my_0.2deg_PT3H-i": "GLOBAL_MULTIYEAR_WAV_001_032",

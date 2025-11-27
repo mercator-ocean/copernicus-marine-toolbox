@@ -62,9 +62,9 @@ This option allows you to specify request parameters in a provided JSON file, wh
   .. code-block:: text
 
     {
-        "dataset_id": "cmems_mod_glo_phy_myint_0.083deg_P1M-m",
-        "start_datetime": "2023-10-07",
-        "end_datetime": "2023-10-12",
+        "dataset_id": "cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m",
+        "start_datetime": "2023-10-01",
+        "end_datetime": "2023-11-01",
         "minimum_longitude": -85,
         "maximum_longitude": -10,
         "minimum_latitude": 35,
@@ -72,7 +72,7 @@ This option allows you to specify request parameters in a provided JSON file, wh
         "minimum_depth": 1,
         "maximum_depth": 10,
         "variables": [
-            "so",
+            "bottomT",
             "thetao"
         ],
         "output_directory": "copernicusmarine_data",
@@ -93,13 +93,13 @@ This option allows you to specify request parameters in a provided JSON file, wh
   .. code-block:: text
 
     {
-        "dataset_id": "needs_to_be_changed",
+        "dataset_id": "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m",
         "dataset_version": null,
         "dataset_part": null,
         "username": null,
         "password": null,
         "no_directories": false,
-        "filter": "*01yav_200[0-2]*",
+        "filter": "*01yav_temp_200[0-2]*",
         "regex": null,
         "output_directory": "copernicusmarine_data",
         "file_list": null,

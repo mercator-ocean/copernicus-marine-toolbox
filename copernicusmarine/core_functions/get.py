@@ -171,13 +171,13 @@ def create_get_template() -> None:
     with open(filename, "w") as output_file:
         json.dump(
             {
-                "dataset_id": "cmems_mod_ibi_phy-mld_my_0.027deg_P1Y-m",
+                "dataset_id": "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m",
                 "dataset_version": None,
                 "dataset_part": None,
                 "username": None,
                 "password": None,
                 "no_directories": False,
-                "filter": "*01yav_200[0-2]*",
+                "filter": "*01yav_temp_200[0-2]*",
                 "regex": None,
                 "output_directory": "copernicusmarine_data",
                 "file_list": None,
