@@ -60,12 +60,14 @@ def get(
         If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, then search for a credentials file, else ask for user input. See also :func:`~copernicusmarine.login`
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
+        Mutually exclusive with ``sync_delete``.
     output_directory : Union[pathlib.Path, str], optional
         The destination folder for the downloaded files. Default is the current directory.
     credentials_file : Union[pathlib.Path, str], optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
+        Mutually exclusive with ``skip_existing``, ``sync`` and ``sync_delete``.
     request_file : Union[pathlib.Path, str], optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     filter : str, optional
@@ -78,10 +80,15 @@ def get(
         Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file to the specified output directory (default to current directory). The file name specified should end with '.txt' or '.csv'. If specified, no other action will be performed.
     sync : bool, optional
         Option to synchronize the local directory with the remote directory. See the documentation for more details.
+        Requires to set ``dataset_version``.
+        Mutually exclusive with ``skip_existing`` and ``overwrite``.
     sync_delete : bool, optional
         Option to delete local files that are not present on the remote server while applying sync.
+        Requires to set ``dataset_version``.
+        Mutually exclusive with ``skip_existing``, ``overwrite`` and ``no_directories``.
     skip_existing : bool, optional
         If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
+        Mutually exclusive with ``overwrite``, ``sync`` and ``sync_delete``.
     index_parts : bool, optional
         Option to get the index files of an INSITU dataset.
     dry_run : bool, optional
@@ -110,8 +117,6 @@ def get(
             raise MutuallyExclusiveArguments("skip_existing", "sync")
         elif sync_delete:
             raise MutuallyExclusiveArguments("skip_existing", "sync_delete")
-        elif no_directories:
-            raise MutuallyExclusiveArguments("skip_existing", "no_directories")
     if no_directories:
         if sync_delete:
             raise MutuallyExclusiveArguments("sync_delete", "no_directories")

@@ -69,11 +69,14 @@ The content of ``selected_files_for_2021.csv`` would be:
 About ``--sync`` option
 ------------------------
 
-The ``--sync`` option downloads original files only if they do not exist or are not up to date. The toolbox checks the destination folder against the source folder and can be combined with filters. If set with ``--overwrite``, the latter will be ignored. The ``--sync-delete`` option works like ``--sync`` but also deletes any local files not found on the remote server.
+The ``--sync`` option downloads original files only if they do not exist or are not up to date.
+The toolbox checks the destination folder against the source folder and can be combined with filters.
+The ``--sync-delete`` option works like ``--sync`` but also deletes any local files not found on the remote server.
 
 **Limitations:**
 
 - ``--sync`` only works with ``--dataset-version``. (see :ref:`dataset-version <dataset version>` option )
+- ``--sync-delete`` is not compatible with ``--no-directories``.
 
 About filtering options
 ------------------------
