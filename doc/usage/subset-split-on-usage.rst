@@ -1,4 +1,4 @@
-.. _subset-split:
+.. _subset-split-on:
 
 ===========================
 Command ``subset-split-on``

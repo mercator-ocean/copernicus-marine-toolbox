@@ -686,8 +686,8 @@ def _create_filenames_out(
 
 def _create_filename_out(
     file_path: str,
-    output_directory: pathlib.Path = pathlib.Path("."),
-    no_directories=False,
+    output_directory: pathlib.Path,
+    no_directories: bool,
 ):
     if no_directories:
         filename_out = (
