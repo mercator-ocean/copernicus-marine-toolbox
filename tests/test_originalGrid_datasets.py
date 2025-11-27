@@ -24,7 +24,7 @@ ORIGINAL_GRID_DATASETS = [
     ],
     [
         "DMI-ARC-SEAICE_BERG_IW-L4-NRT-OBS",
-        "2020",
+        "2024",
         "-1055555",
         "1055555",
         "355555",
@@ -32,7 +32,7 @@ ORIGINAL_GRID_DATASETS = [
     ],
     [
         "DMI-ARC-SEAICE_BERG-L4-NRT-OBS",
-        "2020",
+        "2024",
         "-1055555",
         "1055555",
         "355555",
@@ -157,7 +157,7 @@ ORIGINAL_GRID_DATASETS = [
     ],
     [
         "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
-        "2020",
+        "2024",
         "220000",
         "2150000",
         "215000",

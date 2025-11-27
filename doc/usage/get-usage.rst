@@ -10,22 +10,22 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m
 
 **Returns:**
 
 .. code-block:: bash
 
-    INFO - 2025-07-10T13:11:13Z - Selected dataset version: "202211"
-    INFO - 2025-07-10T13:11:13Z - Selected dataset part: "default"
-    INFO - 2025-07-10T13:11:13Z - Listing files on remote server...
-    1it [00:00,  2.74it/s]
-    Downloading files: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 31/31 [00:25<00:00,  1.22it/s]
+    INFO - 2025-11-27T11:20:55Z - Selected dataset version: "202511"
+    INFO - 2025-11-27T11:20:55Z - Selected dataset part: "default"
+    INFO - 2025-11-27T11:20:55Z - Listing files on remote server...
+    1it [00:00, 10.68it/s]
+    Downloading files: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 30/30 [00:32<00:00,  1.08s/it]
     {
-      "number_of_files_to_download": 31,
-      "total_size": 258.66549015045166,
-      "status": "000",
-      "message": "The request was successful."
+    "number_of_files_to_download": 30,
+    "total_size": 1354.8411445617676,
+    "status": "000",
+    "message": "The request was successful."
     }
 
 **By default:**
@@ -40,14 +40,14 @@ If the user inputs a filename that ends in ``.txt``, it will contain only the fu
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.txt
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.txt
 
 The content of ``selected_files_for_2021.txt`` would be:
 
 .. code-block:: text
 
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m_202511/2021/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_temp_20210101_20210131_R20251125_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m_202511/2021/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_temp_20210201_20210228_R20251125_RE01.nc
     [...]
 
 If the user inputs a filename that ends in ``.csv``, it will contain columns separated by a comma: ``filename``, ``size`` (in Bytes), ``last_modified_datetime``, and ``etag``. It is **not** directly compatible with the ``--file-list`` option and would require post-processing.
@@ -56,14 +56,14 @@ If the user inputs a filename that ends in ``.csv``, it will contain columns sep
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.csv
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m --filter "*2021*" --create-file-list selected_files_for_2021.csv
 
 The content of ``selected_files_for_2021.csv`` would be:
 
 .. code-block:: text
 
     filename,size,last_modified_datetime,etag
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc,12295906,2023-11-12 23:47:05.466000+00:00,"e8a7e564f676a08bf601bcdeaebdc563"
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m_202511/2021/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_temp_20210101_20210131_R20251125_RE01.nc,49558406.0,2025-10-02T12:01:01.149000+00:00,"f04e74284d48a11234bf25231fbdee15-6"
     [...]
 
 About ``--sync`` option
@@ -84,7 +84,7 @@ The ``--filter`` option allows specifying a Unix shell-style wildcard pattern to
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --filter "*01yav_200[0-2]*"
+    copernicusmarine get --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m --filter "*01yav_temp_200[0-2]*"
 
 Option ``--regex`` allows specifying a regular expression for more advanced file selection.
 
@@ -92,7 +92,7 @@ Option ``--regex`` allows specifying a regular expression for more advanced file
 
 .. code-block:: bash
 
-    copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1Y-m --regex ".*01yav_20(00|01|02).*.nc"
+    copernicusmarine get -i cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m --regex ".*01yav_temp_20(00|01|02).*.nc"
 
 About ``--file-list`` option
 -----------------------------
@@ -124,8 +124,8 @@ By default, the ``get`` functionality lists all files on the remote server to se
 
 .. code-block:: text
 
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210101_20210131_R20230101_RE01.nc
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210201_20210228_R20230101_RE01.nc
-    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m_202012/2021/CMEMS_v5r1_IBI_PHY_MY_PdE_01mav_20210301_20210331_R20230101_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m_202511/2021/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_temp_20210101_20210131_R20251125_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m_202511/2021/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_temp_20210201_20210228_R20251125_RE01.nc
+    s3://mdl-native-10/native/IBI_MULTIYEAR_PHY_005_002/cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m_202511/2021/CMEMS_v6r1_IBI_PHY_MY_NL_01mav_temp_20210301_20210331_R20251125_RE01.nc
 
 Note that a path to a file can include wildcards or regular expressions.

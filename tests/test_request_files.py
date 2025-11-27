@@ -115,6 +115,7 @@ class TestRequestFiles:
         command += [
             "--output-directory",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -130,6 +131,7 @@ class TestRequestFiles:
         command += [
             "--output-directory",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)
@@ -144,6 +146,7 @@ class TestRequestFiles:
         command += [
             "--output-directory",
             f"{tmp_path}",
+            "--dry-run",
         ]
 
         self.output = execute_in_terminal(command)

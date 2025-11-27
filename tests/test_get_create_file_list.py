@@ -12,7 +12,7 @@ class TestGetCreateFileList:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            "cmems_mod_ibi_phy-hflux_my_0.027deg_P1M-m",
             "--create-file-list",
             "hello",
         ]
@@ -27,7 +27,7 @@ class TestGetCreateFileList:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            "cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m",
             "--create-file-list",
             "hello.txt",
         ]
@@ -41,7 +41,7 @@ class TestGetCreateFileList:
             "copernicusmarine",
             "get",
             "--dataset-id",
-            "cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            "cmems_mod_ibi_phy-mflux_my_0.027deg_P1M-m",
             "--create-file-list",
             "hello.csv",
         ]
@@ -56,7 +56,7 @@ class TestGetCreateFileList:
     def test_get_create_file_list_without_extension_raises_python(self):
         with pytest.raises(AssertionError) as e:
             get(
-                dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+                dataset_id="cmems_mod_ibi_phy-mld_my_0.027deg_P1M-m",
                 create_file_list="hello",
                 dry_run=True,
             )
@@ -67,7 +67,7 @@ class TestGetCreateFileList:
 
     def test_get_create_file_list_python(self):
         get(
-            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            dataset_id="cmems_mod_ibi_phy-sal_my_0.027deg_P1M-m",
             create_file_list="hello_python.txt",
         )
         assert os.path.isfile("hello_python.txt")
@@ -76,7 +76,7 @@ class TestGetCreateFileList:
 
     def test_get_create_file_list_csv_python(self):
         get(
-            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            dataset_id="cmems_mod_ibi_phy-ssh_my_0.027deg_P1M-m",
             create_file_list="hello_python.csv",
         )
         assert os.path.isfile("hello_python.csv")
@@ -88,18 +88,18 @@ class TestGetCreateFileList:
 
     def test_get_create_file_with_overwrite_option(self):
         get(
-            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m",
             create_file_list="hello_python_overwrite.txt",
         )
         get(
-            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m",
             create_file_list="hello_python_overwrite.txt",
             overwrite=True,
         )
         assert not os.path.isfile("hello_python_overwrite_(1).txt")
 
         get(
-            dataset_id="cmems_mod_ibi_phy_my_0.083deg-3D_P1M-m",
+            dataset_id="cmems_mod_ibi_phy-wcur_my_0.027deg_P1M-m",
             create_file_list="hello_python_overwrite.txt",
         )
         assert os.path.isfile("hello_python_overwrite_(1).txt")

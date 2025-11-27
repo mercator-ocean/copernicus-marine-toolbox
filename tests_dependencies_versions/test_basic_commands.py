@@ -23,7 +23,7 @@ class TestBasicCommands:
             "copernicusmarine",
             "subset",
             "-i",
-            "med-hcmr-wav-rean-h",
+            "cmems_mod_med_wav_my_4.2km_PT1H-i",
             "-x",
             "13.723",
             "-X",
