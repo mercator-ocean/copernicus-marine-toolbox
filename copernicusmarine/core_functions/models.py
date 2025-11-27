@@ -14,7 +14,7 @@ FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
 DEFAULT_FILE_FORMATS = list(get_args(FileFormat))
 
-FileExtension = Literal[".nc", ".zarr"]
+FileExtension = Literal[".nc", ".zarr", ".csv"]
 DEFAULT_FILE_EXTENSION: FileExtension = ".nc"
 DEFAULT_FILE_EXTENSIONS = list(get_args(FileExtension))
 
