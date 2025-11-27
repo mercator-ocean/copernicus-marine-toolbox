@@ -32,7 +32,7 @@ ORIGINAL_GRID_DATASETS = [
     ],
     [
         "DMI-ARC-SEAICE_BERG-L4-NRT-OBS",
-        "2020",
+        "2024",
         "-1055555",
         "1055555",
         "355555",
@@ -157,7 +157,7 @@ ORIGINAL_GRID_DATASETS = [
     ],
     [
         "DMI-ARC-SEAICE_BERG_MOSAIC_IW-L4-NRT-OBS",
-        "2020",
+        "2024",
         "220000",
         "2150000",
         "215000",
@@ -296,7 +296,7 @@ class TestOriginalGridDatasets:
 
     def test_originalGrid_works_when_subsetting(self):
         for dataset_info in ORIGINAL_GRID_DATASETS:
-            if random.randrange(start=100) > 80:
+            if random.randrange(start=100) > 0:
                 print(f"running dataset {dataset_info[0]}")
                 self.run_one_dataset(dataset_info)
 
