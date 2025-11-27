@@ -173,6 +173,7 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.4.2 or later)
 
 .. _xarray-issue:
+
 About ``xarray`` and ``numpy``
 -------------------------------
 
@@ -188,6 +189,7 @@ For ``zarr>=3.0.0``:
 - If you want to use ``zarr>=3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
 
 .. _netcdf4-issue:
+
 About ``h5netcdf``, ``netcdf4`` and ``h5py``
 -----------------------------------------------
 
@@ -216,6 +218,7 @@ and ``h5netcdf`` library as the backend.
 There is an incompatiblity with the use of netcdf4 and h5py for linux systems, related to this `issue <https://github.com/Unidata/netcdf4-python/issues/1438>`_ . For the moment we can recommend not to update those libraries beyond versions ``netcdf4<=1.7.2`` if you are on linux systems and using the netcdf4 backend.
 
 .. _click-issue:
+
 About ``click``
 -----------------
 
