@@ -55,3 +55,11 @@ New Features
 ^^^^^^^^^^^^
 
 * Removed the incompatibility between the ``sync`` option and the ``no_directories`` option. They can now be used together.
+
+Login
+-----
+
+Fixes
+^^^^^
+
+* The argument ``configuration_file_directory`` in the ``login`` function can now accept both string and pathlib.Path types as prescribed in the documentation.
