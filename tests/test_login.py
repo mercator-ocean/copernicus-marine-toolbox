@@ -460,3 +460,18 @@ class TestLogin:
 
         with pytest.raises(CouldNotConnectToAuthenticationSystem):
             login(username="toto", password="lololo")
+
+    def test_credentials_file_as_str(self, tmp_path):
+        folder = Path(tmp_path, "cred_test_types")
+        assert login(
+            username=os.getenv("COPERNICUSMARINE_SERVICE_USERNAME"),
+            password=os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD"),
+            configuration_file_directory=str(folder),
+            force_overwrite=True,
+        )
+
+        assert (folder / ".copernicusmarine-credentials").is_file()
+        assert login(
+            check_credentials_valid=True,
+            configuration_file_directory=folder,
+        )
