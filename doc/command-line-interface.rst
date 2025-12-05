@@ -18,8 +18,8 @@ Command line interface
 .. _cli-subset:
 .. click:: copernicusmarine.command_line_interface.group_subset:subset
     :prog: subset
-    :nested: short
-    :commands: subset
+    :nested: full
+    :commands: subset,split-on
 
 .. _cli-get:
 .. click:: copernicusmarine.command_line_interface.group_get:get
@@ -32,9 +32,3 @@ Command line interface
     :prog: login
     :nested: short
     :commands: login
-
-.. _cli-split-on:
-.. click:: copernicusmarine.command_line_interface.group_subset:split_on
-    :prog: split_on
-    :nested: short
-    :commands: split_on

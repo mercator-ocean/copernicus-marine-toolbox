@@ -8,6 +8,9 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
 )
+from copernicusmarine.core_functions.exceptions import (
+    MutuallyExclusiveArguments,
+)
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_VERTICAL_AXIS,
@@ -125,8 +128,10 @@ def subset(
         Format of the downloaded dataset. If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets and to CSV '.csv' for sparse datasets.
     overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
+        Mutually exclusive with ``skip_existing``.
     skip_existing : bool, optional
         If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
+        Mutually exclusive with ``overwrite``.
     service : str, optional
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     request_file : Union[pathlib.Path, str], optional
@@ -151,6 +156,9 @@ def subset(
     ResponseSubset
         A description of the downloaded data and its destination.
     """  # noqa
+    if overwrite:
+        if skip_existing:
+            raise MutuallyExclusiveArguments("overwrite", "skip_existing")
 
     if variables is not None:
         _check_type(variables, list, "variables")
