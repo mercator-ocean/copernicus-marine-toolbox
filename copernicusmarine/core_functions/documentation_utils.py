@@ -295,11 +295,11 @@ GET: dict[str, str] = {
     ),
     "SYNC_HELP": (
         "Option to synchronize the local directory with the remote directory. See the "
-        "documentation for more details."
+        "documentation for more details. Requires to set ``--dataset-version``."
     ),
     "SYNC_DELETE_HELP": (
         "Option to delete local files that are not present on the remote server while "
-        "applying sync."
+        "applying sync. Requires to set ``--dataset-version``."
     ),
     "INDEX_PARTS_HELP": (
         "Option to get the index files of an INSITU dataset."
