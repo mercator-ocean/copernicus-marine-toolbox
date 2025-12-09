@@ -79,12 +79,10 @@ def get(
     create_file_list : str, optional
         Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file to the specified output directory (default to current directory). The file name specified should end with '.txt' or '.csv'. If specified, no other action will be performed.
     sync : bool, optional
-        Option to synchronize the local directory with the remote directory. See the documentation for more details.
-        Requires to set ``dataset_version``.
+        Option to synchronize the local directory with the remote directory. See the documentation for more details. Requires to set ``dataset_version``.
         Mutually exclusive with ``skip_existing`` and ``overwrite``.
     sync_delete : bool, optional
-        Option to delete local files that are not present on the remote server while applying sync.
-        Requires to set ``dataset_version``.
+        Option to delete local files that are not present on the remote server while applying sync. Requires to set ``dataset_version``.
         Mutually exclusive with ``skip_existing``, ``overwrite`` and ``no_directories``.
     skip_existing : bool, optional
         If the files already exists where it would be downloaded, then the download is skipped for this file. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
