@@ -335,7 +335,9 @@ def _format_datetimes(
     if minimum_datetime is None or maximum_datetime is None:
         return ""
     else:
-        if minimum_datetime == maximum_datetime:
+        if minimum_datetime.strftime(time_format) == maximum_datetime.strftime(
+            time_format
+        ):
             formatted_datetime = f"{minimum_datetime.strftime(time_format)}"
         else:
             formatted_datetime = (
