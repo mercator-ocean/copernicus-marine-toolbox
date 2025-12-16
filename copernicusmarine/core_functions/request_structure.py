@@ -417,8 +417,8 @@ def create_subset_request(
         request_update_dict["dry_run"] = dry_run
     if staging:
         request_update_dict["staging"] = staging
-    if disable_progress_bar:
-        request_update_dict["disable_progress_bar"] = disable_progress_bar
+    if disable_progress_bar or dry_run:
+        request_update_dict["disable_progress_bar"] = True
 
     return subset_request.update(request_update_dict)
 

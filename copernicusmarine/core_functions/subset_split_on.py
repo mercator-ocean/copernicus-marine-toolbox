@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from datetime import datetime
 from typing import Optional, Union
 
@@ -135,7 +136,7 @@ def subset_split_on_function(
                 on_variables=on_variables,
                 axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
             ),
-            retrieval_service,
+            deepcopy(retrieval_service),
             {
                 "disable": subset_request.disable_progress_bar,
                 "desc": name_progress_bar(split_on_parameter),

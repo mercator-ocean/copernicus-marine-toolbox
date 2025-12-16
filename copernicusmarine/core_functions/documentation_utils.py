@@ -315,7 +315,8 @@ SUBSET_SPLIT_ON: dict[str, str] = {
         "and split the output files based on variable names, time intervals or both. "
         "By default, sequentially download the data.\n\n"
         "The datasetID is required and can be found via the ``describe`` command. "
-        "Accept all the arguments from the subset."
+        "Accept all the arguments from the subset, and should be entered by order: "
+        "``copernicusmarine subset [SUBSET-OPTIONS] split-on [SPLIT-ON-OPTIONS].``"
     ),
     "SPLIT_ON_SHORT_HELP": "Extract a subset of data and split the output files.",
     "ON_VARIABLES_HELP": (
