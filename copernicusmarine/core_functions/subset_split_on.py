@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from datetime import datetime
 from typing import Optional, Union
 
@@ -74,8 +75,8 @@ def subset_split_on_function(
         time_keys = get_split_time_keys_from_metadata(
             part=retrieval_service.dataset_part,
             time_frequence=on_time,
-            start_datetime=subset_request.start_datetime,
-            end_datetime=subset_request.end_datetime,
+            requested_minimum_time=subset_request.start_datetime,
+            requested_maximum_time=subset_request.end_datetime,
             coordinate_selection_method=subset_request.coordinates_selection_method,
         )
     if on_variables:
@@ -135,7 +136,7 @@ def subset_split_on_function(
                 on_variables=on_variables,
                 axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
             ),
-            retrieval_service,
+            deepcopy(retrieval_service),
             {
                 "disable": subset_request.disable_progress_bar,
                 "desc": name_progress_bar(split_on_parameter),
@@ -179,8 +180,8 @@ def subset_split_on_function(
 def get_split_time_keys_from_metadata(
     part: CopernicusMarinePart,
     time_frequence: SplitOnTimeOption,
-    start_datetime: Optional[datetime],
-    end_datetime: Optional[datetime],
+    requested_minimum_time: Optional[datetime],
+    requested_maximum_time: Optional[datetime],
     coordinate_selection_method: CoordinatesSelectionMethod,
 ) -> list[tuple[datetime, datetime]]:
     time_coordinate, _, _ = part.get_coordinates().get(
@@ -214,47 +215,51 @@ def get_split_time_keys_from_metadata(
 
     values_datetime.sort()
 
-    if start_datetime:
+    if requested_minimum_time:
         for i, v in enumerate(values_datetime):
-            if v >= start_datetime:
+            if v >= requested_minimum_time:
                 minimum_index = i
                 break
         else:
             raise ValueError(
-                f"Start datetime: {start_datetime} is after "
+                f"Start datetime: {requested_minimum_time} is after "
                 "the maximum time available in the dataset."
             )
         if (
             coordinate_selection_method == "outside"
-            and values_datetime[minimum_index] > start_datetime
+            and values_datetime[minimum_index] > requested_minimum_time
         ):
             minimum_index = max(0, minimum_index - 1)
         elif coordinate_selection_method == "nearest":
             if minimum_index > 0 and abs(
-                values_datetime[minimum_index - 1] - start_datetime
-            ) < abs(values_datetime[minimum_index] - start_datetime):
+                values_datetime[minimum_index - 1] - requested_minimum_time
+            ) < abs(values_datetime[minimum_index] - requested_minimum_time):
                 minimum_index = minimum_index - 1
+    else:
+        minimum_index = 0
 
-    if end_datetime:
+    if requested_maximum_time:
         for i in range(len(values_datetime) - 1, -1, -1):
-            if values_datetime[i] <= end_datetime:
+            if values_datetime[i] <= requested_maximum_time:
                 maximum_index = i
                 break
         else:
             raise ValueError(
-                f"End datetime: {end_datetime} is before "
+                f"End datetime: {requested_maximum_time} is before "
                 "the minimum time available in the dataset."
             )
         if (
             coordinate_selection_method == "outside"
-            and values_datetime[maximum_index] < end_datetime
+            and values_datetime[maximum_index] < requested_maximum_time
         ):
             maximum_index = min(len(values_datetime) - 1, maximum_index + 1)
         elif coordinate_selection_method == "nearest":
             if maximum_index < len(values_datetime) - 1 and abs(
-                values_datetime[maximum_index + 1] - end_datetime
-            ) < abs(values_datetime[maximum_index] - end_datetime):
+                values_datetime[maximum_index + 1] - requested_maximum_time
+            ) < abs(values_datetime[maximum_index] - requested_maximum_time):
                 maximum_index = maximum_index + 1
+    else:
+        maximum_index = len(values_datetime) - 1
 
     selected_values = values_datetime[minimum_index : maximum_index + 1]
 

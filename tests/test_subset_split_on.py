@@ -400,3 +400,12 @@ class TestSubsetSplitOn:
         filenames = [f.filename for f in res]
         assert len([name for name in filenames if "sithick_cglo" in name]) == 3
         assert len([name for name in filenames if "thetao_oras" in name]) == 3
+
+    def test_split_on_time_without_time_selection(self, tmp_path):
+        res = subset_split_on(
+            dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1M-m",
+            on_time="year",
+            output_directory=tmp_path,
+            dry_run=True,
+        )
+        assert len(res) > 0
