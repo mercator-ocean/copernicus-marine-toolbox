@@ -1,18 +1,16 @@
 import logging
 import pathlib
 from datetime import datetime
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, Optional, Union
 
+import numpy
 import xarray
 
-from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.core_functions.models import (
     DEFAULT_FILE_EXTENSIONS,
-    CoordinatesSelectionMethod,
     DatasetChunking,
     FileFormat,
     GeographicalExtent,
-    SplitOnTimeOption,
     TimeExtent,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
@@ -428,28 +426,14 @@ def get_approximation_size_data_downloaded(
     return download_estimated_size
 
 
-class DownloadParams(TypedDict):
-    output_filename: Optional[str]
-    key: Optional[str]
-    split_on: Optional[SplitOnTimeOption]
-    dataset_id: str
-    file_format: FileFormat
-    axis_coordinate_id_mapping: dict[str, str]
-    geographical_parameters: GeographicalParameters
-    output_directory: pathlib.Path
-    netcdf_compression_level: int
-    netcdf3_compatible: bool
-    overwrite: bool
-    skip_existing: bool
-    dry_run: bool
-    username: str
-    password: str
-    dataset_url: str
-    variables: Optional[list[str]]
-    temporal_parameters: TemporalParameters
-    depth_parameters: DepthParameters
-    coordinates_selection_method: CoordinatesSelectionMethod
-    chunk_size_limit: int
-    service: CopernicusMarineService
-    dataset_chunking: Optional[DatasetChunking]
-    disable_progress_bar: bool
+def get_approximation_size_final_result_csv(
+    dataset: xarray.Dataset,
+) -> numpy.float64:
+    n_rows = numpy.prod([dataset.sizes[dim] for dim in dataset.dims])
+    n_columns = len(dataset.data_vars) + len(dataset.dims)
+
+    bytes_per_value = 12
+
+    csv_size_bytes = n_rows * n_columns * bytes_per_value
+    csv_size_mb = csv_size_bytes / (1024**2)
+    return csv_size_mb
