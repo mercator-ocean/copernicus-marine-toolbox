@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import pathlib
 from typing import Optional
 
@@ -97,16 +96,3 @@ def create_get_template() -> None:
             indent=4,
         )
     logger.info(f"Template created at: {filename}")
-
-
-def get_direct_download_files(
-    file_list_path: pathlib.Path,
-) -> list[str]:
-    if not os.path.exists(file_list_path):
-        raise FileNotFoundError(
-            f"File {file_list_path} does not exist."
-            " Please provide a valid path to a '.txt' file."
-        )
-    with open(file_list_path) as f:
-        direct_download_files = [line.strip() for line in f.readlines()]
-    return direct_download_files
