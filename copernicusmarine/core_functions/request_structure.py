@@ -2,6 +2,7 @@ import fnmatch
 import importlib.util
 import json
 import logging
+import os
 import pathlib
 import re
 from dataclasses import dataclass
@@ -24,7 +25,6 @@ from copernicusmarine.core_functions.exceptions import (
     MutuallyExclusiveArguments,
     XYNotAvailableInNonOriginalGridDatasets,
 )
-from copernicusmarine.core_functions.get import get_direct_download_files
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
@@ -685,3 +685,16 @@ def overload_regex_with_additionnal_filter(
     regex: str, filter: Optional[str]
 ) -> str:
     return "(" + regex + "|" + filter + ")" if filter else regex
+
+
+def get_direct_download_files(
+    file_list_path: pathlib.Path,
+) -> list[str]:
+    if not os.path.exists(file_list_path):
+        raise FileNotFoundError(
+            f"File {file_list_path} does not exist."
+            " Please provide a valid path to a '.txt' file."
+        )
+    with open(file_list_path) as f:
+        direct_download_files = [line.strip() for line in f.readlines()]
+    return direct_download_files
