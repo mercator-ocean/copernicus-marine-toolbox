@@ -38,7 +38,6 @@ logger = logging.getLogger("copernicusmarine")
 
 def download_original_files(
     username: str,
-    password: str,
     get_request: GetRequest,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
