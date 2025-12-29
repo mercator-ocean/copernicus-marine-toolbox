@@ -396,15 +396,15 @@ class TestGet:
             lines = file.read().splitlines()
             assert len(lines) == 3
             assert (
-                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20010101_20011231_R20251125_RE01.nc"
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20010101_20011231_R20251206_RE01.nc"
                 in lines[0]
             )
             assert (
-                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20020101_20021231_R20251125_RE01.nc"
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20020101_20021231_R20251206_RE01.nc"
                 in lines[1]
             )
             assert (
-                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20030101_20031231_R20251125_RE01.nc"
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20030101_20031231_R20251206_RE01.nc"
                 in lines[2]
             )
 
