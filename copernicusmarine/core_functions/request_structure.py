@@ -24,6 +24,7 @@ from copernicusmarine.core_functions.exceptions import (
     MutuallyExclusiveArguments,
     XYNotAvailableInNonOriginalGridDatasets,
 )
+from copernicusmarine.core_functions.get import get_direct_download_files
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
     DEFAULT_FILE_FORMAT,
@@ -508,6 +509,7 @@ def get_geographical_inputs(
 @dataclass
 class GetRequest:
     dataset_id: str
+    username: str
     dataset_url: Optional[str] = None
     dataset_version: Optional[str] = None
     dataset_part: Optional[str] = None
@@ -523,6 +525,9 @@ class GetRequest:
     direct_download: Optional[list[str]] = None
     dry_run: bool = False
     skip_existing: bool = False
+    disable_progress_bar: bool = False
+    create_file_list: Optional[str] = None
+    max_concurrent_requests: int = 15
 
     def update(self, new_dict: dict):
         """Method to update values in GetRequest object.
@@ -573,6 +578,96 @@ class GetRequest:
                 file_list_regex, full_regex
             )
         self.regex = full_regex
+
+
+def create_get_request(
+    dataset_id: Optional[str],
+    dataset_version: Optional[str],
+    dataset_part: Optional[str],
+    username: Optional[str],
+    password: Optional[str],
+    credentials_file: Optional[pathlib.Path],
+    no_directories: bool,
+    output_directory: Optional[pathlib.Path],
+    overwrite: bool,
+    request_file: Optional[pathlib.Path],
+    filter: Optional[str],
+    regex: Optional[str],
+    file_list: Optional[pathlib.Path],
+    create_file_list: Optional[str],
+    sync: bool,
+    sync_delete: bool,
+    skip_existing: bool,
+    index_parts: bool,
+    dry_run: bool,
+    max_concurrent_requests: int,
+    disable_progress_bar: bool,
+) -> GetRequest:
+    logger.debug("Checking username and password...")
+    username, password = get_and_check_username_password(
+        username, password, credentials_file
+    )
+    get_request = GetRequest(dataset_id=dataset_id or "", username=username)
+
+    if request_file:
+        get_request.from_file(request_file)
+    if not get_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a get request.")
+    request_update_dict = {
+        "dataset_version": dataset_version,
+        "output_directory": output_directory,
+        "username": username,
+        "max_concurrent_requests": max_concurrent_requests,
+        "disable_progress_bar": disable_progress_bar,
+    }
+    get_request.update(request_update_dict)
+
+    # Specific treatment for default values:
+    # In order to not overload arguments with default values
+    # TODO is this really useful?
+    if dataset_version:
+        get_request.dataset_version = dataset_version
+    if dataset_part:
+        get_request.dataset_part = dataset_part
+    if no_directories:
+        get_request.no_directories = no_directories
+    if overwrite:
+        get_request.overwrite = overwrite
+    if skip_existing:
+        get_request.skip_existing = skip_existing
+
+    if filter:
+        get_request.regex = filter_to_regex(filter)
+    if regex:
+        get_request.regex = overload_regex_with_additionnal_filter(
+            regex, get_request.regex
+        )
+    if sync or sync_delete:
+        get_request.sync = True
+        if not get_request.dataset_version:
+            raise ValueError(
+                "Sync requires to set a dataset version. "
+                "Please use --dataset-version option."
+            )
+    if sync_delete:
+        get_request.sync_delete = sync_delete
+    if index_parts:
+        get_request.index_parts = index_parts
+        get_request.regex = overload_regex_with_additionnal_filter(
+            filter_to_regex("*index_*"), get_request.regex
+        )
+    if create_file_list is not None:
+        assert create_file_list.endswith(".txt") or create_file_list.endswith(
+            ".csv"
+        ), "Download file list must be a '.txt' or '.csv' file. "
+        f"Got '{create_file_list}' instead."
+    if file_list:
+        direct_download_files = get_direct_download_files(file_list)
+        if direct_download_files:
+            get_request.direct_download = direct_download_files
+    if create_file_list or dry_run:
+        get_request.dry_run = True
+    return get_request
 
 
 def filter_to_regex(filter: str) -> str:
