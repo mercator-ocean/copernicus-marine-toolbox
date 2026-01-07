@@ -10,6 +10,9 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.get import get_function
 from copernicusmarine.core_functions.models import ResponseGet
+from copernicusmarine.core_functions.request_structure import (
+    create_get_request,
+)
 from copernicusmarine.python_interface.exception_handler import (
     log_exception_and_exit,
 )
@@ -127,10 +130,10 @@ def get(
     )
     file_list = pathlib.Path(file_list) if file_list else None
     request_file = pathlib.Path(request_file) if request_file else None
-    return get_function(
+    get_request = create_get_request(
         dataset_id=dataset_id,
-        force_dataset_version=dataset_version,
-        force_dataset_part=dataset_part,
+        dataset_version=dataset_version,
+        dataset_part=dataset_part,
         username=username,
         password=password,
         no_directories=no_directories,
@@ -138,9 +141,9 @@ def get(
         credentials_file=credentials_file,
         overwrite=overwrite,
         request_file=request_file,
-        filter_option=filter,
+        filter=filter,
         regex=regex,
-        file_list_path=file_list,
+        file_list=file_list,
         create_file_list=create_file_list,
         index_parts=index_parts,
         sync=sync,
@@ -149,5 +152,8 @@ def get(
         dry_run=dry_run,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
+    )
+    return get_function(
+        get_request=get_request,
         staging=staging,
     )
