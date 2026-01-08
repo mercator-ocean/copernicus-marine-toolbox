@@ -2287,6 +2287,22 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.9.2)"]
 
 [[package]]
+name = "pandas-stubs"
+version = "2.0.3.230814"
+description = "Type annotations for pandas"
+optional = false
+python-versions = ">=3.8"
+groups = ["dev"]
+files = [
+    {file = "pandas_stubs-2.0.3.230814-py3-none-any.whl", hash = "sha256:4b3dfc027d49779176b7daa031a3405f7b839bcb6e312f4b9f29fea5feec5b4f"},
+    {file = "pandas_stubs-2.0.3.230814.tar.gz", hash = "sha256:1d5cc09e36e3d9f9a1ed9dceae4e03eeb26d1b898dd769996925f784365c8769"},
+]
+
+[package.dependencies]
+numpy = {version = ">=1.25.0", markers = "python_version >= \"3.9\""}
+types-pytz = ">=2022.1.1"
+
+[[package]]
 name = "parso"
 version = "0.8.5"
 description = "A Python Parser"
@@ -3948,6 +3964,18 @@ files = [
 ]
 
 [[package]]
+name = "types-pytz"
+version = "2025.2.0.20251108"
+description = "Typing stubs for pytz"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "types_pytz-2025.2.0.20251108-py3-none-any.whl", hash = "sha256:0f1c9792cab4eb0e46c52f8845c8f77cf1e313cb3d68bf826aa867fe4717d91c"},
+    {file = "types_pytz-2025.2.0.20251108.tar.gz", hash = "sha256:fca87917836ae843f07129567b74c1929f1870610681b4c92cb86a3df5817bdb"},
+]
+
+[[package]]
 name = "types-requests"
 version = "2.31.0.6"
 description = "Typing stubs for requests"
@@ -4311,4 +4339,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "0d73947506606fea22646986684e26e7b9b493b4e2d1f84313c00ab0940a1900"
+content-hash = "3e59e867beab90c74a5b379cbeb0ecb0a48026547e6f189d89bbf976b316418e"

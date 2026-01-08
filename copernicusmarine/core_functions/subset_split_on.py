@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 import pandas as pd
 from dateutil.tz import UTC
+from pandas.core.groupby import DataFrameGroupBy
 from tqdm import tqdm
 
 from copernicusmarine.catalogue_parser.models import (
@@ -37,6 +38,9 @@ from copernicusmarine.download_functions.utils import (
 )
 
 logger = logging.getLogger("copernicusmarine")
+
+# Allow for hourly split-on and precise time formatting in filenames
+SPLIT_ON_PRECISE_TIME_FORMAT = "%Y-%m-%dT%H-%M-%S"
 
 
 def subset_split_on_function(
@@ -276,7 +280,7 @@ def get_split_time_keys_from_metadata(
 def group_per_frequency(
     datetimes: list[datetime],
     time_frequence: SplitOnTimeOption,
-):
+) -> DataFrameGroupBy:
     df = pd.DataFrame({"time": datetimes})
     if time_frequence == "hour":
         groups = df.groupby(df["time"].dt.floor("h"))
@@ -359,7 +363,7 @@ def _update_output_filename(
         subset_request.variables or dataset_variables,
         platform_ids=subset_request.platform_ids or [],
         axis_coordinate_id_mapping=axis_coordinate_id_mapping,
-        time_format=_get_best_time_format(on_time) if on_time else None,
+        time_format=SPLIT_ON_PRECISE_TIME_FORMAT,
     )
     return subset_request.update({"output_filename": filename})
 
@@ -371,7 +375,7 @@ def _get_split_on_suffix(
 ) -> str:
     suffix = "_"
     if on_time:
-        time_format = _get_best_time_format(on_time) if on_time else ""
+        time_format = SPLIT_ON_PRECISE_TIME_FORMAT
         if subset_request.start_datetime:
             suffix += f"{subset_request.start_datetime.strftime(time_format)}"
         if subset_request.end_datetime and (
@@ -387,16 +391,3 @@ def _get_split_on_suffix(
             suffix += "_"
         suffix += f"{subset_request.variables[0]}"
     return suffix
-
-
-def _get_best_time_format(
-    time_option: SplitOnTimeOption,
-) -> str:
-    if time_option == "hour":
-        return "%Y-%m-%dT%H:%M:%S"
-    elif time_option == "day":
-        return "%Y-%m-%d"
-    elif time_option == "month":
-        return "%Y-%m"
-    elif time_option == "year":
-        return "%Y"
