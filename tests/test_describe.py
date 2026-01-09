@@ -39,7 +39,7 @@ class TestDescribe:
         self.then_datasets_variables_are_correct(snapshot)
         self.then_all_dataset_parts_are_filled()
 
-    def test_describe_product_id_dataset_id(self):
+    def test_describe_timeout_product_id_dataset_id(self):
         dataset_id = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
         product_id = "GLOBAL_MULTIYEAR_PHY_001_030"
         different_product_id = "ANTARCTIC_OMI_SI_extent"
@@ -71,12 +71,12 @@ class TestDescribe:
         self.when_I_use_staging_environment_in_debug_logging_level()
         self.then_I_check_that_the_urls_contains_only_dta()
 
-    def test_describe_function_with_return_fields(self):
+    def test_describe_timeout_function_with_return_fields(self):
         self.when_I_run_copernicus_marine_describe_with_return_fields()
         self.then_stdout_can_be_load_as_json()
         self.then_only_the_queried_fields_are_returned()
 
-    def test_describe_exclude_datasets(self):
+    def test_describe_timeout_exclude_datasets(self):
         product_id = "GLOBAL_MULTIYEAR_PHY_001_030"
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, None, exclude="services"
@@ -259,6 +259,14 @@ class TestDescribe:
             map(lambda x: x in expected_services, expected_dataset_services)
         )
 
+    def remove_maximum_time_from_service(self, service: dict):
+        """Remove fields that are not relevant for the snapshot testing."""
+        for variable in service["variables"]:
+            for coordinate in variable.get("coordinates", []):
+                if coordinate["coordinate_id"] == "time":
+                    coordinate.pop("maximum_value", None)
+        return service
+
     def then_datasets_variables_are_correct(self, snapshot):
         expected_product_id = "GLOBAL_MULTIYEAR_PHY_ENS_001_031"
         expected_dataset_id = "cmems_mod_glo_phy-all_my_0.25deg_P1D-m"
@@ -282,7 +290,7 @@ class TestDescribe:
         ]
         dataset = expected_dataset[0]
         wanted_services_in_dataset = [
-            x
+            self.remove_maximum_time_from_service(x)
             for x in dataset["versions"][0]["parts"][0]["services"]
             if x["service_name"] in wanted_services
         ]
