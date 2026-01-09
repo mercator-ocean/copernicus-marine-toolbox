@@ -49,6 +49,7 @@ compliance-checker = { version = "^5.1.1", python = ">3.10, <3.14", markers = "s
 pytest-cov = "^6.1.1"
 responses = "^0.25.7"
 pytest = "^8.4.2"
+pandas-stubs = "2.0.3.230814"
 
 [build-system]
 requires = ["poetry-core"]

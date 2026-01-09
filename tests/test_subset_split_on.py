@@ -131,18 +131,18 @@ class TestSubsetSplitOn:
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_siconc_glor_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01-2022-02-10.nc",
+                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_siconc_glor_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01T00-00-00-2022-02-10T00-00-00.nc",
             )
         )
         assert os.path.exists(
             os.path.join(
                 tmp_path,
-                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_thetao_cglo_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01-2022-02-10.nc",
+                "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_thetao_cglo_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01T00-00-00-2022-02-10T00-00-00.nc",
             )
         )
         path_vo_cglo = os.path.join(
             tmp_path,
-            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_vo_cglo_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01-2022-02-10.nc",
+            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_vo_cglo_9.90W-9.50W_33.90N-35.00N_5.00-6.00m_2022-01-01T00-00-00-2022-02-10T00-00-00.nc",
         )
         assert os.path.exists(path_vo_cglo)
         ds_vo_cglo = xarray.open_dataset(path_vo_cglo)
@@ -158,7 +158,7 @@ class TestSubsetSplitOn:
         assert "vo_cglo" in ds_vo_cglo.data_vars
         ds_vo_cglo.close()
 
-    def test_split_on_day_monthly_dataset(self, tmp_path):
+    def test_split_on_day_monthly_dataset(self, tmp_path, snapshot):
         res = subset_split_on(
             dataset_id="cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m",
             start_datetime="2022-01-01",
@@ -175,27 +175,9 @@ class TestSubsetSplitOn:
         )
         assert len(res) == 4
         filenames = [f.filename for f in res]
-        assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-01-01.nc"
-            in filenames
-        )
+        assert snapshot == json.dumps(filenames, indent=2)
 
-        assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-02-01.nc"
-            in filenames
-        )
-
-        assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-03-01.nc"
-            in filenames
-        )
-
-        assert (
-            "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_chl_10.00W-0.00E_45.00N-50.00N_0.00-100.00m_2022-04-01.nc"
-            in filenames
-        )
-
-    def test_split_on_day(self, tmp_path):
+    def test_split_on_day(self, tmp_path, snapshot):
         res = subset_split_on(
             dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
             start_datetime="2024-01-01",
@@ -212,12 +194,9 @@ class TestSubsetSplitOn:
         )
         assert len(res) == 5
         filenames = [f.filename for f in res]
-        assert (
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_1.00W-0.00E_49.00N-50.00N_2024-01-01.nc"
-            in filenames
-        )
+        assert snapshot == json.dumps(filenames, indent=2)
 
-    def test_split_on_hour(self, tmp_path):
+    def test_split_on_hour(self, tmp_path, snapshot):
         res = subset_split_on(
             dataset_id="cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
             start_datetime="2024-01-01T00:00:00",
@@ -234,10 +213,7 @@ class TestSubsetSplitOn:
         )
         assert len(res) == 6
         filenames = [f.filename for f in res]
-        assert (
-            "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_so-thetao-uo-vo-zos_1.00W-0.00E_49.00N-50.00N_0.00-1.00m_2024-01-01T00:00:00.nc"
-            in filenames
-        )
+        assert snapshot == json.dumps(filenames, indent=2)
 
     def test_split_on_cli(self):
         command = [
