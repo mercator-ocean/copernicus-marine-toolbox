@@ -76,7 +76,7 @@ class TestDescribe:
         self.then_stdout_can_be_load_as_json()
         self.then_only_the_queried_fields_are_returned()
 
-    def test_describe_exclude_datasets(self):
+    def test_describe_timeout_exclude_datasets(self):
         product_id = "GLOBAL_MULTIYEAR_PHY_001_030"
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
             product_id, None, exclude="services"
