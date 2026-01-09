@@ -44,7 +44,7 @@ run-tests-unix:
 	poetry run pytest tests -k "not fast_with_timeout and not ncdump" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 run-tests-windows:
-	poetry run pytest tests -k "not fast_with_timeout and not ncdump and not cfcompliant and not prompt" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+	poetry run pytest tests -k "not fast_with_timeout and not test_describe_timeout and not ncdump and not cfcompliant and not prompt" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 run-cov-tests:
 	poetry run pytest tests -k "not fast_with_timeout" --cov --cov-report xml -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
