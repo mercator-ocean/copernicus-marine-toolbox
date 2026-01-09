@@ -259,7 +259,7 @@ class TestDescribe:
             map(lambda x: x in expected_services, expected_dataset_services)
         )
 
-    def clean_the_maximum_time_value_from_service(self, service: dict):
+    def remove_maximum_time_from_service(self, service: dict):
         """Remove fields that are not relevant for the snapshot testing."""
         for variable in service["variables"]:
             for coordinate in variable.get("coordinates", []):
@@ -290,7 +290,7 @@ class TestDescribe:
         ]
         dataset = expected_dataset[0]
         wanted_services_in_dataset = [
-            self.clean_the_maximum_time_value_from_service(x)
+            self.remove_maximum_time_from_service(x)
             for x in dataset["versions"][0]["parts"][0]["services"]
             if x["service_name"] in wanted_services
         ]
