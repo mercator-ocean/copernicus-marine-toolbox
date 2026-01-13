@@ -321,7 +321,7 @@ class TestSubset:
             "--dataset-id",
             "cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
             "--dataset-version",
-            "202311",
+            "202511",
             "--variable",
             "CHL",
             "--minimum-longitude",
