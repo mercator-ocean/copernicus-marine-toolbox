@@ -1,0 +1,12 @@
+Release 2.4.0
+=============
+
+This release introduces new features and improvements.
+
+Subset
+------
+
+New Features
+^^^^^^^^^^^^
+
+* Added support for subsetting in CSV format even dense datasets.

@@ -1761,7 +1761,7 @@ class TestSubset:
                 in caplog.text
             )
 
-    def test_get_dataset_in_csv_format(self, tmp_path):
+    def test_subset_dataset_in_csv_format(self, tmp_path):
         dataset_id = "cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D"
         response = subset(
             dataset_id=dataset_id,
@@ -1784,7 +1784,7 @@ class TestSubset:
             tmp_path / "to_delete.csv", response.model_dump()
         )
 
-    def test_get_dataset_in_csv_too_big(self, tmp_path, caplog):
+    def test_subset_dataset_in_csv_too_big(self, tmp_path, caplog):
         dataset_id = "cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D"
         _ = subset(
             dataset_id=dataset_id,
