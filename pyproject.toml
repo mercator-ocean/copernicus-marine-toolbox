@@ -1,6 +1,6 @@
 [project]
 name = "copernicusmarine"
-version = "2.2.5"
+version = "2.3.0"
 description = "Command line interface and Python API for accessing Copernicus Marine data and related services."
 authors = [{ name = "Copernicus Marine User Support", email = "servicedesk.cmems@mercator-ocean.eu" }]
 readme = "README.md"

@@ -72,8 +72,10 @@ Copernicusmarine  Python    Xarray       Zarr               Dask
 2.0.z             >=3.9     >=2023.4.0   >=2.13.3, <3.0.0   >=2022
 2.1.z             >=3.9     >=2023.4.0   >=2.13.3, <=3.0.8  >=2022
 2.2.z             >=3.9     >=2023.4.0   >=2.13.3           >=2022
+2.3.z             >=3.9     >=2023.4.0   >=2.13.3           >=2022
 ================  ========  ===========  =================  ========
 
 .. note::
+
    For complete dependency specifications including optional packages,
-   see the ``requirements.txt`` file for each version.
+   see the :ref:`dependencies section <installation-page-dependencies>` for each version.
