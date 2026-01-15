@@ -4,13 +4,13 @@ Usage and technical details
 .. toctree::
 
     quickoverview
-    login-usage
-    describe-usage
     subset-usage
+    subset-split-on-usage
+    describe-usage
+    login-usage
     get-usage
     shared-options
     network-configuration
-    subset-split-on-usage
     errors
     environment-variables
     subset_using_polygons
