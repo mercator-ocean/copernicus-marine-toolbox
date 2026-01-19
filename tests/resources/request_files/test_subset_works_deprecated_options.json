@@ -1,6 +1,6 @@
 {
   "dataset_id": "METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2",
-  "end_datetime": "2021-01-02",
+  "end_datetime": "2024-01-17",
   "force_download": true,
   "motu_api_request": "https://nrt.cmems-du.eu/motu-web/Motu"
 }
