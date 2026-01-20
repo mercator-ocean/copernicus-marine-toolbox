@@ -5,6 +5,8 @@ XARRAY_VERSIONS = ["2023.4.0", "latest"]
 DASK_VERSIONS = ["2022.1.0", "latest"]
 BOTO3_VERSIONS = ["1.26.0", "latest"]
 NUMPY_VERSIONS = ["1.26", ">=2.0.0"]
+ZARR_VERSIONS = ["2.13.3", "latest"]
+H5NETCDF_VERSIONS = ["1.4.0", "latest"]
 
 
 @nox.session(python=PYTHON_VERSIONS)
@@ -12,7 +14,17 @@ NUMPY_VERSIONS = ["1.26", ">=2.0.0"]
 @nox.parametrize("dask_version", DASK_VERSIONS)
 @nox.parametrize("boto3_version", BOTO3_VERSIONS)
 @nox.parametrize("numpy_version", NUMPY_VERSIONS)
-def tests(session, xarray_version, dask_version, boto3_version, numpy_version):
+@nox.parametrize("zarr_version", ZARR_VERSIONS)
+@nox.parametrize("h5netcdf_version", H5NETCDF_VERSIONS)
+def tests(
+    session,
+    xarray_version,
+    dask_version,
+    boto3_version,
+    numpy_version,
+    zarr_version,
+    h5netcdf_version,
+):
     """
     Basic test of the toolbox against multiple versions.
     """
@@ -37,6 +49,8 @@ def tests(session, xarray_version, dask_version, boto3_version, numpy_version):
         format_to_correct_pip_command("dask", dask_version),
         format_to_correct_pip_command("boto3", boto3_version),
         format_to_correct_pip_command("numpy", numpy_version),
+        format_to_correct_pip_command("zarr", zarr_version),
+        format_to_correct_pip_command("h5netcdf", h5netcdf_version),
         "pytest==7.4.0",
     )
 
