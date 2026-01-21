@@ -10,7 +10,7 @@ repository = "https://github.com/mercator-ocean/copernicus-marine-toolbox"
 documentation = "https://toolbox-docs.marine.copernicus.eu/"
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.10"
 click = ">=8.0.4,!=8.2.0,<8.3.0"
 requests = ">=2.27.1"
 setuptools = ">=68.2.2"
@@ -25,6 +25,7 @@ numpy = ">=1.23.0"
 pydantic = "^2.9.1"
 h5netcdf = "^1.4.0"
 arcosparse = "^0.4.2"
+h5py = "^3.15.1"
 
 [project.scripts]
 copernicusmarine = 'copernicusmarine.command_line_interface.copernicus_marine:command_line_interface'
