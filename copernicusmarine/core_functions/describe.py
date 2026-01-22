@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     filter_catalogue_with_strings,
@@ -21,8 +20,8 @@ logger = logging.getLogger("copernicusmarine")
 def describe_function(
     show_all_versions: bool,
     contains: list[str],
-    force_product_id: Optional[str],
-    force_dataset_id: Optional[str],
+    force_product_id: str | None,
+    force_dataset_id: str | None,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     staging: bool,
@@ -37,7 +36,7 @@ def describe_function(
     catalogues: list[CopernicusMarineCatalogue] = []
     for i, catalogue_config in enumerate(marine_datasetore_config.catalogues):
         try:
-            catalogue: Optional[CopernicusMarineCatalogue] = parse_catalogue(
+            catalogue: CopernicusMarineCatalogue | None = parse_catalogue(
                 force_product_id=force_product_id,
                 force_dataset_id=force_dataset_id,
                 max_concurrent_requests=max_concurrent_requests,

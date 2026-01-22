@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import click
 
@@ -118,11 +117,11 @@ def cli_describe() -> None:
 @log_exception_and_exit
 def describe(
     show_all_versions: bool,
-    return_fields: Optional[str],
-    exclude_fields: Optional[str],
+    return_fields: str | None,
+    exclude_fields: str | None,
     contains: list[str],
-    product_id: Optional[str],
-    dataset_id: Optional[str],
+    product_id: str | None,
+    dataset_id: str | None,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
@@ -165,9 +164,9 @@ def describe(
 
 
 def _create_include_and_exclude(
-    return_fields: Optional[str],
-    exclude_fields: Optional[str],
-) -> tuple[Optional[dict], Optional[dict]]:
+    return_fields: str | None,
+    exclude_fields: str | None,
+) -> tuple[dict | None, dict | None]:
     include_query = None
     exclude_query = None
     if return_fields:

@@ -1,5 +1,4 @@
 import pathlib
-from typing import Optional, Union
 
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -21,20 +20,20 @@ from copernicusmarine.python_interface.exception_handler import (
 @deprecated_python_option(DEPRECATED_OPTIONS)
 @log_exception_and_exit
 def get(
-    dataset_id: Optional[str] = None,
-    dataset_version: Optional[str] = None,
-    dataset_part: Optional[str] = None,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    dataset_id: str | None = None,
+    dataset_version: str | None = None,
+    dataset_part: str | None = None,
+    username: str | None = None,
+    password: str | None = None,
     no_directories: bool = False,
-    output_directory: Optional[Union[pathlib.Path, str]] = None,
-    credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    output_directory: pathlib.Path | str | None = None,
+    credentials_file: pathlib.Path | str | None = None,
     overwrite: bool = False,
-    request_file: Optional[Union[pathlib.Path, str]] = None,
-    filter: Optional[str] = None,
-    regex: Optional[str] = None,
-    file_list: Optional[Union[pathlib.Path, str]] = None,
-    create_file_list: Optional[str] = None,
+    request_file: pathlib.Path | str | None = None,
+    filter: str | None = None,
+    regex: str | None = None,
+    file_list: pathlib.Path | str | None = None,
+    create_file_list: str | None = None,
     index_parts: bool = False,
     sync: bool = False,
     sync_delete: bool = False,
@@ -64,20 +63,20 @@ def get(
     no_directories : bool, optional
         If True, downloaded files will not be organized into directories.
         Mutually exclusive with ``sync_delete``.
-    output_directory : Union[pathlib.Path, str], optional
+    output_directory : pathlib.Path | str, optional
         The destination folder for the downloaded files. Default is the current directory.
-    credentials_file : Union[pathlib.Path, str], optional
+    credentials_file : pathlib.Path | str, optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
         Mutually exclusive with ``skip_existing``, ``sync`` and ``sync_delete``.
-    request_file : Union[pathlib.Path, str], optional
+    request_file : pathlib.Path | str, optional
         Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
     filter : str, optional
         A pattern that must match the absolute paths of the files to download.
     regex : str, optional
         The regular expression that must match the absolute paths of the files to download.
-    file_list : Union[pathlib.Path, str], optional
+    file_list : pathlib.Path | str, optional
         Path to a '.txt' file containing a list of file paths, line by line, that will be downloaded directly. These files must be from the same dataset as the one specified dataset with the datasetID option. If no files can be found, the Toolbox will list all files on the remote server and attempt to find a match.
     create_file_list : str, optional
         Option to only create a file containing the names of the targeted files instead of downloading them. It writes the file to the specified output directory (default to current directory). The file name specified should end with '.txt' or '.csv'. If specified, no other action will be performed.

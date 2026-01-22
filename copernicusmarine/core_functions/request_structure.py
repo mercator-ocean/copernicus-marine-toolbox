@@ -6,7 +6,7 @@ import os
 import pathlib
 import re
 from datetime import datetime
-from typing import Any, Optional, Type, TypeVar, Union
+from typing import Any, Type, TypeVar
 
 import pandas as pd
 from dateutil.tz import UTC
@@ -58,25 +58,25 @@ SubsetRequest_ = TypeVar("SubsetRequest_", bound="SubsetRequest")
 class SubsetRequest(BaseModel):
     dataset_id: str
     username: str
-    dataset_version: Optional[str] = None
-    dataset_part: Optional[str] = None
-    variables: Optional[list[str]] = None
-    minimum_x: Optional[float] = None
-    maximum_x: Optional[float] = None
-    minimum_y: Optional[float] = None
-    maximum_y: Optional[float] = None
-    minimum_depth: Optional[float] = None
-    maximum_depth: Optional[float] = None
+    dataset_version: str | None = None
+    dataset_part: str | None = None
+    variables: list[str] | None = None
+    minimum_x: float | None = None
+    maximum_x: float | None = None
+    minimum_y: float | None = None
+    maximum_y: float | None = None
+    minimum_depth: float | None = None
+    maximum_depth: float | None = None
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
-    start_datetime: Optional[datetime] = None
-    end_datetime: Optional[datetime] = None
-    platform_ids: Optional[list[str]] = None
+    start_datetime: datetime | None = None
+    end_datetime: datetime | None = None
+    platform_ids: list[str] | None = None
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     )
-    output_filename: Optional[str] = None
+    output_filename: str | None = None
     file_format: FileFormat = DEFAULT_FILE_FORMAT
-    service: Optional[str] = None
+    service: str | None = None
     output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
     skip_existing: bool = False
@@ -106,8 +106,8 @@ class SubsetRequest(BaseModel):
     @field_validator("start_datetime", "end_datetime", mode="before")
     @classmethod
     def parse_datetime(
-        cls, v: Optional[Union[datetime, pd.Timestamp, str]]
-    ) -> Optional[datetime]:
+        cls, v: datetime | pd.Timestamp | str | None
+    ) -> datetime | None:
         if v is None or v == "":
             return None
         if isinstance(v, str):
@@ -120,7 +120,7 @@ class SubsetRequest(BaseModel):
     def from_file(
         cls: Type[SubsetRequest_],
         filepath: pathlib.Path,
-        username: Optional[str] = None,
+        username: str | None = None,
     ) -> SubsetRequest_:
         with open(filepath) as json_file:
             json_content = json.load(json_file)
@@ -246,28 +246,28 @@ def convert_motu_api_request_to_structure(
 
 
 def create_subset_request(
-    dataset_id: Optional[str] = None,
-    dataset_version: Optional[str] = None,
-    dataset_part: Optional[str] = None,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
-    variables: Optional[list[str]] = None,
-    minimum_depth: Optional[float] = None,
-    maximum_depth: Optional[float] = None,
+    dataset_id: str | None = None,
+    dataset_version: str | None = None,
+    dataset_part: str | None = None,
+    username: str | None = None,
+    password: str | None = None,
+    variables: list[str] | None = None,
+    minimum_depth: float | None = None,
+    maximum_depth: float | None = None,
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
-    start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
-    end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
-    platform_ids: Optional[list[str]] = None,
+    start_datetime: datetime | pd.Timestamp | str | None = None,
+    end_datetime: datetime | pd.Timestamp | str | None = None,
+    platform_ids: list[str] | None = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
-    output_filename: Optional[str] = None,
-    file_format: Optional[FileFormat] = None,
-    service: Optional[str] = None,
-    request_file: Optional[pathlib.Path] = None,
-    output_directory: Optional[pathlib.Path] = None,
-    credentials_file: Optional[pathlib.Path] = None,
-    motu_api_request: Optional[str] = None,
+    output_filename: str | None = None,
+    file_format: FileFormat | None = None,
+    service: str | None = None,
+    request_file: pathlib.Path | None = None,
+    output_directory: pathlib.Path | None = None,
+    credentials_file: pathlib.Path | None = None,
+    motu_api_request: str | None = None,
     overwrite: bool = False,
     skip_existing: bool = False,
     dry_run: bool = False,
@@ -277,18 +277,18 @@ def create_subset_request(
     netcdf3_compatible: bool = False,
     chunk_size_limit: int = 0,
     raise_if_updating: bool = False,
-    minimum_longitude: Optional[float] = None,
-    maximum_longitude: Optional[float] = None,
-    minimum_latitude: Optional[float] = None,
-    maximum_latitude: Optional[float] = None,
-    alias_min_x: Optional[float] = None,
-    alias_max_x: Optional[float] = None,
-    alias_min_y: Optional[float] = None,
-    alias_max_y: Optional[float] = None,
-    minimum_x: Optional[float] = None,
-    maximum_x: Optional[float] = None,
-    minimum_y: Optional[float] = None,
-    maximum_y: Optional[float] = None,
+    minimum_longitude: float | None = None,
+    maximum_longitude: float | None = None,
+    minimum_latitude: float | None = None,
+    maximum_latitude: float | None = None,
+    alias_min_x: float | None = None,
+    alias_max_x: float | None = None,
+    alias_min_y: float | None = None,
+    alias_max_y: float | None = None,
+    minimum_x: float | None = None,
+    maximum_x: float | None = None,
+    minimum_y: float | None = None,
+    maximum_y: float | None = None,
 ) -> SubsetRequest:
     if staging:
         logger.warning(
@@ -402,15 +402,15 @@ def create_subset_request(
     if overwrite:
         request_update_dict["overwrite"] = overwrite
     if netcdf_compression_level:
-        request_update_dict[
-            "netcdf_compression_level"
-        ] = netcdf_compression_level
+        request_update_dict["netcdf_compression_level"] = (
+            netcdf_compression_level
+        )
     if netcdf3_compatible:
         request_update_dict["netcdf3_compatible"] = netcdf3_compatible
     if coordinates_selection_method != DEFAULT_COORDINATES_SELECTION_METHOD:
-        request_update_dict[
-            "coordinates_selection_method"
-        ] = coordinates_selection_method
+        request_update_dict["coordinates_selection_method"] = (
+            coordinates_selection_method
+        )
     if raise_if_updating:
         request_update_dict["raise_if_updating"] = raise_if_updating
     if dry_run:
@@ -424,16 +424,16 @@ def create_subset_request(
 
 
 def get_geographical_inputs(
-    minimum_longitude: Optional[float],
-    maximum_longitude: Optional[float],
-    minimum_latitude: Optional[float],
-    maximum_latitude: Optional[float],
-    minimum_x: Optional[float],
-    maximum_x: Optional[float],
-    minimum_y: Optional[float],
-    maximum_y: Optional[float],
-    dataset_part: Optional[str],
-) -> tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+    minimum_longitude: float | None,
+    maximum_longitude: float | None,
+    minimum_latitude: float | None,
+    maximum_latitude: float | None,
+    minimum_x: float | None,
+    maximum_x: float | None,
+    minimum_y: float | None,
+    maximum_y: float | None,
+    dataset_part: str | None,
+) -> tuple[float | None, float | None, float | None, float | None]:
     """
     Returns the geographical selection of the user.
 
@@ -461,7 +461,7 @@ def get_geographical_inputs(
 
     Returns
     -------
-    tuple[Optional[float], Optional[float], Optional[float], Optional[float]]
+    tuple[float | None, float | None, float | None, float | None]
         The geographical selection of the user. (minimum_x_axis, maximum_x_axis, minimum_y_axis, maximum_y_axis).
 
     Raises
@@ -508,23 +508,23 @@ def get_geographical_inputs(
 class GetRequest(BaseModel):
     dataset_id: str
     username: str
-    dataset_url: Optional[str] = None
-    dataset_version: Optional[str] = None
-    dataset_part: Optional[str] = None
+    dataset_url: str | None = None
+    dataset_version: str | None = None
+    dataset_part: str | None = None
     no_directories: bool = False
     output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
-    filter: Optional[str] = None
-    regex: Optional[str] = None
-    file_list: Optional[pathlib.Path] = None
+    filter: str | None = None
+    regex: str | None = None
+    file_list: pathlib.Path | None = None
     sync: bool = False
     sync_delete: bool = False
     index_parts: bool = False
-    direct_download: Optional[list[str]] = None
+    direct_download: list[str] | None = None
     dry_run: bool = False
     skip_existing: bool = False
     disable_progress_bar: bool = False
-    create_file_list: Optional[str] = None
+    create_file_list: str | None = None
     max_concurrent_requests: int = 15
 
     def update(self, new_dict: dict) -> "GetRequest":
@@ -687,7 +687,7 @@ def file_list_to_regex(file_list_path: pathlib.Path) -> str:
 
 
 def overload_regex_with_additional_filter(
-    regex: str, filter: Optional[str]
+    regex: str, filter: str | None
 ) -> str:
     return "(" + regex + "|" + filter + ")" if filter else regex
 

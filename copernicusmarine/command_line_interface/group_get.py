@@ -1,6 +1,5 @@
 import logging
 import pathlib
-from typing import Optional, Union
 
 import click
 
@@ -227,27 +226,27 @@ def cli_get() -> None:
 @force_download_option
 @log_exception_and_exit
 def get(
-    dataset_id: Optional[str],
-    dataset_version: Optional[str],
-    dataset_part: Optional[str],
-    username: Optional[str],
-    password: Optional[str],
+    dataset_id: str | None,
+    dataset_version: str | None,
+    dataset_part: str | None,
+    username: str | None,
+    password: str | None,
     no_directories: bool,
-    output_directory: Optional[pathlib.Path],
-    credentials_file: Optional[pathlib.Path],
+    output_directory: pathlib.Path | None,
+    credentials_file: pathlib.Path | None,
     overwrite: bool,
     create_template: bool,
-    request_file: Optional[pathlib.Path],
-    filter: Optional[str],
-    regex: Optional[str],
-    file_list: Optional[pathlib.Path],
-    create_file_list: Optional[str],
+    request_file: pathlib.Path | None,
+    filter: str | None,
+    regex: str | None,
+    file_list: pathlib.Path | None,
+    create_file_list: str | None,
     sync: bool,
     sync_delete: bool,
     skip_existing: bool,
     index_parts: bool,
     dry_run: bool,
-    response_fields: Optional[str],
+    response_fields: str | None,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     log_level: str,
@@ -302,7 +301,7 @@ def get(
         fields_to_include = {"all"}
     else:
         fields_to_include = DEFAULT_FIELDS_TO_INCLUDE
-    included_fields: Optional[Union[set[str], dict]]
+    included_fields: set[str] | dict | None
     if "all" in fields_to_include:
         included_fields = None
     elif "none" in fields_to_include:

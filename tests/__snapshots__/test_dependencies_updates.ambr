@@ -3,23 +3,22 @@
   dict({
     'arcosparse': '^0.4.2',
     'boto3': '>=1.26',
-    'click': '>=8.0.4,!=8.2.0,<8.3.0',
-    'dask': '>=2022',
+    'click': '>8.2.0,<8.3.0',
+    'dask': '>=2024.8.1',
     'h5netcdf': DynamicInlineTableDict({
       'extras': list([
         'h5py',
       ]),
       'version': '^1.4.0',
     }),
-    'numpy': '>=1.23.0',
+    'numpy': '>=2.1.0',
     'pydantic': '^2.9.1',
-    'pystac': '>=1.8.3',
-    'python': '>=3.9',
+    'pystac': '>=1.11.0',
+    'python': '>=3.10',
     'requests': '>=2.27.1',
     'semver': '>=3.0.2',
-    'setuptools': '>=68.2.2',
     'tqdm': '>=4.65.0',
-    'xarray': '>=2023.4.0',
-    'zarr': '>=2.13.3',
+    'xarray': '>=2024.10.0',
+    'zarr': '>=2.18.3',
   })
 # ---

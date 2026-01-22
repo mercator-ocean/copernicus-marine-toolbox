@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from copernicusmarine.core_functions.models import (
     DEFAULT_GEOSPATIAL_PROJECTION,
@@ -12,15 +11,15 @@ from copernicusmarine.core_functions.models import (
 
 @dataclass
 class YParameters:
-    minimum_y: Optional[float] = None
-    maximum_y: Optional[float] = None
+    minimum_y: float | None = None
+    maximum_y: float | None = None
     coordinate_id: str = "latitude"
 
 
 @dataclass
 class XParameters:
-    minimum_x: Optional[float] = None
-    maximum_x: Optional[float] = None
+    minimum_x: float | None = None
+    maximum_x: float | None = None
     coordinate_id: str = "longitude"
 
 
@@ -33,14 +32,14 @@ class GeographicalParameters:
 
 @dataclass
 class TemporalParameters:
-    start_datetime: Optional[datetime] = None
-    end_datetime: Optional[datetime] = None
+    start_datetime: datetime | None = None
+    end_datetime: datetime | None = None
     coordinate_id: str = "time"
 
 
 @dataclass
 class DepthParameters:
-    minimum_depth: Optional[float] = None
-    maximum_depth: Optional[float] = None
+    minimum_depth: float | None = None
+    maximum_depth: float | None = None
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS
     coordinate_id: str = "depth"

@@ -1,6 +1,6 @@
 import logging
 import ssl
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 import boto3
 import botocore
@@ -42,7 +42,7 @@ except ValueError:
     HTTPS_RETRIES = 5
 
 
-def get_ssl_context() -> Optional[ssl.SSLContext]:
+def get_ssl_context() -> ssl.SSLContext | None:
     if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
         return None
     if COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH:
@@ -55,7 +55,7 @@ def get_ssl_context() -> Optional[ssl.SSLContext]:
 def get_configured_boto3_session(
     endpoint_url: str,
     operation_type: list[Literal["ListObjectsV2", "HeadObject", "GetObject"]],
-    username: Optional[str] = None,
+    username: str | None = None,
     return_ressources: bool = False,
 ) -> tuple[Any, Any]:
     config_boto3 = botocore.config.Config(
@@ -120,7 +120,7 @@ class ConfiguredRequestsSession(requests.Session):
                             503,
                             504,
                         ],
-                        allowed_methods=False,
+                        allowed_methods=None,
                     )
                 ),
             )

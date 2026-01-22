@@ -1,7 +1,6 @@
 import pathlib
 from json import loads
 from pathlib import Path
-from typing import Optional
 
 from copernicusmarine.core_functions.utils import get_unique_filepath
 from tests.test_utils import execute_in_terminal
@@ -9,7 +8,7 @@ from tests.test_utils import execute_in_terminal
 
 class TestOverwriteOutputData:
     def expected_downloaded_filepath_with_counter(
-        self, counter: Optional[int] = None
+        self, counter: int | None = None
     ):
         if counter is None:
             return self.expected_downloaded_filepath
@@ -272,7 +271,7 @@ class TestOverwriteOutputData:
         )
 
 
-def command_from_service(service: str) -> Optional[str]:
+def command_from_service(service: str) -> str | None:
     if service in ["original-files"]:
         return "get"
     elif service in [
