@@ -48,7 +48,7 @@ from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
     get_unique_filepath,
-    human_readable_size_mb,
+    human_readable_size,
 )
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -154,7 +154,6 @@ def download_zarr(
     logger.debug(f"Xarray Dataset: {dataset}")
     logger.debug("Starting download. Please wait...")
 
-    total_size_estimation = 0.0
     if subset_request.file_format == "csv":
         total_size_estimation = get_approximation_size_final_result_csv(
             dataset
@@ -165,11 +164,11 @@ def download_zarr(
             )
             logger.warning(
                 "The estimated size of the final CSV output is "
-                f"{human_readable_size_mb(total_size_estimation)}. "
+                f"{human_readable_size(total_size_estimation)}. "
                 "Generating such a large file may result in high memory "
                 "consumption and significant storage requirements. "
                 f"The same data in NetCDF or Zarr format is estimated at "
-                f"{human_readable_size_mb(non_csv_size_estimation)}. Using "
+                f"{human_readable_size(non_csv_size_estimation)}. Using "
                 "these formats is recommended for large or complex datasets."
             )
     else:
@@ -179,7 +178,7 @@ def download_zarr(
 
     logger.debug(
         f"Total size estimation: "
-        f"{human_readable_size_mb(total_size_estimation)} MB"
+        f"{human_readable_size(total_size_estimation)}."
     )
 
     dataset.close()
@@ -504,7 +503,7 @@ def _save_dataset_locally(
 def _download_dataset_as_zarr(
     dataset: xarray.Dataset, output_path: pathlib.Path
 ):
-    logger.debug("Writing dataset to Zarr")
+    logger.debug("Writing dataset to Zarr.")
     store = DirectoryStore(output_path)
     if ZARR_FORMAT is None:
         return dataset.to_zarr(store=store, mode="w")
@@ -518,7 +517,7 @@ def _download_dataset_as_netcdf(
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
 ):
-    logger.debug("Writing dataset to NetCDF")
+    logger.debug("Writing dataset to NetCDF.")
     for coord in dataset.coords:
         dataset[coord].encoding["_FillValue"] = None
     if netcdf_compression_level > 0:
@@ -567,6 +566,6 @@ def _download_dataset_as_netcdf(
 def _download_dataset_as_csv(
     dataset: xarray.Dataset, output_path: pathlib.Path
 ):
-    logger.debug("Writing dataset to CSV")
+    logger.debug("Writing dataset to CSV.")
     df = dataset.to_dataframe()
     df.to_csv(output_path)
