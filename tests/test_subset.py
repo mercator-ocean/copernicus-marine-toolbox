@@ -6,7 +6,7 @@ import pathlib
 from datetime import datetime
 from json import loads
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Literal
 
 import pytest
 import xarray
@@ -252,7 +252,7 @@ class TestSubset:
             )
 
     def flatten_request_dict(
-        self, request_dict: dict[str, Optional[Union[str, Path]]]
+        self, request_dict: dict[str, str | Path | None]
     ) -> list:
         flatten_list = list(
             itertools.chain.from_iterable(

@@ -3,7 +3,6 @@ import pathlib
 import shutil
 import tempfile
 import uuid
-from typing import Optional
 
 
 class TemporaryPathSaver:
@@ -19,7 +18,7 @@ class TemporaryPathSaver:
         self.base_name = self.output_path.name
         self.is_zarr = self.output_path.suffix == ".zarr"
 
-        self.temp_path: Optional[pathlib.Path] = None
+        self.temp_path: pathlib.Path | None = None
 
     def __enter__(self) -> pathlib.Path:
         if self.is_zarr:

@@ -1,7 +1,7 @@
 import logging
 import pathlib
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy
 import xarray
@@ -38,7 +38,7 @@ def get_file_extension(file_format: FileFormat) -> str:
 
 
 def get_filename(
-    filename: Optional[str],
+    filename: str | None,
     dataset: xarray.Dataset,
     dataset_id: str,
     file_format: FileFormat,
@@ -147,7 +147,7 @@ def build_filename_from_request(
     variables: list[str],
     platform_ids: list[str],
     axis_coordinate_id_mapping: dict[str, str],
-    time_format: Optional[str] = None,
+    time_format: str | None = None,
 ) -> str:
     """
     In the sparse dataset case we don't have the dataset to build the filename from.
@@ -253,7 +253,7 @@ def _get_unit_coordinate(dataset: xarray.Dataset, coordinate_id: str) -> Any:
 
 
 def _format_longitudes(
-    minimum_longitude: Optional[float], maximum_longitude: Optional[float]
+    minimum_longitude: float | None, maximum_longitude: float | None
 ) -> str:
     if minimum_longitude is None or maximum_longitude is None:
         return ""
@@ -272,7 +272,7 @@ def _format_longitudes(
 
 
 def _format_latitudes(
-    minimum_latitude: Optional[float], maximum_latitude: Optional[float]
+    minimum_latitude: float | None, maximum_latitude: float | None
 ) -> str:
     if minimum_latitude is None or maximum_latitude is None:
         return ""
@@ -291,8 +291,8 @@ def _format_latitudes(
 
 
 def _format_xy_axis(
-    minimum_value: Optional[float],
-    maximum_value: Optional[float],
+    minimum_value: float | None,
+    maximum_value: float | None,
     coordinate_id: str,
 ) -> str:
     if minimum_value is None or maximum_value is None:
@@ -312,7 +312,7 @@ def _format_xy_axis(
 
 
 def _format_depths(
-    minimum_depth: Optional[float], maximum_depth: Optional[float]
+    minimum_depth: float | None, maximum_depth: float | None
 ) -> str:
     if minimum_depth is None or maximum_depth is None:
         return ""
@@ -325,9 +325,9 @@ def _format_depths(
 
 
 def _format_datetimes(
-    minimum_datetime: Optional[datetime],
-    maximum_datetime: Optional[datetime],
-    time_format: Optional[str],
+    minimum_datetime: datetime | None,
+    maximum_datetime: datetime | None,
+    time_format: str | None,
 ) -> str:
     time_format = time_format or "%Y-%m-%d"
     if minimum_datetime is None or maximum_datetime is None:
@@ -347,7 +347,7 @@ def _format_datetimes(
 
 def get_dataset_coordinates_extent(
     dataset: xarray.Dataset, axis_coordinate_id_mapping: dict[str, str]
-) -> list[Union[GeographicalExtent, TimeExtent]]:
+) -> list[GeographicalExtent | TimeExtent]:
     coordinates_extent = []
     for coord_axis in ["x", "y", "t", "z"]:
         if coordinate_id := axis_coordinate_id_mapping.get(coord_axis):
@@ -362,7 +362,7 @@ def get_dataset_coordinates_extent(
 def _get_coordinate_extent(
     dataset: xarray.Dataset,
     coordinate_id: str,
-) -> Optional[Union[GeographicalExtent, TimeExtent]]:
+) -> GeographicalExtent | TimeExtent | None:
     if coordinate_id in dataset.sizes:
         minimum = _get_min_coordinate(dataset, coordinate_id)
         maximum = _get_max_coordinate(dataset, coordinate_id)
@@ -408,7 +408,7 @@ def get_approximation_size_final_result(
 def get_approximation_size_data_downloaded(
     dataset: xarray.Dataset,
     dataset_chunking: DatasetChunking,
-) -> Optional[float]:
+) -> float | None:
     # TODO: Test it not sure how to, maybe ask if the chunk size is correct
     temp_dataset = dataset.copy()
     if "elevation" in dataset.sizes:

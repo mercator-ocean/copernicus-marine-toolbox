@@ -4,16 +4,7 @@ import logging
 import pathlib
 import re
 from datetime import datetime, timedelta, timezone
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Literal,
-    Optional,
-    Sequence,
-    TypeVar,
-    Union,
-)
+from typing import Any, Callable, Iterator, Literal, Sequence, TypeVar
 
 import numpy
 import xarray
@@ -54,14 +45,14 @@ def next_or_raise_exception(
         raise exception_to_raise from exception
 
 
-def construct_url_with_query_params(url, query_params: dict) -> Optional[str]:
+def construct_url_with_query_params(url, query_params: dict) -> str | None:
     req = PreparedRequest()
     req.prepare_url(url, query_params)
     return req.url
 
 
 def construct_query_params_for_marine_data_store_monitoring(
-    username: Optional[str] = None,
+    username: str | None = None,
 ) -> dict:
     query_params = {
         "x-cop-client": "copernicus-marine-toolbox",
@@ -72,7 +63,7 @@ def construct_query_params_for_marine_data_store_monitoring(
     return query_params
 
 
-def datetime_parser(date: Union[str, numpy.datetime64]) -> datetime:
+def datetime_parser(date: str | numpy.datetime64) -> datetime:
     if date == "now":
         return datetime.now(tz=timezone.utc)
     try:
@@ -88,7 +79,7 @@ def datetime_parser(date: Union[str, numpy.datetime64]) -> datetime:
 
 
 def timestamp_parser(
-    timestamp: Union[int, float], unit: Literal["s", "ms"] = "ms"
+    timestamp: int | float, unit: Literal["s", "ms"] = "ms"
 ) -> datetime:
     """
     Convert a timestamp in milliseconds to a datetime object.
@@ -104,7 +95,7 @@ def timestamp_parser(
 
 def datetime_to_timestamp(
     date: datetime, unit: Literal["s", "ms"] = "ms"
-) -> Union[int, float]:
+) -> int | float:
     """
     Should be Windows compatible for datetime before 1970
     """
@@ -112,7 +103,7 @@ def datetime_to_timestamp(
 
 
 def timestamp_or_datestring_to_datetime(
-    date: Union[str, int, float, numpy.datetime64],
+    date: str | int | float | numpy.datetime64,
 ) -> datetime:
     if isinstance(date, int) or isinstance(date, float):
         return timestamp_parser(date)
@@ -224,7 +215,7 @@ def parse_access_dataset_url(
         raise ValueError(f"Invalid data path: {data_path}")
 
 
-def create_custom_query_function(username: Optional[str]) -> Callable:
+def create_custom_query_function(username: str | None) -> Callable:
     def _add_custom_query_param(params, context, **kwargs):
         """
         Add custom query params for MDS's Monitoring

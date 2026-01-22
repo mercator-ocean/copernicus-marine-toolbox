@@ -14,12 +14,8 @@ Alternatively, you can use a binary.
 
 .. note::
 
-    Requires Python ``>=3.9``.
+    Requires Python ``>=3.10``.
 
-.. note::
-
-    Note that the use of ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results.
-    See :ref:`later on this page <installation-page-dependencies>` for more details.
 
 .. note::
 
@@ -156,34 +152,29 @@ Dependencies
 **************
 The Copernicus Marine Toolbox has the following dependencies:
 
-- `Python <https://www.python.org/>`__ (3.9 or later)
-- `click <https://click.palletsprojects.com/>`__ (8.0.4 or lower than 8.3.0, :ref:`different from 8.2.0 <click-issue>`)
+- `Python <https://www.python.org/>`__ (3.10 or later)
+- `click <https://click.palletsprojects.com/>`__ (8.2.1 or lower than 8.3.0)
 - `requests <https://docs.python-requests.org/en/latest/>`__ (2.27.1 or later)
-- `setuptools <https://setuptools.pypa.io/en/latest/>`__ (68.2.2 or later)
-- `xarray <https://xarray.pydata.org/>`__ (2023.4.0 or later)
+- `xarray <https://xarray.pydata.org/>`__ (2024.10.0 or later)
 - `tqdm <https://tqdm.github.io/>`__ (4.65.0 or later)
-- `zarr <https://zarr.readthedocs.io/en/stable/>`__ (2.13.3 or later)
-- `dask <https://www.dask.org/>`__ (2022 or later)
+- `zarr <https://zarr.readthedocs.io/en/stable/>`__ (2.18.3 or later)
+- `dask <https://www.dask.org/>`__ (2024.8.1 or later)
 - `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__ (1.26 or later)
-- `semver <https://python-semver.readthedocs.io/en/latest/>`__ (0.2 or later)
-- `pystac <https://pystac.readthedocs.io/en/stable/>`__ (1.8.3 or later)
-- `numpy <https://www.numpy.org/>`__ (1.23 or later)
+- `semver <https://python-semver.readthedocs.io/en/latest/>`__ (3.0.2 or later)
+- `pystac <https://pystac.readthedocs.io/en/stable/>`__ (1.11.0 or later)
+- `numpy <https://www.numpy.org/>`__ (2.1.0 or later)
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
 - `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.4.2 or later)
 
 .. _xarray-issue:
 
-About ``xarray`` and ``numpy``
+About ``xarray`` and ``zarr``
 -------------------------------
 
-The Copernicus Marine Toolbox uses the xarray library to handle the data when using the ``subset`` command in the majority of cases.
-There are some compatibility issues with the latest versions of xarray and numpy:
+The Copernicus Marine Toolbox uses the ``xarray`` and ``zarr`` libraries to handle the data when using the ``subset`` command in the majority of cases.
 
-- ``xarray<2024.7.0`` with ``numpy>=2.0.0`` leads to inconsistent results. See this issue: `xarray issue 1 <https://github.com/pydata/xarray/issues/9179>`_.
-- ``xarray<2024.10.0`` with ``numpy>=2.0.0`` leads to some time overhead. See this issue: `xarray issue 2 <https://github.com/pydata/xarray/issues/9545>`_.
-
-For ``zarr>=3.0.0``:
+About using ``zarr>=3.0.0``:
 
 - If you want to use ``zarr>=v3``, you need to use ``xarray>=2025.3.0``.
 - If you want to use ``zarr>=3.0.9``, you should also update the Copernicus Marine Toolbox to ``copernicusmarine>=2.2.0``.
@@ -231,6 +222,7 @@ We have also restricted the versions of click to lower than 8.3.0 as there seems
 
 Domains required by the Copernicus Marine Toolbox
 ********************************************************
+
 To be able to use the Copernicus Marine Services, you need to be able to access those domains:
 
 - ``https://auth.marine.copernicus.eu``: for the authentication process.

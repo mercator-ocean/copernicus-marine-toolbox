@@ -5,7 +5,6 @@ import platform
 import subprocess
 import time
 from subprocess import CompletedProcess
-from typing import Optional
 
 logger = logging.getLogger()
 
@@ -56,8 +55,8 @@ FIVE_MINUTES = 5 * 60
 def execute_in_terminal(
     command: list[str],
     timeout_second: float = FIVE_MINUTES,
-    user_input: Optional[str] = None,
-    env: Optional[dict[str, str]] = None,
+    user_input: str | None = None,
+    env: dict[str, str] | None = None,
     shell: bool = True,
     safe_quoting: bool = False,
 ) -> CompletedProcess[str]:

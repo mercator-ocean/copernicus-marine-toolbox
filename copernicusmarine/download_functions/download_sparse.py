@@ -4,7 +4,6 @@ import shutil
 import warnings
 from collections import defaultdict
 from copy import deepcopy
-from typing import Optional
 
 import pandas as pd
 from arcosparse import (
@@ -89,7 +88,7 @@ def download_sparse(
     metadata_url: str,
     service: CopernicusMarineService,
     axis_coordinate_id_mapping: dict[str, str],
-    product_doi: Optional[str],
+    product_doi: str | None,
     disable_progress_bar: bool,
 ) -> ResponseSubset:
 
@@ -154,7 +153,7 @@ def read_dataframe_sparse(
     subset_request: SubsetRequest,
     metadata_url: str,
     service: CopernicusMarineService,
-    product_doi: Optional[str],
+    product_doi: str | None,
     disable_progress_bar: bool,
 ) -> pd.DataFrame:
     df, _, _ = _read_dataframe_sparse(
@@ -173,7 +172,7 @@ def _read_dataframe_sparse(
     subset_request: SubsetRequest,
     metadata_url: str,
     service: CopernicusMarineService,
-    product_doi: Optional[str],
+    product_doi: str | None,
     disable_progress_bar: bool,
     dry_run: bool = False,
 ) -> tuple[pd.DataFrame, list[str], list[str]]:
@@ -354,7 +353,7 @@ def _transform_dataframe(
     df: pd.DataFrame,
     vertical_axis: VerticalAxis,
     platforms_metadata: dict[str, Entity],
-    product_doi: Optional[str],
+    product_doi: str | None,
 ) -> pd.DataFrame:
     """
     Transform the dataframe to match the expected format to be consistent with MyOceanPro

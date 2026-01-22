@@ -1,6 +1,5 @@
 import pathlib
 from datetime import datetime
-from typing import List, Optional, Union
 
 import pandas as pd
 
@@ -29,32 +28,32 @@ from copernicusmarine.python_interface.exception_handler import (
 @log_exception_and_exit
 def read_dataframe(
     dataset_id: str,
-    dataset_version: Optional[str] = None,
-    dataset_part: Optional[str] = None,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
-    variables: Optional[List[str]] = None,
-    minimum_longitude: Optional[float] = None,
-    maximum_longitude: Optional[float] = None,
-    minimum_latitude: Optional[float] = None,
-    maximum_latitude: Optional[float] = None,
-    minimum_x: Optional[float] = None,
-    maximum_x: Optional[float] = None,
-    minimum_y: Optional[float] = None,
-    maximum_y: Optional[float] = None,
-    minimum_depth: Optional[float] = None,
-    maximum_depth: Optional[float] = None,
+    dataset_version: str | None = None,
+    dataset_part: str | None = None,
+    username: str | None = None,
+    password: str | None = None,
+    variables: list[str] | None = None,
+    minimum_longitude: float | None = None,
+    maximum_longitude: float | None = None,
+    minimum_latitude: float | None = None,
+    maximum_latitude: float | None = None,
+    minimum_x: float | None = None,
+    maximum_x: float | None = None,
+    minimum_y: float | None = None,
+    maximum_y: float | None = None,
+    minimum_depth: float | None = None,
+    maximum_depth: float | None = None,
     vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
-    start_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
-    end_datetime: Optional[Union[datetime, pd.Timestamp, str]] = None,
+    start_datetime: datetime | pd.Timestamp | str | None = None,
+    end_datetime: datetime | pd.Timestamp | str | None = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
         DEFAULT_COORDINATES_SELECTION_METHOD
     ),
-    service: Optional[str] = None,
-    credentials_file: Optional[Union[pathlib.Path, str]] = None,
+    service: str | None = None,
+    credentials_file: pathlib.Path | str | None = None,
     raise_if_updating: bool = False,
     disable_progress_bar: bool = False,
-    platform_ids: Optional[List[str]] = None,
+    platform_ids: list[str] | None = None,
     staging: bool = False,
 ) -> pd.DataFrame:
     """
@@ -75,7 +74,7 @@ def read_dataframe(
         The username for authentication.
     password : str, optional
         The password for authentication.
-    variables : List[str], optional
+    variables : list[str], optional
         List of variable names to extract.
     minimum_longitude : float, optional
         Minimum longitude for the subset. The value will be transposed to the interval [-180; 360[.
@@ -99,21 +98,21 @@ def read_dataframe(
         Maximum depth for the subset.
     vertical_axis : str, optional
         Consolidate the vertical dimension (the z-axis) as requested: depth with descending positive values, elevation with ascending positive values. Default is depth.
-    start_datetime : Union[datetime, str], optional
+    start_datetime : datetime | str, optional
         The start datetime of the temporal subset. Supports common format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html).
-    end_datetime : Union[datetime, str], optional
+    end_datetime : datetime | str, optional
         The end datetime of the temporal subset. Supports common format parsed by dateutil (https://dateutil.readthedocs.io/en/stable/parser.html).
     coordinates_selection_method : str, optional
         If ``inside``, the selection retrieved will be inside the requested range. If ``strict-inside``, the selection retrieved will be inside the requested range, and an error will be raised if the values don't exist. If ``nearest``, the extremes closest to the requested values will be returned. If ``outside``, the extremes will be taken to contain all the requested interval. The methods ``inside``, ``nearest`` and ``outside`` will display a warning if the request is out of bounds.
     service : str, optional
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
-    credentials_file : Union[pathlib.Path, str], optional
+    credentials_file : pathlib.Path | str, optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files.
     raise_if_updating : bool, optional
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
-    platform_ids : List[str], optional
+    platform_ids : list[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
 
     Returns
