@@ -365,18 +365,14 @@ def _transform_dataframe(
     # Needs to be done before striping the type to the platform_id
     df["institution"] = df["platform_id"].apply(
         lambda x: (
-            (
-                platforms_metadata[x].institution
-                if x in platforms_metadata
-                else pd.NA
-            )
-            or pd.NA
+            platforms_metadata[x].institution
+            if x in platforms_metadata
+            else None
         )
     )
     df["doi"] = df["platform_id"].apply(
         lambda x: (
-            (platforms_metadata[x].doi if x in platforms_metadata else pd.NA)
-            or pd.NA
+            platforms_metadata[x].doi if x in platforms_metadata else None
         )
     )
 
