@@ -7,7 +7,7 @@ Versioning and End-of-Life Policy
 Important Information
 -------------------------
 
-Conda no longer supports Python 3.9, so the upcoming toolbox release (``v2.3``) cannot be installed via conda when using Python 3.9.
+Drop support for Python 3.9 in version 2.4.0.
 
 .. warning::
    :class: big-warning
@@ -54,7 +54,7 @@ Release and End-of-Life Timeline
 +=====================+==============+================+===================+======================================================+
 | 1.x                 | 2023-06      | 2025-07        | 1.3.6             | **[OBSOLETE]** First public release of new toolbox   |
 +---------------------+--------------+----------------+-------------------+------------------------------------------------------+
-| 2.x                 | 2025-01      | Not planned yet| 2.3.0             | Current stable version                               |
+| 2.x                 | 2025-01      | Not planned yet| 2.4.0             | Current stable version                               |
 +---------------------+--------------+----------------+-------------------+------------------------------------------------------+
 
 
@@ -66,14 +66,15 @@ Dependencies and Versions
 ----------------------------
 For a more detailed overview of the allowed dependency versions, you can refer to the documentation for each version of the Copernicus Marine Toolbox. The version listed here always corresponds to the latest patch. Below is a summary of the dependency versions for some of the most relevant libraries used:
 
-================  ========  ===========  =================  ========
+================  ========  ===========  =================  ===========
 Copernicusmarine  Python    Xarray       Zarr               Dask
-================  ========  ===========  =================  ========
+================  ========  ===========  =================  ===========
 2.0.z             >=3.9     >=2023.4.0   >=2.13.3, <3.0.0   >=2022
 2.1.z             >=3.9     >=2023.4.0   >=2.13.3, <=3.0.8  >=2022
 2.2.z             >=3.9     >=2023.4.0   >=2.13.3           >=2022
 2.3.z             >=3.9     >=2023.4.0   >=2.13.3           >=2022
-================  ========  ===========  =================  ========
+2.4.z             >=3.10    >=2024.10.0  >=2.18.3           >=2024.8.1
+================  ========  ===========  =================  ===========
 
 .. note::
 
