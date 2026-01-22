@@ -9,7 +9,6 @@ from typing import Optional, Tuple, Union
 import xarray
 import zarr
 
-from copernicusmarine.core_functions.models import FileFormat
 from copernicusmarine.core_functions.temporary_path_saver import (
     TemporaryPathSaver,
 )
@@ -245,7 +244,6 @@ def download_zarr(
             output_path,
             subset_request.netcdf_compression_level,
             subset_request.netcdf3_compatible,
-            subset_request.file_format,
         )
 
     dataset.close()
@@ -482,10 +480,9 @@ def _save_dataset_locally(
     output_path: pathlib.Path,
     netcdf_compression_level: int,
     netcdf3_compatible: bool,
-    file_format: FileFormat,
-):
+) -> None:
     with TemporaryPathSaver(output_path) as temp_path:
-        if file_format == "netcdf":
+        if output_path.suffix == ".nc":
             _download_dataset_as_netcdf(
                 dataset,
                 temp_path,
@@ -498,9 +495,9 @@ def _save_dataset_locally(
                 "--netcdf-compression-level option cannot be used when "
                 "writing to ZARR or CSV format."
             )
-        if file_format == "zarr":
+        if output_path.suffix == ".zarr":
             _download_dataset_as_zarr(dataset, temp_path)
-        elif file_format == "csv":
+        elif output_path.suffix == ".csv":
             _download_dataset_as_csv(dataset, temp_path)
 
 
