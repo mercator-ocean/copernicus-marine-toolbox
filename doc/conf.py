@@ -41,6 +41,7 @@ html_theme = "furo"
 html_static_path = ["_static"]
 html_favicon = "_static/favicon_cmems.ico"
 html_css_files = ["css/custom.css"]
+html_js_files = ["js/custom.js"]
 
 # -- Options for the furo theme -----------------------------------------------
 # https://pradyunsg.me/furo/customisation/
