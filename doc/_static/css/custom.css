@@ -32,6 +32,11 @@ a:visited:hover {
     margin-bottom: 4px;
 }
 
+.container.bottom-right {
+    right: 20px;
+    bottom: 103px;
+}
+
 /* Intercom widget: keep above sticky headers/sidebars */
 .intercom-lightweight-app,
 .intercom-lightweight-app-launcher,
@@ -40,5 +45,8 @@ iframe[name="intercom-launcher-frame"],
 iframe[name="intercom-frame"],
 #intercom-container,
 #intercom-frame {
-    z-index: 2147483003 !important; /* higher than theme UI */
+    z-index: 2000 !important; /* higher than theme UI */
+    position: fixed !important;
+    right: 30px !important;
+    bottom: 51px !important;
 }
