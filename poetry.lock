@@ -145,7 +145,6 @@ description = "Units of measure as required by the Climate and Forecast (CF) met
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_full_version > \"3.10.0\" and python_version == \"3.10\" and sys_platform != \"win32\" and sys_platform != \"emscripten\""
 files = [
     {file = "cf_units-3.3.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:a5eee5c0e5f6a2890673d785e7eea295ce4a41d347ecc123731521f683258d69"},
     {file = "cf_units-3.3.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:53d1f2819f7fb8e8e85edc032f9481143c1e74eee4d13e2da1cff998b83e9360"},
@@ -171,32 +170,6 @@ numpy = "*"
 all = ["cf-units[docs,test]"]
 docs = ["sphinx"]
 test = ["codecov", "cython", "jinja2", "pip", "pytest", "pytest-cov"]
-
-[[package]]
-name = "cf-units"
-version = "3.3.1"
-description = "Units of measure as required by the Climate and Forecast (CF) metadata conventions"
-optional = false
-python-versions = ">=3.11"
-groups = ["dev"]
-markers = "python_version >= \"3.11\" and python_version < \"3.14\" and sys_platform != \"win32\" and sys_platform != \"emscripten\""
-files = [
-    {file = "cf_units-3.3.1-cp311-abi3-macosx_15_0_arm64.whl", hash = "sha256:6f35616ab44607294920d712eb5edb3ce1c123e56e7cf1b3686fceb300cd2ef6"},
-    {file = "cf_units-3.3.1-cp311-abi3-macosx_15_0_x86_64.whl", hash = "sha256:fd893c45df1a1ac327d67884d0442edbf4cd5eb74198846dfacbbb7662fa7d2b"},
-    {file = "cf_units-3.3.1-cp311-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e10abcd4e3e8cb628bc315835cf3efec8a19d31b31bfcdfb820ce32daa0adf79"},
-    {file = "cf_units-3.3.1-cp311-abi3-win_amd64.whl", hash = "sha256:566b3de7de87967e5fcec8f06adec60bb814705ba8d61fe440a17c0ead7fec14"},
-    {file = "cf_units-3.3.1.tar.gz", hash = "sha256:84339f582994ae32ca5c472075c1e603a89f6c6f5a96cc1031bb5da700a14f3a"},
-]
-
-[package.dependencies]
-cftime = ">=1.2"
-jinja2 = "*"
-numpy = "*"
-
-[package.extras]
-all = ["cf-units[docs,test]"]
-docs = ["sphinx"]
-test = ["codecov", "cython", "jinja2", "pip", "pytest", "pytest-cov", "tomli"]
 
 [[package]]
 name = "cfgv"
@@ -3694,4 +3667,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "1f2d1a9c06fa8f9c31a656b5deb42efa8a81eb8daa627d37f31ec4fdc7b4ffd1"
+content-hash = "a0c5a6ee5f23a798e688c04b97d659d2e24720b66207e822f63c2741d5344edc"
