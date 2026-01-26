@@ -121,14 +121,26 @@ def main_checks_when_file_is_downloaded(
 ):
     size_variance = 0.2
     offset_size = 0.05  # small datasets are hard to predict
-    file_size = os.path.getsize(file_path)
-    if file_path.suffix == ".nc":
+    file_size = os.path.getsize(file_path) / 1048e3  # in MB
+
+    if file_path.suffix == ".csv":
         assert (
-            file_size / 1048e3
+            file_size
             <= response["file_size"] * (1 + size_variance) + offset_size
         )
         assert (
-            file_size / 1048e3
+            file_size
+            >= response["file_size"] * (1 - size_variance) - offset_size
+        )
+        return
+
+    if file_path.suffix == ".nc":
+        assert (
+            file_size
+            <= response["file_size"] * (1 + size_variance) + offset_size
+        )
+        assert (
+            file_size
             >= response["file_size"] * (1 - size_variance) - offset_size
         )
     assert response["file_size"] <= response["data_transfer_size"]

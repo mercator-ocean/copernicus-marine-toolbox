@@ -235,3 +235,15 @@ def create_custom_query_function(username: Optional[str]) -> Callable:
         )
 
     return _add_custom_query_param
+
+
+def human_readable_size(size_mb: Union[numpy.float64, float]) -> str:
+    units = ["B", "KB", "MB", "GB", "TB", "PB"]
+    size_bytes = size_mb * 1024 * 1024
+    index = 0
+
+    while size_bytes >= 1024 and index < len(units) - 1:
+        size_bytes /= 1024.0
+        index += 1
+
+    return f"{size_bytes:.2f} {units[index]}"

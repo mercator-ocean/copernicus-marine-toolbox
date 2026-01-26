@@ -4,6 +4,7 @@ from freezegun import freeze_time
 
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
+    human_readable_size,
     timestamp_parser,
 )
 
@@ -51,4 +52,33 @@ class TestUtilityFunctions:
         )
         assert timestamp_parser(1672527600, unit="s") == datetime(
             2022, 12, 31, 23, 0, 0, tzinfo=timezone.utc
+        )
+
+    def test_human_readable_size_bytes(self):
+        assert human_readable_size(0) == "0.00 B"
+        assert human_readable_size(0.0000001) == "0.10 B"
+
+    def test_human_readable_size_kilobytes(self):
+        assert human_readable_size(1 / 1024) == "1.00 KB"
+        assert human_readable_size(0.5 / 1024) == "512.00 B"
+
+    def test_human_readable_size_megabytes(self):
+        assert human_readable_size(1) == "1.00 MB"
+        assert human_readable_size(0.5) == "512.00 KB"
+        assert human_readable_size(999) == "999.00 MB"
+
+    def test_human_readable_size_gigabytes(self):
+        assert human_readable_size(1024) == "1.00 GB"
+        assert human_readable_size(2048) == "2.00 GB"
+        assert human_readable_size(1536) == "1.50 GB"
+
+    def test_human_readable_size_terabytes(self):
+        assert human_readable_size(1024 * 1024) == "1.00 TB"
+        assert human_readable_size(2 * 1024 * 1024) == "2.00 TB"
+
+    def test_human_readable_size_petabytes(self):
+        assert human_readable_size(1024 * 1024 * 1024) == "1.00 PB"
+        assert (
+            human_readable_size(2 * 1024 * 1024 * 1024 * 1024 * 1024)
+            == "2097152.00 PB"
         )

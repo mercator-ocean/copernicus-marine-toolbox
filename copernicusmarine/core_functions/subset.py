@@ -86,10 +86,10 @@ def download_zarr_or_sparse(
         raise_when_all_dataset_requested(subset_request, False)
         if "file_format" not in subset_request.model_fields_set:
             subset_request.file_format = "netcdf"
-        elif subset_request.file_format not in ["netcdf", "zarr"]:
+        elif subset_request.file_format not in ["netcdf", "zarr", "csv"]:
             raise WrongFormatRequested(
                 requested_format=subset_request.file_format,
-                supported_formats=["netcdf", "zarr"],
+                supported_formats=["netcdf", "zarr", "csv"],
             )
         logger.debug(
             f"Downloading data in {subset_request.file_format} format."
