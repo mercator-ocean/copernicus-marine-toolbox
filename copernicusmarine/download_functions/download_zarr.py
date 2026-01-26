@@ -178,7 +178,7 @@ def download_zarr(
 
     logger.debug(
         f"Total size estimation: "
-        f"{human_readable_size(total_size_estimation)}."
+        f"{human_readable_size_mb(total_size_estimation)}."
     )
 
     dataset.close()
