@@ -145,6 +145,7 @@ description = "Units of measure as required by the Climate and Forecast (CF) met
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
+markers = "sys_platform != \"win32\""
 files = [
     {file = "cf_units-3.3.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:a5eee5c0e5f6a2890673d785e7eea295ce4a41d347ecc123731521f683258d69"},
     {file = "cf_units-3.3.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:53d1f2819f7fb8e8e85edc032f9481143c1e74eee4d13e2da1cff998b83e9360"},
@@ -3667,4 +3668,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "a0c5a6ee5f23a798e688c04b97d659d2e24720b66207e822f63c2741d5344edc"
+content-hash = "55de9b8df10614ff922c35aa6091f5a474812998366af85e6714e19d42589a33"
