@@ -1,5 +1,6 @@
 import logging
-from typing import Literal, Type, Union, get_args, get_origin, get_type_hints
+from types import UnionType
+from typing import Literal, Type, get_args, get_origin, get_type_hints
 
 from pydantic import BaseModel
 
@@ -115,7 +116,7 @@ def _get_base_models_in_type(
         )
         if result:
             models.update(result)
-    elif get_origin(type_to_check) is Union:
+    elif get_origin(type_to_check) is UnionType:
         for union_type in get_args(type_to_check):
             result = _get_base_models_in_type(
                 union_type, in_an_iterable=in_an_iterable
