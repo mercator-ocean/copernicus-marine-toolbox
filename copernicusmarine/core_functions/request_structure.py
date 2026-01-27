@@ -5,7 +5,6 @@ import logging
 import os
 import pathlib
 import re
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional, Type, TypeVar, Union
 
@@ -506,8 +505,7 @@ def get_geographical_inputs(
             )
 
 
-@dataclass
-class GetRequest:
+class GetRequest(BaseModel):
     dataset_id: str
     username: str
     dataset_url: Optional[str] = None
@@ -604,7 +602,7 @@ def create_get_request(
     disable_progress_bar: bool,
 ) -> GetRequest:
     logger.debug("Checking username and password...")
-    username, password = get_and_check_username_password(
+    username, _ = get_and_check_username_password(
         username, password, credentials_file
     )
     get_request = GetRequest(dataset_id=dataset_id or "", username=username)
@@ -657,12 +655,14 @@ def create_get_request(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
-        assert create_file_list.endswith(".txt") or create_file_list.endswith(
-            ".csv"
-        ), (
-            "Download file list must be a '.txt' or '.csv' file. "
-            f"Got '{create_file_list}' instead."
-        )
+        if not (
+            create_file_list.endswith(".txt")
+            or create_file_list.endswith(".csv")
+        ):
+            raise ValueError(
+                "Download file list must be a '.txt' or '.csv' file. "
+                f"Got '{create_file_list}' instead."
+            )
         get_request.create_file_list = create_file_list
     if file_list:
         direct_download_files = get_direct_download_files(file_list)

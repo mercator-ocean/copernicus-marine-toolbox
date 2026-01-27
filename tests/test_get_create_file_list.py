@@ -57,16 +57,20 @@ class TestGetCreateFileList:
                 == "filename,size,last_modified_datetime,etag\n"
             )
 
-    def test_get_create_file_list_without_extension_raises_python(self):
-        with pytest.raises(AssertionError) as e:
+    def test_get_create_file_list_without_extension_raises_python(
+        self, tmp_path
+    ):
+        with pytest.raises(
+            ValueError,
+            match="Download file list must be a '.txt' or '.csv' file."
+            " Got 'hello' instead.",
+        ):
             get(
                 dataset_id="cmems_mod_ibi_phy-mld_my_0.027deg_P1M-m",
                 create_file_list="hello",
                 dry_run=True,
+                output_directory=tmp_path,
             )
-        assert str(e.value) == (
-            "Download file list must be a '.txt' or '.csv' file. Got 'hello' instead."
-        )
 
     def test_get_create_file_list_python(self, tmp_path):
         get(
