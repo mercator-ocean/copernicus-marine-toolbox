@@ -64,9 +64,8 @@ class TestGetCreateFileList:
                 create_file_list="hello",
                 dry_run=True,
             )
-        assert (
-            str(e.value)
-            == "Download file list must be a '.txt' or '.csv' file. "
+        assert str(e.value) == (
+            "Download file list must be a '.txt' or '.csv' file. Got 'hello' instead."
         )
 
     def test_get_create_file_list_python(self, tmp_path):
