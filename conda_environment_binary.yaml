@@ -6,8 +6,8 @@ dependencies:
   - gh==2.45.0
   - pyinstaller==6.11.1
   - pytest==8.1.1
-  - numpy==2.1.3
   - pip:
+      - numpy==2.1.3
       - xarray
       - distributed
       - tzdata
