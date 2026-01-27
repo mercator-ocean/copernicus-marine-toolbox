@@ -1,5 +1,6 @@
 import pathlib
 from json import loads
+from unittest import mock
 
 import pandas as pd
 import pytest
@@ -215,3 +216,13 @@ class TestSparseSubset:
         response = loads(self.output.stdout)
         output_path = pathlib.Path(response["file_path"])
         assert output_path.exists()
+
+    @mock.patch(
+        "copernicusmarine.download_functions.download_sparse.get_entities",
+        return_value=[],
+    )
+    def test_works_without_platform_metadata(self, mock_get_entities):
+        df = read_dataframe(**BASIC_COMMAND_DICT)
+        assert not df.empty
+        assert df["institution"].isnull().all()
+        assert df["doi"].isnull().all()
