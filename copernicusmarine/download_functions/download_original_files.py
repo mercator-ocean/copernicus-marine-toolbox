@@ -21,7 +21,7 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.core_functions.request_structure import (
     GetRequest,
-    overload_regex_with_additionnal_filter,
+    overload_regex_with_additional_filter,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
@@ -73,7 +73,7 @@ def download_original_files(
                     for file_not_found in files_headers.files_not_found
                 ]
             )
-            get_request.regex = overload_regex_with_additionnal_filter(
+            get_request.regex = overload_regex_with_additional_filter(
                 files_not_found_regex, get_request.regex
             )
         if get_request.index_parts:
@@ -309,7 +309,6 @@ def _download_header(
     disable_progress_bar: bool,
     only_list_root_path: bool = False,
 ) -> S3FilesDescriptor:
-
     files_headers = S3FilesDescriptor(endpoint=endpoint_url, bucket=bucket)
 
     raw_filenames = _list_files_on_marine_data_lake_s3(
@@ -390,7 +389,6 @@ def _download_header_for_direct_download(
     overwrite: bool,
     skip_existing: bool,
 ) -> S3FilesDescriptor:
-
     files_headers = S3FilesDescriptor(endpoint=endpoint_url, bucket=bucket)
 
     split_path = path.split("/")

@@ -569,12 +569,12 @@ class GetRequest:
         full_regex = self.regex
         if self.filter:
             filter_regex = filter_to_regex(self.filter)
-            full_regex = overload_regex_with_additionnal_filter(
+            full_regex = overload_regex_with_additional_filter(
                 filter_regex, full_regex
             )
         if self.file_list:
             file_list_regex = file_list_to_regex(self.file_list)
-            full_regex = overload_regex_with_additionnal_filter(
+            full_regex = overload_regex_with_additional_filter(
                 file_list_regex, full_regex
             )
         self.regex = full_regex
@@ -639,7 +639,7 @@ def create_get_request(
     if filter:
         get_request.regex = filter_to_regex(filter)
     if regex:
-        get_request.regex = overload_regex_with_additionnal_filter(
+        get_request.regex = overload_regex_with_additional_filter(
             regex, get_request.regex
         )
     if sync or sync_delete:
@@ -653,7 +653,7 @@ def create_get_request(
         get_request.sync_delete = sync_delete
     if index_parts:
         get_request.index_parts = index_parts
-        get_request.regex = overload_regex_with_additionnal_filter(
+        get_request.regex = overload_regex_with_additional_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
@@ -684,7 +684,7 @@ def file_list_to_regex(file_list_path: pathlib.Path) -> str:
     return pattern
 
 
-def overload_regex_with_additionnal_filter(
+def overload_regex_with_additional_filter(
     regex: str, filter: Optional[str]
 ) -> str:
     return "(" + regex + "|" + filter + ")" if filter else regex
