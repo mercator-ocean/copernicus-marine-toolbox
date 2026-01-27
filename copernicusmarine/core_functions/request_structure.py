@@ -659,8 +659,10 @@ def create_get_request(
     if create_file_list is not None:
         assert create_file_list.endswith(".txt") or create_file_list.endswith(
             ".csv"
-        ), "Download file list must be a '.txt' or '.csv' file. "
-        f"Got '{create_file_list}' instead."
+        ), (
+            "Download file list must be a '.txt' or '.csv' file. "
+            f"Got '{create_file_list}' instead."
+        )
         get_request.create_file_list = create_file_list
     if file_list:
         direct_download_files = get_direct_download_files(file_list)
