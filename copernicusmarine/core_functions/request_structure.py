@@ -512,7 +512,7 @@ class GetRequest(BaseModel):
     dataset_version: Optional[str] = None
     dataset_part: Optional[str] = None
     no_directories: bool = False
-    output_directory: str = "."
+    output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
     filter: Optional[str] = None
     regex: Optional[str] = None

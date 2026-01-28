@@ -53,7 +53,7 @@ def download_original_files(
             bucket=bucket,
             path=path,
             sync=get_request.sync,
-            directory_out=pathlib.Path(get_request.output_directory),
+            directory_out=get_request.output_directory,
             username=username,
             no_directories=get_request.no_directories,
             overwrite=get_request.overwrite,
@@ -88,7 +88,7 @@ def download_original_files(
             username=username,
             sync=get_request.sync,
             create_file_list=create_file_list,
-            directory_out=pathlib.Path(get_request.output_directory),
+            directory_out=get_request.output_directory,
             no_directories=get_request.no_directories,
             skip_existing=get_request.skip_existing,
             overwrite=get_request.overwrite,
@@ -116,14 +116,14 @@ def download_original_files(
 
     files_headers = _create_filenames_out(
         files_information=files_headers,
-        output_directory=pathlib.Path(get_request.output_directory),
+        output_directory=get_request.output_directory,
         no_directories=get_request.no_directories,
     )
 
     if get_request.sync_delete:
         files_headers = _get_files_to_delete_with_sync(
             files_information=files_headers,
-            output_directory=pathlib.Path(get_request.output_directory),
+            output_directory=get_request.output_directory,
         )
         if files_headers.files_to_delete:
             logger.info("Some files will be deleted due to sync delete:")
@@ -177,7 +177,7 @@ def create_response_get_from_files_headers(
                 file_size=size_to_MB(s3_file.size),
                 last_modified_datetime=s3_file.last_modified,
                 etag=s3_file.etag,
-                output_directory=pathlib.Path(get_request.output_directory),
+                output_directory=get_request.output_directory,
                 filename=s3_file.filename_out.name,
                 file_path=s3_file.filename_out,
                 file_format=s3_file.filename_out.suffix,
