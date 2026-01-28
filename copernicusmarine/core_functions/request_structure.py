@@ -618,40 +618,34 @@ def create_get_request(
         "max_concurrent_requests": max_concurrent_requests,
         "disable_progress_bar": disable_progress_bar,
     }
-    get_request.update(request_update_dict)
-
-    # Specific treatment for default values:
-    # In order to not overload arguments with default values
-    # TODO is this really useful?
-    if dataset_version:
-        get_request.dataset_version = dataset_version
+    # To be able to distinguish between set and unset values
     if dataset_part:
-        get_request.dataset_part = dataset_part
+        request_update_dict["dataset_part"] = dataset_part
     if no_directories:
-        get_request.no_directories = no_directories
+        request_update_dict["no_directories"] = no_directories
     if overwrite:
-        get_request.overwrite = overwrite
+        request_update_dict["overwrite"] = overwrite
     if skip_existing:
-        get_request.skip_existing = skip_existing
+        request_update_dict["skip_existing"] = skip_existing
 
     if filter:
         get_request.regex = filter_to_regex(filter)
     if regex:
-        get_request.regex = overload_regex_with_additional_filter(
+        request_update_dict["regex"] = overload_regex_with_additional_filter(
             regex, get_request.regex
         )
     if sync or sync_delete:
-        get_request.sync = True
+        request_update_dict["sync"] = True
         if not get_request.dataset_version:
             raise ValueError(
                 "Sync requires to set a dataset version. "
                 "Please use --dataset-version option."
             )
     if sync_delete:
-        get_request.sync_delete = sync_delete
+        request_update_dict["sync_delete"] = sync_delete
     if index_parts:
-        get_request.index_parts = index_parts
-        get_request.regex = overload_regex_with_additional_filter(
+        request_update_dict["index_parts"] = index_parts
+        request_update_dict["regex"] = overload_regex_with_additional_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
@@ -663,14 +657,15 @@ def create_get_request(
                 "Download file list must be a '.txt' or '.csv' file. "
                 f"Got '{create_file_list}' instead."
             )
-        get_request.create_file_list = create_file_list
+        request_update_dict["create_file_list"] = create_file_list
     if file_list:
         direct_download_files = get_direct_download_files(file_list)
         if direct_download_files:
             get_request.direct_download = direct_download_files
     if create_file_list or dry_run:
-        get_request.dry_run = True
-    return get_request
+        request_update_dict["dry_run"] = True
+
+    return get_request.update(request_update_dict)
 
 
 def filter_to_regex(filter: str) -> str:
