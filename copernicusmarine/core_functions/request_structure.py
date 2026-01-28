@@ -527,13 +527,20 @@ class GetRequest(BaseModel):
     create_file_list: Optional[str] = None
     max_concurrent_requests: int = 15
 
-    def update(self, new_dict: dict):
-        """Method to update values in GetRequest object.
-        Skips "None" values
-        """
-        for key, value in new_dict.items():
-            if value is not None:
-                self.__dict__.update({key: value})
+    def update(self, new_dict: dict) -> "GetRequest":
+        filtered_dict = {
+            key: value
+            for key, value in new_dict.items()
+            if value is not None
+            and not (isinstance(value, (list, tuple, str)) and not value)
+        }
+        data = self.model_dump(
+            exclude_defaults=True,
+            exclude_unset=True,
+            exclude_none=True,
+        )
+        data.update(filtered_dict)
+        return self.model_validate(data)
 
     def enforce_types(self):
         type_enforced_dict = {}
@@ -631,7 +638,7 @@ def create_get_request(
     if filter:
         get_request.regex = filter_to_regex(filter)
     if regex:
-        request_update_dict["regex"] = overload_regex_with_additional_filter(
+        get_request.regex = overload_regex_with_additional_filter(
             regex, get_request.regex
         )
     if sync or sync_delete:
@@ -645,7 +652,7 @@ def create_get_request(
         request_update_dict["sync_delete"] = sync_delete
     if index_parts:
         request_update_dict["index_parts"] = index_parts
-        request_update_dict["regex"] = overload_regex_with_additional_filter(
+        get_request.regex = overload_regex_with_additional_filter(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
