@@ -643,7 +643,7 @@ def create_get_request(
         )
     if sync or sync_delete:
         request_update_dict["sync"] = True
-        if not get_request.dataset_version:
+        if not request_update_dict["dataset_version"]:
             raise ValueError(
                 "Sync requires to set a dataset version. "
                 "Please use --dataset-version option."
