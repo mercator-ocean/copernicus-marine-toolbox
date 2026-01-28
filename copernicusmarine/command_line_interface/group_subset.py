@@ -470,7 +470,7 @@ def subset(
 
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))
-    elif dry_run:
+    elif subset_request.dry_run:
         fields_to_include = {"all"}
     else:
         fields_to_include = DEFAULT_FIELDS_TO_INCLUDE

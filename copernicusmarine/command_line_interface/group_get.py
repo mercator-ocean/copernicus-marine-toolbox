@@ -29,6 +29,9 @@ from copernicusmarine.core_functions.get import (
     get_function,
 )
 from copernicusmarine.core_functions.models import ResponseGet
+from copernicusmarine.core_functions.request_structure import (
+    create_get_request,
+)
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
@@ -267,10 +270,10 @@ def get(
         create_get_template()
         return
 
-    response = get_function(
+    get_request = create_get_request(
         dataset_id=dataset_id,
-        force_dataset_version=dataset_version,
-        force_dataset_part=dataset_part,
+        dataset_version=dataset_version,
+        dataset_part=dataset_part,
         username=username,
         password=password,
         no_directories=no_directories,
@@ -278,9 +281,9 @@ def get(
         credentials_file=credentials_file,
         overwrite=overwrite,
         request_file=request_file,
-        filter_option=filter,
+        filter=filter,
         regex=regex,
-        file_list_path=file_list,
+        file_list=file_list,
         create_file_list=create_file_list,
         sync=sync,
         sync_delete=sync_delete,
@@ -289,8 +292,9 @@ def get(
         dry_run=dry_run,
         max_concurrent_requests=max_concurrent_requests,
         disable_progress_bar=disable_progress_bar,
-        staging=staging,
     )
+
+    response = get_function(get_request, staging)
 
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))

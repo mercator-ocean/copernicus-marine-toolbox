@@ -2,9 +2,9 @@ import fnmatch
 import importlib.util
 import json
 import logging
+import os
 import pathlib
 import re
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional, Type, TypeVar, Union
 
@@ -505,14 +505,14 @@ def get_geographical_inputs(
             )
 
 
-@dataclass
-class GetRequest:
+class GetRequest(BaseModel):
     dataset_id: str
+    username: str
     dataset_url: Optional[str] = None
     dataset_version: Optional[str] = None
     dataset_part: Optional[str] = None
     no_directories: bool = False
-    output_directory: str = "."
+    output_directory: pathlib.Path = pathlib.Path(".")
     overwrite: bool = False
     filter: Optional[str] = None
     regex: Optional[str] = None
@@ -523,14 +523,24 @@ class GetRequest:
     direct_download: Optional[list[str]] = None
     dry_run: bool = False
     skip_existing: bool = False
+    disable_progress_bar: bool = False
+    create_file_list: Optional[str] = None
+    max_concurrent_requests: int = 15
 
-    def update(self, new_dict: dict):
-        """Method to update values in GetRequest object.
-        Skips "None" values
-        """
-        for key, value in new_dict.items():
-            if value is not None:
-                self.__dict__.update({key: value})
+    def update(self, new_dict: dict) -> "GetRequest":
+        filtered_dict = {
+            key: value
+            for key, value in new_dict.items()
+            if value is not None
+            and not (isinstance(value, (list, tuple, str)) and not value)
+        }
+        data = self.model_dump(
+            exclude_defaults=True,
+            exclude_unset=True,
+            exclude_none=True,
+        )
+        data.update(filtered_dict)
+        return self.model_validate(data)
 
     def enforce_types(self):
         type_enforced_dict = {}
@@ -564,15 +574,105 @@ class GetRequest:
         full_regex = self.regex
         if self.filter:
             filter_regex = filter_to_regex(self.filter)
-            full_regex = overload_regex_with_additionnal_filter(
+            full_regex = overload_regex_with_additional_filter(
                 filter_regex, full_regex
             )
         if self.file_list:
             file_list_regex = file_list_to_regex(self.file_list)
-            full_regex = overload_regex_with_additionnal_filter(
+            full_regex = overload_regex_with_additional_filter(
                 file_list_regex, full_regex
             )
         self.regex = full_regex
+
+
+def create_get_request(
+    dataset_id: Optional[str],
+    dataset_version: Optional[str],
+    dataset_part: Optional[str],
+    username: Optional[str],
+    password: Optional[str],
+    credentials_file: Optional[pathlib.Path],
+    no_directories: bool,
+    output_directory: Optional[pathlib.Path],
+    overwrite: bool,
+    request_file: Optional[pathlib.Path],
+    filter: Optional[str],
+    regex: Optional[str],
+    file_list: Optional[pathlib.Path],
+    create_file_list: Optional[str],
+    sync: bool,
+    sync_delete: bool,
+    skip_existing: bool,
+    index_parts: bool,
+    dry_run: bool,
+    max_concurrent_requests: int,
+    disable_progress_bar: bool,
+) -> GetRequest:
+    logger.debug("Checking username and password...")
+    username, _ = get_and_check_username_password(
+        username, password, credentials_file
+    )
+    get_request = GetRequest(dataset_id=dataset_id or "", username=username)
+
+    if request_file:
+        get_request.from_file(request_file)
+    if not get_request.dataset_id:
+        raise ValueError("Please provide a dataset id for a get request.")
+    request_update_dict = {
+        "dataset_version": dataset_version,
+        "output_directory": output_directory,
+        "username": username,
+        "max_concurrent_requests": max_concurrent_requests,
+        "disable_progress_bar": disable_progress_bar,
+    }
+    # To be able to distinguish between set and unset values
+    if dataset_part:
+        request_update_dict["dataset_part"] = dataset_part
+    if no_directories:
+        request_update_dict["no_directories"] = no_directories
+    if overwrite:
+        request_update_dict["overwrite"] = overwrite
+    if skip_existing:
+        request_update_dict["skip_existing"] = skip_existing
+
+    if filter:
+        get_request.regex = filter_to_regex(filter)
+    if regex:
+        get_request.regex = overload_regex_with_additional_filter(
+            regex, get_request.regex
+        )
+    if sync or sync_delete:
+        request_update_dict["sync"] = True
+        if not request_update_dict["dataset_version"]:
+            raise ValueError(
+                "Sync requires to set a dataset version. "
+                "Please use --dataset-version option."
+            )
+    if sync_delete:
+        request_update_dict["sync_delete"] = sync_delete
+    if index_parts:
+        request_update_dict["index_parts"] = index_parts
+        get_request.regex = overload_regex_with_additional_filter(
+            filter_to_regex("*index_*"), get_request.regex
+        )
+    if create_file_list is not None:
+        if not (
+            create_file_list.endswith(".txt")
+            or create_file_list.endswith(".csv")
+        ):
+            raise ValueError(
+                "Download file list must be a '.txt' or '.csv' file. "
+                f"Got '{create_file_list}' instead."
+            )
+        request_update_dict["create_file_list"] = create_file_list
+    if file_list:
+        direct_download_files = get_direct_download_files(file_list)
+        if direct_download_files:
+            get_request.direct_download = direct_download_files
+    if create_file_list or dry_run:
+        request_update_dict["dry_run"] = True
+
+    return get_request.update(request_update_dict)
 
 
 def filter_to_regex(filter: str) -> str:
@@ -586,7 +686,20 @@ def file_list_to_regex(file_list_path: pathlib.Path) -> str:
     return pattern
 
 
-def overload_regex_with_additionnal_filter(
+def overload_regex_with_additional_filter(
     regex: str, filter: Optional[str]
 ) -> str:
     return "(" + regex + "|" + filter + ")" if filter else regex
+
+
+def get_direct_download_files(
+    file_list_path: pathlib.Path,
+) -> list[str]:
+    if not os.path.exists(file_list_path):
+        raise FileNotFoundError(
+            f"File {file_list_path} does not exist."
+            " Please provide a valid path to a '.txt' file."
+        )
+    with open(file_list_path) as f:
+        direct_download_files = [line.strip() for line in f.readlines()]
+    return direct_download_files
