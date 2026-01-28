@@ -1,7 +1,6 @@
 import json
 import logging
 import pathlib
-from typing import Optional
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
@@ -214,7 +213,7 @@ def raise_when_all_dataset_requested(
 
 def check_requested_area_time_valid(
     subset_request: SubsetRequest,
-    service_format: Optional[CopernicusMarineServiceFormat],
+    service_format: CopernicusMarineServiceFormat | None,
     dataset_part: str,
 ) -> None:
     is_original_grid = dataset_part == "originalGrid"

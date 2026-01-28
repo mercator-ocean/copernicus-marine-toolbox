@@ -1,7 +1,6 @@
 import logging
 import time
 from collections.abc import MutableMapping
-from typing import Optional
 
 import botocore.config
 import botocore.exceptions
@@ -20,7 +19,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         endpoint: str,
         bucket: str,
         root_path: str,
-        copernicus_marine_username: Optional[str] = None,
+        copernicus_marine_username: str | None = None,
         number_of_retries: int = 9,
         initial_retry_wait_seconds: int = 1,
     ):

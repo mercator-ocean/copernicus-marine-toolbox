@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import xarray
 import zarr
@@ -11,7 +10,7 @@ logger = logging.getLogger("copernicusmarine")
 
 def open_zarr(
     dataset_url: str,
-    copernicus_marine_username: Optional[str] = None,
+    copernicus_marine_username: str | None = None,
     **kwargs,
 ) -> xarray.Dataset:
     (

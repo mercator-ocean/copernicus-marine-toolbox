@@ -1,6 +1,5 @@
 import logging
 import pathlib
-from typing import Optional
 
 from copernicusmarine.core_functions.credentials_utils import (
     RECOVER_YOUR_CREDENTIALS_MESSAGE,
@@ -12,12 +11,12 @@ logger = logging.getLogger("copernicusmarine")
 
 
 def login_function(
-    username: Optional[str],
-    password: Optional[str],
+    username: str | None,
+    password: str | None,
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
     check_credentials_valid: bool,
-    configuration_file: Optional[pathlib.Path],
+    configuration_file: pathlib.Path | None,
 ) -> bool:
     if check_credentials_valid:
         logger.info("Checking if credentials are valid.")

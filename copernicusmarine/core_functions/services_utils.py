@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Literal, Optional, Union
+from typing import Literal
 
 from copernicusmarine.catalogue_parser.catalogue_parser import (
     get_dataset_metadata,
@@ -74,7 +74,7 @@ def _get_best_arco_service_type(
         CopernicusMarineServiceNames.TIMESERIES,
         CopernicusMarineServiceNames.GEOSERIES,
     ],
-    Optional[DatasetChunking],
+    DatasetChunking | None,
 ]:
     dataset_chunking_geoseries = get_dataset_chunking(
         dataset_subset,
@@ -139,10 +139,10 @@ def _get_first_available_service_name(
 
 
 def _select_service_by_priority(
-    request: Union[SubsetRequest, GetRequest],
+    request: SubsetRequest | GetRequest,
     dataset_version_part: CopernicusMarinePart,
     command_type: CommandType,
-) -> tuple[CopernicusMarineService, Optional[DatasetChunking]]:
+) -> tuple[CopernicusMarineService, DatasetChunking | None]:
     dataset_available_service_names = [
         service.service_name for service in dataset_version_part.services
     ]
@@ -200,20 +200,20 @@ def _select_service_by_priority(
 class RetrievalService:
     dataset_id: str
     service_name: CopernicusMarineServiceNames
-    service_format: Optional[CopernicusMarineServiceFormat]
+    service_format: CopernicusMarineServiceFormat | None
     uri: str
-    dataset_valid_start_date: Optional[Union[str, int, float]]
+    dataset_valid_start_date: str | int | float | None
     metadata_url: str
     service: CopernicusMarineService
     dataset_part: CopernicusMarinePart
     axis_coordinate_id_mapping: dict[str, str]
-    dataset_chunking: Optional[DatasetChunking]
+    dataset_chunking: DatasetChunking | None
     is_original_grid: bool
-    product_doi: Optional[str]
+    product_doi: str | None
 
 
 def get_retrieval_service(
-    request: Union[SubsetRequest, GetRequest],
+    request: SubsetRequest | GetRequest,
     command_type: CommandType,
     marine_datastore_config: MarineDataStoreConfig,
 ) -> RetrievalService:
@@ -226,7 +226,7 @@ def get_retrieval_service(
             "the catalogue, you can use 'copernicusmarine describe "
             "-r datasets --contains <search_token>' to find datasets"
         )
-    force_service_name: Optional[CopernicusMarineServiceNames] = (
+    force_service_name: CopernicusMarineServiceNames | None = (
         _service_name_from_string(request.service, command_type)
         if isinstance(request, SubsetRequest) and request.service
         else None
@@ -243,10 +243,10 @@ def get_retrieval_service(
 
 def _get_retrieval_service_from_dataset(
     dataset: CopernicusMarineDataset,
-    request: Union[SubsetRequest, GetRequest],
-    force_service_name: Optional[CopernicusMarineServiceNames],
+    request: SubsetRequest | GetRequest,
+    force_service_name: CopernicusMarineServiceNames | None,
     command_type: CommandType,
-    product_doi: Optional[str],
+    product_doi: str | None,
 ) -> RetrievalService:
     dataset_version = dataset.get_version(request.dataset_version)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
@@ -263,10 +263,10 @@ def _get_retrieval_service_from_dataset(
 def _get_retrieval_service_from_dataset_version(
     dataset_id: str,
     dataset_version: CopernicusMarineVersion,
-    request: Union[SubsetRequest, GetRequest],
-    force_service_name: Optional[CopernicusMarineServiceNames],
+    request: SubsetRequest | GetRequest,
+    force_service_name: CopernicusMarineServiceNames | None,
     command_type: CommandType,
-    product_doi: Optional[str],
+    product_doi: str | None,
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(request.dataset_part)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
@@ -351,7 +351,7 @@ def _get_retrieval_service_from_dataset_version(
 
 def _get_dataset_start_date_from_service(
     service: CopernicusMarineService,
-) -> Optional[Union[str, int, float]]:
+) -> str | int | float | None:
     for variable in service.variables:
         for coordinate in variable.coordinates:
             if coordinate.coordinate_id == "time":

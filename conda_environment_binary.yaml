@@ -7,11 +7,11 @@ dependencies:
   - pyinstaller==6.11.1
   - pytest==8.1.1
   - pip:
-    - numpy==1.26.4 # TODO: check this dependency
-    - xarray
-    - distributed
-    - tzdata
-    - pillow
-    - pydantic
-    - pystac
-    - tqdm
+      - numpy==2.1.3
+      - xarray
+      - distributed
+      - tzdata
+      - pillow
+      - pydantic
+      - pystac
+      - tqdm

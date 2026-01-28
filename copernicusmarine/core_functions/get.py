@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import pathlib
-from typing import Optional
 
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
@@ -30,20 +29,20 @@ logger = logging.getLogger("copernicusmarine")
 
 
 def get_function(
-    dataset_id: Optional[str],
-    force_dataset_version: Optional[str],
-    force_dataset_part: Optional[str],
-    username: Optional[str],
-    password: Optional[str],
+    dataset_id: str | None,
+    force_dataset_version: str | None,
+    force_dataset_part: str | None,
+    username: str | None,
+    password: str | None,
     no_directories: bool,
-    output_directory: Optional[pathlib.Path],
-    credentials_file: Optional[pathlib.Path],
+    output_directory: pathlib.Path | None,
+    credentials_file: pathlib.Path | None,
     overwrite: bool,
-    request_file: Optional[pathlib.Path],
-    filter_option: Optional[str],
-    regex: Optional[str],
-    file_list_path: Optional[pathlib.Path],
-    create_file_list: Optional[str],
+    request_file: pathlib.Path | None,
+    filter_option: str | None,
+    regex: str | None,
+    file_list_path: pathlib.Path | None,
+    create_file_list: str | None,
     sync: bool,
     sync_delete: bool,
     index_parts: bool,
@@ -130,11 +129,11 @@ def get_function(
 
 
 def _run_get_request(
-    username: Optional[str],
-    password: Optional[str],
+    username: str | None,
+    password: str | None,
     get_request: GetRequest,
-    create_file_list: Optional[str],
-    credentials_file: Optional[pathlib.Path],
+    create_file_list: str | None,
+    credentials_file: pathlib.Path | None,
     marine_datastore_config: MarineDataStoreConfig,
     max_concurrent_requests: int,
     disable_progress_bar: bool,

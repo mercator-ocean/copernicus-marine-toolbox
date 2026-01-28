@@ -69,11 +69,11 @@ CATALOG_URLS = [
 
 def mocked_stac_requests_get(*args, **kwargs):
     class MockResponse:
-        def __init__(self, json_data: Optional[dict], status_code: int):
+        def __init__(self, json_data: dict | None, status_code: int):
             self.json_data = json_data
             self.status_code = status_code
 
-        def json(self) -> Optional[dict]:
+        def json(self) -> dict | None:
             return self.json_data
 
         def raise_for_status(self):

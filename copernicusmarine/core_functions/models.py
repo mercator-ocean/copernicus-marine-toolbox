@@ -1,7 +1,7 @@
 import pathlib
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Optional, Union, get_args
+from typing import Literal, get_args
 
 from pydantic import BaseModel, ConfigDict
 
@@ -123,13 +123,13 @@ class ResponseGet(BaseModel):
     #: Description of the files concerned by the query.
     files: list[FileGet]
     #: List of deleted files. Only if option ``sync-delete`` is passed.
-    files_deleted: Optional[list[str]]
+    files_deleted: list[str] | None
     #: List of not found files from the file list input.
-    files_not_found: Optional[list[str]]
+    files_not_found: list[str] | None
     #: Number of files to be downloaded.
     number_of_files_to_download: int
     #: Total size of the files that would be downloaded in MB.
-    total_size: Optional[float]
+    total_size: float | None
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.
@@ -174,7 +174,7 @@ class GeographicalExtent(BaseModel):
 
     minimum: float
     maximum: float
-    unit: Optional[str]
+    unit: str | None
     coordinate_id: str
 
 
@@ -201,14 +201,14 @@ class ResponseSubset(BaseModel):
     #: Estimation of the size of the final result file in MB.
     #: This estimation may not be accurate if you save the result as
     #: a compressed NetCDF file.
-    file_size: Optional[float]
+    file_size: float | None
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.
-    data_transfer_size: Optional[float]
+    data_transfer_size: float | None
     #: Variables of the subsetted dataset.
     variables: list[str]
     #: The bounds of the subsetted dataset.
-    coordinates_extent: list[Union[GeographicalExtent, TimeExtent]]
+    coordinates_extent: list[GeographicalExtent | TimeExtent]
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.
@@ -246,9 +246,7 @@ class DatasetChunking:
             ].number_values
         return 0
 
-    def get_number_chunks_coordinate(
-        self, coordinate_id: str
-    ) -> Optional[float]:
+    def get_number_chunks_coordinate(self, coordinate_id: str) -> float | None:
         if coordinate_id in self.chunking_per_coordinate:
             return self.chunking_per_coordinate[coordinate_id].number_of_chunks
         return None

@@ -2,7 +2,7 @@ import logging
 import typing
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, List, Literal, Optional, Union
+from typing import Any, Literal
 
 import numpy
 import xarray
@@ -51,9 +51,9 @@ NETCDF_CONVENTION_COORDINATE_ATTRIBUTES = [
 def _choose_extreme_point(
     dataset: xarray.Dataset,
     coord_label: str,
-    actual_extreme: Union[float, datetime],
+    actual_extreme: float | datetime,
     method: Literal["pad", "backfill", "nearest"],
-) -> Union[float, datetime]:
+) -> float | datetime:
     if (
         coord_label == "time"
         and actual_extreme
@@ -127,7 +127,7 @@ def _nearest_selection(
 def _dataset_custom_sel(
     dataset: xarray.Dataset,
     coordinate_label: str,
-    coord_selection: Union[float, slice, datetime, None],
+    coord_selection: float | slice | datetime | None,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     if coordinate_label in dataset.sizes:
@@ -193,8 +193,8 @@ def _dataset_custom_sel(
 def get_size_of_coordinate_subset(
     dataset: xarray.Dataset,
     coordinate_label: str,
-    minimum: Optional[Union[float, datetime]],
-    maximum: Optional[Union[float, datetime]],
+    minimum: float | datetime | None,
+    maximum: float | datetime | None,
 ) -> int:
     if coordinate_label in dataset.sizes:
         return (
@@ -276,7 +276,7 @@ def _y_axis_subset(
 
 def x_axis_selection(
     longitude_parameters: XParameters,
-) -> tuple[Union[float, slice, None], bool]:
+) -> tuple[float | slice | None, bool]:
     shift_window = False
     minimum_x = longitude_parameters.minimum_x
     maximum_x = longitude_parameters.maximum_x
@@ -334,7 +334,7 @@ def _x_axis_subset(
 
 def t_axis_selection(
     temporal_parameters: TemporalParameters,
-) -> Union[slice, datetime, None]:
+) -> slice | datetime | None:
     start_datetime = (
         temporal_parameters.start_datetime.astimezone(UTC).replace(tzinfo=None)
         if temporal_parameters.start_datetime
@@ -434,7 +434,7 @@ def _depth_subset(
 
 def _get_variable_name_from_standard_name(
     dataset: xarray.Dataset, standard_name: str
-) -> Optional[str]:
+) -> str | None:
     for variable_name in dataset.variables:
         if (
             hasattr(dataset[variable_name], "standard_name")
@@ -468,7 +468,7 @@ def _cast_valid_range_to_variable_dtype(
 
 
 def _update_variables_attributes(
-    dataset: xarray.Dataset, variables: List[str]
+    dataset: xarray.Dataset, variables: list[str]
 ) -> xarray.Dataset:
     for variable in variables:
         if (
@@ -482,7 +482,7 @@ def _update_variables_attributes(
 
 
 def _variables_subset(
-    dataset: xarray.Dataset, variables: Optional[List[str]]
+    dataset: xarray.Dataset, variables: list[str] | None
 ) -> xarray.Dataset:
     dataset_variables_filter = []
 
@@ -507,7 +507,7 @@ def _variables_subset(
     return _update_variables_attributes(dataset, dataset_variables_filter)
 
 
-def _filter_attributes(attributes: dict, attributes_to_keep: List[str]):
+def _filter_attributes(attributes: dict, attributes_to_keep: list[str]):
     attributes_that_exist = set(attributes).intersection(attributes_to_keep)
     return {key: attributes[key] for key in attributes_that_exist}
 
@@ -559,7 +559,7 @@ def _update_dataset_coordinate_attributes(
 
 def subset(
     dataset: xarray.Dataset,
-    variables: Optional[List[str]],
+    variables: list[str] | None,
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
@@ -745,10 +745,10 @@ def check_dataset_subset_bounds(
 @typing.no_type_check
 def _check_coordinate_overlap(
     dimension: str,
-    user_minimum_coordinate_value: Union[float, datetime],
-    user_maximum_coordinate_value: Union[float, datetime],
-    dataset_minimum_coordinate_value: Union[float, datetime],
-    dataset_maximum_coordinate_value: Union[float, datetime],
+    user_minimum_coordinate_value: float | datetime,
+    user_maximum_coordinate_value: float | datetime,
+    dataset_minimum_coordinate_value: float | datetime,
+    dataset_maximum_coordinate_value: float | datetime,
     is_strict: bool,
 ) -> None:
     prefix_message = "Some of your subset selection "

@@ -3,6 +3,18 @@ Release 2.4.0
 
 This release introduces new features and improvements.
 
+General
+-------
+
+.. warning::
+
+    This release drops support for Python 3.9. The minimum required Python version is now 3.10.
+
+New Features
+^^^^^^^^^^^^
+
+* Drop support for Python 3.9. The minimum required Python version is now 3.10. Consequently, updated the versions of the dependencies: see the :ref:`dependencies section <installation-page-dependencies>` for more details.
+
 Subset
 ------
 

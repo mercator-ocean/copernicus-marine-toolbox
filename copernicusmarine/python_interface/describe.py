@@ -1,5 +1,3 @@
-from typing import Optional
-
 from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
@@ -16,8 +14,8 @@ from copernicusmarine.python_interface.exception_handler import (
 def describe(
     show_all_versions: bool = False,
     contains: list[str] = [],
-    product_id: Optional[str] = None,
-    dataset_id: Optional[str] = None,
+    product_id: str | None = None,
+    dataset_id: str | None = None,
     max_concurrent_requests: int = 15,
     disable_progress_bar: bool = False,
     staging: bool = False,
