@@ -27,3 +27,4 @@ Fixes
 ^^^^^^^
 
 * Fixed an issue where download would fail for sparse datasets when some platform metadata was missing. Now, the Toolbox handles missing metadata more gracefully and replace the missing data with ``None``.
+* Fixed an issue where an empty file would be created even if there were no data to download for sparse datasets. Now, no file is created.
