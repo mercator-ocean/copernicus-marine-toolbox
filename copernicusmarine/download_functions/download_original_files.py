@@ -21,7 +21,7 @@ from copernicusmarine.core_functions.models import (
 )
 from copernicusmarine.core_functions.request_structure import (
     GetRequest,
-    overload_regex_with_additionnal_filter,
+    overload_regex_with_additional_filter,
 )
 from copernicusmarine.core_functions.sessions import (
     get_configured_boto3_session,
@@ -38,7 +38,6 @@ logger = logging.getLogger("copernicusmarine")
 
 def download_original_files(
     username: str,
-    password: str,
     get_request: GetRequest,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
@@ -54,7 +53,7 @@ def download_original_files(
             bucket=bucket,
             path=path,
             sync=get_request.sync,
-            directory_out=pathlib.Path(get_request.output_directory),
+            directory_out=get_request.output_directory,
             username=username,
             no_directories=get_request.no_directories,
             overwrite=get_request.overwrite,
@@ -74,7 +73,7 @@ def download_original_files(
                     for file_not_found in files_headers.files_not_found
                 ]
             )
-            get_request.regex = overload_regex_with_additionnal_filter(
+            get_request.regex = overload_regex_with_additional_filter(
                 files_not_found_regex, get_request.regex
             )
         if get_request.index_parts:
@@ -89,7 +88,7 @@ def download_original_files(
             username=username,
             sync=get_request.sync,
             create_file_list=create_file_list,
-            directory_out=pathlib.Path(get_request.output_directory),
+            directory_out=get_request.output_directory,
             no_directories=get_request.no_directories,
             skip_existing=get_request.skip_existing,
             overwrite=get_request.overwrite,
@@ -117,14 +116,14 @@ def download_original_files(
 
     files_headers = _create_filenames_out(
         files_information=files_headers,
-        output_directory=pathlib.Path(get_request.output_directory),
+        output_directory=get_request.output_directory,
         no_directories=get_request.no_directories,
     )
 
     if get_request.sync_delete:
         files_headers = _get_files_to_delete_with_sync(
             files_information=files_headers,
-            output_directory=pathlib.Path(get_request.output_directory),
+            output_directory=get_request.output_directory,
         )
         if files_headers.files_to_delete:
             logger.info("Some files will be deleted due to sync delete:")
@@ -178,7 +177,7 @@ def create_response_get_from_files_headers(
                 file_size=size_to_MB(s3_file.size),
                 last_modified_datetime=s3_file.last_modified,
                 etag=s3_file.etag,
-                output_directory=pathlib.Path(get_request.output_directory),
+                output_directory=get_request.output_directory,
                 filename=s3_file.filename_out.name,
                 file_path=s3_file.filename_out,
                 file_format=s3_file.filename_out.suffix,
@@ -310,7 +309,6 @@ def _download_header(
     disable_progress_bar: bool,
     only_list_root_path: bool = False,
 ) -> S3FilesDescriptor:
-
     files_headers = S3FilesDescriptor(endpoint=endpoint_url, bucket=bucket)
 
     raw_filenames = _list_files_on_marine_data_lake_s3(
@@ -391,7 +389,6 @@ def _download_header_for_direct_download(
     overwrite: bool,
     skip_existing: bool,
 ) -> S3FilesDescriptor:
-
     files_headers = S3FilesDescriptor(endpoint=endpoint_url, bucket=bucket)
 
     split_path = path.split("/")
