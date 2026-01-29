@@ -402,15 +402,15 @@ def create_subset_request(
     if overwrite:
         request_update_dict["overwrite"] = overwrite
     if netcdf_compression_level:
-        request_update_dict["netcdf_compression_level"] = (
-            netcdf_compression_level
-        )
+        request_update_dict[
+            "netcdf_compression_level"
+        ] = netcdf_compression_level
     if netcdf3_compatible:
         request_update_dict["netcdf3_compatible"] = netcdf3_compatible
     if coordinates_selection_method != DEFAULT_COORDINATES_SELECTION_METHOD:
-        request_update_dict["coordinates_selection_method"] = (
-            coordinates_selection_method
-        )
+        request_update_dict[
+            "coordinates_selection_method"
+        ] = coordinates_selection_method
     if raise_if_updating:
         request_update_dict["raise_if_updating"] = raise_if_updating
     if dry_run:
@@ -586,20 +586,20 @@ class GetRequest(BaseModel):
 
 
 def create_get_request(
-    dataset_id: Optional[str],
-    dataset_version: Optional[str],
-    dataset_part: Optional[str],
-    username: Optional[str],
-    password: Optional[str],
-    credentials_file: Optional[pathlib.Path],
+    dataset_id: str | None,
+    dataset_version: str | None,
+    dataset_part: str | None,
+    username: str | None,
+    password: str | None,
+    credentials_file: pathlib.Path | None,
     no_directories: bool,
-    output_directory: Optional[pathlib.Path],
+    output_directory: pathlib.Path | None,
     overwrite: bool,
-    request_file: Optional[pathlib.Path],
-    filter: Optional[str],
-    regex: Optional[str],
-    file_list: Optional[pathlib.Path],
-    create_file_list: Optional[str],
+    request_file: pathlib.Path | None,
+    filter: str | None,
+    regex: str | None,
+    file_list: pathlib.Path | None,
+    create_file_list: str | None,
     sync: bool,
     sync_delete: bool,
     skip_existing: bool,
