@@ -139,6 +139,9 @@ def download_sparse(
 
     if subset_request.output_directory:
         subset_request.output_directory.mkdir(parents=True, exist_ok=True)
+    if df.empty:
+        return response
+
     with TemporaryPathSaver(output_path) as tmp_path:
         if subset_request.file_format == "parquet":
             df.to_parquet(tmp_path, index=False)

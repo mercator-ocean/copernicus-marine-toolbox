@@ -45,7 +45,9 @@ def next_or_raise_exception(
         raise exception_to_raise from exception
 
 
-def construct_url_with_query_params(url, query_params: dict) -> str | None:
+def construct_url_with_query_params(
+    url: str, query_params: dict[str, str]
+) -> str | None:
     req = PreparedRequest()
     req.prepare_url(url, query_params)
     return req.url
@@ -53,7 +55,7 @@ def construct_url_with_query_params(url, query_params: dict) -> str | None:
 
 def construct_query_params_for_marine_data_store_monitoring(
     username: str | None = None,
-) -> dict:
+) -> dict[str, str]:
     query_params = {
         "x-cop-client": "copernicus-marine-toolbox",
         "x-cop-client-version": copernicusmarine_version,
