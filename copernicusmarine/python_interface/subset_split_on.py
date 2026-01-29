@@ -1,5 +1,4 @@
 import pathlib
-from typing import Optional
 
 from copernicusmarine.core_functions.models import (
     ResponseSubset,
@@ -19,8 +18,8 @@ from copernicusmarine.python_interface.exception_handler import (
 @log_exception_and_exit
 def subset_split_on(
     on_variables: bool = False,
-    on_time: Optional[SplitOnTimeOption] = None,
-    concurrent_processes: Optional[int] = None,
+    on_time: SplitOnTimeOption | None = None,
+    concurrent_processes: int | None = None,
     **kwargs,
 ) -> list[ResponseSubset]:
     """
@@ -35,9 +34,9 @@ def subset_split_on(
     ----------
     on_variables : bool, optional
         If True, split the output files based on variable names, by default False.
-    on_time : Optional[SplitOnTimeOption], optional
+    on_time : SplitOnTimeOption | None, optional
         If provided, split the output files based on specified time intervals, by default None.
-    concurrent_processes : Optional[int], optional
+    concurrent_processes : int | None, optional
         Number of concurrent processes to use for downloading data, by default None. Should be greater or equal to 1.
     **kwargs
         Additional keyword arguments for subset request creation. See :class:`copernicusmarine.subset` for detailed accepted parameters.

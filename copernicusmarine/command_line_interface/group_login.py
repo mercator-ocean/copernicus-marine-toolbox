@@ -1,6 +1,5 @@
 import logging
 import pathlib
-from typing import Optional
 
 import click
 
@@ -96,12 +95,12 @@ def cli_login() -> None:
 )
 @log_exception_and_exit
 def login(
-    username: Optional[str],
-    password: Optional[str],
+    username: str | None,
+    password: str | None,
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
     check_credentials_valid: bool,
-    credentials_file: Optional[pathlib.Path],
+    credentials_file: pathlib.Path | None,
     log_level: str = "INFO",
 ) -> None:
     if log_level == "QUIET":

@@ -1,13 +1,6 @@
 import logging
-from typing import (
-    Literal,
-    Optional,
-    Type,
-    Union,
-    get_args,
-    get_origin,
-    get_type_hints,
-)
+from types import UnionType
+from typing import Literal, Type, get_args, get_origin, get_type_hints
 
 from pydantic import BaseModel
 
@@ -52,7 +45,7 @@ class WrongFieldsError(Exception):
 def build_query(
     fields_to_include_or_exclude: set[str],
     type_to_check: Type,
-    query: Optional[dict] = None,
+    query: dict | None = None,
 ) -> dict:
     """
     Recursively builds a query to include or exclude fields from a Pydantic model
@@ -107,7 +100,7 @@ def build_query(
 def _get_base_models_in_type(
     type_to_check: Type,
     in_an_iterable: bool = False,
-) -> Optional[dict[Type, Literal["__all__", None]]]:
+) -> dict[Type, Literal["__all__", None]] | None:
     models = {}
     if check_type_is_base_model(type_to_check):
         return {type_to_check: "__all__" if in_an_iterable else None}
@@ -123,7 +116,7 @@ def _get_base_models_in_type(
         )
         if result:
             models.update(result)
-    elif get_origin(type_to_check) is Union:
+    elif get_origin(type_to_check) is UnionType:
         for union_type in get_args(type_to_check):
             result = _get_base_models_in_type(
                 union_type, in_an_iterable=in_an_iterable
@@ -134,7 +127,7 @@ def _get_base_models_in_type(
 
 
 def _return_available_fields(
-    type_to_check: Type, available_fields: Optional[set[str]] = None
+    type_to_check: Type, available_fields: set[str] | None = None
 ) -> set[str]:
     """
     Recursively get all the fields that are available in the model

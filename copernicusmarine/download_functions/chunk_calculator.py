@@ -1,7 +1,6 @@
 import logging
 import math
 from datetime import datetime
-from typing import Optional, Union
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCoordinate,
@@ -30,8 +29,8 @@ logger = logging.getLogger("copernicusmarine")
 def _get_chunks_index_arithmetic(
     requested_value: float,
     reference_chunking_step: float,
-    chunk_length: Union[int, float],
-    chunk_step: Union[int, float],
+    chunk_length: int | float,
+    chunk_step: int | float,
 ) -> int:
     """
     Chunk index calculation for arithmetic chunking.
@@ -45,8 +44,8 @@ def _get_chunks_index_arithmetic(
 def _get_chunks_index_geometric(
     requested_value: float,
     reference_chunking_step: float,
-    chunk_length: Union[int, float],
-    factor: Union[int, float, None],
+    chunk_length: int | float,
+    factor: int | float | None,
 ) -> int:
     """
     Chunk index calculation for geometric chunking.
@@ -69,9 +68,9 @@ def _get_chunks_index_geometric(
 
 def _get_chunk_indexes_for_coordinate(
     coordinate: CopernicusMarineCoordinate,
-    requested_minimum: Optional[float],
-    requested_maximum: Optional[float],
-    chunking_length: Union[int, float],
+    requested_minimum: float | None,
+    requested_maximum: float | None,
+    chunking_length: int | float,
 ) -> tuple[int, int]:
     (
         coordinate_minimum_value,
@@ -169,7 +168,7 @@ def get_dataset_chunking(
     )
     for variable in variables_to_iterate:
         number_chunks_per_variable = 1
-        number_values_per_variable: Union[float, int] = 1
+        number_values_per_variable: float | int = 1
         for coordinate in variable.coordinates:
             if coordinate.chunking_length:
                 chunking_length = coordinate.chunking_length
@@ -221,7 +220,7 @@ def _extract_requested_min_max(
     coordinate: CopernicusMarineCoordinate,
     subset_request: SubsetRequest,
     axis_coordinate_id_mapping: dict[str, str],
-) -> tuple[Optional[float], Optional[float]]:
+) -> tuple[float | None, float | None]:
     if coordinate.coordinate_id in axis_coordinate_id_mapping.get("t", ""):
         temporal_selection = t_axis_selection(
             subset_request.get_temporal_parameters(
@@ -266,12 +265,12 @@ def _extract_requested_min_max(
 
 def _get_coordinate_extreme(
     coordinate: CopernicusMarineCoordinate,
-) -> tuple[Union[int, float, None], Union[int, float, None]]:
+) -> tuple[int | float | None, int | float | None]:
     """
     Get the extreme value of a coordinate.
     """
-    coordinate_minimum_value: Union[int, float]
-    coordinate_maximum_value: Union[int, float]
+    coordinate_minimum_value: int | float
+    coordinate_maximum_value: int | float
     if isinstance(coordinate.minimum_value, str):
         coordinate_minimum_value = float(
             timestamp_or_datestring_to_datetime(

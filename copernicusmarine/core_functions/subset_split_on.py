@@ -1,7 +1,6 @@
 import logging
 from copy import deepcopy
 from datetime import datetime
-from typing import Optional, Union
 
 import pandas as pd
 from dateutil.tz import UTC
@@ -45,9 +44,9 @@ SPLIT_ON_PRECISE_TIME_FORMAT = "%Y-%m-%dT%H-%M-%S"
 
 def subset_split_on_function(
     on_variables: bool,
-    on_time: Optional[SplitOnTimeOption],
+    on_time: SplitOnTimeOption | None,
     subset_request: SubsetRequest,
-    concurrent_processes: Optional[int],
+    concurrent_processes: int | None,
 ) -> list[ResponseSubset]:
     if not on_variables and not on_time:
         raise ValueError(
@@ -88,7 +87,7 @@ def subset_split_on_function(
             service=retrieval_service.service,
             requested_variables=set(subset_request.variables or []),
         )
-    new_parameters: list[dict[str, Union[list[str], datetime]]] = []
+    new_parameters: list[dict[str, list[str] | datetime]] = []
     if time_keys and variables:
         (
             _,
@@ -184,8 +183,8 @@ def subset_split_on_function(
 def get_split_time_keys_from_metadata(
     part: CopernicusMarinePart,
     time_frequence: SplitOnTimeOption,
-    requested_minimum_time: Optional[datetime],
-    requested_maximum_time: Optional[datetime],
+    requested_minimum_time: datetime | None,
+    requested_maximum_time: datetime | None,
     coordinate_selection_method: CoordinatesSelectionMethod,
 ) -> list[tuple[datetime, datetime]]:
     time_coordinate, _, _ = part.get_coordinates().get(
@@ -331,7 +330,7 @@ def name_progress_bar(
 
 def _update_output_filename(
     subset_request: SubsetRequest,
-    on_time: Optional[SplitOnTimeOption],
+    on_time: SplitOnTimeOption | None,
     on_variables: bool,
     dataset_variables: list[str],
     axis_coordinate_id_mapping: dict[str, str],
@@ -370,7 +369,7 @@ def _update_output_filename(
 
 def _get_split_on_suffix(
     subset_request: SubsetRequest,
-    on_time: Optional[SplitOnTimeOption],
+    on_time: SplitOnTimeOption | None,
     on_variables: bool,
 ) -> str:
     suffix = "_"

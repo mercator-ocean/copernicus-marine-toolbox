@@ -4,7 +4,6 @@ import pathlib
 import warnings
 from copy import deepcopy
 from multiprocessing import current_process
-from typing import Optional, Tuple, Union
 
 import xarray
 import zarr
@@ -73,9 +72,9 @@ def get_dataset_and_parameters(
     dataset_url: str,
     axis_coordinate_id_mapping: dict[str, str],
     service: CopernicusMarineService,
-    dataset_chunking: Optional[DatasetChunking],
+    dataset_chunking: DatasetChunking | None,
     is_original_grid: bool,
-    dataset_valid_start_date: Optional[Union[str, int, float]],
+    dataset_valid_start_date: str | int | float | None,
 ) -> tuple[xarray.Dataset, GeographicalParameters, DepthParameters]:
     if dataset_valid_start_date:
         minimum_start_date = timestamp_or_datestring_to_datetime(
@@ -125,10 +124,10 @@ def get_dataset_and_parameters(
 def download_zarr(
     subset_request: SubsetRequest,
     dataset_url: str,
-    dataset_valid_start_date: Optional[Union[str, int, float]],
+    dataset_valid_start_date: str | int | float | None,
     service: CopernicusMarineService,
     axis_coordinate_id_mapping: dict[str, str],
-    dataset_chunking: Optional[DatasetChunking],
+    dataset_chunking: DatasetChunking | None,
     is_original_grid: bool,
     tdqm_configuration: dict,
 ) -> ResponseSubset:
@@ -258,12 +257,12 @@ def download_zarr(
 def open_dataset_from_arco_series(
     username: str,
     dataset_url: str,
-    variables: Optional[list[str]],
+    variables: list[str] | None,
     geographical_parameters: GeographicalParameters,
     temporal_parameters: TemporalParameters,
     depth_parameters: DepthParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
-    optimum_dask_chunking: Optional[dict[str, int]],
+    optimum_dask_chunking: dict[str, int] | None,
 ) -> xarray.Dataset:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=UserWarning)
@@ -295,14 +294,14 @@ def open_dataset_from_arco_series(
 
 def get_coordinates_dask_and_zarr_chunks_info(
     service: CopernicusMarineService,
-    variables: Optional[list[str]],
+    variables: list[str] | None,
     dataset_chunking: DatasetChunking,
-) -> Tuple[dict, dict]:
+) -> tuple[dict, dict]:
     """
     Return
     -------
 
-    Tuple[dict, dict]
+    tuple[dict, dict]
         A tuple containing:
         - a dict with the maximum dask chunk factor for each coordinate id.
           It tells us how many times we can multiply the zarr chunking per coordinate.
@@ -342,11 +341,11 @@ def get_coordinates_dask_and_zarr_chunks_info(
 
 def get_optimum_dask_chunking(
     service: CopernicusMarineService,
-    variables: Optional[list[str]],
+    variables: list[str] | None,
     dataset_chunking: DatasetChunking,
     chunk_size_limit: int,
     axis_coordinate_id_mapping: dict[str, str],
-) -> Optional[dict[str, int]]:
+) -> dict[str, int] | None:
     """
     We have some problems with overly big dask graphs (we think) that introduces huge overheads
     and memory usage. We are trying to find the optimum chunking for dask arrays.
@@ -366,7 +365,7 @@ def get_optimum_dask_chunking(
     Returns
     -------
 
-    Optional[dict[str, int]]
+    dict[str, int] | None
         A dictionary with the optimum dask chunking for each coordinate id. In the form:
         {
             "longitude": 2,

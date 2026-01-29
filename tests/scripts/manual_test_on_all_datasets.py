@@ -5,7 +5,7 @@ import re
 import time
 from pathlib import Path
 from random import shuffle
-from typing import Literal, Optional
+from typing import Literal
 
 import pendulum
 import xarray
@@ -26,22 +26,22 @@ class SubsetArguments(BaseModel):
     part: str
     variables: list[str]
     output_filename: str
-    start_datetime: Optional[str]
-    end_datetime: Optional[str]
-    minimum_depth: Optional[float]
-    maximum_depth: Optional[float]
-    minimum_latitude: Optional[float]
-    maximum_latitude: Optional[float]
-    minimum_longitude: Optional[float]
-    maximum_longitude: Optional[float]
+    start_datetime: str | None
+    end_datetime: str | None
+    minimum_depth: float | None
+    maximum_depth: float | None
+    minimum_latitude: float | None
+    maximum_latitude: float | None
+    minimum_longitude: float | None
+    maximum_longitude: float | None
     service: str
     keep_going: bool
 
 
 def test_download_variable_and_test_compliance(
-    number_of_datasets: Optional[int] = None,
-    dataset_id: Optional[str] = None,
-    product_id: Optional[str] = None,
+    number_of_datasets: int | None = None,
+    dataset_id: str | None = None,
+    product_id: str | None = None,
     service_to_test: Literal[
         "arco-time-series", "arco-geo-series"
     ] = "arco-time-series",
@@ -144,7 +144,7 @@ def test_download_variable_and_test_compliance(
 def _get_subset_arguments(
     subset_arguments: SubsetArguments,
     service: CopernicusMarineService,
-) -> Optional[SubsetArguments]:
+) -> SubsetArguments | None:
     for variable in service.variables:
         for coordinate in variable.coordinates:
             coordinate_id = coordinate.coordinate_id
@@ -202,18 +202,18 @@ def open_dataset_and_snapshot_ncdump(
     part: str,
     variables: list[str],
     output_filename: str,
-    start_datetime: Optional[str],
-    end_datetime: Optional[str],
-    minimum_depth: Optional[float],
-    maximum_depth: Optional[float],
-    minimum_latitude: Optional[float],
-    maximum_latitude: Optional[float],
-    minimum_longitude: Optional[float],
-    maximum_longitude: Optional[float],
+    start_datetime: str | None,
+    end_datetime: str | None,
+    minimum_depth: float | None,
+    maximum_depth: float | None,
+    minimum_latitude: float | None,
+    maximum_latitude: float | None,
+    minimum_longitude: float | None,
+    maximum_longitude: float | None,
     service: str,
     keep_going: bool,
     tmp_path: Path = Path("data_to_delete"),
-) -> tuple[str, Optional[float], Optional[float]]:
+) -> tuple[str, float | None, float | None]:
     message: str = "------------------------------------------------------------------- \n"  # noqa
     message += f"{dataset_id} \n"
     arguments = [

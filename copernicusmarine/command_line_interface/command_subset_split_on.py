@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import Optional, Union
 
 import click
 from click import Context
@@ -64,8 +63,8 @@ DEFAULT_FIELDS_TO_INCLUDE = {
 def split_on(
     context: Context,
     on_variables: bool,
-    on_time: Optional[SplitOnTimeOption],
-    concurrent_processes: Optional[int],
+    on_time: SplitOnTimeOption | None,
+    concurrent_processes: int | None,
 ):
     subset_request = context.obj.get("subset_request")
     responses = subset_split_on_function(
@@ -75,7 +74,7 @@ def split_on(
         concurrent_processes=concurrent_processes,
     )
 
-    response_fields: Optional[str] = context.obj.get("response_fields")
+    response_fields: str | None = context.obj.get("response_fields")
     dry_run: bool = subset_request.dry_run
     if response_fields:
         fields_to_include = set(response_fields.replace(" ", "").split(","))
@@ -84,7 +83,7 @@ def split_on(
     else:
         fields_to_include = DEFAULT_FIELDS_TO_INCLUDE
 
-    included_fields: Optional[Union[dict, set]]
+    included_fields: dict | set | None
     if "all" in fields_to_include:
         included_fields = None
     elif "none" in fields_to_include:

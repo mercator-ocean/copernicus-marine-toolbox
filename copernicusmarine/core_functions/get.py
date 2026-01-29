@@ -1,7 +1,6 @@
 import json
 import logging
 import pathlib
-from typing import Optional
 
 from copernicusmarine.core_functions.marine_datastore_config import (
     MarineDataStoreConfig,
@@ -42,7 +41,7 @@ def get_function(
 
 def _run_get_request(
     get_request: GetRequest,
-    create_file_list: Optional[str],
+    create_file_list: str | None,
     marine_datastore_config: MarineDataStoreConfig,
     max_concurrent_requests: int,
     disable_progress_bar: bool,

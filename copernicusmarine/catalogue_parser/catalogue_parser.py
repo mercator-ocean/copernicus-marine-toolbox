@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from itertools import groupby
-from typing import Any, Optional, TypeVar, Union
+from typing import Any, TypeVar
 
 import pystac
 from pydantic import BaseModel
@@ -34,7 +34,7 @@ def get_dataset_metadata(
     dataset_id: str,
     marine_datastore_config: MarineDataStoreConfig,
     raise_on_error: bool,
-) -> Optional[CopernicusMarineDataset]:
+) -> CopernicusMarineDataset | None:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
     catalogue_errors: list[tuple] = []
@@ -130,7 +130,7 @@ def get_dataset_metadata(
 
 def _parse_dataset_json_to_pystac_item(
     metadate_json: dict,
-) -> Optional[pystac.Item]:
+) -> pystac.Item | None:
     try:
         return pystac.Item.from_dict(metadate_json)
     except pystac.STACError as exception:
@@ -146,7 +146,7 @@ def _parse_dataset_json_to_pystac_item(
 
 def _parse_product_json_to_pystac_collection(
     metadata_json: dict,
-) -> Optional[pystac.Collection]:
+) -> pystac.Collection | None:
     try:
         return pystac.Collection.from_dict(metadata_json)
     except KeyError as exception:
@@ -159,7 +159,7 @@ def _parse_product_json_to_pystac_collection(
 def _parse_and_sort_dataset_items(
     dataset_items: list[DatasetItem],
     raise_on_error: bool,
-) -> Optional[CopernicusMarineDataset]:
+) -> CopernicusMarineDataset | None:
     """
     Return all dataset metadata parsed and sorted.
     The first version and part are the default.
@@ -200,7 +200,7 @@ def _parse_and_sort_dataset_items(
 def _construct_marine_data_store_product(
     stac_tuple: tuple[pystac.Collection, list[DatasetItem]],
     raise_on_error: bool,
-) -> Optional[CopernicusMarineProduct]:
+) -> CopernicusMarineProduct | None:
     stac_product, dataset_items = stac_tuple
     stac_datasets_sorted = sorted(dataset_items, key=lambda x: x.item_id)
     dataset_items_by_dataset_id = groupby(
@@ -281,7 +281,7 @@ def _construct_marine_data_store_product(
 
 def _get_stac_product_property(
     stac_product: pystac.Collection, property_key: str
-) -> Optional[Any]:
+) -> Any:
     properties: dict[str, str] = (
         stac_product.extra_fields.get("properties", {})
         if stac_product.extra_fields
@@ -294,7 +294,7 @@ def fetch_dataset_items(
     root_url: str,
     connection: JsonParserConnection,
     collection: pystac.Collection,
-    force_dataset_id: Optional[str],
+    force_dataset_id: str | None,
     raise_on_error: bool,
 ) -> list[DatasetItem]:
     items: list[DatasetItem] = []
@@ -341,9 +341,9 @@ def fetch_collection(
     root_url: str,
     connection: JsonParserConnection,
     url: str,
-    force_dataset_id: Optional[str],
+    force_dataset_id: str | None,
     raise_on_error: bool,
-) -> Optional[tuple[pystac.Collection, list[DatasetItem]]]:
+) -> tuple[pystac.Collection, list[DatasetItem]] | None:
     try:
         json_collection = connection.get_json_file(url)
         collection = _parse_product_json_to_pystac_collection(json_collection)
@@ -365,12 +365,12 @@ def fetch_product_items(
     root_url: str,
     connection: JsonParserConnection,
     child_links: list[pystac.Link],
-    force_product_id: Optional[str],
-    force_dataset_id: Optional[str],
+    force_product_id: str | None,
+    force_dataset_id: str | None,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     raise_on_error: bool,
-) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
+) -> list[tuple[pystac.Collection, list[DatasetItem]] | None]:
     tasks = []
     for link in child_links:
         if force_product_id and force_product_id not in link.href:
@@ -403,13 +403,13 @@ def fetch_product_items(
 
 def fetch_all_products_items(
     connection: JsonParserConnection,
-    force_product_id: Optional[str],
-    force_dataset_id: Optional[str],
+    force_product_id: str | None,
+    force_dataset_id: str | None,
     max_concurrent_requests: int,
     catalogue_config: CatalogueConfig,
     disable_progress_bar: bool,
     raise_on_error: bool,
-) -> list[Optional[tuple[pystac.Collection, list[DatasetItem]]]]:
+) -> list[tuple[pystac.Collection, list[DatasetItem]] | None]:
     catalog_root_url = catalogue_config.stac_catalogue_url
     json_catalog = connection.get_json_file(catalog_root_url)
     catalog = pystac.Catalog.from_dict(json_catalog)
@@ -430,14 +430,14 @@ def fetch_all_products_items(
 
 
 def parse_catalogue(
-    force_product_id: Optional[str],
-    force_dataset_id: Optional[str],
+    force_product_id: str | None,
+    force_dataset_id: str | None,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
     catalogue_config: CatalogueConfig,
     catalogue_number: int,
     raise_on_error: bool,
-) -> Optional[CopernicusMarineCatalogue]:
+) -> CopernicusMarineCatalogue | None:
     logger.debug("Parsing catalogue...")
     progress_bar = tqdm(
         total=2,
@@ -498,7 +498,7 @@ def parse_catalogue(
 
 def search_and_filter(
     model: BaseModel, search_str: set[str]
-) -> Union[BaseModel, None]:
+) -> BaseModel | None:
     filtered_fields = {}
     search_str = {s.lower() for s in search_str}
     for field, value in model:

@@ -4,7 +4,7 @@ import pathlib
 import re
 from datetime import datetime
 from itertools import chain
-from typing import Literal, Optional
+from typing import Literal
 
 from botocore.client import ClientError
 from dateutil.tz import UTC
@@ -41,7 +41,7 @@ def download_original_files(
     get_request: GetRequest,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
-    create_file_list: Optional[str],
+    create_file_list: str | None,
 ) -> ResponseGet:
     endpoint, bucket, path = parse_access_dataset_url(
         str(get_request.dataset_url)
@@ -298,10 +298,10 @@ def _download_header(
     endpoint_url: str,
     bucket: str,
     path: str,
-    regex: Optional[str],
+    regex: str | None,
     username: str,
     sync: bool,
-    create_file_list: Optional[str],
+    create_file_list: str | None,
     directory_out: pathlib.Path,
     no_directories: bool,
     overwrite: bool,
@@ -596,7 +596,7 @@ def _list_files_on_marine_data_lake_s3(
 
 def _get_file_size_last_modified_and_etag(
     endpoint_url: str, bucket: str, file_in: str, username: str
-) -> Optional[tuple[int, datetime, str]]:
+) -> tuple[int, datetime, str] | None:
     s3_client, _ = get_configured_boto3_session(
         endpoint_url, ["HeadObject"], username
     )

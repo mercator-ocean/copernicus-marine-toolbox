@@ -2,7 +2,7 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Optional, Type, TypeVar, Union
+from typing import Literal, Type, TypeVar
 
 import pystac
 from pydantic import BaseModel, ConfigDict
@@ -133,21 +133,21 @@ class CopernicusMarineCoordinate(BaseModel):
     #: Coordinate units.
     coordinate_unit: str
     #: Minimum value of the coordinate.
-    minimum_value: Optional[Union[float, str]]
+    minimum_value: float | str | None
     #: Maximum value of the coordinate.
-    maximum_value: Optional[Union[float, str]]
+    maximum_value: float | str | None
     #: Step of the coordinate.
-    step: Optional[float]
+    step: float | None
     #: Values of the coordinate.
-    values: Optional[list[Union[float, int, str]]]
+    values: list[float | int | str] | None
     #: Chunking length of the coordinate.
-    chunking_length: Optional[Union[float, int]]
+    chunking_length: float | int | None
     #: Chunk type of the coordinate.
-    chunk_type: Optional[str]
+    chunk_type: str | None
     #: Chunk reference coordinate of the coordinate.
-    chunk_reference_coordinate: Optional[Union[float, int]]
+    chunk_reference_coordinate: float | int | None
     #: Chunk geometric factor of the coordinate.
-    chunk_geometric_factor: Optional[Union[float, int]]
+    chunk_geometric_factor: float | int | None
     #: Axis of the coordinate
     axis: Literal["x", "y", "z", "t"]
 
@@ -157,8 +157,8 @@ class CopernicusMarineCoordinate(BaseModel):
         variable_id: str,
         dimension: str,
         dimension_metadata: dict,
-        arco_data_metadata_producer_valid_start_date: Optional[str],
-        arco_data_metadata_producer_valid_start_index: Optional[int],
+        arco_data_metadata_producer_valid_start_date: str | None,
+        arco_data_metadata_producer_valid_start_index: int | None,
         cube_dimensions: dict,
     ) -> Coordinate:
         coordinates_info = dimension_metadata.get("coords", {})
@@ -211,7 +211,7 @@ class CopernicusMarineCoordinate(BaseModel):
     def _format_admp_valid_start_date(
         arco_data_metadata_producer_valid_start_date: str,
         to_timestamp: bool = False,
-    ) -> Union[str, int]:
+    ) -> str | int:
         if to_timestamp:
             return int(
                 datetime_parser(
@@ -253,11 +253,11 @@ class CopernicusMarineVariable(BaseModel):
     #: Short name of the variable.
     short_name: str
     #: Standard name of the variable.
-    standard_name: Optional[str]
+    standard_name: str | None
     #: Units of the variable.
-    units: Optional[str]
+    units: str | None
     #: Bounding box of the variable.
-    bbox: Optional[list[float]]
+    bbox: list[float | None]
     #: List of coordinates of the variable.
     coordinates: list[CopernicusMarineCoordinate]
 
@@ -267,7 +267,7 @@ class CopernicusMarineVariable(BaseModel):
         metadata_item: pystac.Item,
         asset: pystac.Asset,
         variable_id: str,
-        bbox: Optional[list[float]],
+        bbox: list[float | None],
     ) -> Variable:
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]
@@ -310,18 +310,18 @@ class CopernicusMarineService(BaseModel):
     service_name: CopernicusMarineServiceNames
 
     #: Service short name.
-    service_short_name: Optional[CoperniusMarineServiceShortNames]
+    service_short_name: CoperniusMarineServiceShortNames | None
 
     #: Service format: format of the service
     #: (eg:"arco-geo-series" can be "zarr", "sqlite").
-    service_format: Optional[CopernicusMarineServiceFormat]
+    service_format: CopernicusMarineServiceFormat | None
     #: Service uri: uri of the service.
     uri: str
     #: List of variables of the service.
     variables: list[CopernicusMarineVariable]
     #: A link to information about available platforms.
     #: Only for arco-platform-series service.
-    platforms_metadata: Optional[str]
+    platforms_metadata: str | None
 
     @classmethod
     def from_metadata_item(
@@ -329,7 +329,7 @@ class CopernicusMarineService(BaseModel):
         metadata_item: pystac.Item,
         service_name: str,
         asset: pystac.Asset,
-    ) -> Optional[Service]:
+    ) -> Service | None:
         try:
             service_uri = asset.get_absolute_href()
             if not service_uri:
@@ -419,18 +419,18 @@ class CopernicusMarinePart(BaseModel):
     #: List of services available for the part.
     services: list[CopernicusMarineService]
     #: Date when the part will be retired.
-    retired_date: Optional[str]
+    retired_date: str | None
     #: Date when the part will be/was released.
-    released_date: Optional[str]
+    released_date: str | None
     #: Date (of the data) starting from which the data is currently being updated.
     #: If set, the data after this date may not be up to date.
     #: Only applies to ARCO series
     #: and not to the original files.
-    arco_updating_start_date: Optional[str]
+    arco_updating_start_date: str | None
     #: Date when the arco series of the part were last updated.
     #: Only applies to ARCO series
     #: and not to the original files.
-    arco_updated_date: Optional[str]
+    arco_updated_date: str | None
     #: TODO: ask if this should be hidden
     # = Field(..., exclude=True)
     # if yes: needs to modify the query builder
@@ -442,7 +442,7 @@ class CopernicusMarinePart(BaseModel):
         metadata_item: pystac.Item,
         part_name: str,
         url_metadata: str,
-    ) -> Optional[VersionPart]:
+    ) -> VersionPart | None:
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
         arco_updated_date = metadata_item.properties.get("admp_updated_data")
@@ -545,7 +545,7 @@ class CopernicusMarineVersion(BaseModel):
     #: List of parts of the version.
     parts: list[CopernicusMarinePart]
 
-    def get_part(self, force_part: Optional[str]) -> CopernicusMarinePart:
+    def get_part(self, force_part: str | None) -> CopernicusMarinePart:
         wanted_part = force_part or PART_DEFAULT
         for part in self.parts:
             if part.name == wanted_part:
@@ -554,7 +554,7 @@ class CopernicusMarineVersion(BaseModel):
                 return part
         raise DatasetVersionPartNotFound(self)
 
-    def sort_parts(self) -> tuple[Optional[str], Optional[str]]:
+    def sort_parts(self) -> tuple[str | None, str | None]:
         not_released_parts = {
             part.name
             for part in self.parts
@@ -599,7 +599,7 @@ class DatasetItem:
     url: str
     stac_item: pystac.Item
     stac_json: dict
-    product_doi: Optional[str]
+    product_doi: str | None
 
 
 class CopernicusMarineDataset(BaseModel):
@@ -614,12 +614,12 @@ class CopernicusMarineDataset(BaseModel):
     dataset_name: str
     #: Digital object identifier or doi from
     #: the product the dataset belongs to.
-    digital_object_identifier: Optional[str]
+    digital_object_identifier: str | None
     #: List of versions of the dataset.
     versions: list[CopernicusMarineVersion]
 
     def get_version(
-        self, force_version: Optional[str]
+        self, force_version: str | None
     ) -> CopernicusMarineVersion:
         if not force_version:
             return self.versions[0]
@@ -714,17 +714,17 @@ class CopernicusMarineProduct(BaseModel):
     #: Thumbnail url of the product.
     thumbnail_url: str
     #: Description of the product.
-    description: Optional[str]
+    description: str | None
     #: Digital object identifier or doi of the product.
-    digital_object_identifier: Optional[str]
+    digital_object_identifier: str | None
     #: Sources of the product.
     sources: list[str]
     #: Processing level of the product.
-    processing_level: Optional[str]
+    processing_level: str | None
     #: Production center of the product.
     production_center: str
     #: Keywords of the product.
-    keywords: Optional[list[str]]
+    keywords: list[str] | None
     #: List of datasets of the product.
     datasets: list[CopernicusMarineDataset]
 
@@ -793,7 +793,7 @@ class DatasetVersionNotFound(Exception):
     """
 
     def __init__(
-        self, dataset: CopernicusMarineDataset, force_version: Optional[str]
+        self, dataset: CopernicusMarineDataset, force_version: str | None
     ):
         if force_version:
             message = (

@@ -4,7 +4,7 @@ import logging
 import pathlib
 from netrc import netrc
 from platform import system
-from typing import Literal, Optional, Union
+from typing import Literal
 
 import click
 import requests
@@ -124,7 +124,7 @@ def _warning_motuclient_deprecated():
 def _load_credential_from_copernicus_marine_configuration_file(
     credential_type: Literal["username", "password"],
     configuration_filename: pathlib.Path,
-) -> Optional[str]:
+) -> str | None:
     configuration_file = open(configuration_filename)
     configuration_string = base64.standard_b64decode(
         configuration_file.read()
@@ -140,7 +140,7 @@ def _load_credential_from_copernicus_marine_configuration_file(
 def _load_credential_from_netrc_configuration_file(
     credential_type: Literal["username", "password"],
     configuration_filename: pathlib.Path,
-) -> Optional[str]:
+) -> str | None:
     authenticator = None
     for host in ACCEPTED_HOSTS_NETRC_FILE:
         authenticator = netrc(configuration_filename).authenticators(host=host)
@@ -163,7 +163,7 @@ def _load_credential_from_netrc_configuration_file(
 def _load_credential_from_motu_configuration_file(
     credential_type: Literal["username", "password"],
     configuration_filename: pathlib.Path,
-) -> Optional[str]:
+) -> str | None:
     motu_file = open(configuration_filename)
     motu_credential_type = "user" if credential_type == "username" else "pwd"
     config = configparser.RawConfigParser()
@@ -190,7 +190,7 @@ def _retrieve_credential_from_prompt(
 
 def _retrieve_credential_from_environment_variable(
     credential_type: Literal["username", "password"],
-) -> Optional[str]:
+) -> str | None:
     if credential_type == "username":
         logger.debug("Tried to load username from environment variable")
         return COPERNICUSMARINE_SERVICE_USERNAME
@@ -202,7 +202,7 @@ def _retrieve_credential_from_environment_variable(
 def _retrieve_credential_from_custom_configuration_files(
     credential_type: Literal["username", "password"],
     credentials_file: pathlib.Path,
-) -> Optional[str]:
+) -> str | None:
     if "netrc" in str(credentials_file):
         credential = _load_credential_from_netrc_configuration_file(
             credential_type, credentials_file
@@ -224,7 +224,7 @@ def _retrieve_credential_from_custom_configuration_files(
 
 def _retrieve_credential_from_default_configuration_files(
     credential_type: Literal["username", "password"],
-) -> Optional[str]:
+) -> str | None:
     copernicus_marine_configuration_file = pathlib.Path(
         DEFAULT_CLIENT_CREDENTIALS_FILEPATH
     )
@@ -258,8 +258,8 @@ def _retrieve_credential_from_default_configuration_files(
 
 def _retrieve_credential_from_configuration_files(
     credential_type: Literal["username", "password"],
-    credentials_file: Optional[pathlib.Path],
-) -> Optional[str]:
+    credentials_file: pathlib.Path | None,
+) -> str | None:
     if credentials_file and credentials_file.exists():
         credential = _retrieve_credential_from_custom_configuration_files(
             credential_type, credentials_file
@@ -272,10 +272,10 @@ def _retrieve_credential_from_configuration_files(
 
 
 def copernicusmarine_validate_and_get_user(
-    configuration_file: Optional[pathlib.Path],
-    username: Optional[str],
-    password: Optional[str],
-) -> Union[str, None]:
+    configuration_file: pathlib.Path | None,
+    username: str | None,
+    password: str | None,
+) -> str | None:
     if username and password:
         if user := _validate_and_get_user(username, password):
             logger.info("Valid credentials from input username and password.")
@@ -347,7 +347,7 @@ def create_copernicusmarine_configuration_file(
     password: str,
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
-) -> tuple[Optional[pathlib.Path], bool]:
+) -> tuple[pathlib.Path | None, bool]:
     configuration_lines = [
         "[credentials]\n",
         f"username={username}\n",
@@ -374,9 +374,7 @@ def create_copernicusmarine_configuration_file(
     return configuration_filename, False
 
 
-def _check_credentials_with_cas(
-    username: str, password: str
-) -> Union[str, None]:
+def _check_credentials_with_cas(username: str, password: str) -> str | None:
     """
     Check the credentials with the Copernicus Marine Authentication System (CAS).
     Returns the username if the credentials are valid, None otherwise.
@@ -422,7 +420,7 @@ def _check_credentials_with_cas(
     return None
 
 
-def _validate_and_get_user(username: str, password: str) -> Union[str, None]:
+def _validate_and_get_user(username: str, password: str) -> str | None:
     try:
         result = _get_user(username, password)
         return result
@@ -433,7 +431,7 @@ def _validate_and_get_user(username: str, password: str) -> Union[str, None]:
         raise CouldNotConnectToAuthenticationSystem()
 
 
-def _get_user(username: str, password: str) -> Union[str, None]:
+def _get_user(username: str, password: str) -> str | None:
     number_of_retry = 3
     while number_of_retry > 0:
         try:
@@ -449,10 +447,10 @@ def _get_user(username: str, password: str) -> Union[str, None]:
 
 
 def get_credential(
-    credential: Optional[str],
+    credential: str | None,
     credential_type: Literal["username", "password"],
     hide_input: bool,
-    credentials_file: Optional[pathlib.Path],
+    credentials_file: pathlib.Path | None,
 ) -> str:
     if not credential:
         credential = _retrieve_credential_from_environment_variable(
@@ -475,9 +473,9 @@ def get_credential(
 
 
 def get_and_check_username_password(
-    username: Optional[str],
-    password: Optional[str],
-    credentials_file: Optional[pathlib.Path],
+    username: str | None,
+    password: str | None,
+    credentials_file: pathlib.Path | None,
 ) -> tuple[str, str]:
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
@@ -496,9 +494,9 @@ def get_and_check_username_password(
 
 
 def get_username_password(
-    username: Optional[str],
-    password: Optional[str],
-    credentials_file: Optional[pathlib.Path],
+    username: str | None,
+    password: str | None,
+    credentials_file: pathlib.Path | None,
 ) -> tuple[str, str]:
     username = get_credential(
         username,
@@ -516,7 +514,7 @@ def get_username_password(
 
 
 def _get_credential_from_environment_variable_or_prompt(
-    credential: Optional[str],
+    credential: str | None,
     credential_type: Literal["username", "password"],
     hide_input: bool,
 ) -> str:
@@ -534,11 +532,11 @@ def _get_credential_from_environment_variable_or_prompt(
 
 
 def credentials_file_builder(
-    username: Optional[str],
-    password: Optional[str],
+    username: str | None,
+    password: str | None,
     configuration_file_directory: pathlib.Path,
     force_overwrite: bool,
-) -> tuple[Optional[pathlib.Path], bool]:
+) -> tuple[pathlib.Path | None, bool]:
     """
     Returns:
         a path to the configuration file: if none, the credentials are not valid

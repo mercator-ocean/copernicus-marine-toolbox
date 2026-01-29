@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import time
-from typing import AsyncIterator, Iterable, Optional, Union
+from collections.abc import AsyncIterator, Iterable
 
 import botocore.config
 import botocore.exceptions
@@ -23,7 +23,7 @@ class CustomS3StoreZarrV3(Store):
         endpoint: str,
         bucket: str,
         root_path: str,
-        copernicus_marine_username: Optional[str] = None,
+        copernicus_marine_username: str | None = None,
         number_of_retries: int = 9,
         initial_retry_wait_seconds: int = 1,
         **kwargs,
@@ -77,8 +77,8 @@ class CustomS3StoreZarrV3(Store):
         self,
         key: str,
         prototype: BufferPrototype,
-        byte_range: Union[ByteRequest, None] = None,
-    ) -> Union[Buffer, None]:
+        byte_range: ByteRequest | None = None,
+    ) -> Buffer | None:
         loop = asyncio.get_running_loop()
 
         def fn():
@@ -100,8 +100,8 @@ class CustomS3StoreZarrV3(Store):
     async def get_partial_values(
         self,
         prototype: BufferPrototype,
-        key_ranges: Iterable[tuple[str, Union[ByteRequest, None]]],
-    ) -> list[Union[Buffer, None]]:
+        key_ranges: Iterable[tuple[str, ByteRequest | None]],
+    ) -> list[Buffer | None]:
         return [
             await self.get(key, prototype, byte_range)
             for key, byte_range in key_ranges

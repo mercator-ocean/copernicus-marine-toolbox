@@ -1,11 +1,11 @@
 import nox
 
-PYTHON_VERSIONS = ["3.9", "3.10", "3.11", "3.12", "3.13"]
-XARRAY_VERSIONS = ["2023.4.0", "latest"]
-DASK_VERSIONS = ["2022.1.0", "latest"]
+PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+XARRAY_VERSIONS = ["2024.10.0", "latest"]
+DASK_VERSIONS = ["2024.8.1", "latest"]
 BOTO3_VERSIONS = ["1.26.0", "latest"]
-NUMPY_VERSIONS = ["1.26", ">=2.0.0"]
-ZARR_VERSIONS = ["2.13.3", "latest"]
+NUMPY_VERSIONS = ["2.1.0", "latest"]
+ZARR_VERSIONS = ["2.18.3", "latest"]
 H5NETCDF_VERSIONS = ["1.4.0", "latest"]
 
 
@@ -28,21 +28,6 @@ def tests(
     """
     Basic test of the toolbox against multiple versions.
     """
-    # Skip invalid combinations, dask 2022.1.0 is not supported with numpy >= 2.0.0
-    if dask_version == "2022.1.0" and numpy_version == ">=2.0.0":
-        session.log(
-            f"Skipping unsupported combination: "
-            f"dask={dask_version} and numpy={numpy_version}"
-        )
-        session.skip()
-
-    # Numpy 1.26.0 is not supported with python 3.13
-    if numpy_version == "1.26" and session.python == "3.13":
-        session.log(
-            f"Skipping unsupported combination: "
-            f"numpy={numpy_version} and python={session.python}"
-        )
-        session.skip()
 
     session.install(
         format_to_correct_pip_command("xarray", xarray_version),
