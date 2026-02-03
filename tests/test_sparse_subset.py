@@ -5,7 +5,7 @@ from unittest import mock
 import pandas as pd
 import pytest
 
-from copernicusmarine import read_dataframe
+from copernicusmarine import read_dataframe, subset
 from copernicusmarine.download_functions.download_sparse import (
     COLUMNS_ORDER_DEPTH,
     COLUMNS_ORDER_ELEVATION,
@@ -183,18 +183,27 @@ class TestSparseSubset:
             )
 
     def test_if_ask_for_empty_dataframe_it_works(self, caplog):
-        df = read_dataframe(
-            dataset_id="cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
-            variables=["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
-            minimum_latitude=30.1876,
-            maximum_latitude=30.1877,
-            minimum_longitude=31.9,
-            maximum_longitude=32,
-            start_datetime="01-01-2023",
-            end_datetime="02-01-2023",
-        )
+        empty_request = {
+            "dataset_id": "cmems_obs-wave_glo_phy-swh_nrt_cfo-l3_PT1S",
+            "variables": ["VAVH", "VAVH_UNFILTERED", "WIND_SPEED"],
+            "minimum_latitude": 30.1876,
+            "maximum_latitude": 30.1877,
+            "minimum_longitude": 31.9,
+            "maximum_longitude": 32,
+            "start_datetime": "01-01-2023",
+            "end_datetime": "02-01-2023",
+        }
+        df = read_dataframe(**empty_request)
         assert df.empty
         assert "No data found for the given parameters" in caplog.text
+
+        caplog.clear()
+        response_subset = subset(**empty_request)
+        assert "No data found for the given parameters" in caplog.text
+        assert (
+            response_subset.file_path
+            and not response_subset.file_path.exists()
+        )
 
     def test_can_subset_along_track_data(self, tmp_path):
         command = [
