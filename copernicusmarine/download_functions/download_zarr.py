@@ -7,7 +7,6 @@ from multiprocessing import current_process
 
 import xarray
 import zarr
-from dask.diagnostics.progress import ProgressBar
 
 from copernicusmarine.core_functions.temporary_path_saver import (
     TemporaryPathSaver,
@@ -236,50 +235,11 @@ def download_zarr(
     if "position" not in tdqm_configuration and current._identity:
         tdqm_configuration["position"] = current._identity[0]
 
-    # from dask.callbacks import Callback
-    # from tqdm import tqdm
-
-    # class BytesProgressCallback(Callback):
-    #     def __init__(self, total_bytes, **kwargs):
-    #         self.total_bytes = total_bytes
-    #         self.pbar = tqdm(
-    #             total=total_bytes, unit="B", unit_scale=True, **kwargs
-    #         )
-
-    #     def _pretask(self, key, dsk, state):
-    #         # Update based on result size if available
-    #         pass
-
-    #     def _posttask(self, key, result, dsk, state, worker_id):
-    #         # Estimate bytes processed (rough approximation)
-    #         import sys
-
-    #         bytes_processed = sys.getsizeof(result)
-    #         self.pbar.update(bytes_processed)
-
-    #     def _finish(self, dsk, state, errored):
-    #         self.pbar.close()
-
-    # # Usage
-    # total_bytes = 1_742_957_435  # Estimate your total data size
-    # with BytesProgressCallback(total_bytes=total_bytes, desc="Processing"):
-    #     _save_dataset_locally(
-    #         dataset,
-    #         output_path,
-    #         subset_request.netcdf_compression_level,
-    #         subset_request.netcdf3_compatible,
-    #     )
-
-    with ProgressBar(
-        # **tdqm_configuration,
+    bar_format = "{l_bar}{bar}| [{elapsed}<{remaining}]"
+    with TqdmCallback(
+        **tdqm_configuration,
+        bar_format=bar_format,
     ):
-        _save_dataset_locally(
-            dataset,
-            output_path,
-            subset_request.netcdf_compression_level,
-            subset_request.netcdf3_compatible,
-        )
-    with TqdmCallback(**tdqm_configuration, desc="Dask Tasks"):
         _save_dataset_locally(
             dataset,
             output_path,

@@ -144,10 +144,10 @@ def subset_split_on_function(
                 "disable": subset_request.disable_progress_bar,
                 "desc": name_progress_bar(split_on_parameter),
                 "leave": False,
-                "position": 1,
+                "position": i + 1,
             },
         )
-        for split_on_parameter in new_parameters
+        for i, split_on_parameter in enumerate(new_parameters)
     ]
 
     responses = []
