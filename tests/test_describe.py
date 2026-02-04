@@ -227,7 +227,7 @@ class TestDescribe:
 
     def then_products_from_marine_data_store_catalog_are_available(self):
         expected_product_id = "NWSHELF_ANALYSISFORECAST_PHY_004_013"
-        expected_dataset_id = "cmems_mod_nws_phy_anfc_0.027deg-2D_PT15M-i"
+        expected_dataset_id = "cmems_mod_nws_phy-bottomt_anfc_1.5km-2D_P1D-m"
         expected_services = [
             "original-files",
             "arco-geo-series",
