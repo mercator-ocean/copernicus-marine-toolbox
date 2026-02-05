@@ -33,7 +33,7 @@ def tests(
     if (
         session.python == "3.14"
         and os.getenv("RUNNER_OPERATING_SYSTEM") == "windows-latest"
-        and numpy_version == "2.1.2"
+        and numpy_version == "2.1.0"
     ):
         # see https://numpy.org/doc/stable/release/2.3.2-notes.html
         # for the first Windows 64 - Python 3.14 compatible version of numpy
@@ -48,12 +48,12 @@ def tests(
         and os.getenv("RUNNER_OPERATING_SYSTEM") == "macos-latest"
         and numpy_version == "2.1.0"
     ):
-        # see https://numpy.org/doc/stable/release/2.1.1-notes.html
+        # see https://numpy.org/doc/stable/release/2.1.2-notes.html
         # where a bug for macOS wheel was fixed
-        numpy_version = "2.1.1"
+        numpy_version = "2.1.2"
         session.log(
-            "Python 3.14 on macOS requires numpy 2.1.1 or higher, "
-            "using numpy 2.1.1 for this test"
+            "Python 3.14 on macOS requires numpy 2.1.2 or higher, "
+            "using numpy 2.1.2 for this test"
         )
 
     session.install(
