@@ -2,7 +2,7 @@ import os
 
 import nox
 
-PYTHON_VERSIONS = ["3.14"]  # ["3.10", "3.11", "3.12", "3.13", "3.14"]
+PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 XARRAY_VERSIONS = ["2024.10.0", "latest"]
 DASK_VERSIONS = ["2024.8.1", "latest"]
 BOTO3_VERSIONS = ["1.26.0", "latest"]
