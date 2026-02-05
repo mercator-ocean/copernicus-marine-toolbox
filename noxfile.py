@@ -1,11 +1,12 @@
+import os
+
 import nox
 
-PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+PYTHON_VERSIONS = ["3.14"]  # ["3.10", "3.11", "3.12", "3.13", "3.14"]
 XARRAY_VERSIONS = ["2024.10.0", "latest"]
 DASK_VERSIONS = ["2024.8.1", "latest"]
 BOTO3_VERSIONS = ["1.26.0", "latest"]
-# 2.1.1 fix an issue with macOS and 2.1.2 an issue with Windows
-NUMPY_VERSIONS = ["2.1.2", "latest"]
+NUMPY_VERSIONS = ["2.1.0", "latest"]
 ZARR_VERSIONS = ["2.18.3", "latest"]
 H5NETCDF_VERSIONS = ["1.4.0", "latest"]
 
@@ -29,6 +30,31 @@ def tests(
     """
     Basic test of the toolbox against multiple versions.
     """
+    if (
+        session.python == "3.14"
+        and os.getenv("RUNNER_OPERATING_SYSTEM") == "windows-latest"
+        and numpy_version == "2.1.2"
+    ):
+        # see https://numpy.org/doc/stable/release/2.3.2-notes.html
+        # for the first Windows 64 - Python 3.14 compatible version of numpy
+        numpy_version = "2.3.2"
+        session.log(
+            "Python 3.14 on Windows requires numpy 2.3.2 or higher, "
+            "using numpy 2.3.2 for this test"
+        )
+
+    if (
+        session.python == "3.14"
+        and os.getenv("RUNNER_OPERATING_SYSTEM") == "macos-latest"
+        and numpy_version == "2.1.0"
+    ):
+        # see https://numpy.org/doc/stable/release/2.1.1-notes.html
+        # where a bug for macOS wheel was fixed
+        numpy_version = "2.1.1"
+        session.log(
+            "Python 3.14 on macOS requires numpy 2.1.1 or higher, "
+            "using numpy 2.1.1 for this test"
+        )
 
     session.install(
         format_to_correct_pip_command("xarray", xarray_version),
