@@ -31,18 +31,3 @@ a:visited:hover {
     font-weight: 500;
     margin-bottom: 4px;
 }
-
-
-/* Intercom widget: keep above sticky headers/sidebars */
-.intercom-lightweight-app,
-.intercom-lightweight-app-launcher,
-.intercom-messenger-frame,
-iframe[name="intercom-launcher-frame"],
-iframe[name="intercom-frame"],
-#intercom-container,
-#intercom-frame {
-    z-index: 2000 !important; /* higher than theme UI */
-    position: fixed !important;
-    right: 30px !important;
-    bottom: 200px !important;
-}
