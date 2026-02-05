@@ -44,5 +44,5 @@ iframe[name="intercom-frame"],
     z-index: 2000 !important; /* higher than theme UI */
     position: fixed !important;
     right: 30px !important;
-    bottom:100px !important;
+    bottom: 200px !important;
 }
