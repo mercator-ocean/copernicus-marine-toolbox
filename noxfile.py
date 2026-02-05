@@ -4,7 +4,8 @@ PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 XARRAY_VERSIONS = ["2024.10.0", "latest"]
 DASK_VERSIONS = ["2024.8.1", "latest"]
 BOTO3_VERSIONS = ["1.26.0", "latest"]
-NUMPY_VERSIONS = ["2.1.0", "latest"]
+# 2.1.1 fix an issue with macOS and 2.1.2 an issue with Windows
+NUMPY_VERSIONS = ["2.1.2", "latest"]
 ZARR_VERSIONS = ["2.18.3", "latest"]
 H5NETCDF_VERSIONS = ["1.4.0", "latest"]
 
