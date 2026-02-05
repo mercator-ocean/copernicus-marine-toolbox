@@ -234,8 +234,11 @@ def download_zarr(
     current = current_process()
     if "position" not in tdqm_configuration and current._identity:
         tdqm_configuration["position"] = current._identity[0]
+
+    bar_format = "{l_bar}{bar}| [{elapsed}<{remaining}]"
     with TqdmCallback(
         **tdqm_configuration,
+        bar_format=bar_format,
     ):
         _save_dataset_locally(
             dataset,
