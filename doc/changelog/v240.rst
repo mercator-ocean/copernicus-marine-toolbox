@@ -14,6 +14,7 @@ New Features
 ^^^^^^^^^^^^
 
 * Drop support for Python 3.9. The minimum required Python version is now 3.10. Consequently, updated the versions of the dependencies: see the :ref:`dependencies section <installation-page-dependencies>` for more details.
+* Added widget to contact the User Support directly from the Copernicus Marine Toolbox documentation.
 
 Subset
 ------
