@@ -1,3 +1,5 @@
+import os
+
 import nox
 
 PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
@@ -28,6 +30,31 @@ def tests(
     """
     Basic test of the toolbox against multiple versions.
     """
+    if (
+        session.python == "3.14"
+        and os.getenv("RUNNER_OPERATING_SYSTEM") == "windows-latest"
+        and numpy_version == "2.1.0"
+    ):
+        # see https://numpy.org/doc/stable/release/2.3.2-notes.html
+        # for the first Windows 64 - Python 3.14 compatible version of numpy
+        numpy_version = "2.3.2"
+        session.log(
+            "Python 3.14 on Windows requires numpy 2.3.2 or higher, "
+            "using numpy 2.3.2 for this test"
+        )
+
+    if (
+        session.python == "3.14"
+        and os.getenv("RUNNER_OPERATING_SYSTEM") == "macos-latest"
+        and numpy_version == "2.1.0"
+    ):
+        # see https://numpy.org/doc/stable/release/2.1.2-notes.html
+        # where a bug for macOS wheel was fixed
+        numpy_version = "2.1.2"
+        session.log(
+            "Python 3.14 on macOS requires numpy 2.1.2 or higher, "
+            "using numpy 2.1.2 for this test"
+        )
 
     session.install(
         format_to_correct_pip_command("xarray", xarray_version),
