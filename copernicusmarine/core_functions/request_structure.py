@@ -13,7 +13,7 @@ from dateutil.tz import UTC
 from pydantic import BaseModel, ValidationError, field_validator
 
 from copernicusmarine.catalogue_parser.models import (
-    get_version_and_part_from_full_dataset_id,
+    get_version_from_dataset_id,
 )
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
@@ -378,7 +378,6 @@ def create_subset_request(
         )
 
     request_update_dict = {
-        "dataset_version": dataset_version,
         "dataset_part": dataset_part,
         "variables": variables,
         "minimum_x": (
@@ -645,7 +644,6 @@ def create_get_request(
     )
 
     request_update_dict = {
-        "dataset_version": dataset_version,
         "output_directory": output_directory,
         "username": username,
         "max_concurrent_requests": max_concurrent_requests,
@@ -669,7 +667,7 @@ def create_get_request(
         )
     if sync or sync_delete:
         request_update_dict["sync"] = True
-        if not request_update_dict["dataset_version"]:
+        if not get_request.dataset_version:
             raise ValueError(
                 "Sync requires to set a dataset version. "
                 "Please use --dataset-version option."
@@ -737,8 +735,8 @@ def process_dataset_id_and_dataset_version(
 ) -> tuple[str, str | None]:
     if not dataset_id:
         raise ValueError("Dataset id must be provided.")
-    dataset_id, dataset_version, _ = get_version_and_part_from_full_dataset_id(
-        dataset_id
+    dataset_id, dataset_version = get_version_from_dataset_id(
+        dataset_id, raise_on_error=False
     )
     if user_input_dataset_version and dataset_version:
         raise ValueError(
