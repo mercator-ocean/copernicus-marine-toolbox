@@ -257,7 +257,7 @@ class CopernicusMarineVariable(BaseModel):
     #: Units of the variable.
     units: str | None
     #: Bounding box of the variable.
-    bbox: list[float | None]
+    bbox: list[float] | None
     #: List of coordinates of the variable.
     coordinates: list[CopernicusMarineCoordinate]
 
@@ -267,7 +267,7 @@ class CopernicusMarineVariable(BaseModel):
         metadata_item: pystac.Item,
         asset: pystac.Asset,
         variable_id: str,
-        bbox: list[float | None],
+        bbox: list[float] | None,
     ) -> Variable:
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]

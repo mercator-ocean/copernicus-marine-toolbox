@@ -1826,3 +1826,22 @@ class TestSubset:
         assert response.filename.endswith(".zarr")
         assert os.path.exists(tmp_path / "to_delete.zarr")
         assert os.path.isdir(tmp_path / "to_delete.zarr")
+
+    def test_can_pass_version_in_dataset_id_with_warning(self, caplog):
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m"
+        version = "202511"
+
+        with caplog.at_level(logging.INFO):
+            _ = subset(
+                dataset_id=f"{dataset_id}_{version}",
+                variables=["thetao"],
+                start_datetime="2023-01-01T00:00:00",
+                end_datetime="2023-01-31T23:59:59",
+                dry_run=True,
+            )
+            assert (
+                "The dataset version has been included in the dataset_id argument."
+                in caplog.text
+            )
+            assert "WARNING" in caplog.text
+            assert 'Selected dataset version: "202511"' in caplog.text

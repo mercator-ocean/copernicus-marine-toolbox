@@ -12,6 +12,9 @@ import pandas as pd
 from dateutil.tz import UTC
 from pydantic import BaseModel, ValidationError, field_validator
 
+from copernicusmarine.catalogue_parser.models import (
+    get_version_and_part_from_full_dataset_id,
+)
 from copernicusmarine.core_functions.credentials_utils import (
     get_and_check_username_password,
 )
@@ -330,8 +333,13 @@ def create_subset_request(
         subset_request = subset_request.update(
             motu_api_subset_request.__dict__
         )
-    if not subset_request.dataset_id:
-        raise ValueError("Please provide a dataset id for a subset request.")
+    (
+        subset_request.dataset_id,
+        subset_request.dataset_version,
+    ) = process_dataset_id_and_dataset_version(
+        subset_request.dataset_id,
+        dataset_version or subset_request.dataset_version,
+    )
     if netcdf3_compatible:
         documentation_url = (
             f"https://toolbox-docs.marine.copernicus.eu"
@@ -628,8 +636,14 @@ def create_get_request(
 
     if request_file:
         get_request.from_file(request_file)
-    if not get_request.dataset_id:
-        raise ValueError("Please provide a dataset id for a get request.")
+    (
+        get_request.dataset_id,
+        get_request.dataset_version,
+    ) = process_dataset_id_and_dataset_version(
+        get_request.dataset_id,
+        dataset_version or get_request.dataset_version,
+    )
+
     request_update_dict = {
         "dataset_version": dataset_version,
         "output_directory": output_directory,
@@ -715,3 +729,34 @@ def get_direct_download_files(
     with open(file_list_path) as f:
         direct_download_files = [line.strip() for line in f.readlines()]
     return direct_download_files
+
+
+def process_dataset_id_and_dataset_version(
+    dataset_id: str,
+    user_input_dataset_version: str | None,
+) -> tuple[str, str | None]:
+    if not dataset_id:
+        raise ValueError("Dataset id must be provided.")
+    dataset_id, dataset_version, _ = get_version_and_part_from_full_dataset_id(
+        dataset_id
+    )
+    if user_input_dataset_version and dataset_version:
+        raise ValueError(
+            f"Conflicting dataset versions provided. "
+            f"Dataset id '{dataset_id}' contains "
+            f"version '{dataset_version}', "
+            f"but user input dataset version "
+            f"is '{user_input_dataset_version}'. "
+            f"Please provide consistent dataset version information."
+        )
+    elif dataset_version and not user_input_dataset_version:
+        logger.warning(
+            "The dataset version has been included "
+            "in the dataset_id argument. "
+            "This is not recommended. "
+            "Please either omit the version —allowing "
+            "the Toolbox to select it "
+            "automatically— or specify it "
+            "using the dataset_version argument."
+        )
+    return dataset_id, dataset_version or user_input_dataset_version
