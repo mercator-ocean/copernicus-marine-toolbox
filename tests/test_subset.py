@@ -1405,10 +1405,10 @@ class TestSubset:
         assert dataset.elevation.values.min() <= -2.3  # our limit
         assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.strptime("2024-01-01", "%Y-%m-%d")
+        ) <= datetime.strptime("2026-01-01", "%Y-%m-%d")
         assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.strptime("2024-01-03", "%Y-%m-%d")
+        ) > datetime.strptime("2026-01-03", "%Y-%m-%d")
 
     def test_subset_goes_to_staging(self):
         command = [
