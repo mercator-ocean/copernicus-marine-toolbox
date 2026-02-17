@@ -10,20 +10,18 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
 
 .. code-block:: bash
 
-    copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
+    copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m --variable thetao --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
 
 **Returns:**
 
 .. code-block:: bash
 
-  INFO - 2025-07-10T13:18:03Z - Selected dataset version: "202012"
-  INFO - 2025-07-10T13:18:03Z - Selected dataset part: "default"
-  INFO - 2025-07-10T13:18:05Z - Starting download. Please wait...
-  100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 44/44 [00:10<00:00,  4.03it/s]
-  INFO - 2025-07-10T13:18:16Z - Successfully downloaded to cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m_thetao-so_0.08E_28.00N-28.08N_0.51-5698.06m_2021-01-01-2021-01-03.nc
+  INFO - 2026-02-17T15:44:29Z - Selected dataset version: "202511"
+  INFO - 2026-02-17T15:44:29Z - Selected dataset part: "default"
+  100%|████████████████████████████████████████████████████████████| [00:01<00:00]
   {
-    "file_size": 0.01414503816793893,
-    "data_transfer_size": 422.5758778625954,
+    "file_size": 0.019870229007633588,
+    "data_transfer_size": 237.3002748091603,
     "status": "000",
     "message": "The request was successful."
   }
@@ -142,7 +140,7 @@ Option ``--file-format``
 """"""""""""""""""""""""""""""""""""""""
 
 The ``--file-format`` option allows you to specify the format of the downloaded file.
-Here we distinguish between gridded and sparse datasets. For sparse datasets, see the section on :ref:`sparse data subsetting <sparse-subset>`.
+Here, we distinguish between gridded and sparse datasets. For sparse datasets, see the section on :ref:`sparse data subsetting <sparse-subset>`.
 
 For gridded datasets, the available formats are:
 
@@ -150,17 +148,22 @@ For gridded datasets, the available formats are:
 - Zarr ('.zarr' extension, 'zarr' ``file-format`` input)
 - CSV ('.csv' extension, 'csv' ``file-format`` input)
 
-To choose one of these formats, simply add the corresponding ``--file-format`` option or extension to youy ``output-filename``. For example, if you want to download a NetCDF file, you can use either of the following commands:
+There are two ways to choose these formats.
+The first is adding the corresponding ``--file-format`` argument.
+The second is using the format's extension in the ``--output-filename``.
+If both ``--file-format`` and ``--output-filename`` are used, the format will be determined by the extension in the output filename.
+
+For example, if you want to download a Zarr file, you can use either of the following commands:
 
 .. code-block:: bash
-  copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --file-format zarr
 
+  copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -t "20251028" --file-format zarr
   # or
-  copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --output-filename my_subset.zarr
+  copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -t "20251028" --output-filename my_subset.zarr
 
 About CSV format for gridded datasets:
 
-- The CSV format is not recommended for large gridded datasets, as it can lead to very large file sizes, long download times and RAM overload. The toolbox will emit a warning if the estimated CSV file size exceeds 1 GB.
+- The CSV format is not recommended for large gridded datasets, as it can lead to very large file sizes, long download times and RAM overload. The Toolbox will emit a warning if the estimated CSV file size exceeds 1 GB.
 - The estimated CSV file size is based on the number of rows and columns in the resulting subset. The estimation assumes that each value will take up a certain number of bytes, which can vary depending on the dataset's characteristics. It may not be accurate for all datasets, but it provides a rough estimate to help users make informed decisions about using the CSV format.
 
 Option ``--netcdf-compression-level``
