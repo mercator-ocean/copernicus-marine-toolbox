@@ -1358,8 +1358,8 @@ class TestSubset:
         max_latitude = 50
         min_depth = 1.1
         max_depth = 2.3
-        start_datetime = "2024-01-01T00:00:00"
-        end_datetime = "2024-01-03T23:04:00"
+        start_datetime = "2026-01-01T00:00:00"
+        end_datetime = "2026-01-03T23:04:00"
         command = [
             "copernicusmarine",
             "subset",

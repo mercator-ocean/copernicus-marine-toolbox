@@ -422,12 +422,11 @@ def create_subset_request(
         request_update_dict["disable_progress_bar"] = True
     if (
         output_filename
-        and not file_format
         and (suffix := pathlib.Path(output_filename).suffix)
         in DEFAULT_FILE_EXTENSIONS
     ):
         if suffix == ".nc":
-            request_update_dict["file_format"] = "netcdf"
+            request_update_dict["file_formaft"] = "netcdf"
         elif suffix == ".csv":
             request_update_dict["file_format"] = "csv"
         elif suffix == ".zarr":
