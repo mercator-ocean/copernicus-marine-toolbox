@@ -136,6 +136,33 @@ Example of request that crosses the antemeridian:
 
   Crossing the antemeridian is not supported for sparse datasets. If you want to see this feature, please contact us.
 
+.. _file-format:
+
+Option ``--file-format``
+""""""""""""""""""""""""""""""""""""""""
+
+The ``--file-format`` option allows you to specify the format of the downloaded file.
+Here we distinguish between gridded and sparse datasets. For sparse datasets, see the section on :ref:`sparse data subsetting <sparse-subset>`.
+
+For gridded datasets, the available formats are:
+
+- NetCDF ('.nc' extension, 'netcdf' ``file-format`` input), default format
+- Zarr ('.zarr' extension, 'zarr' ``file-format`` input)
+- CSV ('.csv' extension, 'csv' ``file-format`` input)
+
+To choose one of these formats, simply add the corresponding ``--file-format`` option or extension to youy ``output-filename``. For example, if you want to download a NetCDF file, you can use either of the following commands:
+
+.. code-block:: bash
+  copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --file-format zarr
+
+  # or
+  copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --output-filename my_subset.zarr
+
+About CSV format for gridded datasets:
+
+- The CSV format is not recommended for large gridded datasets, as it can lead to very large file sizes, long download times and RAM overload. The toolbox will emit a warning if the estimated CSV file size exceeds 1 GB.
+- The estimated CSV file size is based on the number of rows and columns in the resulting subset. The estimation assumes that each value will take up a certain number of bytes, which can vary depending on the dataset's characteristics. It may not be accurate for all datasets, but it provides a rough estimate to help users make informed decisions about using the CSV format.
+
 Option ``--netcdf-compression-level``
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

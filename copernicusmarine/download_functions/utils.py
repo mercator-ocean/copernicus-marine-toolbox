@@ -432,7 +432,10 @@ def get_approximation_size_final_result_csv(
     n_rows = numpy.prod([dataset.sizes[dim] for dim in dataset.dims])
     n_columns = len(dataset.data_vars) + len(dataset.dims)
 
-    bytes_per_value = 12
+    if "depth" in dataset.sizes or "elevation" in dataset.sizes:
+        bytes_per_value = 10
+    else:
+        bytes_per_value = 7
 
     csv_size_bytes = n_rows * n_columns * bytes_per_value
     csv_size_mb = csv_size_bytes / (1024**2)

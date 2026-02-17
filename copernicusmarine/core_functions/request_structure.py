@@ -26,6 +26,7 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import (
     DEFAULT_COORDINATES_SELECTION_METHOD,
+    DEFAULT_FILE_EXTENSIONS,
     DEFAULT_FILE_FORMAT,
     DEFAULT_VERTICAL_AXIS,
     CoordinatesSelectionMethod,
@@ -419,6 +420,18 @@ def create_subset_request(
         request_update_dict["staging"] = staging
     if disable_progress_bar or dry_run:
         request_update_dict["disable_progress_bar"] = True
+    if (
+        output_filename
+        and not file_format
+        and (suffix := pathlib.Path(output_filename).suffix)
+        in DEFAULT_FILE_EXTENSIONS
+    ):
+        if suffix == ".nc":
+            request_update_dict["file_format"] = "netcdf"
+        elif suffix == ".csv":
+            request_update_dict["file_format"] = "csv"
+        elif suffix == ".zarr":
+            request_update_dict["file_format"] = "zarr"
 
     return subset_request.update(request_update_dict)
 
