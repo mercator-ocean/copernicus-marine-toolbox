@@ -18,13 +18,13 @@ class TestSeveralMetadataCatalogues:
         self, caplog
     ):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
-            dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
+            dataset_id = "cmems_mod_glo_phy_anfc_0.083deg_P1D-m"
 
             result = get(dataset_id=dataset_id, dry_run=True, staging=True)
 
-            assert "s3.waw4-1.cloudferro.com" in result.files[0].https_url
+            assert "s3.waw3-1.cloudferro.com" in result.files[0].https_url
             assert (
-                "https://s3.waw3-1.cloudferro.com/mdl-metadata-dta/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m_202406/dataset.stac.json"
+                "https://s3.waw4-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m_202406/dataset.stac.json"
                 not in caplog.text
             )
 
@@ -65,7 +65,7 @@ class TestSeveralMetadataCatalogues:
         )
         responses.add(
             responses.GET,
-            "https://s3.waw4-1.cloudferro.com/mdl-metadata-dta/dataset_product_id_mapping.json",
+            "https://s3.waw4-1.cloudferro.com/mdl-metadata/dataset_product_id_mapping.json",
             json=None,
             status=400,
         )
@@ -94,8 +94,9 @@ class TestSeveralMetadataCatalogues:
                 assert dataset.dataset_id not in dataset_ids
                 dataset_ids.add(dataset.dataset_id)
 
+        # dataset only in WAW4-1
         one_dataset_describe = describe(
-            dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+            dataset_id="cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
             staging=True,
         )
         assert len(one_dataset_describe.products) == 1
@@ -136,7 +137,7 @@ class TestSeveralMetadataCatalogues:
         responses.mock.passthru_prefixes = ("http://", "https://")
         responses.add(
             responses.GET,
-            "https://s3.waw4-1.cloudferro.com/mdl-metadata-dta/metadata/catalog.stac.json",
+            "https://s3.waw4-1.cloudferro.com/mdl-metadata/metadata/catalog.stac.json",
             json=None,
             status=400,
         )
