@@ -1804,3 +1804,25 @@ class TestSubset:
         )
         assert "WARNING" in caplog.text
         assert "The estimated size of the final CSV output is" in caplog.text
+
+    def test_subset_priority_output_filename_over_file_format(self, tmp_path):
+        dataset_id = "cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D"
+        response = subset(
+            dataset_id=dataset_id,
+            variables=["CHL"],
+            start_datetime="2025-09-01T23:00:00",
+            end_datetime="2025-09-01T23:50:00",
+            minimum_longitude=0,
+            maximum_longitude=0.5,
+            minimum_latitude=0,
+            maximum_latitude=0.5,
+            minimum_depth=0,
+            maximum_depth=1,
+            output_directory=tmp_path,
+            output_filename="to_delete.zarr",
+            file_format="netcdf",
+        )
+
+        assert response.filename.endswith(".zarr")
+        assert os.path.exists(tmp_path / "to_delete.zarr")
+        assert os.path.isdir(tmp_path / "to_delete.zarr")

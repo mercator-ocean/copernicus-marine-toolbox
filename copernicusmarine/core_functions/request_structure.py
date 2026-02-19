@@ -426,7 +426,7 @@ def create_subset_request(
         in DEFAULT_FILE_EXTENSIONS
     ):
         if suffix == ".nc":
-            request_update_dict["file_formaft"] = "netcdf"
+            request_update_dict["file_format"] = "netcdf"
         elif suffix == ".csv":
             request_update_dict["file_format"] = "csv"
         elif suffix == ".zarr":
