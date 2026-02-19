@@ -735,17 +735,16 @@ def process_dataset_id_and_dataset_version(
 ) -> tuple[str, str | None]:
     if not dataset_id:
         raise ValueError("Dataset id must be provided.")
-    dataset_id, dataset_version = get_version_from_dataset_id(
+    dataset_id_without_version, dataset_version = get_version_from_dataset_id(
         dataset_id, raise_on_error=False
     )
     if user_input_dataset_version and dataset_version:
         raise ValueError(
-            f"Conflicting dataset versions provided. "
-            f"Dataset id '{dataset_id}' contains "
+            f"Dataset id '{dataset_id_without_version}' contains "
             f"version '{dataset_version}', "
-            f"but user input dataset version "
-            f"is '{user_input_dataset_version}'. "
-            f"Please provide consistent dataset version information."
+            f"but dataset-version is also provided with value "
+            f"'{user_input_dataset_version}'. "
+            f"Please only use the dataset_version argument."
         )
     elif dataset_version and not user_input_dataset_version:
         logger.warning(
@@ -757,4 +756,7 @@ def process_dataset_id_and_dataset_version(
             "automatically— or specify it "
             "using the dataset_version argument."
         )
-    return dataset_id, dataset_version or user_input_dataset_version
+    return (
+        dataset_id_without_version,
+        dataset_version or user_input_dataset_version,
+    )
