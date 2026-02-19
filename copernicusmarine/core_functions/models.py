@@ -3,12 +3,13 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, get_args
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_serializer
 
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceNames,
     short_name_from_service_name,
 )
+from copernicusmarine.core_functions.utils import human_readable_size
 
 FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
@@ -99,6 +100,13 @@ class FileGet(BaseModel):
     https_url: str
     #: Size of the file in MB.
     file_size: float
+
+    @field_serializer("file_size")
+    def serialize_file_size(self, file_size: float | None) -> str | None:
+        if file_size is not None:
+            return human_readable_size(file_size)
+        return file_size
+
     #: Last modified date.
     last_modified_datetime: str
     #: ETag of the file.
@@ -130,6 +138,13 @@ class ResponseGet(BaseModel):
     number_of_files_to_download: int
     #: Total size of the files that would be downloaded in MB.
     total_size: float | None
+
+    @field_serializer("total_size")
+    def serialize_total_size(self, total_size: float | None) -> str | None:
+        if total_size is not None:
+            return human_readable_size(total_size)
+        return total_size
+
     #: Status of the request.
     status: StatusCode
     #: Message explaning the status.
@@ -202,9 +217,25 @@ class ResponseSubset(BaseModel):
     #: This estimation may not be accurate if you save the result as
     #: a compressed NetCDF file.
     file_size: float | None
+
+    @field_serializer("file_size")
+    def serialize_file_size(self, file_size: float | None) -> str | None:
+        if file_size is not None:
+            return human_readable_size(file_size)
+        return file_size
+
     #: Estimation of the maximum amount of data needed to
     #: get the final result in MB.
     data_transfer_size: float | None
+
+    @field_serializer("data_transfer_size")
+    def serialize_data_transfer_size(
+        self, data_transfer_size: float | None
+    ) -> str | None:
+        if data_transfer_size is not None:
+            return human_readable_size(data_transfer_size)
+        return data_transfer_size
+
     #: Variables of the subsetted dataset.
     variables: list[str]
     #: The bounds of the subsetted dataset.
