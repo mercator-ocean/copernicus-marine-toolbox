@@ -116,7 +116,7 @@ def download_original_files(
             )
 
     logger.debug(
-        "Total size of the download:%s.",
+        "Total size of the download: %s.",
         human_readable_size(files_headers.total_size / 1024 / 1024),
     )
 
