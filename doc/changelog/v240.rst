@@ -13,8 +13,9 @@ General
 New Features
 ^^^^^^^^^^^^
 
-* Drop support for Python 3.9. The minimum required Python version is now 3.10. Consequently, updated the versions of the dependencies: see the :ref:`dependencies section <installation-page-dependencies>` for more details.
-* Added widget to contact the User Support directly from the Copernicus Marine Toolbox documentation.
+* The minimum required Python version is now 3.10. Consequently, the versions of the dependencies have been updated: see the :ref:`dependencies section <installation-page-dependencies>` for more details.
+* Added a widget to contact User Support directly from the Copernicus Marine Toolbox documentation.
+* The dataset version can now be specified in the dataset ID using the format ``datasetID_version``. See the :ref:`documentation <dataset-version>` for more details. Note that this format is not recommended; prefer using the ``dataset_version`` argument or the ``--dataset-version`` option instead.
 
 Subset
 ------
@@ -22,11 +23,11 @@ Subset
 New Features
 ^^^^^^^^^^^^
 
-* Added support for subsetting in CSV format even for dense datasets. Also added :ref:`documentation about file formats <file-format>`.
-* Progress bars are not displaying Dask tasks numbers which makes them easier to understand.
+* Added support for subsetting dense datasets in CSV format. Also added :ref:`documentation about file formats <file-format>`.
+* Progress bars no longer display Dask task numbers, making them easier to read.
 
 Fixes
-^^^^^^^
+^^^^^
 
-* Fixed an issue where download would fail for sparse datasets when some platform metadata was missing. Now, the Toolbox handles missing metadata more gracefully and replace the missing data with ``None``.
-* Fixed an issue where an empty file would be created even if there were no data to download for sparse datasets. Now, no file is created.
+* Fixed an issue where downloads would fail for sparse datasets when some platform metadata was missing. The Toolbox now handles missing metadata more gracefully by replacing missing values with ``None``.
+* Fixed an issue where an empty file would be created even when there was no data to download for sparse datasets. No file is now created in this case.

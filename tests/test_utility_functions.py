@@ -2,6 +2,9 @@ from datetime import datetime, timezone
 
 from freezegun import freeze_time
 
+from copernicusmarine.catalogue_parser.models import (
+    get_version_from_dataset_id,
+)
 from copernicusmarine.core_functions.utils import (
     datetime_parser,
     human_readable_size,
@@ -82,3 +85,40 @@ class TestUtilityFunctions:
             human_readable_size(2 * 1024 * 1024 * 1024 * 1024 * 1024)
             == "2097152.00 PB"
         )
+
+    def test_parse_properly_version_from_dataset_id(self):
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_202511"
+        (
+            dataset_id_without_version,
+            dataset_version,
+        ) = get_version_from_dataset_id(dataset_id, raise_on_error=True)
+        assert (
+            dataset_id_without_version
+            == "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m"
+        )
+        assert dataset_version == "202511"
+
+        dataset_id_no_version = "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m"
+        (
+            dataset_id_without_version,
+            dataset_version,
+        ) = get_version_from_dataset_id(
+            dataset_id_no_version, raise_on_error=True
+        )
+        assert (
+            dataset_id_without_version
+            == "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m"
+        )
+        assert dataset_version is None
+
+        dataset_id_with_part = (
+            "cmems_obs-ins_med_phybgcwav_mynrt_na_irr_202311--ext--monthly"
+        )
+        (
+            dataset_id_without_version,
+            dataset_version,
+        ) = get_version_from_dataset_id(
+            dataset_id_with_part, raise_on_error=True
+        )
+        assert dataset_id_without_version == dataset_id_with_part
+        assert dataset_version is None

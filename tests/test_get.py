@@ -8,6 +8,8 @@ from json import loads
 from pathlib import Path
 from unittest import mock
 
+import pytest
+
 from copernicusmarine import get
 from tests.test_utils import execute_in_terminal, get_all_files_in_folder_tree
 
@@ -493,3 +495,29 @@ class TestGet:
         response_get = loads(self.output.stdout)
         assert len(response_get["files"]) == 1
         assert response_get["number_of_files_to_download"] == 1
+
+    def test_can_pass_version_in_dataset_id_with_warning(self, caplog):
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m"
+        version = "202511"
+
+        with caplog.at_level(logging.INFO):
+            _ = get(
+                dataset_id=f"{dataset_id}_{version}",
+                dry_run=True,
+            )
+            assert (
+                "The dataset version has been included in the dataset_id argument."
+                in caplog.text
+            )
+            assert "WARNING" in caplog.text
+            assert 'Selected dataset version: "202511"' in caplog.text
+
+    def test_error_when_both_version_in_id_and_dataset_version_param(self):
+        dataset_id = "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m"
+        version = "202511"
+        with pytest.raises(ValueError):
+            get(
+                dataset_id=f"{dataset_id}_{version}",
+                dataset_version=version,
+                dry_run=True,
+            )

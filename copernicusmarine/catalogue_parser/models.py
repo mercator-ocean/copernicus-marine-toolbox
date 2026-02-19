@@ -257,7 +257,7 @@ class CopernicusMarineVariable(BaseModel):
     #: Units of the variable.
     units: str | None
     #: Bounding box of the variable.
-    bbox: list[float | None]
+    bbox: list[float] | None
     #: List of coordinates of the variable.
     coordinates: list[CopernicusMarineCoordinate]
 
@@ -267,7 +267,7 @@ class CopernicusMarineVariable(BaseModel):
         metadata_item: pystac.Item,
         asset: pystac.Asset,
         variable_id: str,
-        bbox: list[float | None],
+        bbox: list[float] | None,
     ) -> Variable:
         cube_variables = metadata_item.properties["cube:variables"]
         cube_variable = cube_variables[variable_id]
@@ -887,11 +887,23 @@ def get_version_and_part_from_full_dataset_id(
     else:
         name_with_maybe_version = full_dataset_id
         part = PART_DEFAULT
+    dataset_name, version = get_version_from_dataset_id(
+        name_with_maybe_version, raise_on_error=True
+    )
+    version = version or VERSION_DEFAULT
+    return dataset_name, version, part
+
+
+def get_version_from_dataset_id(
+    dataset_id: str, raise_on_error: bool
+) -> tuple[str, str | None]:
     pattern = rf"^(.*?)(?:_({REGEX_PATTERN_DATE_YYYYMM}))?$"
-    match = re.match(pattern, name_with_maybe_version)
+    match = re.match(pattern, dataset_id)
     if match:
         dataset_name = match.group(1)
-        version = match.group(2) or VERSION_DEFAULT
+        version = match.group(2)
+        return dataset_name, version
     else:
-        raise Exception(f"Could not parse datasetID: {full_dataset_id}")
-    return dataset_name, version, part
+        if raise_on_error:
+            raise Exception(f"Could not parse datasetID: {dataset_id}")
+        return dataset_id, None
