@@ -22,7 +22,7 @@ Subset
 New Features
 ^^^^^^^^^^^^
 
-* Added support for subsetting in CSV format even dense datasets.
+* Added support for subsetting in CSV format even for dense datasets. Also added :ref:`documentation about file formats <file-format>`.
 * Progress bars are not displaying Dask tasks numbers which makes them easier to understand.
 
 Fixes

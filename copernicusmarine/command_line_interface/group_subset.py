@@ -77,13 +77,13 @@ def cli_subset():
 
     .. code-block:: bash
 
-        copernicusmarine subset --dataset-id cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --variable thetao --variable so --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2
+        copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m --variable thetao --variable bottomT --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2
 
     Equivalent to:
 
     .. code-block:: bash
 
-        copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao -v so -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 \n
+        copernicusmarine subset -i cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -v bottomT -t 2021-01-01 -T 2021-01-03 -x 0.0 -X 0.1 -y 28.0 -Y 28.1 -z 1 -Z 2 \n
     """,  # noqa
     invoke_without_command=True,
 )

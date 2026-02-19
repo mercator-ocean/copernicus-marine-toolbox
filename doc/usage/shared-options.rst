@@ -136,13 +136,13 @@ The version of dataset can be found through the ``describe`` command.
 
 .. code:: bash
 
-    copernicusmarine get -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m --dataset-version 202012
+    copernicusmarine get -i cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m --dataset-version 202511
 
 **Returns:**
 
 .. code:: text
 
-    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset version "202012"
+    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset version "202511"
 
 Option ``--dataset-part``
 *********************************
@@ -216,41 +216,52 @@ When used, the toolbox will by default, send the full return response of the com
 
 .. code:: bash
 
-      copernicusmarine subset -i cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m -v thetao --dry-run
+      copernicusmarine subset -i cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao --dry-run
 
 **Returns:**
 
 .. code:: text
 
-    INFO - 2024-10-07T08:47:46Z - Dataset version was not specified, the latest one was selected: "202012"
-    INFO - 2024-10-07T08:47:46Z - Dataset part was not specified, the first one was selected: "default"
-    INFO - 2024-10-07T08:47:47Z - Service was not specified, the default one was selected: "arco-geo-series"
-    INFO - 2024-10-07T08:47:48Z - Downloading using service arco-geo-series...
-    INFO - 2024-10-07T08:47:50Z - Estimated size of the dataset file is 210828.202 MB
-    Estimated size of the data that needs to be downloaded to obtain the result: 210888 MB
-    This a very rough estimation and usually its higher than the actual size of the data that needs to be downloaded.
+    INFO - 2026-02-17T15:47:49Z - Selected dataset version: "202511"
+    INFO - 2026-02-17T15:47:49Z - Selected dataset part: "default"
     {
-      "output": "cmems_mod_ibi_phy_my_0.083deg-3D_P1D-m_thetao_19.00W-5.00E_26.00N-56.00N_0.51-5698.06m_1993-01-01-2021-12-28.nc",
-      "size": 210828.20248091602,
-      "data_needed": 210887.9328244275,
-      "coodinates_extent": {
-        "longitude": {
-          "minimum": -19.0,
-          "maximum": 4.999999046325684
+      "file_path": "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_thetao_19.08W-5.08E_26.17N-56.08N_0.49-5727.92m_1993-01-01-2025-10-28.nc",
+      "output_directory": ".",
+      "filename": "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_thetao_19.08W-5.08E_26.17N-56.08N_0.49-5727.92m_1993-01-01-2025-10-28.nc",
+      "file_size": 2148268.6546030534,
+      "data_transfer_size": 2191234.0144351143,
+      "variables": [
+        "thetao"
+      ],
+      "coordinates_extent": [
+        {
+          "minimum": -19.082841873168945,
+          "maximum": 5.084567070007324,
+          "unit": "degrees_east",
+          "coordinate_id": "longitude"
         },
-        "latitude": {
-          "minimum": 26.0,
-          "maximum": 56.0
+        {
+          "minimum": 26.16535758972168,
+          "maximum": 56.082942962646484,
+          "unit": "degrees_north",
+          "coordinate_id": "latitude"
         },
-        "time": {
-          "minimum": "1993-01-01T00:00:00Z",
-          "maximum": "2021-12-28T00:00:00Z"
+        {
+          "minimum": "1993-01-01T00:00:00+00:00",
+          "maximum": "2025-10-28T00:00:00+00:00",
+          "unit": "iso8601",
+          "coordinate_id": "time"
         },
-        "depth": {
-          "minimum": 0.5057600140571594,
-          "maximum": 5698.060546875
+        {
+          "minimum": 0.4940253794193268,
+          "maximum": 5727.91650390625,
+          "unit": "m",
+          "coordinate_id": "depth"
         }
-      }
+      ],
+      "status": "001",
+      "message": "The request was run with the dry-run option. No data was downloaded.",
+      "file_status": "DOWNLOADED"
     }
 
 See :ref:`Response types documentation <response-types>` for more information about the response you can expect.

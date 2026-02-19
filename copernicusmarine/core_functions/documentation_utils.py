@@ -223,9 +223,16 @@ SUBSET: dict[str, str] = {
     ),
     "OUTPUT_FILENAME_HELP": (
         "Save the downloaded data with the given file name (under the output "
-        "directory)."
+        "directory). "
+        "Extension is optional and will be added if not set. "
+        "Extension takes priority over the file format option if both are set."
     ),
-    "FILE_FORMAT_HELP": "Format of the downloaded dataset. If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets and to CSV '.csv' for sparse datasets.",  # noqa: E501
+    "FILE_FORMAT_HELP": (
+        "Format of the downloaded dataset. "
+        "If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets "
+        "and to CSV '.csv' for sparse datasets. "
+        "Output filename extension takes priority over this option if both are set."
+    ),
     "MOTU_API_REQUEST_HELP": (
         "Option to pass a complete MOTU API request as a string. Caution, user has to "
         """replace double quotes " with single quotes ' in the request."""

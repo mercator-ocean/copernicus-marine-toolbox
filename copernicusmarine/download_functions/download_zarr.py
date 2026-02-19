@@ -154,16 +154,16 @@ def download_zarr(
     logger.debug("Starting download. Please wait...")
 
     if subset_request.file_format == "csv":
-        total_size_estimation = get_approximation_size_final_result_csv(
+        final_result_size_estimation = get_approximation_size_final_result_csv(
             dataset
         )
-        if total_size_estimation > 1000:
+        if final_result_size_estimation > 1000:
             non_csv_size_estimation = get_approximation_size_final_result(
                 dataset, axis_coordinate_id_mapping
             )
             logger.warning(
                 "The estimated size of the final CSV output is "
-                f"{human_readable_size(total_size_estimation)}. "
+                f"{human_readable_size(final_result_size_estimation)}. "
                 "Generating such a large file may result in high memory "
                 "consumption and significant storage requirements. "
                 f"The same data in NetCDF or Zarr format is estimated at "
@@ -171,13 +171,13 @@ def download_zarr(
                 "these formats is recommended for large or complex datasets."
             )
     else:
-        total_size_estimation = get_approximation_size_final_result(
+        final_result_size_estimation = get_approximation_size_final_result(
             dataset, axis_coordinate_id_mapping
         )
 
     logger.debug(
         f"Total size estimation: "
-        f"{human_readable_size(total_size_estimation)}."
+        f"{human_readable_size(final_result_size_estimation)}."
     )
 
     dataset.close()
@@ -189,10 +189,6 @@ def download_zarr(
         subset_request.file_format,
         axis_coordinate_id_mapping,
         geographical_parameters,
-    )
-
-    final_result_size_estimation = get_approximation_size_final_result(
-        dataset, axis_coordinate_id_mapping
     )
     if dataset_chunking:
         data_needed_approximation = get_approximation_size_data_downloaded(
@@ -234,6 +230,11 @@ def download_zarr(
     current = current_process()
     if "position" not in tdqm_configuration and current._identity:
         tdqm_configuration["position"] = current._identity[0]
+    if (
+        "disable" not in tdqm_configuration
+        or not tdqm_configuration["disable"]
+    ) and subset_request.file_format == "csv":
+        tdqm_configuration["disable"] = True
 
     bar_format = "{l_bar}{bar}| [{elapsed}<{remaining}]"
     with TqdmCallback(

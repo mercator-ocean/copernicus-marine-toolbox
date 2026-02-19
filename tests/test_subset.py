@@ -1358,8 +1358,8 @@ class TestSubset:
         max_latitude = 50
         min_depth = 1.1
         max_depth = 2.3
-        start_datetime = "2024-01-01T00:00:00"
-        end_datetime = "2024-01-03T23:04:00"
+        start_datetime = "2026-01-01T00:00:00"
+        end_datetime = "2026-01-03T23:04:00"
         command = [
             "copernicusmarine",
             "subset",
@@ -1405,10 +1405,10 @@ class TestSubset:
         assert dataset.elevation.values.min() <= -2.3  # our limit
         assert datetime.strptime(
             str(dataset.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) <= datetime.strptime("2024-01-01", "%Y-%m-%d")
+        ) <= datetime.strptime("2026-01-01", "%Y-%m-%d")
         assert datetime.strptime(
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
-        ) >= datetime.strptime("2024-01-03", "%Y-%m-%d")
+        ) > datetime.strptime("2026-01-03", "%Y-%m-%d")
 
     def test_subset_goes_to_staging(self):
         command = [
@@ -1804,3 +1804,25 @@ class TestSubset:
         )
         assert "WARNING" in caplog.text
         assert "The estimated size of the final CSV output is" in caplog.text
+
+    def test_subset_priority_output_filename_over_file_format(self, tmp_path):
+        dataset_id = "cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D"
+        response = subset(
+            dataset_id=dataset_id,
+            variables=["CHL"],
+            start_datetime="2025-09-01T23:00:00",
+            end_datetime="2025-09-01T23:50:00",
+            minimum_longitude=0,
+            maximum_longitude=0.5,
+            minimum_latitude=0,
+            maximum_latitude=0.5,
+            minimum_depth=0,
+            maximum_depth=1,
+            output_directory=tmp_path,
+            output_filename="to_delete.zarr",
+            file_format="netcdf",
+        )
+
+        assert response.filename.endswith(".zarr")
+        assert os.path.exists(tmp_path / "to_delete.zarr")
+        assert os.path.isdir(tmp_path / "to_delete.zarr")
