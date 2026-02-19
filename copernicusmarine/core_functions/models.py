@@ -9,7 +9,6 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceNames,
     short_name_from_service_name,
 )
-from copernicusmarine.core_functions.utils import human_readable_size
 
 FileFormat = Literal["netcdf", "zarr", "csv", "parquet"]
 DEFAULT_FILE_FORMAT: FileFormat = "netcdf"
@@ -104,7 +103,7 @@ class FileGet(BaseModel):
     @field_serializer("file_size")
     def serialize_file_size(self, file_size: float | None) -> str | None:
         if file_size is not None:
-            return human_readable_size(file_size)
+            return f"{file_size:.2f} MB"
         return file_size
 
     #: Last modified date.
@@ -142,7 +141,7 @@ class ResponseGet(BaseModel):
     @field_serializer("total_size")
     def serialize_total_size(self, total_size: float | None) -> str | None:
         if total_size is not None:
-            return human_readable_size(total_size)
+            return f"{total_size:.2f} MB"
         return total_size
 
     #: Status of the request.
@@ -221,7 +220,7 @@ class ResponseSubset(BaseModel):
     @field_serializer("file_size")
     def serialize_file_size(self, file_size: float | None) -> str | None:
         if file_size is not None:
-            return human_readable_size(file_size)
+            return f"{file_size:.2f} MB"
         return file_size
 
     #: Estimation of the maximum amount of data needed to
@@ -233,7 +232,7 @@ class ResponseSubset(BaseModel):
         self, data_transfer_size: float | None
     ) -> str | None:
         if data_transfer_size is not None:
-            return human_readable_size(data_transfer_size)
+            return f"{data_transfer_size:.2f} MB"
         return data_transfer_size
 
     #: Variables of the subsetted dataset.
