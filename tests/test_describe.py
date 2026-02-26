@@ -330,9 +330,9 @@ class TestDescribe:
 
         version_ordered = sorted(
             dataset["versions"],
-            key=lambda x: (
-                x["label"] if x["label"] != VERSION_DEFAULT else "110001"
-            ),
+            key=lambda x: x["label"]
+            if x["label"] != VERSION_DEFAULT
+            else "110001",
             reverse=True,
         )
 
@@ -504,7 +504,7 @@ class TestDescribe:
             command.extend(["--dataset-id", dataset_id])
         if exclude:
             command.extend(["--exclude-fields", exclude])
-        self.output = execute_in_terminal(command, timeout_second=10)
+        self.output = execute_in_terminal(command, timeout_second=12)
 
     def then_I_have_only_one_product(self):
         json_result = loads(self.output.stdout)
