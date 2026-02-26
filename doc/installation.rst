@@ -153,7 +153,7 @@ Dependencies
 The Copernicus Marine Toolbox has the following dependencies:
 
 - `Python <https://www.python.org/>`__ (3.10 or later)
-- `click <https://click.palletsprojects.com/>`__ (8.2.1 or lower than 8.3.0)
+- `click <https://click.palletsprojects.com/>`__ (8.2.1 or later (except 8.3.0 and 8.3.1))
 - `requests <https://docs.python-requests.org/en/latest/>`__ (2.27.1 or later)
 - `xarray <https://xarray.pydata.org/>`__ (2024.10.0 or later)
 - `tqdm <https://tqdm.github.io/>`__ (4.65.0 or later)
@@ -216,7 +216,7 @@ About ``click``
 If you use ``subprocess.run`` or similar, or you are on Windows, and with version 8.2.0 of ``click``, it would create a bug where certain flags would not be taken into account.
 Hence, the Toolbox is incompatible with ``click==8.2.0``. Please check this `click issue <https://github.com/pallets/click/issues/2894>`_ for more information.
 
-We have also restricted the versions of click to lower than 8.3.0 as there seems to be an error with optional flags. Hopefully, we will be able to release the constraint soon. Please check this `click issue <https://github.com/pallets/click/issues/3084>`_ for more information.
+We have also restricted the versions of click to be different than 8.3.0 and 8.3.1 as there seems to be an error with optional flags. Please check this `click issue <https://github.com/pallets/click/issues/3084>`_ for more information.
 
 .. _installation-page-domains:
 
