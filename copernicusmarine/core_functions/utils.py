@@ -13,6 +13,9 @@ from dateutil.parser._parser import ParserError
 from requests import PreparedRequest
 from tqdm import tqdm
 
+from copernicusmarine.core_functions.environment_variables import (
+    COPERNICUSMARINE_USE_THREADS,
+)
 from copernicusmarine.core_functions.exceptions import WrongDatetimeFormat
 from copernicusmarine.versioner import __version__ as copernicusmarine_version
 
@@ -145,7 +148,7 @@ def run_concurrently(
         total=len(function_arguments),
         **tdqm_bar_configuration,
     ) as pbar:
-        if max_concurrent_requests == 0:
+        if max_concurrent_requests == 0 or not COPERNICUSMARINE_USE_THREADS:
             for function_argument in function_arguments:
                 out.append(func(*function_argument))
                 pbar.update(1)
