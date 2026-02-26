@@ -124,7 +124,7 @@ You can use the ``--credentials-file`` option to specify a credentials file. The
 
 When using the option ``--check-credentials-valid`` with the ``login`` command, the ``--credentials-file`` option can be used the same way as with the ``subset`` and ``get`` commands.
 
-.. _dataset version:
+.. _dataset-version:
 
 Option ``--dataset-version``
 *********************************
@@ -142,7 +142,27 @@ The version of dataset can be found through the ``describe`` command.
 
 .. code:: text
 
-    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset version "202511"
+    INFO - 2026-01-07T08:53:18Z - Selected dataset version: "202511"
+
+
+It is possible to specify the dataset version in the dataset ID using the format ``datasetID_version``.
+However, this is not recommended. Prefer using the ``dataset_version`` argument or the ``--dataset-version`` option instead.
+
+A warning will be raised if the dataset version is specified in the dataset ID.
+An error will be raised if the dataset version is specified both in the dataset ID and via the ``--dataset-version`` option.
+
+
+.. code:: python
+
+  import copernicusmarine
+
+  # Not recommended: specifying the version in the dataset ID
+  copernicusmarine.get(dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_202511")
+
+  # Preferred: using the dataset_version argument
+  copernicusmarine.get(
+      dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m", dataset_version="202511"
+  )
 
 Option ``--dataset-part``
 *********************************

@@ -75,7 +75,7 @@ The ``--sync-delete`` option works like ``--sync`` but also deletes any local fi
 
 **Limitations:**
 
-- ``--sync`` only works with ``--dataset-version``. (see :ref:`dataset-version <dataset version>` option )
+- ``--sync`` only works with ``--dataset-version``. (see :ref:`dataset-version <dataset-version>` option )
 - ``--sync-delete`` is not compatible with ``--no-directories``.
 
 About filtering options
