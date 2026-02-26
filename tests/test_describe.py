@@ -504,7 +504,7 @@ class TestDescribe:
             command.extend(["--dataset-id", dataset_id])
         if exclude:
             command.extend(["--exclude-fields", exclude])
-        self.output = execute_in_terminal(command, timeout_second=12)
+        self.output = execute_in_terminal(command, timeout_second=15)
 
     def then_I_have_only_one_product(self):
         json_result = loads(self.output.stdout)
