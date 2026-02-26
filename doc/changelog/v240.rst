@@ -16,6 +16,7 @@ New Features
 * The minimum required Python version is now 3.10. Consequently, the versions of the dependencies have been updated: see the :ref:`dependencies section <installation-page-dependencies>` for more details.
 * Added a widget to contact User Support directly from the Copernicus Marine Toolbox documentation.
 * The dataset version can now be specified in the dataset ID using the format ``datasetID_version``. See the :ref:`documentation <dataset-version>` for more details. Note that this format is not recommended; prefer using the ``dataset_version`` argument or the ``--dataset-version`` option instead.
+* The CLI now raises an error if an argument is provided twice instead of using the last provided value.
 
 Subset
 ------
