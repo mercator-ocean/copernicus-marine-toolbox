@@ -94,7 +94,7 @@ class ConfiguredBoto3Session:
         operation_type: list[
             Literal["ListObjectsV2", "HeadObject", "GetObject"]
         ],
-        username: Optional[str] = None,
+        username: str | None = None,
         need_resources: bool = False,
     ):
         self.s3_client, self.s3_resource = get_configured_boto3_session(
