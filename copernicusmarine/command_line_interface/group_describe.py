@@ -89,7 +89,7 @@ def cli_describe() -> None:
 )
 @click.option(
     "--max-concurrent-requests",
-    type=int,
+    type=click.IntRange(0),
     default=15,
     help=documentation_utils.DESCRIBE["MAX_CONCURRENT_REQUESTS_HELP"],
 )
