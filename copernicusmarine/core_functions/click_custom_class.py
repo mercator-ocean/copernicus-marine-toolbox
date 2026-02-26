@@ -13,16 +13,6 @@ from copernicusmarine.core_functions.deprecated_options import (
 logger = logging.getLogger("copernicusmarine")
 
 
-def _get_current_opt_from_frame() -> str | None:
-    frame = inspect.currentframe()
-    try:
-        if frame and frame.f_back:
-            return frame.f_back.f_locals.get("opt")
-        return None
-    finally:
-        del frame
-
-
 def _wrap_option_process(option) -> Callable:
     orig_process = option.process
     is_deprecated = isinstance(option.obj, CustomDeprecatedClickOption)
@@ -38,7 +28,12 @@ def _wrap_option_process(option) -> Callable:
         assert custom_deprecated is not None, msg.format(option.obj.name)
 
     def process(value, state):
-        opt = _get_current_opt_from_frame()
+        frame = inspect.currentframe()
+        try:
+            if frame and frame.f_back:
+                opt = frame.f_back.f_locals.get("opt")
+        finally:
+            del frame
         if not allow_multiple and option.dest in state.opts:
             option_repr = ", ".join(option.obj.opts)
             raise click.UsageError(
