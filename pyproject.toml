@@ -54,6 +54,3 @@ cf-units = { version = "3.3.0", markers = "sys_platform != 'win32'"}
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.mypy]
-python_version = "3.10"
