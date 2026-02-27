@@ -63,8 +63,6 @@ class TestSparseSubset:
         command = BASIC_COMMAND + [
             "--output-directory",
             tmp_path,
-            "-r",
-            "all",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
@@ -87,8 +85,6 @@ class TestSparseSubset:
             "sparse_data",
             "--file-format",
             "parquet",
-            "-r",
-            "all",
         ]
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
