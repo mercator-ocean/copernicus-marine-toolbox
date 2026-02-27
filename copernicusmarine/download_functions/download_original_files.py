@@ -23,9 +23,7 @@ from copernicusmarine.core_functions.request_structure import (
     GetRequest,
     overload_regex_with_additional_filter,
 )
-from copernicusmarine.core_functions.sessions import (
-    get_configured_boto3_session,
-)
+from copernicusmarine.core_functions.sessions import ConfiguredBoto3Session
 from copernicusmarine.core_functions.utils import (
     get_unique_filepath,
     parse_access_dataset_url,
@@ -554,26 +552,25 @@ def _list_files_on_marine_data_lake_s3(
     recursive: bool,
     disable_progress_bar: bool,
 ) -> list[tuple[str, int, datetime, str]]:
-    s3_client, _ = get_configured_boto3_session(
+    with ConfiguredBoto3Session(
         endpoint_url, ["ListObjectsV2", "HeadObject"], username
-    )
+    ) as session:
+        if not prefix.endswith("/"):
+            try:
+                session.s3_client.head_object(Bucket=bucket, Key=prefix)
+            except ClientError as e:
+                error_code = e.response.get("Error", {}).get("Code")
+                if error_code == "404" or error_code == "NoSuchKey":
+                    prefix += "/"
+                else:
+                    raise
 
-    if not prefix.endswith("/"):
-        try:
-            s3_client.head_object(Bucket=bucket, Key=prefix)
-        except ClientError as e:
-            error_code = e.response.get("Error", {}).get("Code")
-            if error_code == "404" or error_code == "NoSuchKey":
-                prefix += "/"
-            else:
-                raise
-
-    paginator = s3_client.get_paginator("list_objects")
-    page_iterator = paginator.paginate(
-        Bucket=bucket,
-        Prefix=prefix,
-        Delimiter="/" if not recursive else "",
-    )
+        paginator = session.s3_client.get_paginator("list_objects")
+        page_iterator = paginator.paginate(
+            Bucket=bucket,
+            Prefix=prefix,
+            Delimiter="/" if not recursive else "",
+        )
     logger.info("Listing files on remote server...")
     s3_objects = chain(
         *map(
@@ -597,28 +594,27 @@ def _list_files_on_marine_data_lake_s3(
 def _get_file_size_last_modified_and_etag(
     endpoint_url: str, bucket: str, file_in: str, username: str
 ) -> tuple[int, datetime, str] | None:
-    s3_client, _ = get_configured_boto3_session(
+    with ConfiguredBoto3Session(
         endpoint_url, ["HeadObject"], username
-    )
-
-    try:
-        s3_object = s3_client.head_object(
-            Bucket=bucket,
-            Key=file_in.replace(f"s3://{bucket}/", ""),
-        )
-        return (
-            s3_object["ContentLength"],
-            s3_object["LastModified"].astimezone(tz=UTC),
-            s3_object["ETag"],
-        )
-    except ClientError as e:
-        if "404" in str(e):
-            logger.warning(
-                f"File {file_in} not found on the server. Skipping."
+    ) as session:
+        try:
+            s3_object = session.s3_client.head_object(
+                Bucket=bucket,
+                Key=file_in.replace(f"s3://{bucket}/", ""),
             )
-            return None
-        else:
-            raise e
+            return (
+                s3_object["ContentLength"],
+                s3_object["LastModified"].astimezone(tz=UTC),
+                s3_object["ETag"],
+            )
+        except ClientError as e:
+            if "404" in str(e):
+                logger.warning(
+                    f"File {file_in} not found on the server. Skipping."
+                )
+                return None
+            else:
+                raise e
 
 
 def _download_one_file(
@@ -628,21 +624,21 @@ def _download_one_file(
     file_in: str,
     file_out: str,
 ) -> None:
-    s3_client, s3_resource = get_configured_boto3_session(
+    with ConfiguredBoto3Session(
         endpoint_url,
         ["GetObject", "HeadObject"],
         username,
-        return_ressources=True,
-    )
-    last_modified_date_epoch = s3_resource.Object(
-        bucket, file_in.replace(f"s3://{bucket}/", "")
-    ).last_modified.timestamp()
+        need_resources=True,
+    ) as session:
+        last_modified_date_epoch = session.s3_resource.Object(
+            bucket, file_in.replace(f"s3://{bucket}/", "")
+        ).last_modified.timestamp()
 
-    s3_client.download_file(
-        bucket,
-        file_in.replace(f"s3://{bucket}/", ""),
-        file_out,
-    )
+        session.download_file(
+            bucket,
+            file_in.replace(f"s3://{bucket}/", ""),
+            file_out,
+        )
 
     try:
         os.utime(
