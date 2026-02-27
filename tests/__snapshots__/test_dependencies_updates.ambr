@@ -3,7 +3,7 @@
   dict({
     'arcosparse': '^0.4.2',
     'boto3': '>=1.26',
-    'click': '>8.2.0,<8.3.0',
+    'click': '>8.2.0,!=8.3.0,!=8.3.1',
     'dask': '>=2024.8.1',
     'h5netcdf': DynamicInlineTableDict({
       'extras': list([
