@@ -202,6 +202,10 @@ def _read_dataframe_sparse(
     ]
     if dry_run:
         return pd.DataFrame(), variables, platform_ids
+    progress_bar_configuration = {
+        "disable": disable_progress_bar,
+        "bar_format": "{l_bar}{bar}| [{elapsed}<{remaining}]",
+    }
     # see https://github.com/pandas-dev/pandas/issues/55928
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=FutureWarning)
@@ -235,7 +239,7 @@ def _read_dataframe_sparse(
             vertical_axis=subset_request.vertical_axis,
             url_metadata=metadata_url,
             user_configuration=user_configuration,
-            disable_progress_bar=disable_progress_bar,
+            progress_bar_configuration=progress_bar_configuration,
             columns_rename=COLUMNS_RENAME,
         )
 

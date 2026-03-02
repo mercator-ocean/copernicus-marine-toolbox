@@ -165,7 +165,7 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `numpy <https://www.numpy.org/>`__ (2.1.0 or later)
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
-- `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.4.2 or later)
+- `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.5.0 or later)
 
 .. _xarray-issue:
 
