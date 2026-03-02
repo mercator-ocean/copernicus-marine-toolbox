@@ -10,6 +10,8 @@ General
 
     This release drops support for Python 3.9. The minimum required Python version is now 3.10.
 
+* Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
+
 New Features
 ^^^^^^^^^^^^
 
