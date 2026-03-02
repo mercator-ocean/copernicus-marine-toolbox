@@ -35,7 +35,7 @@ def describe(
     dataset_id : str, optional
         Force the datasetID to be used for the describe command. Will not parse the whole catalogue, but only the dataset with the given datasetID.
     max_concurrent_requests : int, optional
-        Maximum number of concurrent requests (>=1). Default 15. The command uses a thread pool executor to manage concurrent requests.
+        Maximum number of concurrent requests. Default 15. The command uses a thread pool executor to manage concurrent requests. If set to 0, no parallel executions are used.
     disable_progress_bar : bool, optional
         Flag to hide progress bar.
     raise_on_error : bool, optional

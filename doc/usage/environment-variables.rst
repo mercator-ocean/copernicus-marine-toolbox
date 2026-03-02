@@ -112,3 +112,17 @@ It can be set this way:
 
 - on **UNIX** platforms: ``export PROXY_HTTPS="http://user"``
 - on **Windows** platforms: ``set PROXY_HTTPS="http://user"``
+
+.. _env-use-threads:
+
+``COPERNICUSMARINE_USE_THREADS``
+-----------------------------------
+
+If set to "False" or anything else than "True", this will deactivate the use of threads. "True" by default.
+
+By default, the Toolbox uses threads and in particular the widely used ``threading`` module to manage concurrent requests.
+It allows to speed up execution time for some tasks, especially downloads.
+However, it might not be compatible with some environments.
+Such environments are uncommon and you might want to check other solution if you have issues with downloading with the Toolbox.
+
+Note, the performance of the Toolbox without threads are expected to be worse, especially for downloads, as requests will be executed sequentially.

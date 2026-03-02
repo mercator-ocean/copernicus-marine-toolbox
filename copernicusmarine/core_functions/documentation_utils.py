@@ -121,8 +121,9 @@ DESCRIBE: dict[str, str] = {
         "parse the whole catalogue, but only the dataset with the given datasetID."
     ),
     "MAX_CONCURRENT_REQUESTS_HELP": (
-        "Maximum number of concurrent requests (>=1). Default 15. The command uses "
-        "a thread pool executor to manage concurrent requests."
+        "Maximum number of concurrent requests. Default 15. The command uses "
+        "a thread pool executor to manage concurrent requests. "
+        "If set to 0, no parallel executions are used."
     ),
     "RAISE_ON_ERROR_HELP": (
         "If set to True, the function will raise at the first error encountered "

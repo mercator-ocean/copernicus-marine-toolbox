@@ -205,7 +205,7 @@ def cli_get() -> None:
 )
 @click.option(
     "--max-concurrent-requests",
-    type=int,
+    type=click.IntRange(0),
     default=15,
     help=documentation_utils.GET["MAX_CONCURRENT_REQUESTS_HELP"],
 )
