@@ -22,10 +22,10 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
     1it [00:00, 10.68it/s]
     Downloading files: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 30/30 [00:32<00:00,  1.08s/it]
     {
-    "number_of_files_to_download": 30,
-    "total_size": 1354.8411445617676,
-    "status": "000",
-    "message": "The request was successful."
+      "number_of_files_to_download": 30,
+      "total_size": "1354.84 MB",
+      "status": "000",
+      "message": "The request was successful."
     }
 
 **By default:**
