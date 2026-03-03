@@ -240,3 +240,16 @@ def human_readable_size(size_mb: numpy.float64 | float) -> str:
         index += 1
 
     return f"{size_bytes:.2f} {units[index]}"
+
+
+def parse_size(size):
+    units = {
+        "B": 1,
+        "KB": 1024,
+        "MB": 1024**2,
+        "GB": 1024**3,
+        "TB": 1024**4,
+        "PB": 1024**5,
+    }
+    number, unit = (string.strip() for string in size.split())
+    return int(float(number) * units[unit])

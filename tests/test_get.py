@@ -113,7 +113,7 @@ class TestGet:
         assert not os.path.exists(
             start_path + "20010101_20011231_R20251125_RE01_(1).nc"
         )
-        assert returned_value["total_size"] == 0
+        assert returned_value["total_size"] == "0.00 MB"
 
     def test_get_download_with_dry_run_option(self, tmp_path):
         dataset_id = "cmems_mod_ibi_phy-cur_my_0.027deg_P1Y-m"
