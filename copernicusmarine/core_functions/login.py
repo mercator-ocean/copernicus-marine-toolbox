@@ -37,6 +37,8 @@ def login_function(
     else:
         existing_valid_credentials = False
         overwrite = True
+    if existing_valid_credentials and not force_overwrite:
+        return True
     if not existing_valid_credentials and not overwrite:
         return False
     if force_overwrite or not existing_valid_credentials:

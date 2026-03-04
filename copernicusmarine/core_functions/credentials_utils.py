@@ -251,7 +251,7 @@ def try_use_existing_credentials_file(
             return True, False
         overwrite = click.confirm(
             f"File {saved_configuration_file} already exists "
-            "but contains invalid credentials."
+            "but contains invalid credentials. "
             "Use --force-overwrite combined with credentials (specified by arguments, "
             "netrc file or environment variables) to always overwrite. "
             "Do you want to overwrite?"
