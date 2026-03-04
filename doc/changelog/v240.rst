@@ -32,3 +32,11 @@ Fixes
 
 * Fixed an issue where downloads would fail for sparse datasets when some platform metadata was missing. The Toolbox now handles missing metadata more gracefully by replacing missing values with ``None``.
 * Fixed an issue where an empty file would be created even when there was no data to download for sparse datasets. No file is now created in this case.
+
+Login
+------
+
+New Features
+^^^^^^^^^^^^
+
+* Login will now reuse existing credentials if they are still valid, instead of prompting the user to log in again.
