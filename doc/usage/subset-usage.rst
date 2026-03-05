@@ -20,8 +20,8 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
   INFO - 2026-02-17T15:44:29Z - Selected dataset part: "default"
   100%|████████████████████████████████████████████████████████████| [00:01<00:00]
   {
-    "file_size": 0.019870229007633588,
-    "data_transfer_size": 237.3002748091603,
+    "file_size": "0.02 MB",
+    "data_transfer_size": "237.30 MB",
     "status": "000",
     "message": "The request was successful."
   }
