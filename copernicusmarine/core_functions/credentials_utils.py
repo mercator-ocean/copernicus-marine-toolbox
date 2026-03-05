@@ -30,9 +30,6 @@ DEFAULT_CLIENT_BASE_DIRECTORY: pathlib.Path = (
     else pathlib.Path.home()
 ) / ".copernicusmarine"
 DEFAULT_CLIENT_CREDENTIALS_FILENAME = ".copernicusmarine-credentials"
-DEFAULT_CLIENT_CREDENTIALS_FILEPATH = (
-    DEFAULT_CLIENT_BASE_DIRECTORY / DEFAULT_CLIENT_CREDENTIALS_FILENAME
-)
 RECOVER_YOUR_CREDENTIALS_MESSAGE = (
     "Learn how to recover your credentials at: "
     "https://help.marine.copernicus.eu/en/articles/"
@@ -222,11 +219,60 @@ def _retrieve_credential_from_custom_configuration_files(
     return credential
 
 
+def try_use_existing_credentials_file(
+    configuration_file_directory: pathlib.Path | None,
+) -> tuple[bool, bool]:
+    """
+    Check if a configuration file with credentials already exists
+    in the default configuration files.
+    If it exists and credentials are valid, use it.
+    Return a tuple of two booleans: the first one indicates
+    if valid credentials have been found and used,
+    the second one indicates if the user should be prompted to overwrite
+    the existing configuration file (in case it contains invalid credentials).
+    """
+    (
+        saved_username,
+        saved_configuration_file,
+    ) = _retrieve_credential_from_default_configuration_files(
+        "username", configuration_file_directory, False
+    )
+    saved_password, _ = _retrieve_credential_from_default_configuration_files(
+        "password", configuration_file_directory, False
+    )
+    if saved_username and saved_password:
+        if _validate_and_get_user(saved_username, saved_password):
+            logger.info(
+                f"Using existing credentials from {saved_configuration_file}. "
+                "Use --force-overwrite combined with credentials "
+                "(specified by arguments, "
+                "netrc file or environment variables) to always overwrite."
+            )
+            return True, False
+        overwrite = click.confirm(
+            f"File {saved_configuration_file} already exists "
+            "but contains invalid credentials. "
+            "Use --force-overwrite combined with credentials (specified by arguments, "
+            "netrc file or environment variables) to always overwrite. "
+            "Do you want to overwrite?"
+        )
+        if not overwrite:
+            logger.info(
+                "Continuing with the existing configuration in "
+                f"{saved_configuration_file}."
+            )
+        return False, overwrite
+    return False, True
+
+
 def _retrieve_credential_from_default_configuration_files(
     credential_type: Literal["username", "password"],
-) -> str | None:
+    credential_file_dictory: pathlib.Path | None = None,
+    check_deprecated_option: bool = True,
+) -> tuple[str | None, pathlib.Path | None]:
     copernicus_marine_configuration_file = pathlib.Path(
-        DEFAULT_CLIENT_CREDENTIALS_FILEPATH
+        (credential_file_dictory or DEFAULT_CLIENT_BASE_DIRECTORY)
+        / DEFAULT_CLIENT_CREDENTIALS_FILENAME
     )
     motu_configuration_file = pathlib.Path(
         pathlib.Path.home() / "motuclient" / "motuclient-python.ini"
@@ -241,19 +287,25 @@ def _retrieve_credential_from_default_configuration_files(
                 copernicus_marine_configuration_file,
             )
         )
-    elif motu_configuration_file.exists():
+        configuration_file = (
+            copernicus_marine_configuration_file if credential else None
+        )
+    elif check_deprecated_option and motu_configuration_file.exists():
         if credential_type == "username":
             _warning_motuclient_deprecated()
         credential = _load_credential_from_motu_configuration_file(
             credential_type, motu_configuration_file
         )
+        configuration_file = motu_configuration_file if credential else None
     elif netrc_configuration_file.exists():
         credential = _load_credential_from_netrc_configuration_file(
             credential_type, netrc_configuration_file
         )
+        configuration_file = netrc_configuration_file if credential else None
     else:
         credential = None
-    return credential
+        configuration_file = None
+    return credential, configuration_file
 
 
 def _retrieve_credential_from_configuration_files(
@@ -265,7 +317,7 @@ def _retrieve_credential_from_configuration_files(
             credential_type, credentials_file
         )
     else:
-        credential = _retrieve_credential_from_default_configuration_files(
+        credential, _ = _retrieve_credential_from_default_configuration_files(
             credential_type
         )
     return credential
@@ -358,7 +410,7 @@ def create_copernicusmarine_configuration_file(
     )
     if configuration_filename.exists() and not force_overwrite:
         confirmed = click.confirm(
-            f"File {configuration_filename} already exists, overwrite it ?"
+            f"File {configuration_filename} already exists, overwrite it?"
         )
         if not confirmed:
             logger.error("Abort")
