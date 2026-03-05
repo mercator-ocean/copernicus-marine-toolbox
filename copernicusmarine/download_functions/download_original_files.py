@@ -115,7 +115,7 @@ def download_original_files(
                 files_headers_listing.files_not_found
             )
 
-    logger.debug(
+    logger.info(
         "Total size of the download: %s.",
         human_readable_size(files_headers.total_size / 1024 / 1024),
     )
