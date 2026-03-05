@@ -10,8 +10,6 @@ General
 
     This release drops support for Python 3.9. The minimum required Python version is now 3.10.
 
-* Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
-
 New Features
 ^^^^^^^^^^^^
 
@@ -20,6 +18,7 @@ New Features
 * The dataset version can now be specified in the dataset ID using the format ``datasetID_version``. See the :ref:`documentation <dataset-version>` for more details. Note that this format is not recommended; prefer using the ``dataset_version`` argument or the ``--dataset-version`` option instead.
 * The CLI now raises an error if an argument is provided twice instead of using the last provided value.
 * Added a way to use the Toolbox without threads by setting the environment variable ``COPERNICUSMARINE_USE_THREADS`` to "False". See :ref:`documentation about environment variables <env-use-threads>` for more details.
+* Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
 
 Subset
 ------
