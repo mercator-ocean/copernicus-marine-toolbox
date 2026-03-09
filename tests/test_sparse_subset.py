@@ -151,9 +151,8 @@ class TestSparseSubset:
         self.output = execute_in_terminal(netcdf_command)
         assert self.output.returncode == 0
         response = loads(self.output.stdout)
-        assert response["filename"].endswith(".nc")
-        # Check that per-platform .nc files were created
-        nc_files = list(pathlib.Path(tmp_path).glob("*.nc"))
+        assert response["file_names"]
+        nc_files = list(pathlib.Path(response["file_path"]).glob("*.nc"))
         assert len(nc_files) > 0
 
         # zarr format is still not supported
@@ -301,9 +300,12 @@ class TestSparseSubset:
                 ]
             )
             assert self.netcdf_output.returncode == 0
-            assert self.netcdf_output.stdout == snapshot(
-                name=str(nc_file.name) + ".txt"
+            stdout = "\n".join(
+                line
+                for line in self.netcdf_output.stdout.splitlines()
+                if ":download_date" not in line
             )
+            assert stdout == snapshot(name=str(nc_file.name) + ".txt")
 
     def test_can_subset_sparse_to_netcdf_per_platform_netcdf_3(self, tmp_path):
         # test that the produced netcdf files are in netcdf3 format

@@ -144,6 +144,7 @@
     'coordinate_id',
     'coordinates_extent',
     'data_transfer_size',
+    'file_names',
     'file_path',
     'file_size',
     'file_status',

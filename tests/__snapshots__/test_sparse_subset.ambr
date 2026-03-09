@@ -75,12 +75,10 @@
   		:geospatial_vertical_max = 1. ;
   		:references = "http://marine.copernicus.eu  http://www.marineinsitu.eu" ;
   		:license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
-  		:download_date = "2026-03-09T10:07:52.385311" ;
   		:copernicusmarine_toolbox_version = "2.3.0" ;
   		:product_id = "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031" ;
   		:dataset_id = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr" ;
   }
-
   '''
 # ---
 # name: TestSparseSubset.test_can_subset_sparse_to_netcdf_per_platform[F-Vartdalsfjorden.nc.txt]
@@ -159,11 +157,9 @@
   		:geospatial_vertical_max = 1. ;
   		:references = "http://marine.copernicus.eu  http://www.marineinsitu.eu" ;
   		:license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
-  		:download_date = "2026-03-09T10:07:52.515049" ;
   		:copernicusmarine_toolbox_version = "2.3.0" ;
   		:product_id = "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031" ;
   		:dataset_id = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr" ;
   }
-
   '''
 # ---
