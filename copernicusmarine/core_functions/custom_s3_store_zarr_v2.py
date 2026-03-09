@@ -6,9 +6,7 @@ import botocore.config
 import botocore.exceptions
 import botocore.session
 
-from copernicusmarine.core_functions.sessions import (
-    get_configured_boto3_session,
-)
+from copernicusmarine.core_functions.sessions import ConfiguredBoto3Session
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -31,7 +29,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         self.number_of_retries = number_of_retries
         self.initial_retry_wait_seconds = initial_retry_wait_seconds
 
-        self._client = None
+        self._session = None
 
     def __getstate__(self):
         """
@@ -43,25 +41,26 @@ class CustomS3StoreZarrV2(MutableMapping):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        self._client = None
+        self._session = None
 
-    def _get_client(self):
-        if self._client is None:
+    def _get_session(self):
+        if self._session is None:
             logger.debug("Creating new boto3 client")
-            client, _ = get_configured_boto3_session(
+            session = ConfiguredBoto3Session(
                 self._endpoint,
                 ["GetObject", "HeadObject", "ListObjectsV2"],
                 self._copernicus_marine_username,
+                need_resources=False,
             )
-            self._client = client
-        return self._client
+            self._session = session
+        return self._session
 
     def __getitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
             try:
-                resp = self._get_client().get_object(
-                    Bucket=self._bucket, Key=full_key
+                resp = self._get_session().get_object(
+                    bucket_name=self._bucket, object_key=full_key
                 )
                 res = resp["Body"].read()
                 return res
@@ -75,7 +74,7 @@ class CustomS3StoreZarrV2(MutableMapping):
 
         def fn():
             try:
-                self._get_client().head_object(
+                self._get_session().s3_client.head_object(
                     Bucket=self._bucket, Key=full_key
                 )
                 return True
@@ -90,7 +89,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         def fn():
             full_key = f"{self._root_path}/{key}"
             final_headers = headers if headers is not None else {}
-            self._get_client().put_object(
+            self._get_session().s3_client.put_object(
                 Bucket=self._bucket, Key=full_key, Body=value, **final_headers
             )
 
@@ -99,7 +98,9 @@ class CustomS3StoreZarrV2(MutableMapping):
     def __delitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
-            self._get_client().delete_object(Bucket=self._bucket, Key=full_key)
+            self._get_session().s3_client.delete_object(
+                Bucket=self._bucket, Key=full_key
+            )
 
         return self.with_retries(fn)
 
@@ -111,7 +112,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         keys = []
         cursor = self._root_path
         while True:
-            resp = self._get_client().list_objects_v2(
+            resp = self._get_session().s3_client.list_objects_v2(
                 Bucket=self._bucket, Prefix=self._root_path, StartAfter=cursor
             )
             entries = resp.get("Contents", [])
@@ -139,7 +140,7 @@ class CustomS3StoreZarrV2(MutableMapping):
             objects = list(
                 map(lambda k: {"Key": f"{self._root_path}/{k}"}, some_keys)
             )
-            self._get_client().delete_objects(
+            self._get_session().s3_client.delete_objects(
                 Bucket=self._bucket, Delete={"Objects": objects}
             )
             idx += 1000
