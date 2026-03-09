@@ -218,7 +218,7 @@ def get_retrieval_service(
     command_type: CommandType,
     marine_datastore_config: MarineDataStoreConfig,
 ) -> RetrievalService:
-    dataset_metadata, product_id = get_dataset_metadata(
+    dataset_metadata = get_dataset_metadata(
         request.dataset_id, marine_datastore_config, raise_on_error=False
     )
     if not dataset_metadata:
@@ -239,7 +239,7 @@ def get_retrieval_service(
         force_service_name=force_service_name,
         command_type=command_type,
         product_doi=product_doi,
-        product_id=product_id,
+        product_id=dataset_metadata.product_id,
     )
 
 

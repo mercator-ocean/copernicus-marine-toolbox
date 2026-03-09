@@ -34,11 +34,10 @@ def get_dataset_metadata(
     dataset_id: str,
     marine_datastore_config: MarineDataStoreConfig,
     raise_on_error: bool,
-) -> tuple[CopernicusMarineDataset | None, str | None]:
+) -> CopernicusMarineDataset | None:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
     catalogue_errors: list[tuple] = []
-    product_id = None
     for catalogue in marine_datastore_config.catalogues:
         try:
             with JsonParserConnection() as connection:
@@ -102,6 +101,7 @@ def get_dataset_metadata(
                                     parsed_id=parsed_id,
                                     parsed_version=parsed_version,
                                     parsed_part=parsed_part,
+                                    product_id=product_id,
                                     product_doi=digital_object_identifier,
                                 )
                             )
@@ -119,16 +119,13 @@ def get_dataset_metadata(
     if not dataset_items:
         raise DatasetNotFound(dataset_id)
 
-    return (
-        _parse_and_sort_dataset_items(
-            [
-                dataset_item
-                for dataset_item in dataset_items
-                if dataset_item.parsed_id == dataset_id
-            ],
-            raise_on_error=raise_on_error,
-        ),
-        product_id,
+    return _parse_and_sort_dataset_items(
+        [
+            dataset_item
+            for dataset_item in dataset_items
+            if dataset_item.parsed_id == dataset_id
+        ],
+        raise_on_error=raise_on_error,
     )
 
 
@@ -187,6 +184,7 @@ def _parse_and_sort_dataset_items(
     dataset_part_version_merged = CopernicusMarineDataset(
         dataset_id=dataset_id,
         dataset_name=dataset_title,
+        product_id=dataset_item_example.product_id,
         digital_object_identifier=dataset_item_example.product_doi,
         versions=[],
     )
@@ -232,6 +230,7 @@ def _construct_marine_data_store_product(
                         parsed_id=dataset_item.parsed_id,
                         parsed_version=dataset_item.parsed_version,
                         parsed_part=dataset_item.parsed_part,
+                        product_id=dataset_item.product_id,
                         product_doi=digital_object_identifier,
                     )
                     for dataset_item in dataset_items
@@ -336,6 +335,7 @@ def fetch_dataset_items(
                     parsed_version=parsed_version,
                     parsed_part=parsed_part,
                     product_doi=None,
+                    product_id=collection.id,
                 )
             )
     return items
@@ -359,7 +359,11 @@ def fetch_collection(
         return None
     if collection:
         items = fetch_dataset_items(
-            root_url, connection, collection, force_dataset_id, raise_on_error
+            root_url,
+            connection,
+            collection,
+            force_dataset_id,
+            raise_on_error,
         )
         return (collection, items)
     return None

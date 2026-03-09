@@ -566,7 +566,7 @@ def _platform_dataframe_to_dataset(
     ds = ds.set_coords("pressure")
     ds = ds.set_coords("latitude")
     ds = ds.set_coords("longitude")
-    ds = ds.set_coords("depth")
+    ds = ds.set_coords(vertical_col)
     ds = ds.set_coords("is_depth_from_producer")
     ds.time.attrs["units"] = "seconds since 1970-01-01T00:00:00Z"
     return ds

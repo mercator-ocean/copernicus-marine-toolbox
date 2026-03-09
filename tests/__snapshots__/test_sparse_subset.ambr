@@ -1,40 +1,40 @@
 # serializer version: 1
-# name: TestSparseSubset.test_can_subset_sparse_to_netcdf_per_platform[B-Sulafjorden.nc.txt]
+# name: TestSparseSubset.test_netcdf_attributes_ncdump[B-Sulafjorden.nc.txt]
   '''
   netcdf B-Sulafjorden {
   dimensions:
   	time = 1592 ;
   	depth_level = 1 ;
   variables:
-  	double depth(time, depth_level) ;
-  		depth:_FillValue = NaN ;
-  		depth:positive = "down" ;
-  		depth:axis = "Z" ;
-  		depth:units = "m" ;
-  		depth:valid_min = -12000LL ;
-  		depth:valid_max = 12000LL ;
+  	double elevation(time, depth_level) ;
+  		elevation:_FillValue = NaN ;
+  		elevation:positive = "up" ;
+  		elevation:axis = "Z" ;
+  		elevation:units = "m" ;
+  		elevation:valid_min = -12000LL ;
+  		elevation:valid_max = 12000LL ;
   	double PSAL(time, depth_level) ;
   		PSAL:_FillValue = NaN ;
   		PSAL:standard_name = "sea_water_practical_salinity" ;
   		PSAL:units = "0.001" ;
   		PSAL:ancillary_variable = "PSAL_qc" ;
-  		PSAL:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		PSAL:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	double TEMP(time, depth_level) ;
   		TEMP:_FillValue = NaN ;
   		TEMP:standard_name = "sea_water_temperature" ;
   		TEMP:units = "degrees_C" ;
   		TEMP:ancillary_variable = "TEMP_qc" ;
-  		TEMP:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		TEMP:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	int64 PSAL_qc(time, depth_level) ;
   		PSAL_qc:long_name = "Quality control flag for PSAL" ;
   		PSAL_qc:flags_values = 0LL, 1LL, 2LL, 3LL, 4LL, 5LL, 6LL, 7LL, 8LL, 9LL ;
   		PSAL_qc:flags_meanings = "no_qc_performed good_data probably_good_data bad_data_that_are_potentially_correctable bad_data value_changed value_below_detection nominal_value interpolated_value missing_value" ;
-  		PSAL_qc:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		PSAL_qc:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	int64 TEMP_qc(time, depth_level) ;
   		TEMP_qc:long_name = "Quality control flag for TEMP" ;
   		TEMP_qc:flags_values = 0LL, 1LL, 2LL, 3LL, 4LL, 5LL, 6LL, 7LL, 8LL, 9LL ;
   		TEMP_qc:flags_meanings = "no_qc_performed good_data probably_good_data bad_data_that_are_potentially_correctable bad_data value_changed value_below_detection nominal_value interpolated_value missing_value" ;
-  		TEMP_qc:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		TEMP_qc:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	double latitude(time, depth_level) ;
   		latitude:_FillValue = NaN ;
   		latitude:units = "degrees_north" ;
@@ -71,52 +71,53 @@
   		:geospatial_lon_min = 6.0765 ;
   		:geospatial_lon_max = 6.0765 ;
   		:last_longitude_observation = 6.0765 ;
-  		:geospatial_vertical_min = 1. ;
-  		:geospatial_vertical_max = 1. ;
+  		:geospatial_vertical_min = -1. ;
+  		:geospatial_vertical_max = -1. ;
   		:references = "http://marine.copernicus.eu  http://www.marineinsitu.eu" ;
   		:license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
+  		:download_date = "2026-03-09T15:50:50.879870" ;
   		:copernicusmarine_toolbox_version = "2.3.0" ;
   		:product_id = "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031" ;
   		:dataset_id = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr" ;
   }
   '''
 # ---
-# name: TestSparseSubset.test_can_subset_sparse_to_netcdf_per_platform[F-Vartdalsfjorden.nc.txt]
+# name: TestSparseSubset.test_netcdf_attributes_ncdump[F-Vartdalsfjorden.nc.txt]
   '''
   netcdf F-Vartdalsfjorden {
   dimensions:
   	time = 1621 ;
   	depth_level = 1 ;
   variables:
-  	double depth(time, depth_level) ;
-  		depth:_FillValue = NaN ;
-  		depth:positive = "down" ;
-  		depth:axis = "Z" ;
-  		depth:units = "m" ;
-  		depth:valid_min = -12000LL ;
-  		depth:valid_max = 12000LL ;
+  	double elevation(time, depth_level) ;
+  		elevation:_FillValue = NaN ;
+  		elevation:positive = "up" ;
+  		elevation:axis = "Z" ;
+  		elevation:units = "m" ;
+  		elevation:valid_min = -12000LL ;
+  		elevation:valid_max = 12000LL ;
   	double PSAL(time, depth_level) ;
   		PSAL:_FillValue = NaN ;
   		PSAL:standard_name = "sea_water_practical_salinity" ;
   		PSAL:units = "0.001" ;
   		PSAL:ancillary_variable = "PSAL_qc" ;
-  		PSAL:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		PSAL:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	double TEMP(time, depth_level) ;
   		TEMP:_FillValue = NaN ;
   		TEMP:standard_name = "sea_water_temperature" ;
   		TEMP:units = "degrees_C" ;
   		TEMP:ancillary_variable = "TEMP_qc" ;
-  		TEMP:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		TEMP:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	int64 PSAL_qc(time, depth_level) ;
   		PSAL_qc:long_name = "Quality control flag for PSAL" ;
   		PSAL_qc:flags_values = 0LL, 1LL, 2LL, 3LL, 4LL, 5LL, 6LL, 7LL, 8LL, 9LL ;
   		PSAL_qc:flags_meanings = "no_qc_performed good_data probably_good_data bad_data_that_are_potentially_correctable bad_data value_changed value_below_detection nominal_value interpolated_value missing_value" ;
-  		PSAL_qc:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		PSAL_qc:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	int64 TEMP_qc(time, depth_level) ;
   		TEMP_qc:long_name = "Quality control flag for TEMP" ;
   		TEMP_qc:flags_values = 0LL, 1LL, 2LL, 3LL, 4LL, 5LL, 6LL, 7LL, 8LL, 9LL ;
   		TEMP_qc:flags_meanings = "no_qc_performed good_data probably_good_data bad_data_that_are_potentially_correctable bad_data value_changed value_below_detection nominal_value interpolated_value missing_value" ;
-  		TEMP_qc:coordinates = "depth is_depth_from_producer latitude longitude pressure" ;
+  		TEMP_qc:coordinates = "elevation is_depth_from_producer latitude longitude pressure" ;
   	double latitude(time, depth_level) ;
   		latitude:_FillValue = NaN ;
   		latitude:units = "degrees_north" ;
@@ -153,10 +154,11 @@
   		:geospatial_lon_min = 5.8966 ;
   		:geospatial_lon_max = 5.8966 ;
   		:last_longitude_observation = 5.8966 ;
-  		:geospatial_vertical_min = 1. ;
-  		:geospatial_vertical_max = 1. ;
+  		:geospatial_vertical_min = -1. ;
+  		:geospatial_vertical_max = -1. ;
   		:references = "http://marine.copernicus.eu  http://www.marineinsitu.eu" ;
   		:license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
+  		:download_date = "2026-03-09T15:50:51.067590" ;
   		:copernicusmarine_toolbox_version = "2.3.0" ;
   		:product_id = "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031" ;
   		:dataset_id = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr" ;

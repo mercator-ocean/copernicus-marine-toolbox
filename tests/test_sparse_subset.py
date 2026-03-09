@@ -249,9 +249,7 @@ class TestSparseSubset:
         assert df["institution"].isnull().all()
         assert df["doi"].isnull().all()
 
-    def test_can_subset_sparse_to_netcdf_per_platform(
-        self, tmp_path, snapshot
-    ):
+    def test_can_subset_sparse_to_netcdf_per_platform(self, tmp_path):
         command = BASIC_COMMAND + [
             "--platform-id",
             "B-Sulafjorden___MO",
@@ -290,7 +288,24 @@ class TestSparseSubset:
             assert f"{var_name}_qc" in data_var_names
         ds.close()
 
-        # snapshot nc dump
+    def test_netcdf_attributes_ncdump(self, tmp_path, snapshot):
+        command = BASIC_COMMAND + [
+            "--platform-id",
+            "B-Sulafjorden___MO",
+            "--platform-id",
+            "F-Vartdalsfjorden___MO",
+            "--output-directory",
+            tmp_path,
+            "--file-format",
+            "netcdf",
+            "--vertical-axis",
+            "elevation",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        nc_files = sorted(pathlib.Path(response["file_path"]).glob("*.nc"))
+        assert len(nc_files) == 2
         for nc_file in nc_files:
             self.netcdf_output = execute_in_terminal(
                 [
@@ -303,7 +318,7 @@ class TestSparseSubset:
             stdout = "\n".join(
                 line
                 for line in self.netcdf_output.stdout.splitlines()
-                if ":download_date" not in line
+                if ":download_date" not in line or line.strip() != ""
             )
             assert stdout == snapshot(name=str(nc_file.name) + ".txt")
 

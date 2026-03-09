@@ -137,7 +137,7 @@ Each NetCDF file has the following structure:
 
 The ``--netcdf-compression-level`` and ``--netcdf3-compatible`` options are also supported for sparse NetCDF output.
 
-The response object for sparse datasets points to the directory containing the NetCDF files. File names can can be found in the ``files_names`` attribute of the response object.
+The response object for sparse datasets points to the directory containing the NetCDF files. File names can be found in the ``file_names`` attribute of the response object.
 
 Additional options
 ------------------
