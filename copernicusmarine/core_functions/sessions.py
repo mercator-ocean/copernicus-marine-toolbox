@@ -105,11 +105,16 @@ class ConfiguredBoto3Session:
         )
         self.use_threads = COPERNICUSMARINE_USE_THREADS
 
+    def close(self):
+        self.s3_client.close()
+        if self.s3_resource:
+            self.s3_resource.meta.client.close()
+
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+        self.close()
 
     def download_file(
         self, bucket_name: str, object_key: str, file_path: str

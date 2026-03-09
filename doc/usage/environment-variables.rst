@@ -120,7 +120,8 @@ It can be set this way:
 
 If set to "False" or anything else than "True", this will deactivate the use of threads. "True" by default.
 
-By default, the Toolbox uses threads and in particular the widely used ``threading`` module to manage concurrent requests.
+By default, the Toolbox uses threads and in particular the widely used ``concurrent.futures.ThreadPoolExecutor`` module to manage concurrent requests.
+``boto3`` also uses threads for some of its operations, such as downloads.
 It allows to speed up execution time for some tasks, especially downloads.
 However, it might not be compatible with some environments.
 Such environments are uncommon and you might want to check other solution if you have issues with downloading with the Toolbox.

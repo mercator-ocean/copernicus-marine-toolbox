@@ -148,7 +148,7 @@ def run_concurrently(
         total=len(function_arguments),
         **tdqm_bar_configuration,
     ) as pbar:
-        if max_concurrent_requests == 0 or not COPERNICUSMARINE_USE_THREADS:
+        if max_concurrent_requests <= 0 or not COPERNICUSMARINE_USE_THREADS:
             for function_argument in function_arguments:
                 out.append(func(*function_argument))
                 pbar.update(1)
