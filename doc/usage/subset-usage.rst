@@ -36,7 +36,7 @@ Sparse data subsetting
 On the one hand, some of the datasets available on Copernicus Marine are gridded datasets, benefiting from all the features of the Copernicus Marine Toolbox.
 On the other hand, certain datasets are time series for a given platform; these are called sparse or in-situ datasets. These datasets are processed and formatted differently within the ARCO data framework. See the `in-situ datasets <https://data.marine.copernicus.eu/products?facets=sources%7EIn-situ+observations>`_ for example.
 
-We can download all the time series of a given geographical area and time period via the ``subset``. Options can also be used to choose the platforms, variables or depth ranges we are interested in. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, or a Parquet database.
+We can download all the time series of a given geographical area and time period via the ``subset``. Options can also be used to choose the platforms, variables or depth ranges we are interested in. It will return the data in a tabular format, such as a Pandas DataFrame, a CSV file, a Parquet database, or as NetCDF files (one per platform).
 
 **Example:**
 
@@ -93,16 +93,51 @@ The output will contain the following columns:
 
 These datasets have specific options and outputs:
 
-- The ``--file-format`` option can be used to specify 'parquet' or 'csv'. The default format is 'csv'.
+- The ``--file-format`` option can be used to specify 'parquet', 'csv', or 'netcdf'. The default format is 'csv'.
+- When using the 'netcdf' format, one ``.nc`` file is produced per platform inside a directory named after the request. See `Downloading sparse data as NetCDF`_ below for details.
 - The ``--platform-id`` option enables filtering data by platform ID. Note, that you can also add the type of platform by adding "___" (e.g., ``--platform-id B-Sulafjorden___MO`` will select platform ID "B-Sulafjorden" and type "MO" for this platform). Otherwise, all the platform types available will be selected.
 
 There are also some options that behave differently or are not available for sparse datasets:
 
-- The 'netcdf' and 'zarr' formats are not available for sparse datasets.
+- The 'zarr' format is not available for sparse datasets.
 - Manually forcing the use of a specific service is not possible; the toolbox will automatically select the preferred service.
 - The :class:`copernicusmarine.ResponseSubset` object does not include coordinate extents, file size, or data transfer size information.
 - For the :ref:`coordinate-selection-method <coordinates-selection-method>` option, only the 'inside' and 'strict-inside' values are relevant.
 - The default naming convention for output files differs slightly. For sparse datasets, the file name will reflect the requested extents rather than the actual extents of the resulting subset.
+
+.. _sparse-netcdf:
+
+Downloading sparse data as NetCDF
+""""""""""""""""""""""""""""""""""
+
+When using ``--file-format netcdf``, the toolbox produces one ``.nc`` file per platform **inside a directory** named after the request.
+
+**Example:**
+
+.. code-block:: bash
+
+  copernicusmarine subset --dataset-id cmems_obs-ins_arc_phybgcwav_mynrt_na_irr --minimum-latitude 45 --maximum-latitude 90 --minimum-longitude -147 --maximum-longitude 180 --minimum-depth 0 --maximum-depth 10 --start-datetime 2023-11-25T00:00:00 --end-datetime 2023-11-26T03:00:00 --dataset-part history --file-format netcdf
+
+The resulting directory will contain one ``.nc`` file per platform found in the requested area. Each file can be opened with xarray:
+
+.. code-block:: python
+
+  import xarray as xr
+
+  ds = xr.open_dataset(
+      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_PSAL-TEMP_147.00W-180.00E_45.00N-90.00N_0.00-10.00m_2023-11-25-2023-11-26/Vestmannaeyjar.nc"
+  )
+
+Each NetCDF file has the following structure:
+
+- **Dimensions**: ``time`` and ``depth_level``. The ``depth_level`` dimension is an integer index that ranks depth observations for each time step (0 for the shallowest, 1 for the next, etc.). Its size equals the maximum number of depth points across all time steps.
+- **Coordinates**: ``depth`` (or ``elevation``), ``latitude``, ``longitude``, ``pressure``, and ``is_depth_from_producer`` are stored as coordinate variables with shape ``(time, depth_level)``.
+- **Data variables**: Each measured quantity (e.g., PSAL, TEMP) gets its own data variable along with a companion quality-control variable (e.g., PSAL_qc, TEMP_qc).
+- **Global attributes**: Per-platform metadata such as ``institution``, ``doi``, ``product_doi``, time and spatial coverage, and the dataset ID.
+
+The ``--netcdf-compression-level`` and ``--netcdf3-compatible`` options are also supported for sparse NetCDF output.
+
+The response object for sparse datasets points to the directory containing the NetCDF files. File names can can be found in the ``files_names`` attribute of the response object.
 
 Additional options
 ------------------

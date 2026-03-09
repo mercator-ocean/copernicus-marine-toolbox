@@ -34,10 +34,11 @@ def get_dataset_metadata(
     dataset_id: str,
     marine_datastore_config: MarineDataStoreConfig,
     raise_on_error: bool,
-) -> CopernicusMarineDataset | None:
+) -> tuple[CopernicusMarineDataset | None, str | None]:
     seen_dataset_links = set()
     dataset_items: list[DatasetItem] = []
     catalogue_errors: list[tuple] = []
+    product_id = None
     for catalogue in marine_datastore_config.catalogues:
         try:
             with JsonParserConnection() as connection:
@@ -118,13 +119,16 @@ def get_dataset_metadata(
     if not dataset_items:
         raise DatasetNotFound(dataset_id)
 
-    return _parse_and_sort_dataset_items(
-        [
-            dataset_item
-            for dataset_item in dataset_items
-            if dataset_item.parsed_id == dataset_id
-        ],
-        raise_on_error=raise_on_error,
+    return (
+        _parse_and_sort_dataset_items(
+            [
+                dataset_item
+                for dataset_item in dataset_items
+                if dataset_item.parsed_id == dataset_id
+            ],
+            raise_on_error=raise_on_error,
+        ),
+        product_id,
     )
 
 

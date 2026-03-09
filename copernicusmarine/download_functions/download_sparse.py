@@ -4,8 +4,10 @@ import shutil
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from datetime import datetime
 
 import pandas as pd
+import xarray as xr
 from arcosparse import (
     Entity,
     UserConfiguration,
@@ -36,7 +38,10 @@ from copernicusmarine.core_functions.temporary_path_saver import (
 )
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
+    datetime_parser,
     datetime_to_isoformat,
+    datetime_to_timestamp,
+    get_unique_directorypath,
     get_unique_filepath,
     timestamp_parser,
 )
@@ -44,6 +49,7 @@ from copernicusmarine.download_functions.utils import (
     build_filename_from_request,
     get_file_extension,
 )
+from copernicusmarine.versioner import __version__ as toolbox_version
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -80,8 +86,6 @@ SORTING = {
 }
 
 
-# TODO: should we support necdf?
-# https://stackoverflow.com/questions/46476920/xarray-writing-to-netcdf-from-pandas-dimension-issue # noqa
 def download_sparse(
     username: str,
     subset_request: SubsetRequest,
@@ -89,6 +93,7 @@ def download_sparse(
     service: CopernicusMarineService,
     axis_coordinate_id_mapping: dict[str, str],
     product_doi: str | None,
+    product_id: str | None,
     disable_progress_bar: bool,
 ) -> ResponseSubset:
 
@@ -142,11 +147,30 @@ def download_sparse(
     if df.empty:
         return response
 
-    with TemporaryPathSaver(output_path) as tmp_path:
-        if subset_request.file_format == "parquet":
-            df.to_parquet(tmp_path, index=False)
-        else:
-            df.to_csv(tmp_path, index=False)
+    if subset_request.file_format == "netcdf":
+        user_configuration = _get_user_configuration(username)
+        platforms_metadata = {
+            entity.entity_id: entity
+            for entity in get_entities(metadata_url, user_configuration)
+        }
+        file_names = _dataframe_to_netcdf_per_platform(
+            df=df,
+            vertical_axis=subset_request.vertical_axis,
+            output_path=output_path,
+            platforms_metadata=platforms_metadata,
+            subset_request=subset_request,
+            product_id=product_id,
+            service=service,
+            netcdf_compression_level=subset_request.netcdf_compression_level,
+            netcdf3_compatible=subset_request.netcdf3_compatible,
+        )
+        response.file_names = file_names
+    else:
+        with TemporaryPathSaver(output_path) as tmp_path:
+            if subset_request.file_format == "parquet":
+                df.to_parquet(tmp_path, index=False)
+            else:
+                df.to_csv(tmp_path, index=False)
 
     return response
 
@@ -316,15 +340,20 @@ def _build_filename_and_output_path(
         platform_ids=platform_ids,
         axis_coordinate_id_mapping=axis_coordinate_id_mapping,
     )
-
-    if pathlib.Path(filename).suffix != extension_file:
+    if subset_request.file_format == "netcdf":
+        filename = pathlib.Path(filename).stem
+    elif pathlib.Path(filename).suffix != extension_file:
         filename = f"{filename}{extension_file}"
     output_path = pathlib.Path(
         subset_request.output_directory,
         filename,
     )
     if not subset_request.overwrite and not subset_request.skip_existing:
-        output_path = get_unique_filepath(output_path)
+        output_path = (
+            get_unique_filepath(output_path)
+            if not subset_request.file_format == "netcdf"
+            else get_unique_directorypath(output_path)
+        )
         filename = output_path.name
     return filename, output_path
 
@@ -417,3 +446,294 @@ def _transform_dataframe(
 
     df.reset_index(drop=True, inplace=True)
     return df
+
+
+def _dataframe_to_netcdf_per_platform(
+    df: pd.DataFrame,
+    vertical_axis: VerticalAxis,
+    output_path: pathlib.Path,
+    platforms_metadata: dict[str, Entity],
+    subset_request: SubsetRequest,
+    product_id: str | None,
+    service: CopernicusMarineService,
+    netcdf_compression_level: int = 0,
+    netcdf3_compatible: bool = False,
+) -> list[str]:
+    vertical_col = "elevation" if vertical_axis == "elevation" else "depth"
+    index_cols = ["time", vertical_col]
+    aux_cols = [
+        "latitude",
+        "longitude",
+        "pressure",
+        "is_depth_from_producer",
+    ]
+    metadata_cols = [
+        "platform_id",
+        "platform_type",
+        "institution",
+        "doi",
+        "product_doi",
+    ]
+
+    produced_paths: list[str] = []
+    with TemporaryPathSaver(output_path, is_directory=True) as tmp_output_path:
+        for platform_id, platform_df in df.groupby("platform_id"):
+            platform_filename = f"{platform_id}.nc"
+            output_path_with_plaform_id = tmp_output_path / platform_filename
+
+            ds = _platform_dataframe_to_dataset(
+                platform_df,
+                index_cols=index_cols,
+                aux_cols=aux_cols,
+                metadata_cols=metadata_cols,
+            )
+
+            ds = _add_attributes_to_dataset(
+                ds=ds,
+                platform_df=platform_df,
+                vertical_axis=vertical_axis,
+                platform_id=str(platform_id),
+                metadata_cols=metadata_cols,
+                platforms_metadata=platforms_metadata,
+                subset_request=subset_request,
+                product_id=product_id,
+                service=service,
+            )
+
+            encoding = _build_netcdf_encoding(ds, netcdf_compression_level)
+            netcdf_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
+
+            with TemporaryPathSaver(output_path_with_plaform_id) as tmp_file:
+                ds.to_netcdf(
+                    tmp_file,
+                    encoding=encoding,
+                    format=netcdf_format,
+                )
+
+            produced_paths.append(platform_filename)
+            logger.debug(
+                f"Written NetCDF file for platform '{platform_id}': "
+                f"{output_path}"
+            )
+
+        logger.info(
+            f"Produced {len(produced_paths)} NetCDF file(s) "
+            f"in {output_path}"
+        )
+    return produced_paths
+
+
+def _platform_dataframe_to_dataset(
+    platform_df: pd.DataFrame,
+    index_cols: list[str],
+    aux_cols: list[str],
+    metadata_cols: list[str],
+) -> xr.Dataset:
+    """
+    ``depth_level`` is an integer index: for each time step, depth
+    observations are ranked by depth. The maximum number of depth
+    points across all time steps determines the size of the
+    ``depth_level`` dimension.
+    """
+
+    obs_df = platform_df.drop(columns=metadata_cols, errors="ignore")
+
+    vertical_col = [c for c in index_cols if c != "time"][0]
+    obs_df = obs_df.sort_values(["time", vertical_col])
+
+    pivot = obs_df.pivot_table(
+        index=["time", vertical_col],
+        columns="variable",
+        values=["value", "value_qc"],  # type: ignore[list-item]
+        aggfunc="first",
+    )
+    pivot.columns = [
+        f"{var}_qc" if metric == "value_qc" else var
+        for metric, var in pivot.columns
+    ]
+
+    spatial_and_aux = obs_df.groupby(["time", vertical_col])[aux_cols].first()
+
+    merged = pd.concat([pivot, spatial_and_aux], axis=1)
+    merged = merged.reset_index()
+    merged["depth_level"] = merged.groupby("time").cumcount()
+    merged["time"] = merged["time"].apply(
+        lambda x: datetime_to_timestamp(datetime_parser(x), unit="s")
+    )
+    merged = merged.set_index(["time", "depth_level"])
+
+    ds = merged.to_xarray()
+    ds = ds.set_coords("pressure")
+    ds = ds.set_coords("latitude")
+    ds = ds.set_coords("longitude")
+    ds = ds.set_coords("depth")
+    ds = ds.set_coords("is_depth_from_producer")
+    ds.time.attrs["units"] = "seconds since 1970-01-01T00:00:00Z"
+    return ds
+
+
+def _build_netcdf_encoding(
+    ds: xr.Dataset,
+    compression_level: int,
+) -> dict:
+    if compression_level <= 0:
+        return {}
+
+    encoding: dict = {}
+    for var_name in ds.data_vars:
+        encoding[var_name] = {
+            "zlib": True,
+            "complevel": compression_level,
+            "contiguous": False,
+            "shuffle": True,
+        }
+    return encoding
+
+
+def _add_attributes_to_dataset(
+    ds: xr.Dataset,
+    platform_df: pd.DataFrame,
+    vertical_axis: VerticalAxis,
+    platform_id: str,
+    metadata_cols: list[str],
+    platforms_metadata: dict[str, Entity],
+    subset_request: SubsetRequest,
+    product_id: str | None,
+    service: CopernicusMarineService,
+) -> xr.Dataset:
+    # global attributes
+    first_row = platform_df.iloc[0]
+    metadata_info: dict[str, str] = {
+        col: str(first_row[col])
+        for col in metadata_cols
+        if col in first_row.index
+        and first_row[col] is not None
+        and not pd.isna(first_row[col])  # type: ignore[arg-type]
+    }
+    if metadata_info.get("platform_id"):
+        ds.attrs["platform_code"] = metadata_info["platform_id"]
+    if metadata_info.get("institution"):
+        ds.attrs["institution"] = metadata_info["institution"]
+    if metadata_info.get("doi"):
+        ds.attrs["doi"] = metadata_info["doi"]
+    if metadata_info.get("product_doi"):
+        if "doi" in ds.attrs:
+            ds.attrs["doi"] += " " + metadata_info["product_doi"]
+        else:
+            ds.attrs["doi"] = metadata_info["product_doi"]
+    if metadata_info.get("platform_type"):
+        platform_id_type = platform_id + "___" + metadata_info["platform_type"]
+        platform_metadata = platforms_metadata.get(
+            platform_id_type
+        ) or platforms_metadata.get(platform_id)
+        if platform_metadata and platform_metadata.institution_edmo_code:
+            ds.attrs[
+                "institution_edmo_code"
+            ] = platform_metadata.institution_edmo_code
+
+    ds.attrs["time_coverage_start"] = datetime_to_isoformat(
+        datetime_parser(str(platform_df["time"].min()))
+    )
+    ds.attrs["time_coverage_end"] = datetime_to_isoformat(
+        datetime_parser(str(platform_df["time"].max()))
+    )
+    ds.attrs["last_date_observation"] = ds.attrs["time_coverage_end"]
+
+    if "latitude" in platform_df.columns:
+        ds.attrs["geospatial_lat_min"] = float(platform_df["latitude"].min())
+        ds.attrs["geospatial_lat_max"] = float(platform_df["latitude"].max())
+        ds.attrs["last_latitude_observation"] = ds.sel(
+            time=datetime_to_timestamp(
+                datetime_parser(ds.attrs["last_date_observation"])
+            ),
+            method="nearest",
+        )["latitude"].values[0]
+    if "longitude" in platform_df.columns:
+        ds.attrs["geospatial_lon_min"] = float(platform_df["longitude"].min())
+        ds.attrs["geospatial_lon_max"] = float(platform_df["longitude"].max())
+        ds.attrs["last_longitude_observation"] = ds.sel(
+            time=datetime_to_timestamp(
+                datetime_parser(ds.attrs["last_date_observation"])
+            ),
+            method="nearest",
+        )["longitude"].values[0]
+    if vertical_axis in platform_df.columns:
+        ds.attrs["geospatial_vertical_min"] = float(
+            platform_df[vertical_axis].min()
+        )
+        ds.attrs["geospatial_vertical_max"] = float(
+            platform_df[vertical_axis].max()
+        )
+    ds.attrs[
+        "references"
+    ] = "http://marine.copernicus.eu  http://www.marineinsitu.eu"
+    ds.attrs[
+        "license"
+    ] = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    ds.attrs["download_date"] = datetime_to_isoformat(datetime.now())
+    ds.attrs["copernicusmarine_toolbox_version"] = toolbox_version
+    if product_id:
+        ds.attrs["product_id"] = product_id
+    ds.attrs["dataset_id"] = subset_request.dataset_id
+
+    # time attributes
+    ds["time"].attrs["axis"] = "T"
+    # unit is set before
+
+    # depth attributes
+    if vertical_axis == "elevation":
+        ds["elevation"].attrs["positive"] = "up"
+    else:
+        ds["depth"].attrs["positive"] = "down"
+    ds[vertical_axis].attrs["axis"] = "Z"
+    ds[vertical_axis].attrs["units"] = "m"
+    ds[vertical_axis].attrs["valid_min"] = -12000
+    ds[vertical_axis].attrs["valid_max"] = 12000
+
+    # pressure attributes
+    ds["pressure"].attrs["units"] = "dbar"
+    ds["pressure"].attrs["axis"] = "Z"
+    ds["pressure"].attrs["positive"] = "down"
+
+    # latitude and longitude attributes
+    ds["latitude"].attrs["units"] = "degrees_north"
+    ds["latitude"].attrs["axis"] = "Y"
+    ds["latitude"].attrs["valid_min"] = -90
+    ds["latitude"].attrs["valid_max"] = 90
+    ds["longitude"].attrs["units"] = "degrees_east"
+    ds["longitude"].attrs["axis"] = "X"
+    ds["longitude"].attrs["valid_min"] = -180
+    ds["longitude"].attrs["valid_max"] = 180
+
+    # variables
+    variables_info = {
+        variable.short_name: variable for variable in service.variables
+    }
+    for variable in ds.data_vars:
+        variable = str(variable)
+        if "_qc" not in variable:
+            variable_info = variables_info[variable]
+            ds[variable].attrs["standard_name"] = variable_info.standard_name
+            ds[variable].attrs["units"] = variable_info.units
+            ds[variable].attrs["ancillary_variable"] = variable + "_qc"
+        else:
+            variable_without_qc = variable.replace("_qc", "")
+            variable_info = variables_info[variable_without_qc]
+            ds[variable].attrs[
+                "long_name"
+            ] = f"Quality control flag for {variable_without_qc}"
+            ds[variable].attrs["flags_values"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            ds[variable].attrs["flags_meanings"] = (
+                "no_qc_performed "
+                "good_data "
+                "probably_good_data "
+                "bad_data_that_are_potentially_correctable "
+                "bad_data "
+                "value_changed "
+                "value_below_detection "
+                "nominal_value "
+                "interpolated_value "
+                "missing_value"
+            )
+
+    return ds

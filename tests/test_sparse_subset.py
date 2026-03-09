@@ -1,9 +1,11 @@
+import os
 import pathlib
 from json import loads
 from unittest import mock
 
 import pandas as pd
 import pytest
+import xarray as xr
 
 from copernicusmarine import read_dataframe, subset
 from copernicusmarine.download_functions.download_sparse import (
@@ -126,7 +128,7 @@ class TestSparseSubset:
         assert self.output.returncode == 0
         assert (tmp_path / "sparse_data_(1).csv").exists()
 
-    def test_can_download_in_different_format(self):
+    def test_can_download_in_different_format(self, tmp_path):
         # parquet done in another test
         command = BASIC_COMMAND + [
             "--dry-run",
@@ -139,13 +141,29 @@ class TestSparseSubset:
         response = loads(self.output.stdout)
         assert response["filename"].endswith(".csv")
 
-        wrong_command = BASIC_COMMAND + [
+        # netcdf format is now supported for sparse datasets
+        netcdf_command = BASIC_COMMAND + [
             "--file-format",
             "netcdf",
+            "--output-directory",
+            tmp_path,
+        ]
+        self.output = execute_in_terminal(netcdf_command)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        assert response["filename"].endswith(".nc")
+        # Check that per-platform .nc files were created
+        nc_files = list(pathlib.Path(tmp_path).glob("*.nc"))
+        assert len(nc_files) > 0
+
+        # zarr format is still not supported
+        wrong_command = BASIC_COMMAND + [
+            "--file-format",
+            "zarr",
         ]
         self.output = execute_in_terminal(wrong_command)
         assert self.output.returncode == 1
-        assert "Wrong format requested" in self.output.stderr
+        assert "is not supported" in self.output.stderr
 
     def test_can_read_dataframe(self):
         df = read_dataframe(**BASIC_COMMAND_DICT)
@@ -231,3 +249,79 @@ class TestSparseSubset:
         assert not df.empty
         assert df["institution"].isnull().all()
         assert df["doi"].isnull().all()
+
+    def test_can_subset_sparse_to_netcdf_per_platform(
+        self, tmp_path, snapshot
+    ):
+        command = BASIC_COMMAND + [
+            "--platform-id",
+            "B-Sulafjorden___MO",
+            "--platform-id",
+            "F-Vartdalsfjorden___MO",
+            "--output-directory",
+            tmp_path,
+            "--file-format",
+            "netcdf",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        assert os.path.exists(response["file_path"]) and os.path.isdir(
+            response["file_path"]
+        )
+
+        nc_files = sorted(pathlib.Path(response["file_path"]).glob("*.nc"))
+        assert len(nc_files) == 2
+        assert sorted(response["file_names"]) == sorted(
+            nc_file.name for nc_file in nc_files
+        )
+
+        ds = xr.open_dataset(nc_files[0])
+        assert "time" in ds.dims
+        assert "depth_level" in ds.dims
+        assert len(ds.dims) == 2
+        assert "pressure" in ds.coords
+        assert "latitude" in ds.coords
+        assert "longitude" in ds.coords
+        assert "depth" in ds.coords
+        assert "is_depth_from_producer" in ds.coords
+        data_var_names = list(ds.data_vars)
+        measured_vars = [v for v in data_var_names if not v.endswith("_qc")]
+        for var_name in measured_vars:
+            assert f"{var_name}_qc" in data_var_names
+        ds.close()
+
+        # snapshot nc dump
+        for nc_file in nc_files:
+            self.netcdf_output = execute_in_terminal(
+                [
+                    "ncdump",
+                    "-h",
+                    str(nc_file),
+                ]
+            )
+            assert self.netcdf_output.returncode == 0
+            assert self.netcdf_output.stdout == snapshot(
+                name=str(nc_file.name) + ".txt"
+            )
+
+    def test_can_subset_sparse_to_netcdf_per_platform_netcdf_3(self, tmp_path):
+        # test that the produced netcdf files are in netcdf3 format
+        command = BASIC_COMMAND + [
+            "--platform-id",
+            "B-Sulafjorden___MO",
+            "--platform-id",
+            "F-Vartdalsfjorden___MO",
+            "--output-directory",
+            tmp_path,
+            "--file-format",
+            "netcdf",
+            "--netcdf3-compatible",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        nc_files = sorted(pathlib.Path(response["file_path"]).glob("*.nc"))
+        for nc_file in nc_files:
+            ds = xr.open_dataset(nc_file)
+            ds.close()
