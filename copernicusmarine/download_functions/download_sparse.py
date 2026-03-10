@@ -664,9 +664,7 @@ def _add_attributes_to_dataset(
         ds.attrs["geospatial_vertical_max"] = float(
             platform_df[vertical_axis].max()
         )
-    ds.attrs[
-        "references"
-    ] = "http://marine.copernicus.eu  http://www.marineinsitu.eu"
+    ds.attrs["references"] = "http://marine.copernicus.eu"
     ds.attrs[
         "license"
     ] = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
@@ -675,9 +673,16 @@ def _add_attributes_to_dataset(
     if product_id:
         ds.attrs["product_id"] = product_id
     ds.attrs["dataset_id"] = subset_request.dataset_id
+    ds.attrs["Conventions"] = "CF-1.9 ACDD-1.3"
+    ds.attrs["title"] = (
+        f"Subset of dataset {subset_request.dataset_id} "
+        f"with Copernicus Marine Toolbox"
+    )
+    ds.attrs["contact"] = "servicedesk.cmems@mercator-ocean.eu"
 
     # time attributes
     ds["time"].attrs["axis"] = "T"
+    ds["time"].attrs["standard_name"] = "time"
     # unit is set before
 
     # depth attributes
@@ -685,25 +690,44 @@ def _add_attributes_to_dataset(
         ds["elevation"].attrs["positive"] = "up"
     else:
         ds["depth"].attrs["positive"] = "down"
-    ds[vertical_axis].attrs["axis"] = "Z"
     ds[vertical_axis].attrs["units"] = "m"
-    ds[vertical_axis].attrs["valid_min"] = -12000
-    ds[vertical_axis].attrs["valid_max"] = 12000
+    ds[vertical_axis].attrs["valid_min"] = -12000.0
+    ds[vertical_axis].attrs["valid_max"] = 12000.0
+    ds[vertical_axis].attrs["standard_name"] = vertical_axis
 
     # pressure attributes
     ds["pressure"].attrs["units"] = "dbar"
-    ds["pressure"].attrs["axis"] = "Z"
+    # ds["pressure"].attrs["axis"] = "Z"
     ds["pressure"].attrs["positive"] = "down"
+    ds["pressure"].attrs["standard_name"] = "reference_pressure"
 
     # latitude and longitude attributes
     ds["latitude"].attrs["units"] = "degrees_north"
     ds["latitude"].attrs["axis"] = "Y"
-    ds["latitude"].attrs["valid_min"] = -90
-    ds["latitude"].attrs["valid_max"] = 90
+    ds["latitude"].attrs["valid_min"] = -90.0
+    ds["latitude"].attrs["valid_max"] = 90.0
+    ds["latitude"].attrs["standard_name"] = "latitude"
     ds["longitude"].attrs["units"] = "degrees_east"
     ds["longitude"].attrs["axis"] = "X"
-    ds["longitude"].attrs["valid_min"] = -180
-    ds["longitude"].attrs["valid_max"] = 180
+    ds["longitude"].attrs["valid_min"] = -180.0
+    ds["longitude"].attrs["valid_max"] = 180.0
+    ds["longitude"].attrs["standard_name"] = "longitude"
+
+    # is depth from producer attributes
+    ds["is_depth_from_producer"].attrs["units"] = "1"
+    ds["is_depth_from_producer"].attrs["long_name"] = (
+        "Flag indicating if the depth value is from the "
+        "data producer (1) or calculated from pressure (0)"
+    )
+
+    # depth level
+    ds["depth_level"].attrs["long_name"] = (
+        "Depth level index. "
+        "For each time step, depth observations are ranked by depth. "
+    )
+    ds["depth_level"].attrs["axis"] = "Z"
+    ds["depth_level"].attrs["positive"] = "down"
+    ds["depth_level"].attrs["units"] = "1"
 
     # variables
     variables_info = {

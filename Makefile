@@ -141,4 +141,5 @@ update-tests-snapshots:
 	poetry run pytest --snapshot-update tests/test_query_builder.py::TestQueryBuilder::test_return_available_fields
 	poetry run pytest --snapshot-update tests/test_request_files.py::TestRequestFiles::test_subset_request_with_request_file
 	poetry run pytest --snapshot-update tests/test_cf_compliance.py
+	poetry run pytest --snapshot-update tests/test_sparse_subset.py::TestSparseSubset::test_netcdf_attributes_ncdump
 	poetry run pytest --snapshot-update tests/test_subset_split_on.py

@@ -12,6 +12,7 @@
         'datasets': dict({
           '__all__': dict({
             'dataset_id': True,
+            'product_id': True,
           }),
         }),
         'product_id': True,

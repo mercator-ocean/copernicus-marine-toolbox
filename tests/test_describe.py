@@ -330,9 +330,9 @@ class TestDescribe:
 
         version_ordered = sorted(
             dataset["versions"],
-            key=lambda x: x["label"]
-            if x["label"] != VERSION_DEFAULT
-            else "110001",
+            key=lambda x: (
+                x["label"] if x["label"] != VERSION_DEFAULT else "110001"
+            ),
             reverse=True,
         )
 
@@ -558,6 +558,7 @@ class TestDescribe:
                     "versions",
                     "dataset_name",
                     "digital_object_identifier",
+                    "product_id",
                 }
                 for version in dataset["versions"]:
                     assert set(version.keys()) == {"parts", "label"}

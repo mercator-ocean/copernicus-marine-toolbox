@@ -318,7 +318,7 @@ class TestSparseSubset:
             stdout = "\n".join(
                 line
                 for line in self.netcdf_output.stdout.splitlines()
-                if ":download_date" not in line or line.strip() != ""
+                if ":download_date" not in line and line.strip() != ""
             )
             assert stdout == snapshot(name=str(nc_file.name) + ".txt")
 
