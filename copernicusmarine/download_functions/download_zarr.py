@@ -175,7 +175,7 @@ def download_zarr(
             dataset, axis_coordinate_id_mapping
         )
 
-    logger.debug(
+    logger.info(
         f"Total size estimation: "
         f"{human_readable_size(final_result_size_estimation)}."
     )
