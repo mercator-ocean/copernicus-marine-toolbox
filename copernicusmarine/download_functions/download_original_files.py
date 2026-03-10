@@ -26,6 +26,7 @@ from copernicusmarine.core_functions.request_structure import (
 from copernicusmarine.core_functions.sessions import ConfiguredBoto3Session
 from copernicusmarine.core_functions.utils import (
     get_unique_filepath,
+    human_readable_size,
     parse_access_dataset_url,
     run_concurrently,
     timestamp_parser,
@@ -111,6 +112,11 @@ def download_original_files(
             files_headers.files_not_found.extend(
                 files_headers_listing.files_not_found
             )
+
+    logger.info(
+        "Total size of the download: %s.",
+        human_readable_size(files_headers.total_size / 1024 / 1024),
+    )
 
     files_headers = _create_filenames_out(
         files_information=files_headers,

@@ -12,6 +12,7 @@ import pytest
 import xarray
 
 from copernicusmarine import WrongFormatRequested, open_dataset, subset
+from copernicusmarine.core_functions.utils import parse_size
 from tests.test_utils import (
     execute_in_terminal,
     get_file_size,
@@ -835,8 +836,11 @@ class TestSubset:
         response_subset = loads(self.output.stdout)
         assert "file_size" in response_subset
         assert "data_transfer_size" in response_subset
-        assert response_subset["file_size"] > 0
-        assert int(response_subset["data_transfer_size"]) == 50
+        assert parse_size(response_subset["file_size"]) > 0
+        assert (
+            int(parse_size(response_subset["data_transfer_size"]) / 1048e3)
+            == 50
+        )
 
     def test_dataset_size_is_displayed_when_downloading_with_arco_service(
         self, tmp_path
@@ -1164,7 +1168,7 @@ class TestSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         response_subset = loads(self.output.stdout)
-        assert int(response_subset["data_transfer_size"]) == 56876
+        assert response_subset["data_transfer_size"] == "56876.19 MB"
 
     def test_requested_interval_fully_included_with_coords_sel_method_outside(
         self, tmp_path
