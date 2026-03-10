@@ -36,6 +36,19 @@ def get_unique_filepath(
     return filepath
 
 
+def get_unique_directorypath(
+    dirpath: pathlib.Path,
+) -> pathlib.Path:
+    parent = dirpath.parent
+    dirname = dirpath.name
+    counter = 1
+
+    while dirpath.exists():
+        dirpath = parent / (dirname + "_(" + str(counter) + ")")
+        counter += 1
+    return dirpath
+
+
 _T = TypeVar("_T")
 
 
@@ -103,6 +116,8 @@ def datetime_to_timestamp(
 ) -> int | float:
     """
     Should be Windows compatible for datetime before 1970
+    Returns a timestamp corresponding to the seconds or
+    milliseconds since the epoch (January 1, 1970, 00:00:00 UTC).
     """
     return calendar.timegm(date.timetuple()) * (1000 if unit == "ms" else 1)
 

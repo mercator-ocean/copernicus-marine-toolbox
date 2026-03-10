@@ -25,6 +25,7 @@ Subset
 New Features
 ^^^^^^^^^^^^
 
+* Added support for subsetting sparse datasets in NetCDF format. See the :ref:`documentation about the new NetCDF format <sparse-netcdf>` for more details.
 * Added support for subsetting dense datasets in CSV format. Also added :ref:`documentation about file formats <file-format>`.
 * Progress bars no longer display Dask task numbers, making them easier to read.
 
