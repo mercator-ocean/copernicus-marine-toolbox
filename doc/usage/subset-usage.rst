@@ -163,7 +163,7 @@ Example of request that crosses the antemeridian:
 
     copernicusmarine subset -i cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M -x 10 -X -40
 
-is equivalent to
+This is equivalent to:
 
 .. code-block:: bash
 
