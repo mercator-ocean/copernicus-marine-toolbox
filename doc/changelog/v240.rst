@@ -19,6 +19,12 @@ New Features
 * The CLI now raises an error if an argument is provided twice instead of using the last provided value.
 * Added a way to use the Toolbox without threads by setting the environment variable ``COPERNICUSMARINE_USE_THREADS`` to "False". See :ref:`documentation about environment variables <env-use-threads>` for more details.
 * Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
+* Release constraints on ``pandas``. ``pandas>=3.0.0`` is now compatible with the Toolbox.
+
+Fixes
+^^^^^
+
+* Some minor documentation improvements and updates.
 
 Subset
 ------
@@ -29,6 +35,7 @@ New Features
 * Added support for subsetting sparse datasets in NetCDF format. See the :ref:`documentation about the new NetCDF format <sparse-netcdf>` for more details.
 * Added support for subsetting dense datasets in CSV format. Also added :ref:`documentation about file formats <file-format>`.
 * Progress bars no longer display Dask task numbers, making them easier to read.
+* Handle chunks parts for sparse datasets. Resulting subsets should be more complete.
 
 Fixes
 ^^^^^

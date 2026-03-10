@@ -162,7 +162,11 @@ Example of request that crosses the antemeridian:
 .. code-block:: bash
 
     copernicusmarine subset -i cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M -x 10 -X -40
-    # Equivalent to:
+
+This is equivalent to:
+
+.. code-block:: bash
+
     copernicusmarine subset -i cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M -x 10 -X 320
 
 .. note::
@@ -311,11 +315,16 @@ When a dataset is being updated, data after a certain date may become unreliable
 
   try:
       dataset = copernicusmarine.subset(
-          dataset_id=dataset_id,
-          start_datetime="2021-01-01",
+          dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1M-m",
+          start_datetime="2025-01-01",
           end_datetime="2025-01-03",
+          minimum_longitude=14,
+          maximum_longitude=15,
+          minimum_latitude=5,
+          maximum_latitude=6,
           raise_if_updating=True,
       )
+
   except copernicusmarine.DatasetUpdating as e:
       # add retries here if needed
       logging.error(e)

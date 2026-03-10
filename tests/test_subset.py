@@ -12,11 +12,11 @@ import pytest
 import xarray
 
 from copernicusmarine import WrongFormatRequested, open_dataset, subset
-from copernicusmarine.core_functions.utils import parse_size
 from tests.test_utils import (
     execute_in_terminal,
     get_file_size,
     main_checks_when_file_is_downloaded,
+    parse_size,
 )
 
 

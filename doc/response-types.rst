@@ -13,7 +13,7 @@ You can easily save it locally by doing, for example:
 
 .. code-block:: bash
 
-    copernicusmarine get -i cmems_mod_glo_phy-thetao_anfc_0.083deg_P1M-m > my_json.json
+    copernicusmarine get -i cmems_mod_glo_phy_anfc_0.083deg_P1M-m --filter "*202501*" > get_response.json
 
 
 .. note::

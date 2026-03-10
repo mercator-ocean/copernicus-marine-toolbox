@@ -60,7 +60,7 @@ def cli_get() -> None:
 
     .. code-block:: bash
 
-        copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m \n
+        copernicusmarine get -i cmems_mod_glo_phy_anfc_0.083deg_P1M-m --filter "*202501*" \n
     """,  # noqa
 )
 @click.option(

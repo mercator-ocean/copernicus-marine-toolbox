@@ -6,8 +6,6 @@ import subprocess
 import time
 from subprocess import CompletedProcess
 
-from copernicusmarine.core_functions.utils import parse_size
-
 logger = logging.getLogger()
 
 
@@ -114,6 +112,19 @@ def execute_in_terminal(
     duration_second = t2 - t1
     logger.info(f"Command executed in {duration_second} s: {command_to_print}")
     return output
+
+
+def parse_size(size: str) -> int:
+    units = {
+        "B": 1,
+        "KB": 1024,
+        "MB": 1024**2,
+        "GB": 1024**3,
+        "TB": 1024**4,
+        "PB": 1024**5,
+    }
+    number, unit = (string.strip() for string in size.split())
+    return int(float(number) * units[unit])
 
 
 def main_checks_when_file_is_downloaded(
