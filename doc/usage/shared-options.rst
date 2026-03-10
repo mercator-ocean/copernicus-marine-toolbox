@@ -62,24 +62,19 @@ This option allows you to specify request parameters in a provided JSON file, wh
   .. code-block:: text
 
     {
-        "dataset_id": "cmems_mod_ibi_phy-temp_my_0.027deg_P1M-m",
-        "start_datetime": "2023-10-01",
-        "end_datetime": "2023-11-01",
-        "minimum_longitude": -85,
-        "maximum_longitude": -10,
-        "minimum_latitude": 35,
-        "maximum_latitude": 43,
-        "minimum_depth": 1,
-        "maximum_depth": 10,
-        "variables": [
-            "bottomT",
-            "thetao"
-        ],
-        "output_directory": "copernicusmarine_data",
-        "force_service": false,
-        "request_file": false,
-        "motu_api_request": false,
-        "overwrite": false
+      "dataset_id": "cmems_mod_glo_phy_anfc_0.083deg_P1M-m",
+      "start_datetime": "2023-10-01",
+      "end_datetime": "2023-11-01",
+      "minimum_longitude": -15,
+      "maximum_longitude": -10,
+      "minimum_latitude": 35,
+      "maximum_latitude"  : 43,
+      "minimum_depth": 1,
+      "maximum_depth": 10,
+      "variables": ["siconc"],
+      "output_directory": "copernicusmarine_data",
+      "request_file": false,
+      "overwrite": false
     }
 
   **Example:**
@@ -130,20 +125,21 @@ Option ``--dataset-version``
 *********************************
 
 This option allows you to fetch a specific version of the dataset, which is particularly useful to maintain operational consistency when updates affect the chosen dataset.
-The version of dataset can be found through the ``describe`` command.
 
 **Example:**
 
 .. code:: bash
 
-    copernicusmarine get -i cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m --dataset-version 202511
+    copernicusmarine get --dataset-id cmems_mod_glo_phy_anfc_0.083deg-sst-anomaly_P1M-m --filter "*202501*" --dataset-version 202411
 
 **Returns:**
 
 .. code:: text
 
-    INFO - 2026-01-07T08:53:18Z - Selected dataset version: "202511"
+    INFO - 2026-01-07T08:53:18Z - Selected dataset version: "202411"
 
+
+The version of dataset can be found through the ``describe`` command.
 
 It is possible to specify the dataset version in the dataset ID using the format ``datasetID_version``.
 However, this is not recommended. Prefer using the ``dataset_version`` argument or the ``--dataset-version`` option instead.
@@ -201,7 +197,7 @@ If requested ``-r all``, all fields will be included. If requested ``-r none``, 
 
 .. code:: bash
 
-    copernicusmarine get -i cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m --dry-run -r https_url,file_size
+    copernicusmarine get -i cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m --dry-run -r https_url,file_size
 
 **Returns:** (Only the two first files are shown)
 
@@ -210,12 +206,12 @@ If requested ``-r all``, all fields will be included. If requested ``-r none``, 
     {
     "files": [
       {
-        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105/2022/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm202207.nc",
-        "file_size": 3.1228113174438477
+      "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m_202012/1993/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm199301.nc",
+      "file_size": "2.99 MB"
       },
       {
-        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_myint_7km-3D-diato_P1M-m_202105/2022/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm202208.nc",
-        "file_size": 3.133638381958008
+        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m_202012/1993/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm199302.nc",
+        "file_size": "3.04 MB"
       },
       ]
     }
@@ -236,39 +232,40 @@ When used, the toolbox will by default, send the full return response of the com
 
 .. code:: bash
 
-      copernicusmarine subset -i cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao --dry-run
+      copernicusmarine subset -i cmems_mod_ibi_phy_anfc_0.027deg-3D_P1D-m -v thetao --dry-run
 
 **Returns:**
 
 .. code:: text
 
-    INFO - 2026-02-17T15:47:49Z - Selected dataset version: "202511"
-    INFO - 2026-02-17T15:47:49Z - Selected dataset part: "default"
+    INFO - 2026-03-10T12:19:18Z - Selected dataset version: "202411"
+    INFO - 2026-03-10T12:19:18Z - Selected dataset part: "default"
+    INFO - 2026-03-10T12:19:20Z - Total size estimation: 106.13 GB.
     {
-      "file_path": "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_thetao_19.08W-5.08E_26.17N-56.08N_0.49-5727.92m_1993-01-01-2025-10-28.nc",
+      "file_path": "cmems_mod_ibi_phy_anfc_0.027deg-3D_P1D-m_thetao_19.08W-5.08E_26.17N-56.08N_0.49-5727.92m_2022-11-23-2026-03-19.nc",
       "output_directory": ".",
-      "filename": "cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_thetao_19.08W-5.08E_26.17N-56.08N_0.49-5727.92m_1993-01-01-2025-10-28.nc",
-      "file_size": 2148268.6546030534,
-      "data_transfer_size": 2191234.0144351143,
+      "filename": "cmems_mod_ibi_phy_anfc_0.027deg-3D_P1D-m_thetao_19.08W-5.08E_26.17N-56.08N_0.49-5727.92m_2022-11-23-2026-03-19.nc",
+      "file_size": "108676.71 MB",
+      "data_transfer_size": "443400.93 MB",
       "variables": [
         "thetao"
       ],
       "coordinates_extent": [
         {
-          "minimum": -19.082841873168945,
-          "maximum": 5.084567070007324,
+          "minimum": -19.0828411,
+          "maximum": 5.084566999999999,
           "unit": "degrees_east",
           "coordinate_id": "longitude"
         },
         {
-          "minimum": 26.16535758972168,
-          "maximum": 56.082942962646484,
+          "minimum": 26.16535726,
+          "maximum": 56.08294177,
           "unit": "degrees_north",
           "coordinate_id": "latitude"
         },
         {
-          "minimum": "1993-01-01T00:00:00+00:00",
-          "maximum": "2025-10-28T00:00:00+00:00",
+          "minimum": "2022-11-23T00:00:00+00:00",
+          "maximum": "2026-03-19T00:00:00+00:00",
           "unit": "iso8601",
           "coordinate_id": "time"
         },

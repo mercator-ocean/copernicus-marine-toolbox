@@ -20,6 +20,11 @@ New Features
 * Added a way to use the Toolbox without threads by setting the environment variable ``COPERNICUSMARINE_USE_THREADS`` to "False". See :ref:`documentation about environment variables <env-use-threads>` for more details.
 * Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
 
+Fixes
+^^^^^
+
+* Some minor documentation improvements and updates.
+
 Subset
 ------
 

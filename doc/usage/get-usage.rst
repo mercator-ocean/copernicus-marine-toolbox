@@ -10,7 +10,7 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m
+    copernicusmarine get --dataset-id cmems_mod_glo_phy_anfc_0.083deg-sst-anomaly_P1M-m --filter "*202501*"
 
 **Returns:**
 
