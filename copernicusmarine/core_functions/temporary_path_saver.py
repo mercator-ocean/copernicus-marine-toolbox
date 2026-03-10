@@ -12,16 +12,16 @@ class TemporaryPathSaver:
     the operation completes successfully.
     """
 
-    def __init__(self, output_path: pathlib.Path):
+    def __init__(self, output_path: pathlib.Path, is_directory: bool = False):
         self.output_path = output_path.resolve()
         self.dir_path = self.output_path.parent
         self.base_name = self.output_path.name
-        self.is_zarr = self.output_path.suffix == ".zarr"
+        self.is_directory = is_directory or self.output_path.suffix == ".zarr"
 
         self.temp_path: pathlib.Path | None = None
 
     def __enter__(self) -> pathlib.Path:
-        if self.is_zarr:
+        if self.is_directory:
             self.temp_path = self.mkstemp_directory(
                 prefix=f"{self.base_name}.",
                 dir=self.dir_path,
@@ -45,7 +45,7 @@ class TemporaryPathSaver:
                     self.temp_path.unlink(missing_ok=True)
             return False
 
-        if self.is_zarr:
+        if self.is_directory:
             if self.output_path.exists():
                 shutil.rmtree(self.output_path)
             self.temp_path.rename(self.output_path)

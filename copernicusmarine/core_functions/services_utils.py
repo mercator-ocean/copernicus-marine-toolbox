@@ -210,6 +210,7 @@ class RetrievalService:
     dataset_chunking: DatasetChunking | None
     is_original_grid: bool
     product_doi: str | None
+    product_id: str | None
 
 
 def get_retrieval_service(
@@ -238,6 +239,7 @@ def get_retrieval_service(
         force_service_name=force_service_name,
         command_type=command_type,
         product_doi=product_doi,
+        product_id=dataset_metadata.product_id,
     )
 
 
@@ -247,6 +249,7 @@ def _get_retrieval_service_from_dataset(
     force_service_name: CopernicusMarineServiceNames | None,
     command_type: CommandType,
     product_doi: str | None,
+    product_id: str | None,
 ) -> RetrievalService:
     dataset_version = dataset.get_version(request.dataset_version)
     logger.info(f'Selected dataset version: "{dataset_version.label}"')
@@ -257,6 +260,7 @@ def _get_retrieval_service_from_dataset(
         force_service_name=force_service_name,
         command_type=command_type,
         product_doi=product_doi,
+        product_id=product_id,
     )
 
 
@@ -267,6 +271,7 @@ def _get_retrieval_service_from_dataset_version(
     force_service_name: CopernicusMarineServiceNames | None,
     command_type: CommandType,
     product_doi: str | None,
+    product_id: str | None,
 ) -> RetrievalService:
     dataset_part = dataset_version.get_part(request.dataset_part)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
@@ -346,6 +351,7 @@ def _get_retrieval_service_from_dataset_version(
         dataset_chunking=dataset_chunking,
         is_original_grid=dataset_part.name == "originalGrid",
         product_doi=product_doi,
+        product_id=product_id,
     )
 
 

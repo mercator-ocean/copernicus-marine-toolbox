@@ -600,6 +600,7 @@ class DatasetItem:
     stac_item: pystac.Item
     stac_json: dict
     product_doi: str | None
+    product_id: str
 
 
 class CopernicusMarineDataset(BaseModel):
@@ -612,6 +613,8 @@ class CopernicusMarineDataset(BaseModel):
     dataset_id: str
     #: The dataset name.
     dataset_name: str
+    #: ProductID of the dataset.
+    product_id: str
     #: Digital object identifier or doi from
     #: the product the dataset belongs to.
     digital_object_identifier: str | None

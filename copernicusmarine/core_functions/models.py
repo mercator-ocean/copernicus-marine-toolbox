@@ -245,6 +245,10 @@ class ResponseSubset(BaseModel):
     message: StatusMessage
     #: Status of the files.
     file_status: FileStatus
+    #: List of file names when multiple files are produced.
+    #: Relevant for sparse datasets in netCDF format.
+    #: None when a single file is produced.
+    file_names: list[str] | None = None
 
 
 # Internal use only

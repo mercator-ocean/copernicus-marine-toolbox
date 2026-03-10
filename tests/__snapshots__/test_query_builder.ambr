@@ -12,6 +12,7 @@
         'datasets': dict({
           '__all__': dict({
             'dataset_id': True,
+            'product_id': True,
           }),
         }),
         'product_id': True,
@@ -144,6 +145,7 @@
     'coordinate_id',
     'coordinates_extent',
     'data_transfer_size',
+    'file_names',
     'file_path',
     'file_size',
     'file_status',

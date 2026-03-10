@@ -135,10 +135,11 @@ change-name-binary:
 	mv dist/copernicusmari* ./copernicusmarine.cli
 
 update-tests-snapshots:
-	pytest --snapshot-update tests/test_help_command_interface.py
-	pytest --snapshot-update tests/test_dependencies_updates.py
-	pytest --snapshot-update tests/test_describe_released_date.py
-	pytest --snapshot-update tests/test_query_builder.py::TestQueryBuilder::test_return_available_fields
-	pytest --snapshot-update tests/test_request_files.py::TestRequestFiles::test_subset_request_with_request_file
-	pytest --snapshot-update tests/test_cf_compliance.py
-	pytest --snapshot-update tests/test_subset_split_on.py
+	poetry run pytest --snapshot-update tests/test_help_command_interface.py
+	poetry run pytest --snapshot-update tests/test_dependencies_updates.py
+	poetry run pytest --snapshot-update tests/test_describe_released_date.py
+	poetry run pytest --snapshot-update tests/test_query_builder.py::TestQueryBuilder::test_return_available_fields
+	poetry run pytest --snapshot-update tests/test_request_files.py::TestRequestFiles::test_subset_request_with_request_file
+	poetry run pytest --snapshot-update tests/test_cf_compliance.py
+	poetry run pytest --snapshot-update tests/test_sparse_subset.py::TestSparseSubset::test_netcdf_attributes_ncdump
+	poetry run pytest --snapshot-update tests/test_subset_split_on.py

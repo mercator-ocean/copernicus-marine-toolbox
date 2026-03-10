@@ -181,6 +181,7 @@ example_dataset = CopernicusMarineDataset(
         will_be_retired_soon_version,
         will_be_retired_in_a_long_time_version,
     ],
+    product_id="example_product_id",
 )
 
 
