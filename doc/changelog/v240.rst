@@ -19,6 +19,7 @@ New Features
 * The CLI now raises an error if an argument is provided twice instead of using the last provided value.
 * Added a way to use the Toolbox without threads by setting the environment variable ``COPERNICUSMARINE_USE_THREADS`` to "False". See :ref:`documentation about environment variables <env-use-threads>` for more details.
 * Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
+* Release constraints on ``pandas``. ``pandas>=3.0.0`` is now compatible with the Toolbox.
 
 Fixes
 ^^^^^
