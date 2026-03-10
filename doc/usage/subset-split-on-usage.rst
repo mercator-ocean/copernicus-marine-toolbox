@@ -37,8 +37,8 @@ The following split options are available:
 
   response = copernicusmarine.subset_split_on(
       dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1M-m",
-      start_datetime="2022-01-01",
-      end_datetime="2023-12-31",
+      start_datetime="2024-01-01",
+      end_datetime="2025-12-31",
       on_time="year",
       maximum_latitude=20,
       minimum_latitude=19,
@@ -48,18 +48,18 @@ The following split options are available:
   )
 
 This will create one file per year in the selected time range, here:
-"cmems_mod_glo_phy_anfc_0.083deg_P1M-m_siconc_19.00E-20.00E_19.00N-20.00N_2022-01-01T00-00-00-2022-12-31T00-00-00.nc",
-"cmems_mod_glo_phy_anfc_0.083deg_P1M-m_siconc_19.00E-20.00E_19.00N-20.00N_2023-01-01T00-00-00-2023-12-31T00-00-00.nc".
+"cmems_mod_glo_phy_anfc_0.083deg_P1M-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_19.00E-20.00E_19.00N-20.00N_2024-01-01T00-00-00-2024-12-01T00-00-00.nc",
+"cmems_mod_glo_phy_anfc_0.083deg_P1M-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_19.00E-20.00E_19.00N-20.00N_2025-01-01T00-00-00-2025-12-01T00-00-00.nc".
 
 Here is an example in CLI:
 
 .. code-block:: bash
 
-    copernicusmarine subset --dataset-id cmems_mod_glo_phy_anfc_0.083deg_P1M-m -x -9 -X -7 -y 34 -Y 38 -Z 2 -t 2022-01-01 -T 2023-05-01 split-on --on-variables
+    copernicusmarine subset --dataset-id cmems_mod_glo_phy_anfc_0.083deg_P1M-m -x -9 -X -7 -y 34 -Y 38 -Z 2 -t 2024-01-01 -T 2025-05-01 split-on --on-variables
 
 This will create one file per variable in the selected variables, here 24, named as if the ``--on-variables`` option was used for each variable,
-e.g. "cmems_mod_glo_phy-all_my_0.25deg_P1D-m_mlotst_cglo_9.00W-7.00W_34.00N-38.00N_2022-01-01-2023-05-01.nc",
-"cmems_mod_glo_phy-all_my_0.25deg_P1D-m_thetao_cglo_9.00W-7.00W_34.00N-38.00N_0.51-1.56m_2022-01-01-2023-05-01.nc".
+e.g. "cmems_mod_glo_phy_anfc_0.083deg_P1M-m_ist_9.00W-7.00W_34.00N-38.00N_2024-01-01T00-00-00-2025-05-01T00-00-00.nc",
+"cmems_mod_glo_phy_anfc_0.083deg_P1M-m_mlotst_9.00W-7.00W_34.00N-38.00N_2024-01-01T00-00-00-2025-05-01T00-00-00.nc".
 
 To use parallel downloading when splitting on several files, you can use the ``concurrent-processes`` option to specify the number of concurrent processes to run simultaneously.
 The Toolbox uses Python's ``concurrent.futures.ProcessPoolExecutor`` to manage parallel execution.
@@ -68,8 +68,8 @@ The Toolbox uses Python's ``concurrent.futures.ProcessPoolExecutor`` to manage p
 
   response = copernicusmarine.subset_split_on(
       dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1M-m",
-      start_datetime="2022-01-01",
-      end_datetime="2023-12-31",
+      start_datetime="2024-01-01",
+      end_datetime="2025-12-31",
       on_time="year",
       concurrent_processes=2,
       maximum_latitude=20,

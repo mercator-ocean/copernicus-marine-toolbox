@@ -73,7 +73,6 @@ This option allows you to specify request parameters in a provided JSON file, wh
       "maximum_depth": 10,
       "variables": ["siconc"],
       "output_directory": "copernicusmarine_data",
-      "request_file": false,
       "overwrite": false
     }
 

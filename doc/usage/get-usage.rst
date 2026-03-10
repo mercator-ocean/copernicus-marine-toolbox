@@ -16,16 +16,17 @@ Download the dataset file(s) as originally produced, based on the dataset ID or 
 
 .. code-block:: bash
 
-    INFO - 2025-11-27T11:20:55Z - Selected dataset version: "202511"
-    INFO - 2025-11-27T11:20:55Z - Selected dataset part: "default"
-    INFO - 2025-11-27T11:20:55Z - Listing files on remote server...
-    1it [00:00, 10.68it/s]
-    Downloading files: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 30/30 [00:32<00:00,  1.08s/it]
+    INFO - 2026-03-10T13:34:15Z - Selected dataset version: "202411"
+    INFO - 2026-03-10T13:34:15Z - Selected dataset part: "default"
+    INFO - 2026-03-10T13:34:16Z - Listing files on remote server...
+    1it [00:00,  4.03it/s]
+    INFO - 2026-03-10T13:34:16Z - Total size of the download: 33.72 MB.
+    Downloading files: 100%|████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.77s/it]
     {
-      "number_of_files_to_download": 30,
-      "total_size": "1354.84 MB",
-      "status": "000",
-      "message": "The request was successful."
+    "number_of_files_to_download": 1,
+    "total_size": "33.72 MB",
+    "status": "000",
+    "message": "The request was successful."
     }
 
 **By default:**

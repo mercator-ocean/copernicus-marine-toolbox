@@ -79,7 +79,7 @@ def cli_subset():
 
         copernicusmarine subset --dataset-id cmems_mod_glo_phy_anfc_0.083deg_P1M-m --variable siconc --variable siage --start-datetime 2023-01-01 --end-datetime 2024-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1 --minimum-depth 1 --maximum-depth 2
 
-    Is equivalent to the following one with short form arguments:
+    is equivalent to the following one with short form arguments:
 
     .. code-block:: bash
 
