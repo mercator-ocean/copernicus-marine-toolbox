@@ -5,6 +5,7 @@ from copernicusmarine.core_functions.credentials_utils import (
     RECOVER_YOUR_CREDENTIALS_MESSAGE,
     copernicusmarine_validate_and_get_user,
     credentials_file_builder,
+    try_use_existing_credentials_file,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -26,20 +27,35 @@ def login_function(
             return True
         else:
             return False
-    credentials_file, has_been_aborted = credentials_file_builder(
-        username=username,
-        password=password,
-        configuration_file_directory=configuration_file_directory,
-        force_overwrite=force_overwrite,
-    )
-    if has_been_aborted:
-        logger.info("No configuration file have been modified.")
-        return False
-    if credentials_file is not None:
-        logger.info(f"Credentials file stored in {credentials_file}.")
-        return True
+    if not force_overwrite:
+        (
+            existing_valid_credentials,
+            overwrite,
+        ) = try_use_existing_credentials_file(
+            configuration_file_directory=configuration_file_directory
+        )
     else:
-        logger.error("Invalid credentials.")
-        logger.info("No configuration file have been modified.")
-        logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+        existing_valid_credentials = False
+        overwrite = True
+    if existing_valid_credentials and not force_overwrite:
+        return True
+    if not existing_valid_credentials and not overwrite:
+        return False
+    if force_overwrite or not existing_valid_credentials:
+        credentials_file, has_been_aborted = credentials_file_builder(
+            username=username,
+            password=password,
+            configuration_file_directory=configuration_file_directory,
+            force_overwrite=force_overwrite,
+        )
+        if has_been_aborted:
+            logger.info("No configuration file have been modified.")
+            return False
+        if credentials_file is not None:
+            logger.info(f"Credentials file stored in {credentials_file}.")
+            return True
+        else:
+            logger.error("Invalid credentials.")
+            logger.info("No configuration file have been modified.")
+            logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
     return False
