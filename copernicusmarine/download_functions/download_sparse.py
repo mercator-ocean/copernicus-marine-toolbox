@@ -502,12 +502,14 @@ def _dataframe_to_netcdf_per_platform(
 
             encoding = _build_netcdf_encoding(ds, netcdf_compression_level)
             netcdf_format = "NETCDF3_CLASSIC" if netcdf3_compatible else None
+            engine = "h5netcdf" if not netcdf3_compatible else "netcdf4"
 
             with TemporaryPathSaver(output_path_with_plaform_id) as tmp_file:
                 ds.to_netcdf(
                     tmp_file,
                     encoding=encoding,
                     format=netcdf_format,
+                    engine=engine,
                 )
 
             produced_paths.append(platform_filename)
