@@ -110,6 +110,15 @@ There are also some options that behave differently or are not available for spa
 Downloading sparse data as NetCDF
 """"""""""""""""""""""""""""""""""
 
+.. warning::
+
+  This feature requires to have ``netcdf4`` installed in your Python environment. You can install it via pip:
+  .. code-block:: bash
+
+    pip install netcdf4
+    # or
+    conda install conda-forge::netcdf4
+
 When using ``--file-format netcdf``, the toolbox produces one ``.nc`` file per platform **inside a directory** named after the request.
 
 **Example:**
