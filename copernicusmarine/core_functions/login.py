@@ -46,7 +46,7 @@ def login_function(
             username=username,
             password=password,
             configuration_file_directory=configuration_file_directory,
-            force_overwrite=force_overwrite,
+            force_overwrite=overwrite,
         )
         if has_been_aborted:
             logger.info("No configuration file have been modified.")
