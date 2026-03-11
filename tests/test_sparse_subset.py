@@ -286,6 +286,8 @@ class TestSparseSubset:
         measured_vars = [v for v in data_var_names if not v.endswith("_qc")]
         for var_name in measured_vars:
             assert f"{var_name}_qc" in data_var_names
+        assert "download_date" in ds.attrs
+        assert "copernicusmarine_toolbox_version" in ds.attrs
         ds.close()
 
     def test_netcdf_attributes_ncdump(self, tmp_path, snapshot):
@@ -306,6 +308,10 @@ class TestSparseSubset:
         response = loads(self.output.stdout)
         nc_files = sorted(pathlib.Path(response["file_path"]).glob("*.nc"))
         assert len(nc_files) == 2
+        attrs_to_exclude = [
+            ":download_date",
+            ":copernicusmarine_toolbox_version",
+        ]
         for nc_file in nc_files:
             self.netcdf_output = execute_in_terminal(
                 [
@@ -318,7 +324,8 @@ class TestSparseSubset:
             stdout = "\n".join(
                 line
                 for line in self.netcdf_output.stdout.splitlines()
-                if ":download_date" not in line and line.strip() != ""
+                if all(attr not in line for attr in attrs_to_exclude)
+                and line.strip() != ""
             )
             assert stdout == snapshot(name=str(nc_file.name) + ".txt")
 
