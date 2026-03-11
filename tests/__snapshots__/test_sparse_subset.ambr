@@ -83,7 +83,6 @@
   		:geospatial_vertical_max = -1. ;
   		string :references = "http://marine.copernicus.eu" ;
   		string :license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
-  		string :copernicusmarine_toolbox_version = "2.3.0" ;
   		string :product_id = "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031" ;
   		string :dataset_id = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr" ;
   		string :Conventions = "CF-1.9 ACDD-1.3" ;
@@ -176,7 +175,6 @@
   		:geospatial_vertical_max = -1. ;
   		string :references = "http://marine.copernicus.eu" ;
   		string :license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
-  		string :copernicusmarine_toolbox_version = "2.3.0" ;
   		string :product_id = "INSITU_ARC_PHYBGCWAV_DISCRETE_MYNRT_013_031" ;
   		string :dataset_id = "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr" ;
   		string :Conventions = "CF-1.9 ACDD-1.3" ;
