@@ -41,7 +41,9 @@ SHARED: dict[str, str] = {
     "REQUEST_FILE_HELP": (
         "Option to pass a file containing the arguments. For more information "
         "please refer to the documentation or use option ``--create-template`` "
-        "from the command line interface for an example template."
+        "from the command line interface for an example template. "
+        "If you set an option both in the request file and as a direct argument, "
+        "the value provided as a direct argument will be used."
     ),
     "SKIP_EXISTING_HELP": (
         "If the files already exists where it would be downloaded, then "
