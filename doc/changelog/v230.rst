@@ -20,6 +20,7 @@ Fixes
 * Updated the :ref:`Installation page <installation-page-domains>` in the documentation with a more up-to-date link to test the connection to the server domains.
 * Updated the output of DatasetVersionNotFound to be more descriptive.
 * Some minor documentation fixes and improvements.
+* Fixed an issue where using ``request-file`` option would not work properly with boolean options.
 
 Subset
 ------

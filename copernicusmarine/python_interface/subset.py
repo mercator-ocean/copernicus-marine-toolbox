@@ -134,7 +134,7 @@ def subset(
     service : str, optional
         Force download through one of the available services using the service name among ['arco-geo-series', 'arco-time-series', 'omi-arco', 'static-arco', 'arco-platform-series'] or its short name among ['geoseries', 'timeseries', 'omi-arco', 'static-arco', 'platformseries'].
     request_file : pathlib.Path | str, optional
-        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template. If you set an option both in the request file and in the command line, the value provided in the command line will be used.
     motu_api_request : str, optional
         Option to pass a complete MOTU API request as a string. Caution, user has to replace double quotes " with single quotes ' in the request.
     dry_run : bool, optional

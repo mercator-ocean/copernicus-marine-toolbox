@@ -313,7 +313,7 @@ def create_subset_request(
         if "credentials_file" in json_content:
             credentials_file = pathlib.Path(json_content["credentials_file"])
 
-    username, password = get_and_check_username_password(
+    username, _ = get_and_check_username_password(
         username,
         password,
         credentials_file,
@@ -326,6 +326,8 @@ def create_subset_request(
         subset_request = SubsetRequest.from_file(
             request_file, username=username
         )
+        if dataset_id:
+            subset_request.dataset_id = dataset_id
     if motu_api_request:
         motu_api_subset_request = convert_motu_api_request_to_structure(
             motu_api_request, username=username
@@ -628,6 +630,16 @@ def create_get_request(
     disable_progress_bar: bool,
 ) -> GetRequest:
     logger.debug("Checking username and password...")
+    if request_file and not username and not credentials_file:
+        with open(request_file) as json_file:
+            json_content = json.load(json_file)
+        if "username" in json_content:
+            username = json_content["username"]
+        if "password" in json_content:
+            password = json_content["password"]
+        if "credentials_file" in json_content:
+            credentials_file = pathlib.Path(json_content["credentials_file"])
+
     username, _ = get_and_check_username_password(
         username, password, credentials_file
     )
@@ -635,6 +647,8 @@ def create_get_request(
 
     if request_file:
         get_request.from_file(request_file)
+        if dataset_id:
+            get_request.dataset_id = dataset_id
     (
         get_request.dataset_id,
         get_request.dataset_version,
