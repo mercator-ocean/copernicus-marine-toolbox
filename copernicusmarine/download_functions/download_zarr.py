@@ -175,11 +175,6 @@ def download_zarr(
             dataset, axis_coordinate_id_mapping
         )
 
-    logger.info(
-        f"Total size estimation: "
-        f"{human_readable_size(final_result_size_estimation)}."
-    )
-
     dataset.close()
 
     filename = get_filename(
@@ -524,7 +519,7 @@ def _download_dataset_as_netcdf(
     for coord in dataset.coords:
         dataset[coord].encoding["_FillValue"] = None
     if netcdf_compression_level > 0:
-        logger.info(
+        logger.debug(
             f"NetCDF compression enabled with level {netcdf_compression_level}"
         )
         comp = {
