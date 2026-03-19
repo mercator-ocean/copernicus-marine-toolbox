@@ -112,9 +112,9 @@ This option allows you to specify request parameters in a provided JSON file, wh
      copernicusmarine get --request-file get_template.json
 
 
-If you set an option both in the request file and in the command line, the value provided in the command line will be used.
+If you set an option both in the request file and as a direct argument, the value provided as a direct argument will be used.
 
-Option ``--credentials-file``
+  Option ``--credentials-file``
 *********************************
 
 You can use the ``--credentials-file`` option to specify a credentials file. The file can be either ``.copernicusmarine-credentials``, ``motuclient-python.ini``, ``.netrc``, or ``_netrc``.

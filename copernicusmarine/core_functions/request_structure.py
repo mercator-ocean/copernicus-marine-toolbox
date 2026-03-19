@@ -303,14 +303,14 @@ def create_subset_request(
     if overwrite:
         if skip_existing:
             raise MutuallyExclusiveArguments("overwrite", "skip_existing")
-    if request_file and not username and not credentials_file:
+    if request_file:
         with open(request_file) as json_file:
             json_content = json.load(json_file)
-        if "username" in json_content:
+        if "username" in json_content and not username:
             username = json_content["username"]
-        if "password" in json_content:
+        if "password" in json_content and not password:
             password = json_content["password"]
-        if "credentials_file" in json_content:
+        if "credentials_file" in json_content and not credentials_file:
             credentials_file = pathlib.Path(json_content["credentials_file"])
 
     username, _ = get_and_check_username_password(
@@ -333,7 +333,9 @@ def create_subset_request(
             motu_api_request, username=username
         )
         subset_request = subset_request.update(
-            motu_api_subset_request.__dict__
+            motu_api_subset_request.model_dump(
+                exclude_unset=True, exclude_none=True
+            )
         )
     (
         subset_request.dataset_id,
@@ -630,14 +632,14 @@ def create_get_request(
     disable_progress_bar: bool,
 ) -> GetRequest:
     logger.debug("Checking username and password...")
-    if request_file and not username and not credentials_file:
+    if request_file:
         with open(request_file) as json_file:
             json_content = json.load(json_file)
-        if "username" in json_content:
+        if "username" in json_content and not username:
             username = json_content["username"]
-        if "password" in json_content:
+        if "password" in json_content and not password:
             password = json_content["password"]
-        if "credentials_file" in json_content:
+        if "credentials_file" in json_content and not credentials_file:
             credentials_file = pathlib.Path(json_content["credentials_file"])
 
     username, _ = get_and_check_username_password(

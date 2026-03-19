@@ -42,8 +42,8 @@ SHARED: dict[str, str] = {
         "Option to pass a file containing the arguments. For more information "
         "please refer to the documentation or use option ``--create-template`` "
         "from the command line interface for an example template. "
-        "If you set an option both in the request file and in the command line, "
-        "the value provided in the command line will be used."
+        "If you set an option both in the request file and as a direct argument, "
+        "the value provided as a direct argument will be used."
     ),
     "SKIP_EXISTING_HELP": (
         "If the files already exists where it would be downloaded, then "
