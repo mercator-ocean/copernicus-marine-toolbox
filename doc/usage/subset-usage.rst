@@ -132,7 +132,7 @@ Each NetCDF file has the following structure:
 
 - **Dimensions**: ``time`` and ``depth_level``. The ``depth_level`` dimension is an integer index that ranks depth observations for each time step (0 for the shallowest, 1 for the next, etc.). Its size equals the maximum number of depth points across all time steps.
 - **Coordinates**: ``depth`` (or ``elevation``), ``latitude``, ``longitude``, ``pressure``, and ``is_depth_from_producer`` are stored as coordinate variables with shape ``(time, depth_level)``.
-- **Data variables**: Each measured quantity (e.g., PSAL, TEMP) gets its own data variable along with a companion quality-control variable (e.g., PSAL_qc, TEMP_qc).
+- **Data variables**: Each measured quantity (e.g., PSAL, TEMP) gets its own data variable along with a companion quality-control variable (e.g., PSAL_QC, TEMP_QC).
 - **Global attributes**: Per-platform metadata such as ``institution``, ``doi``, ``product_doi``, time and spatial coverage, and the dataset ID.
 
 The ``--netcdf-compression-level`` and ``--netcdf3-compatible`` options are also supported for sparse NetCDF output.

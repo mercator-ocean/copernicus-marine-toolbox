@@ -726,7 +726,6 @@ def _add_attributes_to_dataset(
     # pressure attributes
     if "pressure" in ds.coords:
         ds["pressure"].attrs["units"] = "dbar"
-        # ds["pressure"].attrs["axis"] = "Z"
         ds["pressure"].attrs["positive"] = "down"
         ds["pressure"].attrs["standard_name"] = "reference_pressure"
         if vertical_axis not in ds.coords:
@@ -750,11 +749,11 @@ def _add_attributes_to_dataset(
     variables_info = {
         variable.short_name: variable for variable in service.variables
     }
-    axis_order = ["T", "Z", "Y", "X"]
+    axis_order = ["T", "Z", "Y", "X", "other"]
     coordinates = [str(axis) for axis in ds.coords]
     coordinates = sorted(
         coordinates,
-        key=lambda x: axis_order.index(ds[x].attrs.get("axis", "")),
+        key=lambda x: axis_order.index(ds[x].attrs.get("axis", "other")),
     )
     coordinates_str = " ".join(coordinates)
     for variable in ds.data_vars:
