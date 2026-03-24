@@ -6,6 +6,7 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 from arcosparse import (
@@ -459,14 +460,6 @@ def _dataframe_to_netcdf_per_platform(
     netcdf_compression_level: int = 0,
     netcdf3_compatible: bool = False,
 ) -> list[str]:
-    vertical_col = "elevation" if vertical_axis == "elevation" else "depth"
-    index_cols = ["time", vertical_col]
-    aux_cols = [
-        "latitude",
-        "longitude",
-        "pressure",
-        "is_depth_from_producer",
-    ]
     metadata_cols = [
         "platform_id",
         "platform_type",
@@ -483,9 +476,8 @@ def _dataframe_to_netcdf_per_platform(
 
             ds = _platform_dataframe_to_dataset(
                 platform_df,
-                index_cols=index_cols,
-                aux_cols=aux_cols,
                 metadata_cols=metadata_cols,
+                vertical_axis=vertical_axis,
             )
 
             ds = _add_attributes_to_dataset(
@@ -527,9 +519,8 @@ def _dataframe_to_netcdf_per_platform(
 
 def _platform_dataframe_to_dataset(
     platform_df: pd.DataFrame,
-    index_cols: list[str],
-    aux_cols: list[str],
     metadata_cols: list[str],
+    vertical_axis: VerticalAxis,
 ) -> xr.Dataset:
     """
     ``depth_level`` is an integer index: for each time step, depth
@@ -537,9 +528,14 @@ def _platform_dataframe_to_dataset(
     points across all time steps determines the size of the
     ``depth_level`` dimension.
     """
-
+    index_cols = ["time", vertical_axis]
+    variable_cols = ["variable", "value", "value_qc"]
     obs_df = platform_df.drop(columns=metadata_cols, errors="ignore")
-
+    obs_df = obs_df.dropna(axis=1, how="all")
+    non_nans_cols = obs_df.columns.to_list()
+    aux_cols = [
+        col for col in non_nans_cols if col not in index_cols + variable_cols
+    ]
     vertical_col = [c for c in index_cols if c != "time"][0]
     obs_df = obs_df.sort_values(["time", vertical_col])
 
@@ -550,7 +546,7 @@ def _platform_dataframe_to_dataset(
         aggfunc="first",
     )
     pivot.columns = [
-        f"{var}_qc" if metric == "value_qc" else var
+        f"{var}_QC" if metric == "value_qc" else var
         for metric, var in pivot.columns
     ]
 
@@ -564,12 +560,31 @@ def _platform_dataframe_to_dataset(
     )
     merged = merged.set_index(["time", "depth_level"])
 
+    if vertical_col in non_nans_cols:
+        merged.loc[
+            merged["is_depth_from_producer"] == 0, vertical_col
+        ] = np.nan
+        merged = merged.drop(
+            columns=["is_depth_from_producer"], errors="ignore"
+        )
+        if merged[vertical_col].isna().all():
+            merged = merged.drop(columns=[vertical_col], errors="ignore")
+            non_nans_cols = [
+                coln for coln in non_nans_cols if coln != vertical_col
+            ]
+
     ds = merged.to_xarray()
-    ds = ds.set_coords("pressure")
-    ds = ds.set_coords("latitude")
-    ds = ds.set_coords("longitude")
-    ds = ds.set_coords(vertical_col)
-    ds = ds.set_coords("is_depth_from_producer")
+    if "pressure" in non_nans_cols:
+        ds = ds.set_coords("pressure")
+    if "latitude" in non_nans_cols:
+        ds = ds.set_coords("latitude")
+    if "longitude" in non_nans_cols:
+        ds = ds.set_coords("longitude")
+    if vertical_col in non_nans_cols:
+        ds = ds.set_coords(vertical_col)
+
+    ds = ds.set_coords("time")
+    ds = ds.drop_vars("depth_level")
     ds.time.attrs["units"] = "seconds since 1970-01-01T00:00:00Z"
     return ds
 
@@ -588,6 +603,8 @@ def _build_netcdf_encoding(
             "complevel": compression_level,
             "contiguous": False,
             "shuffle": True,
+            "scale_factor": 1.0,
+            "add_offset": 0.0,
         }
     return encoding
 
@@ -614,6 +631,8 @@ def _add_attributes_to_dataset(
     }
     if metadata_info.get("platform_id"):
         ds.attrs["platform_code"] = metadata_info["platform_id"]
+    if metadata_info.get("platform_type"):
+        ds.attrs["platform_type"] = metadata_info["platform_type"]
     if metadata_info.get("institution"):
         ds.attrs["institution"] = metadata_info["institution"]
     if metadata_info.get("doi"):
@@ -681,69 +700,73 @@ def _add_attributes_to_dataset(
         f"with Copernicus Marine Toolbox"
     )
     ds.attrs["contact"] = "servicedesk.cmems@mercator-ocean.eu"
+    ds.attrs[
+        "history"
+    ] = f"{datetime_to_isoformat(datetime.now())}: Subset from ARCO data created with Copernicus Marine Toolbox"  # noqa
 
     # time attributes
-    ds["time"].attrs["axis"] = "T"
-    ds["time"].attrs["standard_name"] = "time"
+    if "time" in ds.coords:
+        ds["time"].attrs["axis"] = "T"
+        ds["time"].attrs["standard_name"] = "time"
+        ds["time"].attrs["calendar"] = "standard"
     # unit is set before
 
     # depth attributes
-    if vertical_axis == "elevation":
-        ds["elevation"].attrs["positive"] = "up"
-    else:
-        ds["depth"].attrs["positive"] = "down"
-    ds[vertical_axis].attrs["units"] = "m"
-    ds[vertical_axis].attrs["valid_min"] = -12000.0
-    ds[vertical_axis].attrs["valid_max"] = 12000.0
-    ds[vertical_axis].attrs["standard_name"] = vertical_axis
+    if vertical_axis in ds.coords:
+        if vertical_axis == "elevation":
+            ds["elevation"].attrs["positive"] = "up"
+        else:
+            ds["depth"].attrs["positive"] = "down"
+        ds[vertical_axis].attrs["units"] = "m"
+        ds[vertical_axis].attrs["valid_min"] = -12000.0
+        ds[vertical_axis].attrs["valid_max"] = 12000.0
+        ds[vertical_axis].attrs["standard_name"] = vertical_axis
+        ds[vertical_axis].attrs["axis"] = "Z"
 
     # pressure attributes
-    ds["pressure"].attrs["units"] = "dbar"
-    # ds["pressure"].attrs["axis"] = "Z"
-    ds["pressure"].attrs["positive"] = "down"
-    ds["pressure"].attrs["standard_name"] = "reference_pressure"
+    if "pressure" in ds.coords:
+        ds["pressure"].attrs["units"] = "dbar"
+        # ds["pressure"].attrs["axis"] = "Z"
+        ds["pressure"].attrs["positive"] = "down"
+        ds["pressure"].attrs["standard_name"] = "reference_pressure"
+        if vertical_axis not in ds.coords:
+            ds["pressure"].attrs["axis"] = "Z"
 
     # latitude and longitude attributes
-    ds["latitude"].attrs["units"] = "degrees_north"
-    ds["latitude"].attrs["axis"] = "Y"
-    ds["latitude"].attrs["valid_min"] = -90.0
-    ds["latitude"].attrs["valid_max"] = 90.0
-    ds["latitude"].attrs["standard_name"] = "latitude"
-    ds["longitude"].attrs["units"] = "degrees_east"
-    ds["longitude"].attrs["axis"] = "X"
-    ds["longitude"].attrs["valid_min"] = -180.0
-    ds["longitude"].attrs["valid_max"] = 180.0
-    ds["longitude"].attrs["standard_name"] = "longitude"
-
-    # is depth from producer attributes
-    ds["is_depth_from_producer"].attrs["units"] = "1"
-    ds["is_depth_from_producer"].attrs["long_name"] = (
-        "Flag indicating if the depth value is from the "
-        "data producer (1) or calculated from pressure (0)"
-    )
-
-    # depth level
-    ds["depth_level"].attrs["long_name"] = (
-        "Depth level index. "
-        "For each time step, depth observations are ranked by depth. "
-    )
-    ds["depth_level"].attrs["axis"] = "Z"
-    ds["depth_level"].attrs["positive"] = "down"
-    ds["depth_level"].attrs["units"] = "1"
+    if "latitude" in ds.coords:
+        ds["latitude"].attrs["units"] = "degrees_north"
+        ds["latitude"].attrs["axis"] = "Y"
+        ds["latitude"].attrs["valid_min"] = -90.0
+        ds["latitude"].attrs["valid_max"] = 90.0
+        ds["latitude"].attrs["standard_name"] = "latitude"
+    if "longitude" in ds.coords:
+        ds["longitude"].attrs["units"] = "degrees_east"
+        ds["longitude"].attrs["axis"] = "X"
+        ds["longitude"].attrs["valid_min"] = -180.0
+        ds["longitude"].attrs["valid_max"] = 180.0
+        ds["longitude"].attrs["standard_name"] = "longitude"
 
     # variables
     variables_info = {
         variable.short_name: variable for variable in service.variables
     }
+    axis_order = ["T", "Z", "Y", "X"]
+    coordinates = [str(axis) for axis in ds.coords]
+    coordinates = sorted(
+        coordinates,
+        key=lambda x: axis_order.index(ds[x].attrs.get("axis", "")),
+    )
+    coordinates_str = " ".join(coordinates)
     for variable in ds.data_vars:
         variable = str(variable)
-        if "_qc" not in variable:
+        ds[variable].encoding["coordinates"] = coordinates_str
+        if "_QC" not in variable:
             variable_info = variables_info[variable]
             ds[variable].attrs["standard_name"] = variable_info.standard_name
             ds[variable].attrs["units"] = variable_info.units
-            ds[variable].attrs["ancillary_variable"] = variable + "_qc"
+            ds[variable].attrs["ancillary_variable"] = variable + "_QC"
         else:
-            variable_without_qc = variable.replace("_qc", "")
+            variable_without_qc = variable.replace("_QC", "")
             variable_info = variables_info[variable_without_qc]
             ds[variable].attrs[
                 "long_name"
