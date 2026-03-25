@@ -50,7 +50,8 @@
   		latitude:valid_min = -90. ;
   		latitude:valid_max = 90. ;
   		string latitude:standard_name = "latitude" ;
-  	int64 time(time) ;
+  	double time(time) ;
+  		time:_FillValue = NaN ;
   		string time:units = "seconds since 1970-01-01T00:00:00Z" ;
   		string time:axis = "T" ;
   		string time:standard_name = "time" ;
@@ -133,7 +134,8 @@
   		latitude:valid_min = -90. ;
   		latitude:valid_max = 90. ;
   		string latitude:standard_name = "latitude" ;
-  	int64 time(time) ;
+  	double time(time) ;
+  		time:_FillValue = NaN ;
   		string time:units = "seconds since 1970-01-01T00:00:00Z" ;
   		string time:axis = "T" ;
   		string time:standard_name = "time" ;
