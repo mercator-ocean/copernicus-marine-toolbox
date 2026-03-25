@@ -111,6 +111,10 @@ This option allows you to specify request parameters in a provided JSON file, wh
 
      copernicusmarine get --request-file get_template.json
 
+
+If you set an option both in the request file and as a direct argument, the value provided as a direct argument will be used.
+
+
 Option ``--credentials-file``
 *********************************
 

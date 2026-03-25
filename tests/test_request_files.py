@@ -2,6 +2,9 @@ import fnmatch
 import re
 from pathlib import Path
 
+import pytest
+
+import copernicusmarine
 from tests.test_utils import (
     execute_in_terminal,
     get_all_files_in_folder_tree,
@@ -226,3 +229,22 @@ class TestRequestFiles:
             "Other options passed with create template: no_directories"
             == remove_extra_logging_prefix_info(self.output.stderr)
         )
+
+    def test_dataset_id_option_is_overridden(self):
+        with pytest.raises(copernicusmarine.DatasetNotFound):
+            copernicusmarine.get(
+                dataset_id="wrong_dataset_id",
+                request_file=get_path_to_request_file(
+                    "test_get_request_with_request_file"
+                ),
+                dry_run=True,
+            )
+
+        with pytest.raises(copernicusmarine.DatasetNotFound):
+            copernicusmarine.subset(
+                dataset_id="wrong_dataset_id",
+                request_file=get_path_to_request_file(
+                    "test_subset_request_with_request_file"
+                ),
+                dry_run=True,
+            )
