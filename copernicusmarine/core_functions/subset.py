@@ -19,7 +19,10 @@ from copernicusmarine.core_functions.services_utils import (
     RetrievalService,
     get_retrieval_service,
 )
-from copernicusmarine.core_functions.utils import get_unique_filepath
+from copernicusmarine.core_functions.utils import (
+    get_unique_filepath,
+    human_readable_size,
+)
 from copernicusmarine.download_functions.download_sparse import download_sparse
 from copernicusmarine.download_functions.download_zarr import download_zarr
 from copernicusmarine.download_functions.subset_xarray import (
@@ -41,11 +44,17 @@ def subset_function(
         CopernicusMarineServiceNames.STATIC_ARCO,
     ]:
         raise ServiceNotSupported(retrieval_service.service_name)
-    return download_zarr_or_sparse(
+    subset_response = download_zarr_or_sparse(
         subset_request=subset_request,
         retrieval_service=retrieval_service,
         tdqm_configuration={"disable": subset_request.disable_progress_bar},
     )
+    if subset_response.file_size:
+        logger.info(
+            f"Total size of the download: "
+            f"{human_readable_size(subset_response.file_size)}."
+        )
+    return subset_response
 
 
 def retrieve_metadata_and_check_request(

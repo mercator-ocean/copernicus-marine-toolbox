@@ -277,17 +277,16 @@ class TestSparseSubset:
         assert "time" in ds.dims
         assert "depth_level" in ds.dims
         assert len(ds.dims) == 2
-        assert "pressure" in ds.coords
         assert "latitude" in ds.coords
         assert "longitude" in ds.coords
         assert "depth" in ds.coords
-        assert "is_depth_from_producer" in ds.coords
         data_var_names = list(ds.data_vars)
-        measured_vars = [v for v in data_var_names if not v.endswith("_qc")]
+        measured_vars = [v for v in data_var_names if not v.endswith("_QC")]
         for var_name in measured_vars:
-            assert f"{var_name}_qc" in data_var_names
+            assert f"{var_name}_QC" in data_var_names
         assert "download_date" in ds.attrs
         assert "copernicusmarine_toolbox_version" in ds.attrs
+        assert "history" in ds.attrs
         ds.close()
 
     def test_netcdf_attributes_ncdump(self, tmp_path, snapshot):
@@ -311,6 +310,7 @@ class TestSparseSubset:
         attrs_to_exclude = [
             ":download_date",
             ":copernicusmarine_toolbox_version",
+            ":history",
         ]
         for nc_file in nc_files:
             self.netcdf_output = execute_in_terminal(

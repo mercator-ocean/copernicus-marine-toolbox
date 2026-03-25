@@ -29,6 +29,7 @@ from copernicusmarine.core_functions.subset import (
     retrieve_metadata_and_check_request,
 )
 from copernicusmarine.core_functions.utils import (
+    human_readable_size,
     run_multiprocessors,
     timestamp_or_datestring_to_datetime,
 )
@@ -176,6 +177,14 @@ def subset_split_on_function(
                 )
                 pbar.update(1)
 
+    total_size_downloaded = sum(
+        response.file_size or 0 for response in responses
+    )
+    if total_size_downloaded:
+        logger.info(
+            f"Total size of the download: "
+            f"{human_readable_size(total_size_downloaded)}."
+        )
     return responses
 
 

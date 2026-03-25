@@ -71,7 +71,7 @@ def get(
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
         Mutually exclusive with ``skip_existing``, ``sync`` and ``sync_delete``.
     request_file : pathlib.Path | str, optional
-        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template.
+        Option to pass a file containing the arguments. For more information please refer to the documentation or use option ``--create-template`` from the command line interface for an example template. If you set an option both in the request file and as a direct argument, the value provided as a direct argument will be used.
     filter : str, optional
         A pattern that must match the absolute paths of the files to download.
     regex : str, optional
