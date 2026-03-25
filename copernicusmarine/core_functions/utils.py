@@ -119,7 +119,9 @@ def datetime_to_timestamp(
     Returns a timestamp corresponding to the seconds or
     milliseconds since the epoch (January 1, 1970, 00:00:00 UTC).
     """
-    return calendar.timegm(date.timetuple()) * (1000 if unit == "ms" else 1)
+    return (
+        calendar.timegm(date.timetuple()) + date.microsecond / 1_000_000
+    ) * (1000 if unit == "ms" else 1)
 
 
 def timestamp_or_datestring_to_datetime(
