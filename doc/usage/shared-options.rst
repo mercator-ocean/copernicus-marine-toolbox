@@ -155,6 +155,8 @@ Here is an example of specifying the version in the dataset ID, which is not rec
 
 .. code:: python
 
+  import copernciusmarine
+
   copernicusmarine.get(
       dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_202511", dry_run=True
   )
@@ -162,6 +164,8 @@ Here is an example of specifying the version in the dataset ID, which is not rec
 And here is an example of specifying the version using the ``dataset_version`` argument, which is preferred:
 
 .. code:: python
+
+  import copernicusmarine
 
   copernicusmarine.get(
       dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m",

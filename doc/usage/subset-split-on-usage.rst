@@ -49,7 +49,7 @@ The following split options are available:
 
 This will create one file per year in the selected time range, here:
 
-.. code-block::
+.. code-block:: text
 
     cmems_mod_glo_phy_anfc_0.083deg_P1M-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_19.00E-20.00E_19.00N-20.00N_2024-01-01T00-00-00-2024-12-01T00-00-00.nc
     cmems_mod_glo_phy_anfc_0.083deg_P1M-m_ist-mlotst-pbo-siage-sialb-siconc-sisnthick-sithick-sivelo-sob-tob-usi-vsi-zos_19.00E-20.00E_19.00N-20.00N_2025-01-01T00-00-00-2025-12-01T00-00-00.nc
@@ -63,7 +63,7 @@ Here is an example in CLI:
 This will create one file per variable in the selected variables, here 24, named as if the ``--on-variables`` option was used for each variable,
 e.g:
 
-.. code-block::
+.. code-block:: text
 
     cmems_mod_glo_phy_anfc_0.083deg_P1M-m_ist_9.00W-7.00W_34.00N-38.00N_2024-01-01T00-00-00-2025-05-01T00-00-00.nc
     cmems_mod_glo_phy_anfc_0.083deg_P1M-m_mlotst_9.00W-7.00W_34.00N-38.00N_2024-01-01T00-00-00-2025-05-01T00-00-00.nc
