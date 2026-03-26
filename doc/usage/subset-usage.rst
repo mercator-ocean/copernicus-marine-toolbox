@@ -42,7 +42,7 @@ We can download all the time series of a given geographical area and time period
 
 .. code-block:: bash
 
-  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr -y 45 -Y 90 -x -146.99 -X 180 -z 0 -Z 10 --start-datetime "2023-11-25T00:00:00" -T "2024-11-26T03:00:00" --dataset-part history --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
+  copernicusmarine subset -i cmems_obs-ins_arc_phybgcwav_mynrt_na_irr --dataset-part history -y 45 -x -146.99 -Z 10 -t "2023-11-28T00:00:00" -T "2023-12-01T03:00:00" --platform-id B-Sulafjorden___MO --platform-id F-Vartdalsfjorden___MO
 
 This dataset can be opened with pandas:
 
@@ -51,7 +51,7 @@ This dataset can be opened with pandas:
   import pandas as pd
 
   df = pd.read_csv(
-      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_multi-vars_B-Sulafjorden___MO-F-Vartdalsfjorden___MO_146.99W-180.00E_45.00N-90.00N_0.00-10.00m_2023-11-25-2024-11-26.csv"
+      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_multi-vars_B-Sulafjorden___MO-F-Vartdalsfjorden___MO_2023-11-28-2023-12-01.csv"
   )
 
 It is also possible to load the Pandas DataFrame directly using the :func:`~copernicusmarine.read_dataframe` function:
@@ -63,13 +63,10 @@ It is also possible to load the Pandas DataFrame directly using the :func:`~cope
   df = copernicusmarine.read_dataframe(
       dataset_id="cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
       minimum_latitude=45,
-      maximum_latitude=90,
       minimum_longitude=-146.99,
-      maximum_longitude=180,
-      minimum_depth=0,
       maximum_depth=10,
-      start_datetime="2023-11-25T00:00:00",
-      end_datetime="2024-11-26T03:00:00",
+      start_datetime="2023-11-28T00:00:00",
+      end_datetime="2023-12-01T03:00:00",
       dataset_part="history",
       platform_ids=["B-Sulafjorden", "F-Vartdalsfjorden"],
   )
@@ -116,7 +113,7 @@ When using ``--file-format netcdf``, the toolbox produces one ``.nc`` file per p
 
 .. code-block:: bash
 
-  copernicusmarine subset --dataset-id cmems_obs-ins_arc_phybgcwav_mynrt_na_irr --minimum-latitude 45 --maximum-latitude 90 --minimum-longitude -147 --maximum-longitude 180 --minimum-depth 0 --maximum-depth 10 --start-datetime 2023-11-25T00:00:00 --end-datetime 2023-11-26T03:00:00 --dataset-part history --file-format netcdf
+  copernicusmarine subset --dataset-id cmems_obs-ins_arc_phybgcwav_mynrt_na_irr --minimum-latitude 45 --minimum-longitude -147 --minimum-depth 0 --maximum-depth 10 --start-datetime 2023-11-25T00:00:00 --end-datetime 2023-11-26T03:00:00 --dataset-part history --file-format netcdf
 
 The resulting directory will contain one ``.nc`` file per platform found in the requested area. Each file can be opened with xarray:
 
@@ -125,13 +122,13 @@ The resulting directory will contain one ``.nc`` file per platform found in the 
   import xarray as xr
 
   ds = xr.open_dataset(
-      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_PSAL-TEMP_147.00W-180.00E_45.00N-90.00N_0.00-10.00m_2023-11-25-2023-11-26/Vestmannaeyjar.nc"
+      "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr_multi-vars_0.00-10.00m_2023-11-25-2023-11-26/Surtseyjardufl.nc"
   )
 
 Each NetCDF file has the following structure:
 
 - **Dimensions**: ``time`` and ``depth_level``. The ``depth_level`` dimension is an integer index that ranks depth observations for each time step (0 for the shallowest, 1 for the next, etc.). Its size equals the maximum number of depth points across all time steps.
-- **Coordinates**: ``depth`` (or ``elevation``), ``latitude``, ``longitude``, ``pressure``, and ``is_depth_from_producer`` are stored as coordinate variables with shape ``(time, depth_level)``.
+- **Coordinates**:  ``time``, ``latitude``, ``longitude`` ``depth`` (or ``elevation``) if available, and ``pressure`` if available, are stored as coordinates with shape ``(time, depth_level)``.
 - **Data variables**: Each measured quantity (e.g., PSAL, TEMP) gets its own data variable along with a companion quality-control variable (e.g., PSAL_QC, TEMP_QC).
 - **Global attributes**: Per-platform metadata such as ``institution``, ``doi``, ``product_doi``, time and spatial coverage, and the dataset ID.
 
@@ -196,9 +193,13 @@ For example, if you want to download a Zarr file, you can use either of the foll
 
 .. code-block:: bash
 
-  copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -t "20251028" --file-format zarr
-  # or
-  copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -t "20251028" --output-filename my_subset.zarr
+  copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -t "20251028" -T "20251029" --file-format zarr
+
+This is equivalent to:
+
+.. code-block:: bash
+
+  copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m -v thetao -t "20251028"  -T "20251029" --output-filename my_subset.zarr
 
 About CSV format for gridded datasets:
 

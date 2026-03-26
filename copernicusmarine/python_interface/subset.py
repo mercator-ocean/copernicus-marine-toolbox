@@ -124,7 +124,7 @@ def subset(
     output_filename : str, optional
         Save the downloaded data with the given file name (under the output directory). Extension is optional and will be added if not set. Extension takes priority over the file format option if both are set.
     file_format : str, optional
-        Format of the downloaded dataset. If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets and to CSV '.csv' for sparse datasets. Output filename extension takes priority over this option if both are set.
+        Format of the downloaded dataset. If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets and to CSV '.csv' for sparse datasets. Output filename extension takes priority over this option if both are set. For gridded datasets, the following formats are available: netcdf, zarr, csv. For sparse datasets, the following formats are available: csv, netcdf, parquet.
     overwrite : bool, optional
         If specified and if the file already exists on destination, then it will be overwritten. By default, the toolbox creates a new file with a new index (eg 'filename_(1).nc').
         Mutually exclusive with ``skip_existing``.
