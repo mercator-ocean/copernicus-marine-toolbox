@@ -10,18 +10,18 @@ The ``subset`` command allows you to remotely subset a dataset based on variable
 
 .. code-block:: bash
 
-    copernicusmarine subset --dataset-id cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m --variable thetao --start-datetime 2021-01-01 --end-datetime 2021-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
+  copernicusmarine subset --dataset-id cmems_mod_glo_phy_anfc_0.083deg_P1M-m --start-datetime 2026-01-01 --end-datetime 2026-01-03 --minimum-longitude 0.0 --maximum-longitude 0.1 --minimum-latitude 28.0 --maximum-latitude 28.1
 
 **Returns:**
 
 .. code-block:: bash
 
-  INFO - 2026-02-17T15:44:29Z - Selected dataset version: "202511"
-  INFO - 2026-02-17T15:44:29Z - Selected dataset part: "default"
-  100%|████████████████████████████████████████████████████████████| [00:01<00:00]
+  INFO - 2026-03-31T15:25:20Z - Selected dataset version: "202406"
+  INFO - 2026-03-31T15:25:20Z - Selected dataset part: "default"
+  INFO - 2026-03-31T15:25:24Z - Total size of the download: 13.53 KB.
   {
-    "file_size": "0.02 MB",
-    "data_transfer_size": "237.30 MB",
+    "file_size": "0.01 MB",
+    "data_transfer_size": "0.49 MB",
     "status": "000",
     "message": "The request was successful."
   }
