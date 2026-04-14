@@ -637,5 +637,5 @@ class TestDescribe:
         nwshelf_catalog = describe(contains=["NWSHELF"])
         assert (
             len([product.product_id for product in nwshelf_catalog.products])
-            == 8
+            == 9
         )

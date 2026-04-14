@@ -16,14 +16,15 @@ New Features
 * The minimum required Python version is now 3.10. Consequently, the versions of the dependencies have been updated: see the :ref:`dependencies section <installation-page-dependencies>` for more details.
 * Added a widget to contact User Support directly from the Copernicus Marine Toolbox documentation.
 * The dataset version can now be specified in the dataset ID using the format ``datasetID_version``. See the :ref:`documentation <dataset-version>` for more details. Note that this format is not recommended; prefer using the ``dataset_version`` argument or the ``--dataset-version`` option instead.
-* The CLI now raises an error if an argument is provided twice instead of using the last provided value.
 * Added a way to use the Toolbox without threads by setting the environment variable ``COPERNICUSMARINE_USE_THREADS`` to "False". See :ref:`documentation about environment variables <env-use-threads>` for more details.
 * Improved the display of sizes in the output of the get and subset commands by using human-readable format and limiting the number of decimal places to two.
 * Release constraints on ``pandas``. ``pandas>=3.0.0`` is now compatible with the Toolbox.
+* Release constraints on ``click``. ``click>=8.3.2`` can now be used with the Toolbox.
 
 Fixes
 ^^^^^
 
+* The CLI now raises an error if an argument is provided twice instead of using the last provided value.
 * Some minor documentation improvements and updates.
 
 Subset

@@ -234,7 +234,9 @@ SUBSET: dict[str, str] = {
         "Format of the downloaded dataset. "
         "If not set or set to ``None``, defaults to NetCDF '.nc' for gridded datasets "
         "and to CSV '.csv' for sparse datasets. "
-        "Output filename extension takes priority over this option if both are set."
+        "Output filename extension takes priority over this option if both are set. "
+        "For gridded datasets, the following formats are available: netcdf, zarr, csv. "
+        "For sparse datasets, the following formats are available: csv, netcdf, parquet."  # noqa
     ),
     "MOTU_API_REQUEST_HELP": (
         "Option to pass a complete MOTU API request as a string. Caution, user has to "

@@ -59,7 +59,7 @@ This option allows you to specify request parameters in a provided JSON file, wh
 
 - Template for ``subset`` data request:
 
-  .. code-block:: text
+  .. code-block:: json
 
     {
       "dataset_id": "cmems_mod_glo_phy_anfc_0.083deg_P1M-m",
@@ -67,8 +67,8 @@ This option allows you to specify request parameters in a provided JSON file, wh
       "end_datetime": "2023-11-01",
       "minimum_longitude": -15,
       "maximum_longitude": -10,
-      "minimum_latitude": 35,
-      "maximum_latitude"  : 43,
+      "minimum_latitude": 75,
+      "maximum_latitude"  : 90,
       "minimum_depth": 1,
       "maximum_depth": 10,
       "variables": ["siconc"],
@@ -84,7 +84,7 @@ This option allows you to specify request parameters in a provided JSON file, wh
 
 - Template for ``get`` data request:
 
-  .. code-block:: text
+  .. code-block:: json
 
     {
         "dataset_id": "cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m",
@@ -133,7 +133,7 @@ This option allows you to fetch a specific version of the dataset, which is part
 
 .. code:: bash
 
-    copernicusmarine get --dataset-id cmems_mod_glo_phy_anfc_0.083deg-sst-anomaly_P1M-m --filter "*202501*" --dataset-version 202411
+    copernicusmarine get --dataset-id cmems_mod_glo_phy_anfc_0.083deg-sst-anomaly_P1M-m --filter "*202501*" --dataset-version 202411 --dry-run > response.json
 
 **Returns:**
 
@@ -151,16 +151,26 @@ A warning will be raised if the dataset version is specified in the dataset ID.
 An error will be raised if the dataset version is specified both in the dataset ID and via the ``--dataset-version`` option.
 
 
+Here is an example of specifying the version in the dataset ID, which is not recommended:
+
 .. code:: python
 
   import copernicusmarine
 
-  # Not recommended: specifying the version in the dataset ID
-  copernicusmarine.get(dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_202511")
-
-  # Preferred: using the dataset_version argument
   copernicusmarine.get(
-      dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m", dataset_version="202511"
+      dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_202511", dry_run=True
+  )
+
+And here is an example of specifying the version using the ``dataset_version`` argument, which is preferred:
+
+.. code:: python
+
+  import copernicusmarine
+
+  copernicusmarine.get(
+      dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m",
+      dataset_version="202511",
+      dry_run=True,
   )
 
 Option ``--dataset-part``
@@ -173,13 +183,17 @@ The parts of the dataset can be found through the ``describe`` command.
 
 .. code:: bash
 
-    copernicusmarine get -i cmems_obs-ins_blk_phybgcwav_mynrt_na_irr --dataset-part history
+    copernicusmarine get -i cmems_obs-ins_blk_phybgcwav_mynrt_na_irr --dataset-part history --dry-run > response.json
 
 **Returns:**
 
 .. code:: text
 
-    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset part "history"
+    INFO - 2026-04-14T07:14:48Z - Selected dataset version: "202311"
+    INFO - 2026-04-14T07:14:48Z - Selected dataset part: "history"
+    INFO - 2026-04-14T07:14:49Z - Listing files on remote server...
+    2it [00:00,  2.73it/s]
+    INFO - 2026-04-14T07:14:50Z - Total size of the download: 4.68 GB.
 
 
 Option ``--response-fields`` or ``-r``
