@@ -155,7 +155,7 @@ Here is an example of specifying the version in the dataset ID, which is not rec
 
 .. code:: python
 
-  import copernciusmarine
+  import copernicusmarine
 
   copernicusmarine.get(
       dataset_id="cmems_mod_ibi_phy-temp_my_0.027deg_P1D-m_202511", dry_run=True
@@ -189,7 +189,11 @@ The parts of the dataset can be found through the ``describe`` command.
 
 .. code:: text
 
-    INFO - 2024-10-07T08:53:18Z - You forced selection of dataset part "history"
+    INFO - 2026-04-14T07:14:48Z - Selected dataset version: "202311"
+    INFO - 2026-04-14T07:14:48Z - Selected dataset part: "history"
+    INFO - 2026-04-14T07:14:49Z - Listing files on remote server...
+    2it [00:00,  2.73it/s]
+    INFO - 2026-04-14T07:14:50Z - Total size of the download: 4.68 GB.
 
 
 Option ``--response-fields`` or ``-r``
