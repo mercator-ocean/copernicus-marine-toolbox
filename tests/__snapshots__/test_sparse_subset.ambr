@@ -1,4 +1,109 @@
 # serializer version: 1
+# name: TestSparseSubset.test_can_subset_satellite_data_netcdf_ncdump[SWOT_nadir_28days.nc.txt]
+  '''
+  netcdf SWOT_nadir_28days {
+  dimensions:
+  	time = 10298 ;
+  variables:
+  	double dac(time) ;
+  		dac:_FillValue = NaN ;
+  		string dac:standard_name = "dac" ;
+  		string dac:units = "m" ;
+  		string dac:coordinates = "time latitude longitude" ;
+  	double ib_lf(time) ;
+  		ib_lf:_FillValue = NaN ;
+  		string ib_lf:standard_name = "sea_surface_height_correction_due_to_air_pressure_at_low_frequency" ;
+  		string ib_lf:units = "m" ;
+  		string ib_lf:coordinates = "time latitude longitude" ;
+  	double internal_tide(time) ;
+  		internal_tide:_FillValue = NaN ;
+  		string internal_tide:standard_name = "internal_tide" ;
+  		string internal_tide:units = "m" ;
+  		string internal_tide:coordinates = "time latitude longitude" ;
+  	double lwe(time) ;
+  		lwe:_FillValue = NaN ;
+  		string lwe:standard_name = "lwe" ;
+  		string lwe:units = "m" ;
+  		string lwe:coordinates = "time latitude longitude" ;
+  	double mdt(time) ;
+  		mdt:_FillValue = NaN ;
+  		string mdt:standard_name = "sea_surface_height_above_geoid" ;
+  		string mdt:units = "m" ;
+  		string mdt:coordinates = "time latitude longitude" ;
+  	double ocean_tide(time) ;
+  		ocean_tide:_FillValue = NaN ;
+  		string ocean_tide:standard_name = "sea_surface_height_amplitude_due_to_geocentric_ocean_tide" ;
+  		string ocean_tide:units = "m" ;
+  		string ocean_tide:coordinates = "time latitude longitude" ;
+  	double sla_filtered(time) ;
+  		sla_filtered:_FillValue = NaN ;
+  		string sla_filtered:standard_name = "sea_surface_height_above_sea_level" ;
+  		string sla_filtered:units = "m" ;
+  		string sla_filtered:coordinates = "time latitude longitude" ;
+  	double sla_unfiltered(time) ;
+  		sla_unfiltered:_FillValue = NaN ;
+  		string sla_unfiltered:standard_name = "sea_surface_height_above_sea_level" ;
+  		string sla_unfiltered:units = "m" ;
+  		string sla_unfiltered:coordinates = "time latitude longitude" ;
+  	double xtdir(time) ;
+  		xtdir:_FillValue = NaN ;
+  		string xtdir:standard_name = "sea_water_velocity_to_direction" ;
+  		string xtdir:units = "degrees" ;
+  		string xtdir:coordinates = "time latitude longitude" ;
+  	double xtgosa(time) ;
+  		xtgosa:_FillValue = NaN ;
+  		string xtgosa:standard_name = "xtgosa" ;
+  		string xtgosa:units = "m s-1" ;
+  		string xtgosa:coordinates = "time latitude longitude" ;
+  	double xtgosm(time) ;
+  		xtgosm:_FillValue = NaN ;
+  		string xtgosm:standard_name = "xtgosm" ;
+  		string xtgosm:units = "m s-1" ;
+  		string xtgosm:coordinates = "time latitude longitude" ;
+  	double longitude(time) ;
+  		longitude:_FillValue = NaN ;
+  		string longitude:units = "degrees_east" ;
+  		string longitude:axis = "X" ;
+  		longitude:valid_min = -180. ;
+  		longitude:valid_max = 180. ;
+  		string longitude:standard_name = "longitude" ;
+  	double latitude(time) ;
+  		latitude:_FillValue = NaN ;
+  		string latitude:units = "degrees_north" ;
+  		string latitude:axis = "Y" ;
+  		latitude:valid_min = -90. ;
+  		latitude:valid_max = 90. ;
+  		string latitude:standard_name = "latitude" ;
+  	double time(time) ;
+  		time:_FillValue = NaN ;
+  		string time:units = "seconds since 1970-01-01T00:00:00Z" ;
+  		string time:axis = "T" ;
+  		string time:standard_name = "time" ;
+  		string time:calendar = "standard" ;
+  // global attributes:
+  		string :institution = "CLS, CNES" ;
+  		string :doi = "https://doi.org/10.48670/moi-00140" ;
+  		string :time_coverage_start = "2025-01-04T04:15:07.472988Z" ;
+  		string :time_coverage_end = "2025-01-04T21:12:50.005105Z" ;
+  		string :last_date_observation = "2025-01-04T21:12:50.005105Z" ;
+  		:geospatial_lat_min = 20.001217 ;
+  		:geospatial_lat_max = 66.99916 ;
+  		:last_latitude_observation = 66.9989 ;
+  		:geospatial_lon_min = -30.99699 ;
+  		:geospatial_lon_max = 32.091595 ;
+  		:last_longitude_observation = -3.49405 ;
+  		:geospatial_vertical_min = -0. ;
+  		:geospatial_vertical_max = -0. ;
+  		string :references = "http://marine.copernicus.eu" ;
+  		string :license = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence" ;
+  		string :product_id = "SEALEVEL_EUR_PHY_L3_NRT_008_059" ;
+  		string :dataset_id = "cmems_obs-sl_eur_phy-ssh_nrt_swon-l3-duacs_PT0.2S" ;
+  		string :Conventions = "CF-1.9 ACDD-1.3" ;
+  		string :title = "Subset of dataset cmems_obs-sl_eur_phy-ssh_nrt_swon-l3-duacs_PT0.2S with Copernicus Marine Toolbox" ;
+  		string :contact = "servicedesk.cmems@mercator-ocean.eu" ;
+  }
+  '''
+# ---
 # name: TestSparseSubset.test_netcdf_attributes_ncdump[B-Sulafjorden.nc.txt]
   '''
   netcdf B-Sulafjorden {

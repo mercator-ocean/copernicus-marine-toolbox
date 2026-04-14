@@ -127,8 +127,8 @@ The resulting directory will contain one ``.nc`` file per platform found in the 
 
 Each NetCDF file has the following structure:
 
-- **Dimensions**: ``time`` and ``depth_level``. The ``depth_level`` dimension is an integer index that ranks depth observations for each time step (0 for the shallowest, 1 for the next, etc.). Its size equals the maximum number of depth points across all time steps.
-- **Coordinates**:  ``time``, ``latitude``, ``longitude`` ``depth`` (or ``elevation``) if available, and ``pressure`` if available, are stored as coordinates with shape ``(time, depth_level)`` except for ``time`` which has shape ``(time,)``.
+- **Dimensions**: ``time`` and ``depth_level`` for in-situ data and ``time`` for satellite data. The ``depth_level`` dimension is an integer index that ranks depth observations for each time step (0 for the shallowest, 1 for the next, etc.). Its size equals the maximum number of depth points across all time steps.
+- **Coordinates**:  ``time``, ``latitude``, ``longitude`` ``depth`` (or ``elevation``) if available, and ``pressure`` if available, are stored as coordinates with shape ``(time, depth_level)`` for in-situ data and ``(time)`` for satellite data, except for ``time`` which always has shape ``(time,)``.
 - **Data variables**: Each measured quantity (e.g., PSAL, TEMP) gets its own data variable along with a companion quality-control variable (e.g., PSAL_QC, TEMP_QC).
 - **Global attributes**: Per-platform metadata such as ``institution``, ``doi``, ``product_doi``, time and spatial coverage, and the dataset ID.
 

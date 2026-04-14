@@ -478,6 +478,7 @@ def _dataframe_to_netcdf_per_platform(
                 platform_df,
                 metadata_cols=metadata_cols,
                 vertical_axis=vertical_axis,
+                arco_sparse_type=service.arco_sparse_type,
             )
 
             ds = _add_attributes_to_dataset(
@@ -521,6 +522,7 @@ def _platform_dataframe_to_dataset(
     platform_df: pd.DataFrame,
     metadata_cols: list[str],
     vertical_axis: VerticalAxis,
+    arco_sparse_type: str | None,
 ) -> xr.Dataset:
     """
     ``depth_level`` is an integer index: for each time step, depth
@@ -537,12 +539,18 @@ def _platform_dataframe_to_dataset(
         col for col in non_nans_cols if col not in index_cols + variable_cols
     ]
     vertical_col = [c for c in index_cols if c != "time"][0]
-    obs_df = obs_df.sort_values(["time", vertical_col])
+    if arco_sparse_type == "cmemsAltimetry":
+        pivot_columns = ["time"]
+        values_columns = ["value"]
+    else:  # arco_sparse_type == "cmemsInsitu" or None
+        pivot_columns = ["time", vertical_col]
+        values_columns = ["value", "value_qc"]
 
+    obs_df = obs_df.sort_values(pivot_columns)
     pivot = obs_df.pivot_table(
-        index=["time", vertical_col],
+        index=pivot_columns,
         columns="variable",
-        values=["value", "value_qc"],  # type: ignore[list-item]
+        values=values_columns,  # type: ignore[list-item]
         aggfunc="first",
     )
     pivot.columns = [
@@ -550,15 +558,18 @@ def _platform_dataframe_to_dataset(
         for metric, var in pivot.columns
     ]
 
-    spatial_and_aux = obs_df.groupby(["time", vertical_col])[aux_cols].first()
+    spatial_and_aux = obs_df.groupby(pivot_columns)[aux_cols].first()
 
     merged = pd.concat([pivot, spatial_and_aux], axis=1)
     merged = merged.reset_index()
-    merged["depth_level"] = merged.groupby("time").cumcount()
     merged["time"] = merged["time"].apply(
         lambda x: datetime_to_timestamp(datetime_parser(x), unit="s")
     )
-    merged = merged.set_index(["time", "depth_level"])
+    if arco_sparse_type != "cmemsAltimetry":
+        merged["depth_level"] = merged.groupby("time").cumcount()
+        merged = merged.set_index(["time", "depth_level"])
+    else:
+        merged = merged.set_index(["time"])
 
     if vertical_col in non_nans_cols:
         merged.loc[
@@ -584,7 +595,12 @@ def _platform_dataframe_to_dataset(
         ds = ds.set_coords(vertical_col)
 
     ds = ds.set_coords("time")
-    ds = ds.drop_vars("depth_level")
+    if (
+        "depth_level" in ds.data_vars
+        or "depth_level" in ds.coords
+        or "depth_level" in ds.indexes
+    ):
+        ds = ds.drop_vars("depth_level")
     ds.time.attrs["units"] = "seconds since 1970-01-01T00:00:00Z"
     return ds
 
@@ -620,6 +636,11 @@ def _add_attributes_to_dataset(
     product_id: str | None,
     service: CopernicusMarineService,
 ) -> xr.Dataset:
+    def unpack(value_from_df):
+        if isinstance(value_from_df, np.ndarray) and value_from_df.size == 1:
+            return value_from_df
+        return value_from_df[0]
+
     # global attributes
     first_row = platform_df.iloc[0]
     metadata_info: dict[str, str] = {
@@ -629,10 +650,11 @@ def _add_attributes_to_dataset(
         and first_row[col] is not None
         and not pd.isna(first_row[col])  # type: ignore[arg-type]
     }
-    if metadata_info.get("platform_id"):
-        ds.attrs["platform_code"] = metadata_info["platform_id"]
-    if metadata_info.get("platform_type"):
-        ds.attrs["platform_type"] = metadata_info["platform_type"]
+    if service.arco_sparse_type != "cmemsAltimetry":
+        if metadata_info.get("platform_id"):
+            ds.attrs["platform_code"] = metadata_info["platform_id"]
+        if metadata_info.get("platform_type"):
+            ds.attrs["platform_type"] = metadata_info["platform_type"]
     if metadata_info.get("institution"):
         ds.attrs["institution"] = metadata_info["institution"]
     if metadata_info.get("doi"):
@@ -659,25 +681,28 @@ def _add_attributes_to_dataset(
         datetime_parser(str(platform_df["time"].max()))
     )
     ds.attrs["last_date_observation"] = ds.attrs["time_coverage_end"]
-
     if "latitude" in platform_df.columns:
         ds.attrs["geospatial_lat_min"] = float(platform_df["latitude"].min())
         ds.attrs["geospatial_lat_max"] = float(platform_df["latitude"].max())
-        ds.attrs["last_latitude_observation"] = ds.sel(
-            time=datetime_to_timestamp(
-                datetime_parser(ds.attrs["last_date_observation"])
-            ),
-            method="nearest",
-        )["latitude"].values[0]
+        ds.attrs["last_latitude_observation"] = unpack(
+            ds.sel(
+                time=datetime_to_timestamp(
+                    datetime_parser(ds.attrs["last_date_observation"])
+                ),
+                method="nearest",
+            )["latitude"].values
+        )
     if "longitude" in platform_df.columns:
         ds.attrs["geospatial_lon_min"] = float(platform_df["longitude"].min())
         ds.attrs["geospatial_lon_max"] = float(platform_df["longitude"].max())
-        ds.attrs["last_longitude_observation"] = ds.sel(
-            time=datetime_to_timestamp(
-                datetime_parser(ds.attrs["last_date_observation"])
-            ),
-            method="nearest",
-        )["longitude"].values[0]
+        ds.attrs["last_longitude_observation"] = unpack(
+            ds.sel(
+                time=datetime_to_timestamp(
+                    datetime_parser(ds.attrs["last_date_observation"])
+                ),
+                method="nearest",
+            )["longitude"].values
+        )
     if vertical_axis in platform_df.columns:
         ds.attrs["geospatial_vertical_min"] = float(
             platform_df[vertical_axis].min()
@@ -709,7 +734,7 @@ def _add_attributes_to_dataset(
         ds["time"].attrs["axis"] = "T"
         ds["time"].attrs["standard_name"] = "time"
         ds["time"].attrs["calendar"] = "standard"
-    # unit is set before
+        # unit is set before
 
     # depth attributes
     if vertical_axis in ds.coords:
@@ -763,7 +788,8 @@ def _add_attributes_to_dataset(
             variable_info = variables_info[variable]
             ds[variable].attrs["standard_name"] = variable_info.standard_name
             ds[variable].attrs["units"] = variable_info.units
-            ds[variable].attrs["ancillary_variable"] = variable + "_QC"
+            if service.arco_sparse_type != "cmemsAltimetry":
+                ds[variable].attrs["ancillary_variable"] = variable + "_QC"
         else:
             variable_without_qc = variable.replace("_QC", "")
             variable_info = variables_info[variable_without_qc]

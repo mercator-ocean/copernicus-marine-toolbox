@@ -322,6 +322,9 @@ class CopernicusMarineService(BaseModel):
     #: A link to information about available platforms.
     #: Only for arco-platform-series service.
     platforms_metadata: str | None
+    #: Type of the sparse data, for internal use.
+    #: Values are "cmemsInsitu" or "cmemsAltimetry".
+    arco_sparse_type: str | None
 
     @classmethod
     def from_metadata_item(
@@ -344,6 +347,7 @@ class CopernicusMarineService(BaseModel):
             admp_in_preparation = metadata_item.properties.get(
                 "admp_in_preparation"
             )
+            arco_sparse_type = metadata_item.properties.get("admp_sparse_type")
             if asset.media_type and "zarr" in asset.media_type:
                 service_format = CopernicusMarineServiceFormat.ZARR
             elif asset.media_type and "sqlite3" in asset.media_type:
@@ -384,6 +388,7 @@ class CopernicusMarineService(BaseModel):
                         ],
                         service_format=service_format,
                         platforms_metadata=platforms_metadata,
+                        arco_sparse_type=arco_sparse_type,
                     )
             return None
         except ServiceNotHandled as service_not_handled:
@@ -466,7 +471,6 @@ class CopernicusMarinePart(BaseModel):
         ]
         if not services:
             return None
-        services = services
         return cls(
             name=part_name,
             services=services,
