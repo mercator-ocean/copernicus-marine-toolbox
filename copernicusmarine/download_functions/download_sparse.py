@@ -638,7 +638,7 @@ def _add_attributes_to_dataset(
 ) -> xr.Dataset:
     def unpack(value_from_df):
         if isinstance(value_from_df, np.ndarray) and value_from_df.size == 1:
-            return value_from_df
+            return value_from_df.reshape(-1)[0].item()
         return value_from_df[0]
 
     # global attributes

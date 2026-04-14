@@ -374,12 +374,12 @@ class TestSparseSubset:
         nc_file = output_path / response["file_names"][0]
         assert output_path.exists()
         dataset = xr.open_dataset(nc_file)
-        assert dataset.dims.keys() == {"time"}
+        assert "time" in dataset.dims and len(dataset.dims) == 1
         assert dataset.coords.keys() == {"latitude", "longitude", "time"}
-        dataset.close()
         assert not [
             var for var in dataset.data_vars if var.endswith("_QC")  # type: ignore
         ]
+        dataset.close()
 
         attrs_to_exclude = [
             ":download_date",
