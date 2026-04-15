@@ -539,12 +539,12 @@ def _platform_dataframe_to_dataset(
         col for col in non_nans_cols if col not in index_cols + variable_cols
     ]
     vertical_col = [c for c in index_cols if c != "time"][0]
-    if arco_sparse_type == "cmemsAltimetry":
-        pivot_columns = ["time"]
-        values_columns = ["value"]
-    else:  # arco_sparse_type == "cmemsInsitu" or None
+    if arco_sparse_type != "cmemsAltimetry":
         pivot_columns = ["time", vertical_col]
         values_columns = ["value", "value_qc"]
+    else:  # Specific case for altimetry data
+        pivot_columns = ["time"]
+        values_columns = ["value"]
 
     obs_df = obs_df.sort_values(pivot_columns)
     pivot = obs_df.pivot_table(
