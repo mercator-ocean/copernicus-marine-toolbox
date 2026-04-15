@@ -349,3 +349,55 @@ class TestSparseSubset:
         for nc_file in nc_files:
             ds = xr.open_dataset(nc_file)
             ds.close()
+
+    def test_can_subset_satellite_data_netcdf_ncdump(self, tmp_path, snapshot):
+        command = [
+            "copernicusmarine",
+            "subset",
+            "--dataset-id",
+            "cmems_obs-sl_eur_phy-ssh_nrt_swon-l3-duacs_PT0.2S",
+            "-t",
+            "2025-01-04",
+            "-T",
+            "2025-01-05",
+            "--file-format",
+            "netcdf",
+            "--output-directory",
+            tmp_path,
+            "-r",
+            "all",
+        ]
+        self.output = execute_in_terminal(command)
+        assert self.output.returncode == 0
+        response = loads(self.output.stdout)
+        output_path = pathlib.Path(response["file_path"])
+        nc_file = output_path / response["file_names"][0]
+        assert output_path.exists()
+        dataset = xr.open_dataset(nc_file)
+        assert "time" in dataset.dims and len(dataset.dims) == 1
+        assert dataset.coords.keys() == {"latitude", "longitude", "time"}
+        assert not [
+            var for var in dataset.data_vars if var.endswith("_QC")  # type: ignore
+        ]
+        dataset.close()
+
+        attrs_to_exclude = [
+            ":download_date",
+            ":copernicusmarine_toolbox_version",
+            ":history",
+        ]
+        self.netcdf_output = execute_in_terminal(
+            [
+                "ncdump",
+                "-h",
+                str(nc_file),
+            ]
+        )
+        assert self.netcdf_output.returncode == 0
+        stdout = "\n".join(
+            line
+            for line in self.netcdf_output.stdout.splitlines()
+            if all(attr not in line for attr in attrs_to_exclude)
+            and line.strip() != ""
+        )
+        assert stdout == snapshot(name=str(nc_file.name) + ".txt")
