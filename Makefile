@@ -119,7 +119,7 @@ run-using-pyinstaller-linux:
 	openssl version -a
 	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/lib
 	echo $$LD_LIBRARY_PATH
-	python3 -m PyInstaller --hiddenimport deprecated --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
+	python3 -m PyInstaller --debug=imports --hidden-import deprecated --hidden-import pretend --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}.cli
 
 run-using-pyinstaller-ubuntu-22.04: DISTRIBUTION = linux-glibc-2.35
