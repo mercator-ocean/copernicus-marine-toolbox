@@ -129,6 +129,7 @@ run-using-pyinstaller-ubuntu-24.04: DISTRIBUTION = linux-glibc-2.39
 run-using-pyinstaller-ubuntu-24.04: run-using-pyinstaller-linux
 
 run-tests-binaries:
+	sed -n '1,200p' ../../../micromamba/envs/copernicusmarine-binary/lib/python3.12/site-packages/tests/test_utils.py
 	pytest tests_extra/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_extra/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 change-name-binary:
