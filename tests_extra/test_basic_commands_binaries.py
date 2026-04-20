@@ -2,7 +2,7 @@ import os
 from json import loads
 from pathlib import Path
 
-from tests.test_utils import execute_in_terminal
+from tests_extra.test_utils import execute_in_terminal
 
 BINARY = os.getenv("BINARY_NAME")
 
