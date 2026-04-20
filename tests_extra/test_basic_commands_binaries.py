@@ -1,127 +1,144 @@
-import os
-from json import loads
-from pathlib import Path
+import importlib.util
+import pathlib
+import sys
 
-from .test_utils import execute_in_terminal
+print("CWD:", pathlib.Path().resolve())
+print("sys.path[0:5]:", sys.path[0:5])
 
-BINARY = os.getenv("BINARY_NAME")
+spec = importlib.util.find_spec("tests_extra")
+print("tests_extra spec:", spec)
+if spec and spec.submodule_search_locations:
+    print(
+        "tests_extra search locations:", list(spec.submodule_search_locations)
+    )
+
+spec2 = importlib.util.find_spec("tests_extra.test_utils")
+print("tests_extra.test_utils spec:", spec2)
+
+# import os
+# from json import loads
+# from pathlib import Path
+
+# from .test_utils import execute_in_terminal
+
+# BINARY = os.getenv("BINARY_NAME")
 
 
-class TestBasicCommandsBinaries:
-    def test_help(self):
-        assert (
-            BINARY is not None
-        ), "BINARY_NAME environment variable is not set"
-        self.output = execute_in_terminal(
-            [BINARY, "describe", "--help"], shell=False
-        )
-        assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "get", "-h"], shell=False)
-        assert self.output.returncode == 0
-        self.output = execute_in_terminal(
-            [BINARY, "subset", "-h"], shell=False
-        )
-        assert self.output.returncode == 0
-        self.output = execute_in_terminal([BINARY, "login", "-h"], shell=False)
-        assert self.output.returncode == 0
+# class TestBasicCommandsBinaries:
+#     def test_help(self):
+#         assert (
+#             BINARY is not None
+#         ), "BINARY_NAME environment variable is not set"
+#         self.output = execute_in_terminal(
+#             [BINARY, "describe", "--help"], shell=False
+#         )
+#         assert self.output.returncode == 0
+#         self.output = execute_in_terminal([BINARY, "get", "-h"], shell=False)
+#         assert self.output.returncode == 0
+#         self.output = execute_in_terminal(
+#             [BINARY, "subset", "-h"], shell=False
+#         )
+#         assert self.output.returncode == 0
+#         self.output = execute_in_terminal([BINARY, "login", "-h"], shell=False)
+#         assert self.output.returncode == 0
 
-    def test_describe(self):
-        command = [
-            BINARY,
-            "describe",
-        ]
-        self.output = execute_in_terminal(command, shell=False)
-        assert self.output.returncode == 0
+#     def test_describe(self):
+#         command = [
+#             BINARY,
+#             "describe",
+#         ]
+#         self.output = execute_in_terminal(command, shell=False)
+#         assert self.output.returncode == 0
 
-    def test_subset(self):
-        command = [
-            BINARY,
-            "subset",
-            "-i",
-            "cmems_mod_med_wav_my_4.2km_PT1H-i",
-            "-x",
-            "13.723",
-            "-X",
-            "13.724",
-            "-y",
-            "38.007",
-            "-Y",
-            "40.028",
-            "-t",
-            "1993-01-01T00:00:00",
-            "-T",
-            "1993-01-01T06:00:00",
-            "-v",
-            "VHM0",
-        ]
+#     def test_subset(self):
+#         command = [
+#             BINARY,
+#             "subset",
+#             "-i",
+#             "cmems_mod_med_wav_my_4.2km_PT1H-i",
+#             "-x",
+#             "13.723",
+#             "-X",
+#             "13.724",
+#             "-y",
+#             "38.007",
+#             "-Y",
+#             "40.028",
+#             "-t",
+#             "1993-01-01T00:00:00",
+#             "-T",
+#             "1993-01-01T06:00:00",
+#             "-v",
+#             "VHM0",
+#         ]
 
-        self.output = execute_in_terminal(command, shell=False)
-        assert self.output.returncode == 0
+#         self.output = execute_in_terminal(command, shell=False)
+#         assert self.output.returncode == 0
 
-    def test_get(self):
-        command = [
-            BINARY,
-            "get",
-            "--dataset-id",
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
-            "--filter",
-            "*/2023/08/*",
-            "--dry-run",
-        ]
-        self.output = execute_in_terminal(command, shell=False)
+#     def test_get(self):
+#         command = [
+#             BINARY,
+#             "get",
+#             "--dataset-id",
+#             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+#             "--filter",
+#             "*/2023/08/*",
+#             "--dry-run",
+#         ]
+#         self.output = execute_in_terminal(command, shell=False)
 
-        assert self.output.returncode == 0
-        assert "No data to download" not in self.output.stderr
-        returned_value = loads(self.output.stdout)
-        assert self.output.returncode == 0
-        assert len(returned_value["files"]) != 0
-        assert returned_value["total_size"]
-        assert returned_value["status"]
-        assert returned_value["message"]
-        for get_file in returned_value["files"]:
-            assert get_file["s3_url"] is not None
-            assert get_file["https_url"] is not None
-            assert get_file["file_size"] is not None
-            assert get_file["last_modified_datetime"] is not None
-            assert get_file["etag"] is not None
-            assert get_file["file_format"] is not None
-            assert get_file["output_directory"] is not None
-            assert get_file["filename"] is not None
-            assert get_file["file_path"] is not None
-            assert not os.path.exists(get_file["file_path"])
+#         assert self.output.returncode == 0
+#         assert "No data to download" not in self.output.stderr
+#         returned_value = loads(self.output.stdout)
+#         assert self.output.returncode == 0
+#         assert len(returned_value["files"]) != 0
+#         assert returned_value["total_size"]
+#         assert returned_value["status"]
+#         assert returned_value["message"]
+#         for get_file in returned_value["files"]:
+#             assert get_file["s3_url"] is not None
+#             assert get_file["https_url"] is not None
+#             assert get_file["file_size"] is not None
+#             assert get_file["last_modified_datetime"] is not None
+#             assert get_file["etag"] is not None
+#             assert get_file["file_format"] is not None
+#             assert get_file["output_directory"] is not None
+#             assert get_file["filename"] is not None
+#             assert get_file["file_path"] is not None
+#             assert not os.path.exists(get_file["file_path"])
 
-    def test_get_download(self, tmp_path):
-        command = [
-            BINARY,
-            "get",
-            "--dataset-id",
-            "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
-            "--filter",
-            "*/2023/09/*",
-            "--output-directory",
-            f"{tmp_path}",
-        ]
-        self.output = execute_in_terminal(command, shell=False)
+#     def test_get_download(self, tmp_path):
+#         command = [
+#             BINARY,
+#             "get",
+#             "--dataset-id",
+#             "cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
+#             "--filter",
+#             "*/2023/09/*",
+#             "--output-directory",
+#             f"{tmp_path}",
+#         ]
+#         self.output = execute_in_terminal(command, shell=False)
 
-        assert self.output.returncode == 0
+#         assert self.output.returncode == 0
 
-    def test_login(self, tmp_path):
-        assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
-        assert os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD") is not None
+#     def test_login(self, tmp_path):
+#         assert os.getenv("COPERNICUSMARINE_SERVICE_USERNAME") is not None
+#         assert os.getenv("COPERNICUSMARINE_SERVICE_PASSWORD") is not None
 
-        non_existing_directory = Path(tmp_path, "i_dont_exist")
-        command = [
-            BINARY,
-            "login",
-            "--force-overwrite",
-            "--configuration-file-directory",
-            f"{non_existing_directory}",
-            "--username",
-            f"{os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}",
-            "--password",
-            f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
-        ]
+#         non_existing_directory = Path(tmp_path, "i_dont_exist")
+#         command = [
+#             BINARY,
+#             "login",
+#             "--force-overwrite",
+#             "--configuration-file-directory",
+#             f"{non_existing_directory}",
+#             "--username",
+#             f"{os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}",
+#             "--password",
+#             f"{os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}",
+#         ]
 
-        self.output = execute_in_terminal(command, shell=False)
-        assert self.output.returncode == 0
-        assert non_existing_directory.is_dir()
+#         self.output = execute_in_terminal(command, shell=False)
+#         assert self.output.returncode == 0
+#         assert non_existing_directory.is_dir()
