@@ -119,7 +119,7 @@ run-using-pyinstaller-linux:
 	openssl version -a
 	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/lib
 	echo $$LD_LIBRARY_PATH
-	python3 -m PyInstaller --debug=imports --hidden-import deprecated --hidden-import pretend --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
+	python3 -m PyInstaller --hidden-import deprecated --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}.cli
 
 run-using-pyinstaller-ubuntu-22.04: DISTRIBUTION = linux-glibc-2.35
@@ -129,7 +129,6 @@ run-using-pyinstaller-ubuntu-24.04: DISTRIBUTION = linux-glibc-2.39
 run-using-pyinstaller-ubuntu-24.04: run-using-pyinstaller-linux
 
 run-tests-binaries:
-	python -c "import tests_extra, inspect; print(inspect.getfile(tests_extra))"
 	pytest tests_extra/test_basic_commands_binaries.py -vv --log-cli-level=info --basetemp="tests_extra/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 change-name-binary:
