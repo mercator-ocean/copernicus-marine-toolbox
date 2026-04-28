@@ -83,7 +83,7 @@ src <= dst           src != dst    ✅
 src <= dst           src == dst    ❌
 ==================   ===========  ===========
 
-And if course the file does not exist locally, it will be downloaded.
+Of course, if the file does not exist locally, it will be downloaded.
 
 The ``--sync-delete`` option works like ``--sync`` but also deletes any local files not found on the remote server.
 

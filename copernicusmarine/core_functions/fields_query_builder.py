@@ -48,7 +48,7 @@ def build_query(
     query: dict | None = None,
 ) -> dict:
     """
-    Recursively builds a query to include or exclude fields from a Pydantic model
+    Builds a query to include or exclude fields from a Pydantic model
     Allows to handle nested models, lists and dictionaries.
 
     Example of resulting query:
@@ -126,15 +126,11 @@ def _get_base_models_in_type(
     return models
 
 
-def return_available_fields(
-    type_to_check: Type, available_fields: set[str] | None = None
-) -> set[str]:
+def return_available_fields(type_to_check: Type) -> set[str]:
     """
-    Recursively get all the fields that are available in the model
+    Get all the fields that are available in the model
     """
-    if available_fields is None:
-        available_fields = set()
-
+    available_fields = set()
     for (
         field_name,
         field_type,
@@ -142,8 +138,7 @@ def return_available_fields(
         available_fields.add(field_name)
         all_base_models = _get_base_models_in_type(field_type)
         for base_model, _ in (all_base_models or {}).items():
-            result = return_available_fields(base_model, available_fields)
-            available_fields.union(result)
+            available_fields.update(return_available_fields(base_model))
     return available_fields
 
 
