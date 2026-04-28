@@ -44,8 +44,6 @@ Here the first 2 products are shown:
     }
 
 
-By default, the command only shows the products. To include the datasets, you can use the ``--return-fields datasets`` option.
-
 To save the JSON output to a file, you can use the following command:
 
 .. code-block:: bash
@@ -53,11 +51,10 @@ To save the JSON output to a file, you can use the following command:
     copernicusmarine describe > all_products_copernicus_marine_service.json
 
 .. note::
-    At some point in the future, the command will be updated to include everything by default.
-    Then the user will be able to use the ``--return-fields`` option or ``--exclude-fields`` to filter the output.
+    You can use the ``--return-fields`` option or ``--exclude-fields`` to filter the output.
 
 .. note::
-    In the case of the Python interface, the describe will return directly the :class:`copernicusmarine.CopernicusMarineCatalogue` object.
+    In the case of the Python interface, the describe will return the :class:`copernicusmarine.CopernicusMarineCatalogue` object.
     The catalogue will be complete except if you use the ``dataset_id``, ``product_id`` or ``contains`` arguments.
 
 .. _return-fields:
@@ -112,9 +109,12 @@ The output will be something like this (only the first product is shown):
         ]
     }
 
+The available fields are for the ``describe`` command are:
+
+.. program-output:: python -c "from copernicusmarine.core_functions.fields_query_builder import return_available_fields; import copernicusmarine; print(sorted(return_available_fields(copernicusmarine.CopernicusMarineCatalogue)))"
 
 .. note::
-    You can use ``--return-fields all`` to show all fields.
+    You can use ``--return-fields all`` to show all fields in the output.
 
 
 ``--contains`` option
