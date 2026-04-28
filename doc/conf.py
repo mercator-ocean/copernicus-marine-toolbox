@@ -25,6 +25,7 @@ extensions = [
     "numpydoc",
     "sphinx_copybutton",
     "myst_nb",
+    "sphinxcontrib.programoutput",
 ]
 numpydoc_show_class_members = False
 

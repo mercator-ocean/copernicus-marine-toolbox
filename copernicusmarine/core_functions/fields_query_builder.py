@@ -126,7 +126,7 @@ def _get_base_models_in_type(
     return models
 
 
-def _return_available_fields(
+def return_available_fields(
     type_to_check: Type, available_fields: set[str] | None = None
 ) -> set[str]:
     """
@@ -142,7 +142,7 @@ def _return_available_fields(
         available_fields.add(field_name)
         all_base_models = _get_base_models_in_type(field_type)
         for base_model, _ in (all_base_models or {}).items():
-            result = _return_available_fields(base_model, available_fields)
+            result = return_available_fields(base_model, available_fields)
             available_fields.union(result)
     return available_fields
 
@@ -158,7 +158,7 @@ def get_queryable_requested_fields(
     Returns:
     - a set with the queryable fields
     """  # noqa: E501
-    available_fields = _return_available_fields(type_to_check)
+    available_fields = return_available_fields(type_to_check)
     queryable_fields = requested_fields.intersection(available_fields)
     wrong_inputs = requested_fields - queryable_fields
     if queryable_fields == set():

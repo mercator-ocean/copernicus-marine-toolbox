@@ -2,8 +2,8 @@ from typing import Literal
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
 from copernicusmarine.core_functions.fields_query_builder import (
-    _return_available_fields,
     build_query,
+    return_available_fields,
 )
 from copernicusmarine.core_functions.models import ResponseGet, ResponseSubset
 
@@ -73,6 +73,6 @@ class TestQueryBuilder:
             else:
                 model = ResponseSubset
 
-        available_fields = _return_available_fields(model)
+        available_fields = return_available_fields(model)
 
         assert sorted(list(available_fields)) == snapshot

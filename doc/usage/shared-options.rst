@@ -222,16 +222,24 @@ If requested ``-r all``, all fields will be included. If requested ``-r none``, 
 
     {
     "files": [
-      {
-      "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m_202012/1993/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm199301.nc",
-      "file_size": "2.99 MB"
-      },
-      {
-        "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m_202012/1993/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm199302.nc",
-        "file_size": "3.04 MB"
-      },
+        {
+          "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m_202012/1993/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm199301.nc",
+          "file_size": "2.99 MB"
+        },
+        {
+          "https_url": "https://s3.waw3-1.cloudferro.com/mdl-native-13/native/NWSHELF_MULTIYEAR_BGC_004_011/cmems_mod_nws_bgc-pft_my_7km-3D-diato_P1M-m_202012/1993/metoffice_foam1_amm7_NWS_DIATO_CPWC_mm199302.nc",
+          "file_size": "3.04 MB"
+        },
       ]
     }
+
+Available fields for the ``get`` command are:
+
+.. program-output:: python -c "from copernicusmarine.core_functions.fields_query_builder import return_available_fields; from copernicusmarine.core_functions.models import ResponseGet; print(sorted(return_available_fields(ResponseGet)))"
+
+Available fields for the ``subset`` command are:
+
+.. program-output:: python -c "from copernicusmarine.core_functions.fields_query_builder import return_available_fields; from copernicusmarine.core_functions.models import ResponseSubset; print(sorted(return_available_fields(ResponseSubset)))"
 
 .. note::
   This option is only relevant for the command line interface.
