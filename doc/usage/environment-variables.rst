@@ -127,3 +127,8 @@ However, it might not be compatible with some environments.
 Such environments are uncommon and you might want to check other solution if you have issues with downloading with the Toolbox.
 
 Note, the performance of the Toolbox without threads are expected to be worse, especially for downloads, as requests will be executed sequentially.
+
+It can be set this way:
+
+- on **UNIX** platforms: ``export COPERNICUSMARINE_USE_THREADS=False``
+- on **Windows** platforms: ``set COPERNICUSMARINE_USE_THREADS=False``

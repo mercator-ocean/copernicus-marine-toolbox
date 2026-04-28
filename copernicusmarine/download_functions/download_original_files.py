@@ -474,6 +474,17 @@ def _check_needs_to_be_synced(
     directory_out: pathlib.Path,
     no_directories: bool,
 ) -> bool:
+    """
+    Follow the logic of s5cmd:
+
+    mod time    |  size        |  should sync
+    ------------|--------------|-------------
+    src > dst   |  src != dst  |  ✅
+    src > dst   |  src == dst  |  ✅
+    src <= dst  |  src != dst  |  ✅
+    src <= dst  |  src == dst  |  ❌
+
+    """
     filename_out = _create_filename_out(
         filename, directory_out, no_directories
     )

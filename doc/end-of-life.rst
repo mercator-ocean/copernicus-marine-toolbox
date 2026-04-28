@@ -78,5 +78,5 @@ Copernicusmarine  Python    Xarray       Zarr               Dask
 
 .. note::
 
-   For complete dependency specifications including optional packages,
+   For complete dependency specifications including optional packages and conflicting versions,
    see the :ref:`dependencies section <installation-page-dependencies>` for each version.

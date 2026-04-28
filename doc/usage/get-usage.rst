@@ -70,8 +70,21 @@ The content of ``selected_files_for_2021.csv`` would be:
 About ``--sync`` option
 ------------------------
 
-The ``--sync`` option downloads original files only if they do not exist or are not up to date.
-The toolbox checks the destination folder against the source folder and can be combined with filters.
+The ``--sync`` option downloads original files only if they do not exist or are not up to date. It can be combined with ``--filter`` or ``--regex`` to select specific files.
+
+To decide whether a file should be synced, we use the following logic inspired by `s5cmd library <https://github.com/peak/s5cmd#strategy>`_. If "src" is the remote server file and "dst" is the local destination file then:
+
+==================   ===========  ===========
+modification time    size         should sync
+==================   ===========  ===========
+src > dst            src != dst    ✅
+src > dst            src == dst    ✅
+src <= dst           src != dst    ✅
+src <= dst           src == dst    ❌
+==================   ===========  ===========
+
+And if course the file does not exist locally, it will be downloaded.
+
 The ``--sync-delete`` option works like ``--sync`` but also deletes any local files not found on the remote server.
 
 **Limitations:**
