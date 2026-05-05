@@ -72,7 +72,9 @@ About ``--sync`` option
 
 The ``--sync`` option downloads original files only if they do not exist or are not up to date. It can be combined with ``--filter`` or ``--regex`` to select specific files.
 
-To decide whether a file should be synced, we use the following logic inspired by `s5cmd library <https://github.com/peak/s5cmd#strategy>`_. If "src" is the remote server file and "dst" is the local destination file then:
+To decide whether a file should be synced, we use the following logic inspired by `s5cmd library <https://github.com/peak/s5cmd#strategy>`_.
+The Toolbox compares the modification time and the size of a file.
+If "src" is the remote server file and "dst" is the local destination file then:
 
 ==================   ===========  ===========
 modification time    size         should sync

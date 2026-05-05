@@ -109,7 +109,7 @@ The output will be something like this (only the first product is shown):
         ]
     }
 
-The available fields for the ``describe`` command are:
+The ``describe`` command returns the following fields:
 
 .. program-output:: python -c "from copernicusmarine.core_functions.fields_query_builder import return_available_fields; import copernicusmarine; print(sorted(return_available_fields(copernicusmarine.CopernicusMarineCatalogue)))"
 

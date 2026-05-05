@@ -233,15 +233,16 @@ If requested ``-r all``, all fields will be included. If requested ``-r none``, 
         ]
     }
 
-Available fields for the ``get`` command are:
+The ``get`` command returns the following fields:
 
 .. program-output:: python -c "from copernicusmarine.core_functions.fields_query_builder import return_available_fields; from copernicusmarine import ResponseGet; print(sorted(return_available_fields(ResponseGet)))"
 
-Available fields for the ``subset`` command are:
+The ``subset`` command returns the following fields:
 
 .. program-output:: python -c "from copernicusmarine.core_functions.fields_query_builder import return_available_fields; from copernicusmarine import ResponseSubset; print(sorted(return_available_fields(ResponseSubset)))"
 
 .. note::
+
   This option is only relevant for the command line interface.
 
 .. _dry-run:
