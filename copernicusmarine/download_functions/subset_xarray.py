@@ -312,7 +312,7 @@ def _x_axis_subset(
     longitude_parameters: XParameters,
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
-    (x_selection, shift_window) = x_axis_selection(longitude_parameters)
+    x_selection, shift_window = x_axis_selection(longitude_parameters)
     if shift_window and isinstance(x_selection, slice):
         dataset = _shift_longitude_dimension(
             dataset,
