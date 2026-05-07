@@ -149,7 +149,7 @@ class CopernicusMarineCoordinate(BaseModel):
     #: Chunk geometric factor of the coordinate.
     chunk_geometric_factor: float | int | None
     #: Axis of the coordinate
-    axis: Literal["x", "y", "z", "t"]
+    axis: Literal["x", "y", "z", "t"] | None
 
     @classmethod
     def from_metadata_item(
@@ -184,7 +184,9 @@ class CopernicusMarineCoordinate(BaseModel):
                     arco_data_metadata_producer_valid_start_index:
                 ]
         chunking_length = dimension_metadata.get("chunkLen")
-        axis = cube_dimensions[dimension].get("axis", "t")
+        axis = cube_dimensions[dimension].get("axis")
+        if not axis and cube_dimensions[dimension].get("type") == "temporal":
+            axis = "t"
         if isinstance(chunking_length, dict):
             chunking_length = chunking_length.get(variable_id)
 
@@ -401,6 +403,8 @@ class CopernicusMarineService(BaseModel):
         axis_coordinate_id_mapping: dict[str, str] = {}
         for variable in self.variables:
             for coordinate in variable.coordinates:
+                if not coordinate.axis:
+                    continue
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
                 axis_coordinate_id_mapping[
