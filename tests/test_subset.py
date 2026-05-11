@@ -1849,3 +1849,20 @@ class TestSubset:
             )
             assert "WARNING" in caplog.text
             assert 'Selected dataset version: "202511"' in caplog.text
+
+    def test_subset_with_additional_dimensions(self, tmp_path):
+        # climatology dataset has an nv dimension.
+        # we shouldn't consider it in the subset axes
+        response = subset(
+            dataset_id="cmems_mod_bal_wav_my_2km-climatology_P1M-m",
+            start_datetime="2001",
+            dry_run=True,
+            output_directory=tmp_path,
+        )
+
+        assert "time" in [
+            coor.coordinate_id for coor in response.coordinates_extent
+        ]
+        assert "nv" not in [
+            coor.coordinate_id for coor in response.coordinates_extent
+        ]
