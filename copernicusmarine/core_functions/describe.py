@@ -64,7 +64,6 @@ def describe_function(
             )
     if not show_all_versions:
         base_catalogue.filter_only_official_versions_and_parts()
-
     response_catalogue = (
         filter_catalogue_with_strings(base_catalogue, set(contains))
         if contains

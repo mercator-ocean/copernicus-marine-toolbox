@@ -10,6 +10,7 @@ from copernicusmarine import (
     CopernicusMarineCatalogue,
     CopernicusMarineServiceNames,
     describe,
+    get,
 )
 from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
@@ -639,3 +640,20 @@ class TestDescribe:
             len([product.product_id for product in nwshelf_catalog.products])
             == 9
         )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_and_get_a_dataset_in_several_products(
+        self, mocked_stac_requests_get
+    ):
+        dataset_id = "cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m"
+        describe_result = describe(
+            dataset_id=dataset_id,
+            raise_on_error=True,
+            show_all_versions=True,
+        )
+        assert len(describe_result.products) == 2
+        get_result = get(dataset_id=dataset_id, dry_run=True)
+        assert get_result is not None
