@@ -7,7 +7,7 @@ from copernicusmarine.core_functions.marine_datastore_config import (
 from tests.resources.mock_stac_catalog_WAW3.mock_catalog import (
     MOCK_STAC_CATALOG as MOCK_STAC_CATALOG_WAW3,
 )
-from tests.resources.mock_stac_catalog_WAW3.mock_dataset_DUPLICATE_nwsheld_P1D_m_202012 import (
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_DUPLICATE_nwshelf_P1D_m_202012 import (
     MOCK_DATASET_DUPLICATE_NWSHELF_P1D_M_202012,
 )
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur import (
