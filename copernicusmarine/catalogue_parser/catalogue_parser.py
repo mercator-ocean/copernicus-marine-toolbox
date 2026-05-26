@@ -373,7 +373,7 @@ def fetch_product_items(
     root_url: str,
     connection: JsonParserConnection,
     child_links: list[pystac.Link],
-    force_product_id: str | None,
+    force_product_ids: list[str] | None,
     force_dataset_id: str | None,
     max_concurrent_requests: int,
     disable_progress_bar: bool,
@@ -381,7 +381,9 @@ def fetch_product_items(
 ) -> list[tuple[pystac.Collection, list[DatasetItem]] | None]:
     tasks = []
     for link in child_links:
-        if force_product_id and force_product_id not in link.href:
+        if force_product_ids and not any(
+            product_id in link.href for product_id in force_product_ids
+        ):
             continue
         tasks.append(
             (
@@ -411,7 +413,7 @@ def fetch_product_items(
 
 def fetch_all_products_items(
     connection: JsonParserConnection,
-    force_product_id: str | None,
+    force_product_ids: list[str] | str | None,
     force_dataset_id: str | None,
     max_concurrent_requests: int,
     catalogue_config: CatalogueConfig,
@@ -424,11 +426,13 @@ def fetch_all_products_items(
     catalog.set_self_href(catalog_root_url)
     child_links = catalog.get_child_links()
     root_url = catalogue_config.root_metadata_url
+    if force_product_ids is not None and isinstance(force_product_ids, str):
+        force_product_ids = [force_product_ids]
     childs = fetch_product_items(
         root_url,
         connection,
         child_links,
-        force_product_id,
+        force_product_ids,
         force_dataset_id,
         max_concurrent_requests,
         disable_progress_bar,
@@ -453,6 +457,7 @@ def parse_catalogue(
         disable=disable_progress_bar,
     )
     dataset_product_mapping_url = catalogue_config.dataset_product_mapping_url
+    product_ids_to_search: list[str] | str | None = force_product_id
     with JsonParserConnection() as connection:
         if force_dataset_id:
             product_id_from_mapping = connection.get_json_file(
@@ -460,17 +465,17 @@ def parse_catalogue(
             ).get(force_dataset_id)
             if not product_id_from_mapping:
                 raise DatasetNotFound(force_dataset_id)
-            if (
-                force_product_id
-                and product_id_from_mapping != force_product_id
-            ):
+            product_ids = product_id_from_mapping.split(",")
+            if force_product_id and force_product_id not in product_ids:
                 raise DatasetIsNotPartOfTheProduct(
                     force_dataset_id, force_product_id
                 )
-            force_product_id = product_id_from_mapping
+            elif force_product_id:
+                product_ids = [force_product_id]
+            product_ids_to_search = product_ids
         marine_data_store_root_collections = fetch_all_products_items(
             connection=connection,
-            force_product_id=force_product_id,
+            force_product_ids=product_ids_to_search,
             force_dataset_id=force_dataset_id,
             max_concurrent_requests=max_concurrent_requests,
             catalogue_config=catalogue_config,

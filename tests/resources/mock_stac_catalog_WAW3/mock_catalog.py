@@ -42,5 +42,11 @@ MOCK_STAC_CATALOG = {
             "title": "PRODUCT_W_ERRORS",
             "type": "application/json",
         },
+        {
+            "rel": "child",
+            "href": "DUPLICATE_nwshelf_multiyear_bgc_004_011/product.stac.json",
+            "title": "DUPLICATE_nwshelf_multiyear_bgc_004_011",
+            "type": "application/json",
+        },
     ],
 }
