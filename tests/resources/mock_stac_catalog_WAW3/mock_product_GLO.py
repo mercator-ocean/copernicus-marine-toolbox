@@ -101,6 +101,12 @@ MOCK_PRODUCT_GLO = {
             "type": "application/json",
         },
         {
+            "rel": "item",  # duplicate to check that duplicates are handled correctly
+            "href": "cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/dataset.stac.json",
+            "title": "cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012",
+            "type": "application/json",
+        },
+        {
             "rel": "license",
             "href": "https://marine.copernicus.eu/user-corner/service-commitments-and-licence",
             "title": "Copernicus Marine Service Commitments and Licence",

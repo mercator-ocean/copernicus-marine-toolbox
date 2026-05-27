@@ -7,9 +7,6 @@ from copernicusmarine.core_functions.marine_datastore_config import (
 from tests.resources.mock_stac_catalog_WAW3.mock_catalog import (
     MOCK_STAC_CATALOG as MOCK_STAC_CATALOG_WAW3,
 )
-from tests.resources.mock_stac_catalog_WAW3.mock_dataset_DUPLICATE_nwshelf_P1D_m_202012 import (
-    MOCK_DATASET_DUPLICATE_NWSHELF_P1D_M_202012,
-)
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur import (
     MOCK_DATASET_GLO_PHY_CUR,
 )
@@ -39,9 +36,6 @@ from tests.resources.mock_stac_catalog_WAW3.mock_dataset_with_errors import (
 )
 from tests.resources.mock_stac_catalog_WAW3.mock_marine_datastore_config import (
     MARINE_DATASTORE_CONFIG,
-)
-from tests.resources.mock_stac_catalog_WAW3.mock_product_DUPLICATE_nwshelf import (
-    MOCK_PRODUCT_DUPLICATE_NWSHELF,
 )
 from tests.resources.mock_stac_catalog_WAW3.mock_product_GLO import (
     MOCK_PRODUCT_GLO,
@@ -134,7 +128,13 @@ def mocked_stac_requests_get(*args, **kwargs):
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
         f"cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/"
         f"dataset.stac.json"
+    ) or (
+        args[0] == f"{BASE_URL_WAW3}GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+        f"cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/"
+        f"dataset.stac.json"
     ):
+        # Duplicated dataset to check that duplicates are handled correctly
+        # It is present in both products
         return MockResponse(MOCK_DATASET_NWSHELF_P1D_M_202012, 200)
     elif (
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
@@ -154,18 +154,6 @@ def mocked_stac_requests_get(*args, **kwargs):
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_W_ERRORS, 200)
-    elif (
-        args[0]
-        == f"{BASE_URL_WAW3}DUPLICATE_nwshelf_multiyear_bgc_004_011/product.stac.json"
-    ):
-        return MockResponse(MOCK_PRODUCT_DUPLICATE_NWSHELF, 200)
-    elif (
-        args[0] == f"{BASE_URL_WAW3}DUPLICATE_nwshelf_multiyear_bgc_004_011/"
-        f"cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/"
-        f"dataset.stac.json"
-    ):
-        return MockResponse(MOCK_DATASET_DUPLICATE_NWSHELF_P1D_M_202012, 200)
-
     elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
         return MockResponse({"preferred_username": "copernicususer"}, 200)
 
