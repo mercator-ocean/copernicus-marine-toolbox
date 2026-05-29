@@ -11,10 +11,10 @@
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/pypi/pyversions/copernicusmarine.svg" alt="PyPI Supported Versions" /></a>
   <a href="https://pypi.org/project/copernicusmarine/"><img src="https://img.shields.io/badge/platform-windows | linux | macos-lightgrey" alt="Supported Platforms" /></a>
   <a href="https://hub.docker.com/r/copernicusmarine/copernicusmarine"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white" alt="Docker" /></a>
-  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/readthedocs/copernicusmarine/pre-releases-2.0.0a4?logo=readthedocs" alt="Documentation" /></a>
+  <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/readthedocs/copernicusmarine/stable?logo=readthedocs" alt="Documentation" /></a>
   <a href="https://github.com/python/black"><img src="https://img.shields.io/badge/code%20style-black-000000?style==flat" alt="Code Style" /></a>
   <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue" alt="Licence" /></a>
-  <a href="https://pypistats.org/packages/copernicusmarine"><img src="https://img.shields.io/pypi/dm/copernicusmarine.svg" alt="Downloads" /></a>
+  <a href="https://pepy.tech/projects/copernicusmarine"><img src="https://static.pepy.tech/personalized-badge/copernicusmarine?period=monthly&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads%2Fmonth" alt="PyPI Downloads"></a>
 </div>
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
