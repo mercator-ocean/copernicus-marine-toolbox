@@ -1,5 +1,3 @@
-from typing import Optional
-
 from copernicusmarine.core_functions.credentials_utils import (
     COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT,
 )
@@ -130,7 +128,13 @@ def mocked_stac_requests_get(*args, **kwargs):
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
         f"cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/"
         f"dataset.stac.json"
+    ) or (
+        args[0] == f"{BASE_URL_WAW3}GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+        f"cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/"
+        f"dataset.stac.json"
     ):
+        # Duplicated dataset to check that duplicates are handled correctly
+        # It is present in both products
         return MockResponse(MOCK_DATASET_NWSHELF_P1D_M_202012, 200)
     elif (
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
@@ -150,7 +154,6 @@ def mocked_stac_requests_get(*args, **kwargs):
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_W_ERRORS, 200)
-
     elif args[0] == f"{COPERNICUS_MARINE_AUTH_SYSTEM_USERINFO_ENDPOINT}":
         return MockResponse({"preferred_username": "copernicususer"}, 200)
 

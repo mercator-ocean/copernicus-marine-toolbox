@@ -440,7 +440,7 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "cmems_mod_med_wav_my_4.2km-climatology_P1M-m": "MEDSEA_MULTIYEAR_WAV_006_012",
     "cmems_mod_med_wav_my_4.2km_static": "MEDSEA_MULTIYEAR_WAV_006_012",
     "cmems_mod_med_wav_myint_4.2km_PT1H-i": "MEDSEA_MULTIYEAR_WAV_006_012",
-    "cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m": "NWSHELF_MULTIYEAR_BGC_004_011",
+    "cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m": "NWSHELF_MULTIYEAR_BGC_004_011,GLOBAL_ANALYSISFORECAST_PHY_001_024",
     "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m": "NWSHELF_MULTIYEAR_BGC_004_011",
     "cmems_mod_nws_bgc-chl_myint_7km-3D_P1M-m": "NWSHELF_MULTIYEAR_BGC_004_011",
     "cmems_mod_nws_bgc-kd_my_7km-3D_P1D-m": "NWSHELF_MULTIYEAR_BGC_004_011",
