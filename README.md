@@ -14,7 +14,7 @@
   <a href="https://toolbox-docs.marine.copernicus.eu/en/"><img src="https://img.shields.io/readthedocs/copernicusmarine/stable?logo=readthedocs" alt="Documentation" /></a>
   <a href="https://github.com/python/black"><img src="https://img.shields.io/badge/code%20style-black-000000?style==flat" alt="Code Style" /></a>
   <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/licence-EUPL-lightblue" alt="Licence" /></a>
-  <a href="https://pypistats.org/packages/copernicusmarine"><img src="https://img.shields.io/pypi/dm/copernicusmarine.svg" alt="Downloads" /></a>
+  <a href="https://pypistats.org/packages/copernicusmarine"><img src="https://img.shields.io/pepy/dt/copernicusmarine.svg" alt="Downloads" /></a>
 </div>
 
 ![Copernicus Marine Service and Mercator Ocean international logos](https://www.mercator-ocean.eu/wp-content/uploads/2022/05/Cartouche_CMEMS_poisson_MOi.png)
