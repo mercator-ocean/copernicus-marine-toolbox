@@ -1,0 +1,12 @@
+Release 2.5.0
+=============
+
+This release introduces new features and improvements.
+
+Describe
+--------
+
+Fixes
+^^^^^
+
+* Fixed an issue where the ``describe`` command would fail when the same datasetID would be present in multiple products.

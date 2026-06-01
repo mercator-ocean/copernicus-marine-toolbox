@@ -1,0 +1,12 @@
+Release 2.4.1
+=============
+
+Patch that fixes some issues when accessing climatology datasets.
+
+Subset
+-------
+
+Fixes
+^^^^^
+
+* Fixed a bug where accessing climatology datasets would fail when using ``subset``, as the Toolbox would select the new dimension ``nv`` as the time axis instead of the original time axis. The Toolbox now correctly identifies and selects the time axis for subsetting.
