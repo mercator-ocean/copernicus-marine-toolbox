@@ -413,7 +413,7 @@ def fetch_product_items(
 
 def fetch_all_products_items(
     connection: JsonParserConnection,
-    force_product_ids: list[str] | str | None,
+    force_product_ids: list[str] | None,
     force_dataset_id: str | None,
     max_concurrent_requests: int,
     catalogue_config: CatalogueConfig,
@@ -426,8 +426,6 @@ def fetch_all_products_items(
     catalog.set_self_href(catalog_root_url)
     child_links = catalog.get_child_links()
     root_url = catalogue_config.root_metadata_url
-    if force_product_ids is not None and isinstance(force_product_ids, str):
-        force_product_ids = [force_product_ids]
     childs = fetch_product_items(
         root_url,
         connection,
@@ -457,7 +455,9 @@ def parse_catalogue(
         disable=disable_progress_bar,
     )
     dataset_product_mapping_url = catalogue_config.dataset_product_mapping_url
-    product_ids_to_search: list[str] | str | None = force_product_id
+    product_ids_to_search: list[str] | None = (
+        [force_product_id] if force_product_id else None
+    )
     with JsonParserConnection() as connection:
         if force_dataset_id:
             product_id_from_mapping = connection.get_json_file(
