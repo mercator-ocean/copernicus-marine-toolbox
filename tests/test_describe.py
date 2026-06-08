@@ -657,3 +657,12 @@ class TestDescribe:
         assert len(describe_result.products) == 2
         get_result = get(dataset_id=dataset_id, dry_run=True)
         assert get_result is not None
+
+    def test_describe_dataset_id_with_version(self, caplog):
+        with caplog.at_level(logging.INFO, logger="copernicusmarine"):
+            result = describe(
+                dataset_id="cmems_mod_glo_phy_my_0.083deg_P1M-m_202311"
+            )
+            assert result
+            assert "WARNING" in caplog.text
+            assert "The dataset version has been included" in caplog.text

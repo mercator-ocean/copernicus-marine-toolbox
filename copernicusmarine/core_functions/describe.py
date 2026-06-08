@@ -9,6 +9,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineCatalogue,
     DatasetNotFound,
     ProductNotFound,
+    get_version_from_dataset_id,
 )
 from copernicusmarine.core_functions.marine_datastore_config import (
     get_config_and_check_version_describe,
@@ -34,6 +35,9 @@ def describe_function(
             "Data will come from the staging environment."
         )
     catalogues: list[CopernicusMarineCatalogue] = []
+
+    if force_dataset_id:
+        force_dataset_id = _parse_dataset_id_and_version(force_dataset_id)
     for i, catalogue_config in enumerate(marine_datasetore_config.catalogues):
         try:
             catalogue: CopernicusMarineCatalogue | None = parse_catalogue(
@@ -70,3 +74,18 @@ def describe_function(
         else base_catalogue
     )
     return response_catalogue
+
+
+def _parse_dataset_id_and_version(dataset_id: str):
+    dataset_id_without_version, dataset_version = get_version_from_dataset_id(
+        dataset_id=dataset_id, raise_on_error=False
+    )
+    if dataset_version:
+        logger.warning(
+            "The dataset version has been included "
+            "in the dataset_id argument. "
+            "This is not recommended. "
+            "The describe command will return all"
+            "the available versions of the dataset."
+        )
+    return dataset_id_without_version
