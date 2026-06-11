@@ -10,4 +10,4 @@ Fixes
 ^^^^^
 
 * Fixed an issue where the ``describe`` command would fail when the same datasetID would be present in multiple products.
-* Fixed an issue where adding the version of the dataset in the datasetID would not work at all. Now, it correctly parses the input and logs a warning if needed.
+* Fixed an issue where adding the version of the dataset in the datasetID would not work. Now, it correctly parses the input and logs a warning.
