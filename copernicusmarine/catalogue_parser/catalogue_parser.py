@@ -201,6 +201,7 @@ def _parse_and_sort_dataset_items(
 
 def _construct_marine_data_store_product(
     stac_tuple: tuple[pystac.Collection, list[DatasetItem]],
+    force_dataset_id: str | None,
     raise_on_error: bool,
 ) -> CopernicusMarineProduct | None:
     stac_product, dataset_items = stac_tuple
@@ -237,6 +238,10 @@ def _construct_marine_data_store_product(
                 ],
                 raise_on_error=raise_on_error,
             )
+        )
+        and (
+            not force_dataset_id
+            or dataset_metadata.dataset_id == force_dataset_id
         )
     ]
 
@@ -488,13 +493,11 @@ def parse_catalogue(
     for product_item in marine_data_store_root_collections:
         if product_item:
             if product_metadata := _construct_marine_data_store_product(
-                product_item, raise_on_error
+                product_item,
+                force_dataset_id,
+                raise_on_error,
             ):
-                if _check_product(
-                    product_metadata,
-                    product_ids_to_search,
-                    force_dataset_id,
-                ):
+                if _check_product(product_metadata, product_ids_to_search):
                     products_metadata.append(product_metadata)
     if not products_metadata:
         return None
@@ -516,21 +519,15 @@ def parse_catalogue(
 def _check_product(
     product: CopernicusMarineProduct,
     force_product_ids: list[str] | None,
-    force_dataset_id: str | None,
-):
+) -> bool:
     """
-    Forcing the equality of IDs.
+    Enforce exact ID matching and that the product has datasets.
 
-    Avoid cases like: dataset_id = "antarctic_omi_si_extent_obs" and force_dataset_id = "antarctic_omi_si_extent".
+    Avoid cases like: product_id = "product_id" and force_product_id = "product_id_obs".
     """  # noqa: E501
     if force_product_ids and product.product_id not in force_product_ids:
         return False
-    if force_dataset_id:
-        for dataset in product.datasets:
-            if dataset.dataset_id == force_dataset_id:
-                return True
-        return False
-    return True if product.datasets else False
+    return bool(product.datasets)
 
 
 def search_and_filter(

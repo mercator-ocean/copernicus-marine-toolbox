@@ -34,7 +34,7 @@ class TestDescribeReleaseDate:
     def then_I_dont_get_the_not_released_products_version_and_datasets(
         self, describe_result: CopernicusMarineCatalogue, snapshot
     ):
-        assert 1 == len(describe_result.products)
+        assert 2 == len(describe_result.products)
         assert (
             describe_result.model_dump(
                 exclude_none=True,
@@ -55,7 +55,7 @@ class TestDescribeReleaseDate:
     def then_I_get_all_products_versions_and_datasets(
         self, describe_result: CopernicusMarineCatalogue, snapshot
     ):
-        assert 2 == len(describe_result.products)
+        assert 3 == len(describe_result.products)
         assert (
             describe_result.model_dump(
                 exclude_none=True,

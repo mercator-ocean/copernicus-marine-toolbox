@@ -181,6 +181,52 @@ class TestDescribe:
             assert "UNAVAILABLE_PRODUCT" in caplog.text
             assert "unavailable_dataset" in caplog.text
 
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_exact_match_product_id(self, mocked_requests):
+        """
+        When product_id='GLOBAL_ANALYSISFORECAST_PHY_001_024' is requested,
+        only that exact product should be returned, not
+        'GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER' whose ID contains
+        the requested one as a prefix.
+        """
+        result = describe(
+            product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024",
+            raise_on_error=False,
+            show_all_versions=True,
+        )
+        product_ids = [p.product_id for p in result.products]
+        assert "GLOBAL_ANALYSISFORECAST_PHY_001_024" in product_ids
+        assert "GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER" not in product_ids
+        assert len(product_ids) == 1
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
+    def test_describe_exact_match_dataset_id(self, mocked_requests):
+        """
+        When dataset_id='cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m' is
+        requested, only that exact dataset should be returned, not
+        'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other' whose ID
+        contains the requested one as a prefix.
+        """
+        result = describe(
+            dataset_id="cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
+            raise_on_error=False,
+            show_all_versions=True,
+        )
+        all_dataset_ids = [
+            d.dataset_id for p in result.products for d in p.datasets
+        ]
+        assert "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m" in all_dataset_ids
+        assert (
+            "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other"
+            not in all_dataset_ids
+        )
+
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
         self.output = execute_in_terminal(command, timeout_second=30)

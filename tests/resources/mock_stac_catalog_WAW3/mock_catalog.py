@@ -48,5 +48,11 @@ MOCK_STAC_CATALOG = {
             "title": "DUPLICATE_nwshelf_multiyear_bgc_004_011",
             "type": "application/json",
         },
+        {
+            "rel": "child",
+            "href": "GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/product.stac.json",
+            "title": "GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER",
+            "type": "application/json",
+        },
     ],
 }
