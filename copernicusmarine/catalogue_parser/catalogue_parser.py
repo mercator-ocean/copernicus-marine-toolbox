@@ -490,7 +490,11 @@ def parse_catalogue(
             if product_metadata := _construct_marine_data_store_product(
                 product_item, raise_on_error
             ):
-                if product_metadata.datasets:
+                if _check_product(
+                    product_metadata,
+                    product_ids_to_search,
+                    force_dataset_id,
+                ):
                     products_metadata.append(product_metadata)
     if not products_metadata:
         return None
@@ -507,6 +511,26 @@ def parse_catalogue(
 # ---------------------------------------
 # --- Utils functions
 # ---------------------------------------
+
+
+def _check_product(
+    product: CopernicusMarineProduct,
+    force_product_ids: list[str] | None,
+    force_dataset_id: str | None,
+):
+    """
+    Forcing the equality of IDs.
+
+    Avoid cases like: dataset_id = "antarctic_omi_si_extent_obs" and force_dataset_id = "antarctic_omi_si_extent".
+    """  # noqa: E501
+    if force_product_ids and product.product_id not in force_product_ids:
+        return False
+    if force_dataset_id:
+        for dataset in product.datasets:
+            if dataset.dataset_id == force_dataset_id:
+                return True
+        return False
+    return True if product.datasets else False
 
 
 def search_and_filter(
