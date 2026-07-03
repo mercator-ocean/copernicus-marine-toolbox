@@ -523,7 +523,7 @@ def _check_product(
     """
     Enforce exact ID matching and that the product has datasets.
 
-    Avoid cases like: product_id = "product_id" and force_product_id = "product_id_obs".
+    Avoid cases like: force_product_id = "product_id" and product_id = "product_id_obs".
     """  # noqa: E501
     if force_product_ids and product.product_id not in force_product_ids:
         return False
