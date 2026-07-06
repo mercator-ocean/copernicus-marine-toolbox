@@ -107,6 +107,12 @@ MOCK_PRODUCT_GLO = {
             "type": "application/json",
         },
         {
+            "rel": "item",  # dataset with ID that contains another dataset ID as prefix
+            "href": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/dataset.stac.json",
+            "title": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211",
+            "type": "application/json",
+        },
+        {
             "rel": "license",
             "href": "https://marine.copernicus.eu/user-corner/service-commitments-and-licence",
             "title": "Copernicus Marine Service Commitments and Licence",

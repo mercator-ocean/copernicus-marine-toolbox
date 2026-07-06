@@ -11,3 +11,4 @@ Fixes
 
 * Fixed an issue where the ``describe`` command would fail when the same datasetID would be present in multiple products.
 * Fixed an issue where adding the version of the dataset in the datasetID would not work. Now, it correctly parses the input and logs a warning.
+* Fixed an issue where the ``describe`` command would return too many products when an ID contained another ID as a prefix. Now, it correctly filters the products and datasets and returns only the requested ones.

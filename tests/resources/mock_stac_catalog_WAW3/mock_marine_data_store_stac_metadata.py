@@ -13,6 +13,9 @@ from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur import 
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur_new_version import (
     MOCK_DATASET_GLO_PHY_CUR_NEW_VERSION,
 )
+from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_cur_other import (
+    MOCK_DATASET_GLO_PHY_CUR_OTHER,
+)
 from tests.resources.mock_stac_catalog_WAW3.mock_dataset_GLO_glo_phy_so import (
     MOCK_DATASET_GLO_PHY_SO,
 )
@@ -39,6 +42,9 @@ from tests.resources.mock_stac_catalog_WAW3.mock_marine_datastore_config import 
 )
 from tests.resources.mock_stac_catalog_WAW3.mock_product_GLO import (
     MOCK_PRODUCT_GLO,
+)
+from tests.resources.mock_stac_catalog_WAW3.mock_product_GLO_OTHER import (
+    MOCK_PRODUCT_GLO_OTHER,
 )
 from tests.resources.mock_stac_catalog_WAW3.mock_product_NWSHELF import (
     MOCK_PRODUCT_NWSHELF,
@@ -98,6 +104,11 @@ def mocked_stac_requests_get(*args, **kwargs):
         == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/product.stac.json"
     ):
         return MockResponse(MOCK_PRODUCT_NWSHELF, 200)
+    elif (
+        args[0]
+        == f"{BASE_URL_WAW3}GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/product.stac.json"
+    ):
+        return MockResponse(MOCK_PRODUCT_GLO_OTHER, 200)
     elif args[0] == f"{BASE_URL_WAW3}PRODUCT_W_ERRORS/product.stac.json":
         return MockResponse(MOCK_PRODUCT_W_ERRORS, 200)
     elif (
@@ -124,6 +135,16 @@ def mocked_stac_requests_get(*args, **kwargs):
         f"dataset.stac.json"
     ):
         return MockResponse(MOCK_DATASET_GLO_PHY_SO, 200)
+    elif (
+        args[0] == f"{BASE_URL_WAW3}GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/"
+        f"cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/"
+        f"dataset.stac.json"
+    ) or (
+        args[0] == f"{BASE_URL_WAW3}GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+        f"cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/"
+        f"dataset.stac.json"
+    ):
+        return MockResponse(MOCK_DATASET_GLO_PHY_CUR_OTHER, 200)
     elif (
         args[0] == f"{BASE_URL_WAW3}NWSHELF_MULTIYEAR_BGC_004_011/"
         f"cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m_202012/"

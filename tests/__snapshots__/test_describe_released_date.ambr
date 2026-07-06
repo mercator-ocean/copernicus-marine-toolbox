@@ -921,6 +921,85 @@
             ]),
           }),
           dict({
+            'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other',
+            'dataset_name': 'daily mean fields from Global Ocean Physics Other',
+            'digital_object_identifier': '10.48670/moi-00016',
+            'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
+            'versions': list([
+              dict({
+                'label': '202211',
+                'parts': list([
+                  dict({
+                    'name': 'default',
+                    'released_date': '2022-11-01T00:00:00Z',
+                    'services': list([
+                      dict({
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/timeChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'axis': 'y',
+                                'chunking_length': 128,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                              }),
+                              dict({
+                                'axis': 'x',
+                                'chunking_length': 128,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                              }),
+                              dict({
+                                'axis': 't',
+                                'chunking_length': 1,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01',
+                              }),
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/dataset.stac.json',
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+          dict({
             'dataset_id': 'cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m',
             'dataset_name': 'daily mean fields from Global Ocean Physics Analysis and Forecast updated Daily',
             'digital_object_identifier': '10.48670/moi-00016',
@@ -1421,6 +1500,98 @@
         ]),
         'thumbnail_url': 'https://catalogue.marine.copernicus.eu/documents/IMG/GLOBAL-ANALYSIS-FORECAST-PHYS-001-024-c.gif',
         'title': 'Global Ocean Physics Analysis and Forecast',
+      }),
+      dict({
+        'datasets': list([
+          dict({
+            'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other',
+            'dataset_name': 'daily mean fields from Global Ocean Physics Other',
+            'digital_object_identifier': '10.48670/moi-00016-other',
+            'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER',
+            'versions': list([
+              dict({
+                'label': '202211',
+                'parts': list([
+                  dict({
+                    'name': 'default',
+                    'released_date': '2022-11-01T00:00:00Z',
+                    'services': list([
+                      dict({
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/timeChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'axis': 'y',
+                                'chunking_length': 128,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                              }),
+                              dict({
+                                'axis': 'x',
+                                'chunking_length': 128,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                              }),
+                              dict({
+                                'axis': 't',
+                                'chunking_length': 1,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01',
+                              }),
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/dataset.stac.json',
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+        ]),
+        'digital_object_identifier': '10.48670/moi-00016-other',
+        'processing_level': 'Level 4',
+        'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER',
+        'production_center': 'Mercator Océan International',
+        'sources': list([
+          'Numerical models',
+        ]),
+        'thumbnail_url': 'https://catalogue.marine.copernicus.eu/documents/IMG/GLOBAL-ANALYSIS-FORECAST-PHYS-001-024-OTHER.gif',
+        'title': 'Global Ocean Physics Analysis and Forecast Other',
       }),
       dict({
         'datasets': list([
@@ -3041,6 +3212,85 @@
             ]),
           }),
           dict({
+            'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other',
+            'dataset_name': 'daily mean fields from Global Ocean Physics Other',
+            'digital_object_identifier': '10.48670/moi-00016',
+            'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
+            'versions': list([
+              dict({
+                'label': '202211',
+                'parts': list([
+                  dict({
+                    'name': 'default',
+                    'released_date': '2022-11-01T00:00:00Z',
+                    'services': list([
+                      dict({
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/timeChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'axis': 'y',
+                                'chunking_length': 128,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                              }),
+                              dict({
+                                'axis': 'x',
+                                'chunking_length': 128,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                              }),
+                              dict({
+                                'axis': 't',
+                                'chunking_length': 1,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01',
+                              }),
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/dataset.stac.json',
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+          dict({
             'dataset_id': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
             'dataset_name': 'cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D',
             'digital_object_identifier': '10.48670/moi-00016',
@@ -3089,6 +3339,98 @@
         ]),
         'thumbnail_url': 'https://catalogue.marine.copernicus.eu/documents/IMG/GLOBAL-ANALYSIS-FORECAST-PHYS-001-024-c.gif',
         'title': 'Global Ocean Physics Analysis and Forecast',
+      }),
+      dict({
+        'datasets': list([
+          dict({
+            'dataset_id': 'cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other',
+            'dataset_name': 'daily mean fields from Global Ocean Physics Other',
+            'digital_object_identifier': '10.48670/moi-00016-other',
+            'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER',
+            'versions': list([
+              dict({
+                'label': '202211',
+                'parts': list([
+                  dict({
+                    'name': 'default',
+                    'released_date': '2022-11-01T00:00:00Z',
+                    'services': list([
+                      dict({
+                        'service_name': 'original-files',
+                        'service_short_name': 'files',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-native-14/native/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                      dict({
+                        'service_format': 'zarr',
+                        'service_name': 'arco-geo-series',
+                        'service_short_name': 'geoseries',
+                        'uri': 'https://s3.waw3-1.cloudferro.com/mdl-arco-time-010/arco/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/timeChunked.zarr',
+                        'variables': list([
+                          dict({
+                            'bbox': list([
+                              -180.0,
+                              -80.0,
+                              179.91668701171875,
+                              90.0,
+                            ]),
+                            'coordinates': list([
+                              dict({
+                                'axis': 'y',
+                                'chunking_length': 128,
+                                'coordinate_id': 'latitude',
+                                'coordinate_unit': 'degrees_north',
+                              }),
+                              dict({
+                                'axis': 'x',
+                                'chunking_length': 128,
+                                'coordinate_id': 'longitude',
+                                'coordinate_unit': 'degrees_east',
+                              }),
+                              dict({
+                                'axis': 't',
+                                'chunking_length': 1,
+                                'coordinate_id': 'time',
+                                'coordinate_unit': 'milliseconds since 1970-01-01',
+                              }),
+                            ]),
+                            'short_name': 'uo',
+                            'standard_name': 'eastward_sea_water_velocity',
+                            'units': 'm/s',
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    'url_metadata': 'https://s3.waw3-1.cloudferro.com/mdl-metadata/metadata/GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER/cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other_202211/dataset.stac.json',
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+        ]),
+        'digital_object_identifier': '10.48670/moi-00016-other',
+        'processing_level': 'Level 4',
+        'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER',
+        'production_center': 'Mercator Océan International',
+        'sources': list([
+          'Numerical models',
+        ]),
+        'thumbnail_url': 'https://catalogue.marine.copernicus.eu/documents/IMG/GLOBAL-ANALYSIS-FORECAST-PHYS-001-024-OTHER.gif',
+        'title': 'Global Ocean Physics Analysis and Forecast Other',
       }),
     ]),
   })

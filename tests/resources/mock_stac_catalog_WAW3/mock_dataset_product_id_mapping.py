@@ -1179,4 +1179,5 @@ MOCK_DATASET_PRODUCT_ID_MAPPING = {
     "unavailable_dataset": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
     "unexisting_dataset": "UNAVAILABLE_PRODUCT",
     "irrelevant_dataset": "PRODUCT_W_ERRORS",
+    "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other": "GLOBAL_ANALYSISFORECAST_PHY_001_024,GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER",
 }
