@@ -203,8 +203,8 @@ class TestSparseSubset:
             "maximum_latitude": 30.1877,
             "minimum_longitude": 31.9,
             "maximum_longitude": 32,
-            "start_datetime": "01-01-2023",
-            "end_datetime": "02-01-2023",
+            "start_datetime": "01-01-2025",
+            "end_datetime": "02-01-2025",
         }
         df = read_dataframe(**empty_request)
         assert df.empty
