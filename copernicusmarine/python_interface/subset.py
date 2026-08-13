@@ -151,7 +151,10 @@ def subset(
     platform_ids : list[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
     polygons_file : pathlib.Path | str, optional
-        Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml. If specified, the subset will be based on the polygons and all other spatial selection options will be ignored. You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
+        Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
+        If specified, the subset will be based on the polygons and all other spatial selection options will be ignored.
+        You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.
+        See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
 
     Returns
     -------

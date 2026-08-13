@@ -18,7 +18,7 @@ def clean_description_python_interface(desc: list[str]) -> list[str]:
 
 def clean_documenation_utils_cli(
     documentation: dict[str, str],
-) -> dict[str, str]:
+) -> dict[str, list[str]]:
     def _cli_argument_to_python_argument(cli_description: str) -> str:
         cli_description_parsed = cli_description.split("``")
         if len(cli_description_parsed) <= 1:
@@ -38,9 +38,9 @@ def clean_documenation_utils_cli(
         return "``".join(cli_description_parsed)
 
     return {
-        key.lower().replace("_help", ""): _cli_argument_to_python_argument(
-            value
-        )
+        key.lower()
+        .replace("_help", ""): _cli_argument_to_python_argument(value)
+        .split("\n")
         for key, value in documentation.items()
     }
 
@@ -80,9 +80,10 @@ class TestDocumentation:
                 continue
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
-            assert parameter_desc == [
-                subset_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == subset_documentation_cli_cleaned[name_of_variable]
+            )
 
     def test_get(self):
         text_get = FunctionDoc(copernicusmarine.get)
@@ -92,9 +93,10 @@ class TestDocumentation:
             name_of_variable = parameter.name
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
-            assert parameter_desc == [
-                get_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == get_documentation_cli_cleaned[name_of_variable]
+            )
 
     def test_login(self):
         text_login = FunctionDoc(copernicusmarine.login)
@@ -102,17 +104,18 @@ class TestDocumentation:
         for parameter in text_login["Parameters"]:
             parameter_desc = clean_description_python_interface(parameter.desc)
             name_of_variable = parameter.name
-            if len(parameter_desc) > 1:
-                assert (
-                    " ".join(parameter_desc)
-                    == login_documentation_cli_cleaned[name_of_variable]
-                )
-                continue
+            # if len(parameter_desc) > 1:
+            #     assert (
+            #         " ".join(parameter_desc)
+            #         == login_documentation_cli_cleaned[name_of_variable]
+            #     )
+            #     continue
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
-            assert parameter_desc == [
-                login_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == login_documentation_cli_cleaned[name_of_variable]
+            )
 
     def test_describe(self):
         text_describe = FunctionDoc(copernicusmarine.describe)
@@ -120,9 +123,10 @@ class TestDocumentation:
         for parameter in text_describe["Parameters"]:
             parameter_desc = clean_description_python_interface(parameter.desc)
             name_of_variable = parameter.name
-            assert parameter_desc == [
-                describe_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == describe_documentation_cli_cleaned[name_of_variable]
+            )
 
     def test_open_dataset(self):
         text_open_dataset = FunctionDoc(copernicusmarine.open_dataset)
@@ -138,9 +142,10 @@ class TestDocumentation:
                 continue
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
-            assert parameter_desc == [
-                subset_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == subset_documentation_cli_cleaned[name_of_variable]
+            )
 
     def test_read_dataframe(self):
         text_read_dataframe = FunctionDoc(copernicusmarine.read_dataframe)
@@ -163,9 +168,10 @@ class TestDocumentation:
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
 
-            assert parameter_desc == [
-                subset_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == subset_documentation_cli_cleaned[name_of_variable]
+            )
 
     def test_subset_split_on(self):
         text_subset_split_on = FunctionDoc(copernicusmarine.subset_split_on)
@@ -175,6 +181,7 @@ class TestDocumentation:
             name_of_variable = parameter.name
             if name_of_variable in LIST_OF_EXCEPTIONS:
                 continue
-            assert parameter_desc == [
-                split_on_documentation_cli_cleaned[name_of_variable]
-            ]
+            assert (
+                parameter_desc
+                == split_on_documentation_cli_cleaned[name_of_variable]
+            )
