@@ -45,7 +45,7 @@ jobs:
           poetry --version
           poetry install --no-interaction --no-root --with dev
       - name: Install project
-        run: poetry install --no-interaction --with dev
+        run: poetry install --no-interaction --with dev --all-extras
       - name: Run tests
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}

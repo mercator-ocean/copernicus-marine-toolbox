@@ -28,6 +28,7 @@ from copernicusmarine.core_functions.credentials_utils import (
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
     DatasetUpdating,
+    DependenciesNotAvailable,
     FormatNotSupported,
     NetCDFCompressionNotAvailable,
     NoServiceAvailable,
@@ -87,6 +88,7 @@ __all__ = [
     "DatasetNotFound",
     "DatasetVersionNotFound",
     "DatasetVersionPartNotFound",
+    "DependenciesNotAvailable",
     "FileGet",
     "FormatNotSupported",
     "GeographicalExtent",

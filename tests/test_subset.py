@@ -1,3 +1,4 @@
+import io
 import itertools
 import logging
 import math
@@ -8,8 +9,11 @@ from json import loads
 from pathlib import Path
 from typing import Literal
 
+import matplotlib
+import matplotlib.pyplot as plt
 import pytest
 import xarray
+from syrupy.extensions.image import PNGImageSnapshotExtension
 
 from copernicusmarine import WrongFormatRequested, open_dataset, subset
 from tests.test_utils import (
@@ -18,6 +22,8 @@ from tests.test_utils import (
     main_checks_when_file_is_downloaded,
     parse_size,
 )
+
+matplotlib.use("Agg")
 
 
 class TestSubset:
@@ -1866,3 +1872,29 @@ class TestSubset:
         assert "nv" not in [
             coor.coordinate_id for coor in response.coordinates_extent
         ]
+
+    def test_subset_with_polygons(self, tmp_path, snapshot):
+        french_coast = "tests/resources/french_coast.geojson"
+        output_filename = "subset_with_polygon.nc"
+        subset(
+            dataset_id="cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+            variables=["mlotst_cglo"],
+            start_datetime="2023-01-01",
+            end_datetime="2023-01-01",
+            polygons_file=french_coast,
+            output_directory=tmp_path,
+            output_filename=output_filename,
+        )
+
+        dataset = xarray.open_dataset(tmp_path / output_filename)
+        to_print = dataset.mlotst_cglo.isel(time=0)
+        fig, ax = plt.subplots()
+        to_print.plot(ax=ax)
+
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png")
+        plt.close(fig)
+
+        assert buf.getvalue() == snapshot(
+            extension_class=PNGImageSnapshotExtension
+        )

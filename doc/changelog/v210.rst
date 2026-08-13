@@ -9,7 +9,7 @@ General
 New features
 ------------------
 
-- Added :ref:`"Polygons-based data selection" <polygons-based-data-selection>` page in the docs (usage section), with examples showing how to download data using polygons as the input area.
+- Added "Polygons-based data selection" page in the docs (usage section), with examples showing how to download data using polygons as the input area.
 - Removed Linux binary with ``glibc==2.31`` since GitHub Actions no longer supports it.
 - Added a new binary with ``glibc==2.39``.
 - Added ``arcosparse`` as a new dependency.

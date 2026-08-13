@@ -192,6 +192,16 @@ SUBSET: dict[str, str] = {
         "Maximum y-axis value for the subset. "
         "The units are considered in length (m, 100km...)."
     ),
+    "POLYGONS_FILE_HELP": (
+        """
+        Path to a file containing polygons for the subset.
+        Supported formats: .geojson, .shp, .gpkg, .kml.
+        If specified, the subset will be based on the polygons and all other
+        spatial selection options will be ignored.
+        You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.
+        See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
+        """  # noqa
+    ),
     "MINIMUM_DEPTH_HELP": ("Minimum depth for the subset."),
     "MAXIMUM_DEPTH_HELP": ("Maximum depth for the subset."),
     "VERTICAL_AXIS_HELP": (
