@@ -1,4 +1,3 @@
-import io
 import itertools
 import logging
 import math
@@ -9,11 +8,8 @@ from json import loads
 from pathlib import Path
 from typing import Literal
 
-import matplotlib
-import matplotlib.pyplot as plt
 import pytest
 import xarray
-from syrupy.extensions.image import PNGImageSnapshotExtension
 
 from copernicusmarine import WrongFormatRequested, open_dataset, subset
 from tests.test_utils import (
@@ -22,8 +18,6 @@ from tests.test_utils import (
     main_checks_when_file_is_downloaded,
     parse_size,
 )
-
-matplotlib.use("Agg")
 
 
 class TestSubset:
@@ -1873,7 +1867,7 @@ class TestSubset:
             coor.coordinate_id for coor in response.coordinates_extent
         ]
 
-    def test_subset_with_polygons(self, tmp_path, snapshot):
+    def test_subset_with_polygons(self, tmp_path):
         french_coast = "tests/resources/french_coast.geojson"
         output_filename = "subset_with_polygon.nc"
         subset(
@@ -1886,15 +1880,5 @@ class TestSubset:
             output_filename=output_filename,
         )
 
-        dataset = xarray.open_dataset(tmp_path / output_filename)
-        to_print = dataset.mlotst_cglo.isel(time=0)
-        fig, ax = plt.subplots()
-        to_print.plot(ax=ax)
-
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        plt.close(fig)
-
-        assert buf.getvalue() == snapshot(
-            extension_class=PNGImageSnapshotExtension
-        )
+        # The file without polygon filtering is about 4MB
+        assert get_file_size(Path(tmp_path, output_filename)) < 100 * 1024

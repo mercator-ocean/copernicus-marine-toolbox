@@ -196,7 +196,7 @@ When ``--polygons-file`` is set, it takes precedence over the bounding-box optio
 
 .. note:
 
-  The current implementation need to load in memory the entire bounding box of the dataset before clipping it to the polygons. This can lead to high memory usage for large datasets. If you encounter memory issues, consider using a smaller bounding box or a different dataset or detail your needs in an issue on the `GitHub repository <https://github.com/copernicus-marine-toolbox/copernicus-marine-toolbox/issues>`_.
+  The current implementation needs to load in memory the entire bounding box of the dataset before clipping it to the polygons. This can lead to high memory usage for large datasets. If you encounter memory issues, consider using a smaller bounding box or a different dataset or detail your needs in an issue on the `GitHub repository <https://github.com/copernicus-marine-toolbox/copernicus-marine-toolbox/issues>`_.
 
 **Example:**
 
