@@ -69,6 +69,7 @@ def subset(
     chunk_size_limit: int = -1,
     raise_if_updating: bool = False,
     platform_ids: list[str] | None = None,
+    polygons_file: pathlib.Path | str | None = None,
 ) -> ResponseSubset:
     """
     Extract a subset of data from a specified dataset using given parameters.
@@ -149,6 +150,11 @@ def subset(
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     platform_ids : list[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
+    polygons_file : pathlib.Path | str, optional
+        Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
+        If specified, the subset will be based on the polygons and all other spatial selection options will be ignored.
+        You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.
+        See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
 
     Returns
     -------
@@ -206,6 +212,7 @@ def subset(
         chunk_size_limit=chunk_size_limit,
         raise_if_updating=raise_if_updating,
         platform_ids=platform_ids,
+        polygons_file=(pathlib.Path(polygons_file) if polygons_file else None),
     )
 
     return subset_function(

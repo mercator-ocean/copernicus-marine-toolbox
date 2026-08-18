@@ -1866,3 +1866,19 @@ class TestSubset:
         assert "nv" not in [
             coor.coordinate_id for coor in response.coordinates_extent
         ]
+
+    def test_subset_with_polygons(self, tmp_path):
+        french_coast = "tests/resources/french_coast.geojson"
+        output_filename = "subset_with_polygon.nc"
+        subset(
+            dataset_id="cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+            variables=["mlotst_cglo"],
+            start_datetime="2023-01-01",
+            end_datetime="2023-01-01",
+            polygons_file=french_coast,
+            output_directory=tmp_path,
+            output_filename=output_filename,
+        )
+
+        # The file without polygon filtering is about 4MB
+        assert get_file_size(Path(tmp_path, output_filename)) < 100 * 1024

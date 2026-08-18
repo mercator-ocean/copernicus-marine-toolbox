@@ -36,6 +36,9 @@ from copernicusmarine.core_functions.models import (
     FileFormat,
     VerticalAxis,
 )
+from copernicusmarine.core_functions.polygons_extractor import (
+    get_bounding_box_from_polygons,
+)
 from copernicusmarine.core_functions.utils import datetime_parser
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -91,6 +94,7 @@ class SubsetRequest(BaseModel):
     disable_progress_bar: bool = False
     staging: bool = False
     chunk_size_limit: int = -1
+    polygons_file: pathlib.Path | None = None
 
     def update(self, new_dict: dict) -> "SubsetRequest":
         filtered_dict = {
@@ -293,6 +297,7 @@ def create_subset_request(
     maximum_x: float | None = None,
     minimum_y: float | None = None,
     maximum_y: float | None = None,
+    polygons_file: pathlib.Path | None = None,
 ) -> SubsetRequest:
     if staging:
         logger.warning(
@@ -369,6 +374,7 @@ def create_subset_request(
         minimum_y,
         maximum_y,
         dataset_part,
+        polygons_file or subset_request.polygons_file,
     )
     if dataset_part == "originalGrid" and (
         alias_max_x is not None
@@ -407,6 +413,7 @@ def create_subset_request(
         "service": service,
         "output_directory": output_directory,
         "chunk_size_limit": chunk_size_limit,
+        "polygons_file": polygons_file,
     }
     # To be able to distinguish between set and unset values
     if skip_existing:
@@ -456,6 +463,7 @@ def get_geographical_inputs(
     minimum_y: float | None,
     maximum_y: float | None,
     dataset_part: str | None,
+    polygons_file: pathlib.Path | None = None,
 ) -> tuple[float | None, float | None, float | None, float | None]:
     """
     Returns the geographical selection of the user.
@@ -504,13 +512,30 @@ def get_geographical_inputs(
             or maximum_latitude is not None
         ):
             raise LonLatSubsetNotAvailableInOriginalGridDatasets
-        else:
-            return (
-                minimum_x,
-                maximum_x,
-                minimum_y,
-                maximum_y,
+        elif polygons_file is not None:
+            raise ValueError(
+                "Polygons file is not supported for originalGrid datasets."
             )
+        else:
+            return minimum_x, maximum_x, minimum_y, maximum_y
+    elif polygons_file is not None:
+        if any(
+            (
+                minimum_x is not None,
+                maximum_x is not None,
+                minimum_y is not None,
+                maximum_y is not None,
+                maximum_latitude is not None,
+                minimum_latitude is not None,
+                maximum_longitude is not None,
+                minimum_longitude is not None,
+            )
+        ):
+            logger.warning(
+                "Polygons file is provided. Ignoring any other geographical inputs."
+            )
+        return get_bounding_box_from_polygons(polygons_file)
+
     else:
         if (
             minimum_x is not None
@@ -519,13 +544,12 @@ def get_geographical_inputs(
             or maximum_y is not None
         ):
             raise XYNotAvailableInNonOriginalGridDatasets
-        else:
-            return (
-                minimum_longitude,
-                maximum_longitude,
-                minimum_latitude,
-                maximum_latitude,
-            )
+        return (
+            minimum_longitude,
+            maximum_longitude,
+            minimum_latitude,
+            maximum_latitude,
+        )
 
 
 class GetRequest(BaseModel):

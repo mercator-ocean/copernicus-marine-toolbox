@@ -25,6 +25,28 @@ class CoordinatesOutOfDatasetBounds(Exception):
         super().__init__(message)
 
 
+class DependenciesNotAvailable(Exception):
+    """
+    Exception raised when an optional dependency required by a feature
+    is not installed.
+
+    Some features rely on optional dependencies that are not installed by
+    default. Please install the corresponding extra to use them,
+    e.g. ``pip install copernicusmarine[extra]``.
+    """
+
+    def __init__(self, missing_dependencies: list[str], extra_name: str):
+        self.missing_dependencies = missing_dependencies
+        self.extra_name = extra_name
+        super().__init__(
+            f"The following optional {'dependency is' if len(missing_dependencies) == 1 else 'dependencies are'} "  # noqa: E501
+            f"required for this feature but not installed: "
+            f"{', '.join(missing_dependencies)}. "
+            f"Please install the extra dependencies with: "
+            f"`pip install copernicusmarine[{extra_name}]`."
+        )
+
+
 class NetCDFCompressionNotAvailable(Exception):
     """
     Exception raised when the NetCDF compression is not available.

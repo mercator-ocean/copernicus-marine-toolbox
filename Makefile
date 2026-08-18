@@ -29,7 +29,7 @@ create-update-environment:
 create-environment: SELECTED_ENVIRONMENT_NAME = ${ENVIRONMENT_NAME}
 create-environment: SELECTED_ENVIRONMENT_FILE_NAME = ${ENVIRONMENT_FILE_NAME}
 create-environment: create-update-environment
-		$(call conda-command, run --name ${ENVIRONMENT_NAME} poetry install)
+		$(call conda-command, run --name ${ENVIRONMENT_NAME} poetry install --all-extras)
 
 create-test-environment: SELECTED_ENVIRONMENT_NAME = ${TEST_ENVIRONMENT_NAME}
 create-test-environment: SELECTED_ENVIRONMENT_FILE_NAME = ${TEST_ENVIRONMENT_FILE_NAME}

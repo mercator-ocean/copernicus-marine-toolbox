@@ -3,6 +3,18 @@ Release 2.5.0
 
 This release introduces new features and improvements.
 
+General
+-------
+
+New Features
+^^^^^^^^^^^^
+
+* Added optional dependencies. The following dependencies can be installed with ``pip install copernicusmarine[extra]`` or ``mamba install conda-forge::copernicusmarine-extra`` (see the :ref:`installation page <installation-page>` for more details):
+  * ``rioxarray`` (>=0.19.0)
+  * ``geopandas`` (>=1.1.4)
+  * ``netcdf4`` (<=1.7.2, not available on Windows)
+
+
 Describe
 --------
 
@@ -12,3 +24,11 @@ Fixes
 * Fixed an issue where the ``describe`` command would fail when the same datasetID would be present in multiple products.
 * Fixed an issue where adding the version of the dataset in the datasetID would not work. Now, it correctly parses the input and logs a warning.
 * Fixed an issue where the ``describe`` command would return too many products when an ID contained another ID as a prefix. Now, it correctly filters the products and datasets and returns only the requested ones.
+
+Subset
+------
+
+New Features
+^^^^^^^^^^^^
+
+* Added the ``--polygons-file`` option (``polygons_file`` argument) to subset and clip gridded datasets using polygons from a ``.geojson``, ``.shp``, ``.gpkg`` or ``.kml`` file. This relies on optional dependencies installable with ``pip install copernicusmarine[extra]``. See the :ref:`documentation about polygons subsetting <subset-polygons>` for more details.

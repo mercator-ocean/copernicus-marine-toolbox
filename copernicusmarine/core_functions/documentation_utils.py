@@ -73,14 +73,11 @@ LOGIN: dict[str, str] = {
         "Flag to skip confirmation before overwriting configuration file."
     ),
     "CHECK_CREDENTIALS_VALID_HELP": (
-        "Flag to check if the credentials are valid. "
-        "No other action will be performed. "
-        "The validity will be check in this order: "
-        "1. Check if the credentials are valid"
-        " with the provided username and password. "
-        "2. Check if the credentials are valid in the environment variables. "
-        "3. Check if the credentials are valid in the configuration file. "
-        "When any is found (valid or not valid), will return immediately."
+        """Flag to check if the credentials are valid. No other action will be performed. The validity will be check in this order:
+1. Check if the credentials are valid with the provided username and password.
+2. Check if the credentials are valid in the environment variables.
+3. Check if the credentials are valid in the configuration file.
+When any is found (valid or not valid), will return immediately."""  # noqa
     ),
     "CREDENTIALS_FILE_HELP": (
         "Path to a credentials file if not in its default directory"
@@ -191,6 +188,12 @@ SUBSET: dict[str, str] = {
     "MAXIMUM_Y_HELP": (
         "Maximum y-axis value for the subset. "
         "The units are considered in length (m, 100km...)."
+    ),
+    "POLYGONS_FILE_HELP": (
+        """Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
+If specified, the subset will be based on the polygons and all other spatial selection options will be ignored.
+You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.
+See :ref:`subset-polygons <subset-polygons>` in the documentation for more information."""  # noqa
     ),
     "MINIMUM_DEPTH_HELP": ("Minimum depth for the subset."),
     "MAXIMUM_DEPTH_HELP": ("Maximum depth for the subset."),

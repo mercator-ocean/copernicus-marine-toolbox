@@ -270,7 +270,7 @@
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_is_as_expected
   list([
-    'Usage: copernicusmarine subset [OPTIONS] COMMAND [ARGS]...',
+    'Usage: copernicusmarine subset [OPTIONS] [COMMAND] [ARGS]...',
     '',
     '  Extract a subset of data from a specified dataset using given parameters.',
     '',
@@ -326,6 +326,16 @@
     '  --maximum-y FLOAT               Maximum y-axis value for the subset. The',
     '                                  units are considered in length (m,',
     '                                  100km...).',
+    '  --polygons-file PATH            Path to a file containing polygons for the',
+    '                                  subset. Supported formats: .geojson, .shp,',
+    '                                  .gpkg, .kml. If specified, the subset will',
+    '                                  be based on the polygons and all other',
+    '                                  spatial selection options will be ignored.',
+    '                                  You need to install extra dependencies to',
+    '                                  use this option: ``pip install',
+    '                                  copernicusmarine[extra]``. See :ref:`subset-',
+    '                                  polygons <subset-polygons>` in the',
+    '                                  documentation for more information.',
     '  -z, --minimum-depth FLOAT       Minimum depth for the subset.',
     '  -Z, --maximum-depth FLOAT       Maximum depth for the subset.',
     '  -V, --vertical-axis [depth|elevation]',

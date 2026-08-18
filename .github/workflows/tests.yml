@@ -47,7 +47,7 @@ jobs:
       - name: Install ncdump dependency
         run: sudo apt-get install -y netcdf-bin
       - name: Install library
-        run: python3.13 -m poetry install --no-interaction --with dev
+        run: python3.13 -m poetry install --no-interaction --with dev --all-extras
       - name: Run tests
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}

@@ -42,6 +42,12 @@ And to **upgrade the package** to the newest available version, run:
 
     python -m pip install copernicusmarine --upgrade
 
+To also install the optional dependencies:
+
+.. code-block:: bash
+
+    python -m pip install copernicusmarine[extra]
+
 
 Via mamba | conda (conda-forge channel)
 **********************************************
@@ -65,6 +71,14 @@ Or using ``conda``:
 .. code-block:: bash
 
     conda install -c conda-forge copernicusmarine
+
+To also install the optional dependencies use the `copernicusmarine-extra` package:
+
+.. code-block:: bash
+
+    mamba install conda-forge::copernicusmarine-extra --yes
+    # or using conda
+    conda install -c conda-forge copernicusmarine-extra
 
 Via docker
 **************
@@ -150,6 +164,7 @@ And from a Windows os (cmd):
 
 Dependencies
 **************
+
 The Copernicus Marine Toolbox has the following dependencies:
 
 - `Python <https://www.python.org/>`__ (3.10 or later)
@@ -166,6 +181,12 @@ The Copernicus Marine Toolbox has the following dependencies:
 - `pydantic <https://docs.pydantic.dev/>`__ (2.9.1 or later)
 - `h5netcdf <https://h5netcdf.org>`__ (1.4.0 or later)
 - `arcosparse <https://pypi.org/project/arcosparse/>`__ (0.5.1 or later)
+
+Optional dependencies:
+
+- `rioxarray <https://corteva.github.io/rioxarray/stable/>`__ (0.19.0 or later)
+- `geopandas <https://geopandas.org/>`__ (1.1.4 or later)
+- `netcdf4 <https://unidata.github.io/netcdf4-python/>`__ (1.7.2 or earlier)
 
 .. _xarray-issue:
 
@@ -202,7 +223,17 @@ and ``h5netcdf`` library as the backend.
         # with pip
         python -m pip install netCDF4
 
+    Or install the optional dependencies of the Toolbox with:
 
+    .. code-block:: bash
+
+        # with conda | mamba | micromamba
+        mamba install conda-forge::copernicusmarine-extra --yes
+        # or using conda
+        conda install -c conda-forge copernicusmarine-extra
+
+        # with pip
+        python -m pip install copernicusmarine[extra]
 
     The docker image of the Toolbox should already have the ``netcdf4`` library installed.
 

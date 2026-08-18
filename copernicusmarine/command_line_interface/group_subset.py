@@ -181,6 +181,11 @@ def cli_subset():
     help=documentation_utils.SUBSET["MAXIMUM_Y_HELP"],
 )
 @click.option(
+    "--polygons-file",
+    type=click.Path(exists=True, path_type=pathlib.Path),
+    help=documentation_utils.SUBSET["POLYGONS_FILE_HELP"],
+)
+@click.option(
     "--minimum-depth",
     "-z",
     type=float,
@@ -370,6 +375,7 @@ def subset(
     alias_max_x: float | None,
     alias_min_y: float | None,
     alias_max_y: float | None,
+    polygons_file: pathlib.Path | None,
     minimum_depth: float | None,
     maximum_depth: float | None,
     vertical_axis: VerticalAxis,
@@ -456,6 +462,7 @@ def subset(
         alias_max_x=alias_max_x,
         alias_min_y=alias_min_y,
         alias_max_y=alias_max_y,
+        polygons_file=polygons_file,
     )
 
     if context.invoked_subcommand is not None:

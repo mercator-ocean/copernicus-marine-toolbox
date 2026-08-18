@@ -170,6 +170,59 @@ This is equivalent to:
 
   Crossing the antemeridian is not supported for sparse datasets. If you want to see this feature, please contact us.
 
+.. _subset-polygons:
+
+Option ``--polygons-file``
+""""""""""""""""""""""""""""
+
+The ``--polygons-file`` option lets you subset a gridded dataset using one or more polygons instead of a rectangular bounding box.
+The dataset is first subset to the bounding box of the polygons, then clipped to the polygons so that only the data inside them is kept (points outside are set to ``NaN``).
+
+The supported file formats are ``.geojson``, ``.shp``, ``.gpkg`` and ``.kml``.
+
+.. note::
+
+  This option relies on optional dependencies (``geopandas`` and ``rioxarray``) that are **not installed by default**.
+  Install them with:
+
+  .. code-block:: bash
+
+    pip install copernicusmarine[extra]
+
+  If they are missing, the toolbox raises :class:`copernicusmarine.DependenciesNotAvailable` with instructions on how to install them.
+  See :ref:`the installation page <installation-page>` for more information.
+
+When ``--polygons-file`` is set, it takes precedence over the bounding-box options (``--minimum-longitude``, ``--maximum-longitude``, ``--minimum-latitude``, ``--maximum-latitude`` and their ``-x``/``-X``/``-y``/``-Y`` aliases). If any of these are also provided, they are ignored and a warning is emitted.
+
+.. note:
+
+  The current implementation needs to load in memory the entire bounding box of the dataset before clipping it to the polygons. This can lead to high memory usage for large datasets. If you encounter memory issues, consider using a smaller bounding box or a different dataset or detail your needs in an issue on the `GitHub repository <https://github.com/copernicus-marine-toolbox/copernicus-marine-toolbox/issues>`_.
+
+**Example:**
+
+.. code-block:: bash
+
+  copernicusmarine subset --dataset-id cmems_mod_glo_phy-all_my_0.25deg_P1D-m -v mlotst_cglo -t 2023-01-01 -T 2023-01-01 --polygons-file my_polygons.geojson
+
+The same request using the Python interface:
+
+.. code-block:: python
+
+  import copernicusmarine
+
+  copernicusmarine.subset(
+      dataset_id="cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+      variables=["mlotst_cglo"],
+      start_datetime="2023-01-01",
+      end_datetime="2023-01-01",
+      polygons_file="my_polygons.geojson",
+  )
+
+.. note::
+
+  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``) or sparse datasets. If you want to see this feature, please open an issue on the repository or contact User Support.
+
+
 .. _file-format:
 
 Option ``--file-format``
