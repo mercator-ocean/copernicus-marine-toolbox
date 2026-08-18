@@ -220,9 +220,8 @@ The same request using the Python interface:
 
 .. note::
 
-  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``) or sparse datasets. If you want to see this feature, please contact us.
+  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``) or sparse datasets. If you want to see this feature, please open an issue on the repository or contact User Support.
 
-For a complete, worked example (loading polygons, plotting and clipping the data), see the :doc:`subset using polygons notebook <subset_using_polygons>`.
 
 .. _file-format:
 
