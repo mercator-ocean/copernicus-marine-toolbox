@@ -43,7 +43,7 @@
   231
 # ---
 # name: TestCFCompliance.test_valid_ranges_correct_cfcompliant.3
-  list([
+    list([
         '§2.5.1. Missing data, valid and actual range of data',
     list([
       "The coordinate variable 'time' must not have the _FillValue attribute.",

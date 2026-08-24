@@ -270,7 +270,7 @@
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_is_as_expected
   list([
-        'Usage: copernicusmarine subset [OPTIONS] [COMMAND] [ARGS]...',
+    'Usage: copernicusmarine subset [OPTIONS] [COMMAND] [ARGS]...',
     '',
     '  Extract a subset of data from a specified dataset using given parameters.',
     '',
