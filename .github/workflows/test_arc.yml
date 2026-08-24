@@ -16,8 +16,6 @@ jobs:
     timeout-minutes: 30
     env:
       ACTIONS_STEP_DEBUG: true
-      HOME: /home/github-runner
-
     steps:
       - name: Check out code
         uses: actions/checkout@v4
