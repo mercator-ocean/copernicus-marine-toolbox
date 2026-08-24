@@ -259,6 +259,20 @@ def _construct_marine_data_store_product(
         if thumbnail:
             thumbnail_url = thumbnail.get_absolute_href()
 
+    product_user_manual = _get_stac_product_link_href_by_title(
+        stac_product,
+        "Product User Manual",
+    )
+    quality_information_document = _get_stac_product_link_href_by_title(
+        stac_product,
+        "Quality Information Document",
+    )
+    scientific_quality_overview = _get_stac_product_link_href_by_title(
+        stac_product,
+        "Scientific Quality Overview",
+        "Synthesis Quality Overview",
+    )
+
     sources = _get_stac_product_property(stac_product, "sources") or []
     processing_level = _get_stac_product_property(
         stac_product, "processingLevel"
@@ -276,6 +290,9 @@ def _construct_marine_data_store_product(
             production_center=production_center_name,
             keywords=stac_product.keywords,
             datasets=datasets,
+            product_user_manual=product_user_manual,
+            quality_information_document=quality_information_document,
+            scientific_quality_overview=scientific_quality_overview,
         )
     except Exception as e:
         logger.debug(
@@ -296,6 +313,16 @@ def _get_stac_product_property(
         else {}
     )
     return properties.get(property_key)
+
+
+def _get_stac_product_link_href_by_title(
+    stac_product: pystac.Collection,
+    *titles: str,
+) -> str | None:
+    for link in stac_product.links:
+        if link.title in titles:
+            return link.target
+    return None
 
 
 def fetch_dataset_items(
