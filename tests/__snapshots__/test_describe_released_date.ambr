@@ -1494,7 +1494,10 @@
         'digital_object_identifier': '10.48670/moi-00016',
         'processing_level': 'Level 4',
         'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
+        'product_user_manual': 'https://catalogue.marine.copernicus.eu/documents/PUM/CMEMS-GLO-PUM-001-024.pdf',
         'production_center': 'Mercator Océan International',
+        'quality_information_document': 'https://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-GLO-QUID-001-024.pdf',
+        'scientific_quality_overview': 'https://catalogue.marine.copernicus.eu/documents/SQO/CMEMS-GLO-SQO-001-024.pdf',
         'sources': list([
           'Numerical models',
         ]),
@@ -2734,7 +2737,10 @@
         'digital_object_identifier': '10.48670/moi-00058',
         'processing_level': 'Level 4',
         'product_id': 'NWSHELF_MULTIYEAR_BGC_004_011',
+        'product_user_manual': 'https://catalogue.marine.copernicus.eu/documents/PUM/CMEMS-NWS-PUM-004-009-011.pdf',
         'production_center': 'Met Office (UK)',
+        'quality_information_document': 'https://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-NWS-QUID-004-011.pdf',
+        'scientific_quality_overview': 'https://catalogue.marine.copernicus.eu/documents/SQO/CMEMS-NWS-SQO-004-011.pdf',
         'sources': list([
           'Numerical models',
         ]),
@@ -3333,7 +3339,10 @@
         'digital_object_identifier': '10.48670/moi-00016',
         'processing_level': 'Level 4',
         'product_id': 'GLOBAL_ANALYSISFORECAST_PHY_001_024',
+        'product_user_manual': 'https://catalogue.marine.copernicus.eu/documents/PUM/CMEMS-GLO-PUM-001-024.pdf',
         'production_center': 'Mercator Océan International',
+        'quality_information_document': 'https://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-GLO-QUID-001-024.pdf',
+        'scientific_quality_overview': 'https://catalogue.marine.copernicus.eu/documents/SQO/CMEMS-GLO-SQO-001-024.pdf',
         'sources': list([
           'Numerical models',
         ]),
