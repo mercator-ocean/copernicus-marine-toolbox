@@ -1,4 +1,5 @@
 import logging
+import math
 import pathlib
 from datetime import datetime
 from typing import Any
@@ -387,22 +388,125 @@ def _get_coordinate_extent(
 
 
 def get_approximation_size_final_result(
-    dataset: xarray.Dataset, axis_coordinate_id_mapping: dict[str, str]
+    dataset: xarray.Dataset,
+    axis_coordinate_id_mapping: dict[str, str],
+    file_format: FileFormat = "netcdf",
 ) -> float:
-    coordinates_size = 1
-    variables_size = 0
     baseline_size = 0.013
+    total_values_size_bytes = 0.0
+    coordinates_size = 0
 
-    for variable in dataset.data_vars:
-        variables_size += dataset[variable].encoding["dtype"].itemsize
+    for variable_name in dataset.data_vars:
+        variable = dataset[variable_name]
+        if file_format == "zarr":
+            total_values_size_bytes += _estimate_zarr_variable_size_bytes(
+                variable
+            )
+        else:
+            storage_dtype = variable.encoding.get("dtype", variable.dtype)
+            item_size = numpy.dtype(storage_dtype).itemsize
+            total_values_size_bytes += variable.size * item_size
 
-    for coordinate_name in dataset.sizes:
-        for coord_label in axis_coordinate_id_mapping:
-            if coordinate_name == axis_coordinate_id_mapping[coord_label]:
-                coordinates_size *= dataset[coordinate_name].size
-    estimate_size = baseline_size + coordinates_size * variables_size / 1048e3
+    for coordinate_name in axis_coordinate_id_mapping.values():
+        if coordinate_name in dataset.sizes:
+            coordinates_size += dataset[coordinate_name].size
+
+    coordinate_overhead = coordinates_size * numpy.dtype("float64").itemsize
+    if file_format == "zarr":
+        # Zarr containers include metadata files and chunk key/index overhead.
+        # Keep a small fixed overhead to avoid underestimation for tiny outputs.
+        coordinate_overhead += 8 * 1024
+    estimate_size = (
+        baseline_size
+        + (total_values_size_bytes + coordinate_overhead) / 1048e3
+    )
 
     return estimate_size
+
+
+def _estimate_zarr_variable_size_bytes(variable: xarray.DataArray) -> float:
+    storage_dtype = variable.encoding.get("dtype", variable.dtype)
+    item_size = numpy.dtype(storage_dtype).itemsize
+    uncompressed_bytes = variable.size * item_size
+
+    chunk_shape = _get_zarr_chunk_shape(variable)
+    chunk_count = 1
+    if chunk_shape:
+        chunk_count = math.prod(
+            math.ceil(dim_size / chunk_size)
+            for dim_size, chunk_size in zip(variable.shape, chunk_shape)
+        )
+
+    compression_ratio = _estimate_zarr_compression_ratio(variable)
+
+    # Per-chunk key/index and per-array metadata overhead.
+    overhead_bytes = chunk_count * 180 + 2048
+    return uncompressed_bytes * compression_ratio + overhead_bytes
+
+
+def _get_zarr_chunk_shape(variable: xarray.DataArray) -> tuple[int, ...]:
+    encoding_chunks = variable.encoding.get("chunks")
+    if isinstance(encoding_chunks, tuple) and encoding_chunks:
+        return tuple(int(max(1, chunk)) for chunk in encoding_chunks)
+    if isinstance(encoding_chunks, list) and encoding_chunks:
+        return tuple(int(max(1, chunk)) for chunk in encoding_chunks)
+
+    preferred_chunks = variable.encoding.get("preferred_chunks")
+    if isinstance(preferred_chunks, dict):
+        preferred_chunk_shape = []
+        for dim_name, dim_size in zip(variable.dims, variable.shape):
+            chunk_size = preferred_chunks.get(dim_name, dim_size)
+            preferred_chunk_shape.append(int(max(1, chunk_size)))
+        return tuple(preferred_chunk_shape)
+
+    return tuple(int(max(1, dim_size)) for dim_size in variable.shape)
+
+
+def _estimate_zarr_compression_ratio(variable: xarray.DataArray) -> float:
+    compressor = None
+    compressors = variable.encoding.get("compressors")
+    if compressors and (isinstance(compressors, (tuple, list))):
+        compressor = compressors[0]
+    else:
+        compressor = variable.encoding.get("compressor")
+
+    if compressor is None:
+        return 1.0
+
+    compressor_name = (
+        getattr(compressor, "cname", None) or compressor.__class__.__name__
+    ).lower()
+    clevel = getattr(compressor, "clevel", None)
+    compression_level: float = (
+        clevel if clevel is not None else getattr(compressor, "level", 5)
+    )
+
+    ratio = 0.7
+    if "lz4" in compressor_name:
+        ratio = 0.62
+    elif "zstd" in compressor_name:
+        ratio = 0.45
+    elif "zlib" in compressor_name or "gzip" in compressor_name:
+        ratio = 0.5
+    elif "blosclz" in compressor_name:
+        ratio = 0.58
+
+    ratio -= min(0.2, float(compression_level) * 0.02)
+
+    storage_dtype = variable.encoding.get("dtype", variable.dtype)
+    dtype_kind = numpy.dtype(storage_dtype).kind
+    shuffle = getattr(compressor, "shuffle", None)
+    if dtype_kind in ("i", "u") and shuffle is not None:
+        if str(shuffle).upper() not in {"NOSHUFFLE", "0", "NONE"}:
+            ratio -= 0.08
+
+    if (
+        "scale_factor" in variable.encoding
+        or "add_offset" in variable.encoding
+    ):
+        ratio -= 0.05
+
+    return min(max(ratio, 0.2), 1.0)
 
 
 def get_approximation_size_data_downloaded(
