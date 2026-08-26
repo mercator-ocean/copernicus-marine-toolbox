@@ -37,8 +37,8 @@ jobs:
       # - name: Install dependencies
       #   run: |
       #     python3.13 -m poetry install --no-interaction --no-root
-      # - name: Install ncdump dependency
-      #   run: sudo apt-get install -y netcdf-bin
+      - name: Install ncdump dependency
+        run: sudo apt-get install -y netcdf-bin
       - name: Install library
         run: python3.13 -m poetry install --no-interaction --with dev --all-extras
       - name: Run tests
