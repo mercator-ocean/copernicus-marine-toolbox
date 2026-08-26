@@ -437,7 +437,10 @@ def _estimate_zarr_variable_size_bytes(variable: xarray.DataArray) -> float:
             for dim_size, chunk_size in zip(variable.shape, chunk_shape)
         )
 
-    compression_ratio = _estimate_zarr_compression_ratio(variable)
+    compression_ratio = _estimate_zarr_compression_ratio(
+        variable,
+        chunk_count,
+    )
 
     # Per-chunk key/index and per-array metadata overhead.
     overhead_bytes = chunk_count * 180 + 2048
@@ -445,6 +448,16 @@ def _estimate_zarr_variable_size_bytes(variable: xarray.DataArray) -> float:
 
 
 def _get_zarr_chunk_shape(variable: xarray.DataArray) -> tuple[int, ...]:
+    if variable.chunksizes:
+        dask_chunk_shape = []
+        for dim_name, dim_size in zip(variable.dims, variable.shape):
+            dim_chunks = variable.chunksizes.get(dim_name)
+            if dim_chunks:
+                dask_chunk_shape.append(int(max(1, dim_chunks[0])))
+            else:
+                dask_chunk_shape.append(int(max(1, dim_size)))
+        return tuple(dask_chunk_shape)
+
     encoding_chunks = variable.encoding.get("chunks")
     if isinstance(encoding_chunks, tuple) and encoding_chunks:
         return tuple(int(max(1, chunk)) for chunk in encoding_chunks)
@@ -462,7 +475,10 @@ def _get_zarr_chunk_shape(variable: xarray.DataArray) -> tuple[int, ...]:
     return tuple(int(max(1, dim_size)) for dim_size in variable.shape)
 
 
-def _estimate_zarr_compression_ratio(variable: xarray.DataArray) -> float:
+def _estimate_zarr_compression_ratio(
+    variable: xarray.DataArray,
+    chunk_count: int,
+) -> float:
     compressor = None
     compressors = variable.encoding.get("compressors")
     if compressors and (isinstance(compressors, (tuple, list))):
@@ -483,30 +499,35 @@ def _estimate_zarr_compression_ratio(variable: xarray.DataArray) -> float:
 
     ratio = 0.7
     if "lz4" in compressor_name:
-        ratio = 0.62
+        ratio = 0.74
     elif "zstd" in compressor_name:
-        ratio = 0.45
+        ratio = 0.52
     elif "zlib" in compressor_name or "gzip" in compressor_name:
-        ratio = 0.5
-    elif "blosclz" in compressor_name:
         ratio = 0.58
+    elif "blosclz" in compressor_name:
+        ratio = 0.66
 
-    ratio -= min(0.2, float(compression_level) * 0.02)
+    ratio -= min(0.16, float(compression_level) * 0.015)
 
     storage_dtype = variable.encoding.get("dtype", variable.dtype)
     dtype_kind = numpy.dtype(storage_dtype).kind
     shuffle = getattr(compressor, "shuffle", None)
     if dtype_kind in ("i", "u") and shuffle is not None:
         if str(shuffle).upper() not in {"NOSHUFFLE", "0", "NONE"}:
-            ratio -= 0.08
+            ratio -= 0.04
 
     if (
         "scale_factor" in variable.encoding
         or "add_offset" in variable.encoding
     ):
-        ratio -= 0.05
+        ratio -= 0.03
 
-    return min(max(ratio, 0.2), 1.0)
+    # Large numbers of chunks often correlate with stronger effective
+    # compression in subset outputs (more sparse/repetitive chunk regions).
+    chunk_factor = min(1.0, 1.25 / (max(1, chunk_count) ** 0.4))
+    ratio *= chunk_factor
+
+    return min(max(ratio, 0.08), 1.0)
 
 
 def get_approximation_size_data_downloaded(
