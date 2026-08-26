@@ -743,7 +743,7 @@ class CopernicusMarineProduct(BaseModel):
     #: Quality Information Document (QUID) url of the product.
     quality_information_document: str | None
     #: Scientific Quality Overview (SQO) of the product.
-    scientific_quality_overview: str | None
+    synthesis_quality_overview: str | None
 
 
 class CopernicusMarineCatalogue(BaseModel):

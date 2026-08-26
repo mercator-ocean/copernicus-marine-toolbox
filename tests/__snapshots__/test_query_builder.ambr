@@ -104,7 +104,7 @@
     'quality_information_document',
     'released_date',
     'retired_date',
-    'scientific_quality_overview',
+    'synthesis_quality_overview',
     'service_format',
     'service_name',
     'service_short_name',

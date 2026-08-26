@@ -267,9 +267,8 @@ def _construct_marine_data_store_product(
         stac_product,
         "Quality Information Document",
     )
-    scientific_quality_overview = _get_stac_product_link_href_by_title(
+    synthesis_quality_overview = _get_stac_product_link_href_by_title(
         stac_product,
-        "Scientific Quality Overview",
         "Synthesis Quality Overview",
     )
 
@@ -292,7 +291,7 @@ def _construct_marine_data_store_product(
             datasets=datasets,
             product_user_manual=product_user_manual,
             quality_information_document=quality_information_document,
-            scientific_quality_overview=scientific_quality_overview,
+            synthesis_quality_overview=synthesis_quality_overview,
         )
     except Exception as e:
         logger.debug(

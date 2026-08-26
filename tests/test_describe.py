@@ -156,7 +156,7 @@ class TestDescribe:
             == "https://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-GLO-QUID-001-024.pdf"  # noqa: E501
         )
         assert (
-            product.scientific_quality_overview
+            product.synthesis_quality_overview
             == "https://catalogue.marine.copernicus.eu/documents/SQO/CMEMS-GLO-SQO-001-024.pdf"  # noqa: E501
         )
 
