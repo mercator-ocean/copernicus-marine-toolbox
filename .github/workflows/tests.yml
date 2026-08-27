@@ -16,11 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         coverage: [with-coverage, fast-and-without-coverage]
-    runs-on: self-hosted
+    runs-on: cmt-runners
     timeout-minutes: 30
     env:
       ACTIONS_STEP_DEBUG: true
-      HOME: /home/github-runner
 
     steps:
       - name: Check out code
@@ -42,7 +41,8 @@ jobs:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
-          sudo apt install build-essential -y
+          sudo apt-get update
+          sudo apt-get install -y build-essential
           python3.13 -m poetry install --no-interaction --no-root
       - name: Install ncdump dependency
         run: sudo apt-get install -y netcdf-bin
