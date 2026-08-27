@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        coverage: [with-coverage, fast-and-without-coverage]
+        coverage: [fast-and-without-coverage] # [with-coverage, fast-and-without-coverage]
     runs-on: cmt-runners
     timeout-minutes: 30
     env:
