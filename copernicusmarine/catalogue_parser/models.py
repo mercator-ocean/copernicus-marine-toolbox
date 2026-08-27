@@ -738,6 +738,12 @@ class CopernicusMarineProduct(BaseModel):
     keywords: list[str] | None
     #: List of datasets of the product.
     datasets: list[CopernicusMarineDataset]
+    #: Product user manual (PUM) url of the product.
+    product_user_manual: str | None
+    #: Quality Information Document (QUID) url of the product.
+    quality_information_document: str | None
+    #: Scientific Quality Overview (SQO) of the product.
+    synthesis_quality_overview: str | None
 
 
 class CopernicusMarineCatalogue(BaseModel):

@@ -143,6 +143,27 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
+    def test_describe_reads_product_document_links(self, mocked_requests):
+        result = describe(product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024")
+
+        product = result.products[0]
+        assert (
+            product.product_user_manual
+            == "https://catalogue.marine.copernicus.eu/documents/PUM/CMEMS-GLO-PUM-001-024.pdf"  # noqa: E501
+        )
+        assert (
+            product.quality_information_document
+            == "https://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-GLO-QUID-001-024.pdf"  # noqa: E501
+        )
+        assert (
+            product.synthesis_quality_overview
+            == "https://catalogue.marine.copernicus.eu/documents/SQO/CMEMS-GLO-SQO-001-024.pdf"  # noqa: E501
+        )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get,
+    )
     def test_describe_with_raise_on_error_product_w_errors(
         self, mocked_requests, caplog
     ):

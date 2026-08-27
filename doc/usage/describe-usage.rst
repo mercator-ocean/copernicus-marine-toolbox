@@ -27,7 +27,9 @@ Here the first 2 products are shown:
             "Numerical models"
         ],
         "processing_level": null,
-        "production_center": "Mercator Oc\u00e9an International"
+        "production_center": "Mercator Oc\u00e9an International",
+        "product_user_manual": "https://documentation.marine.copernicus.eu/PUM/CMEMS-GLO-PUM-CLIMATE-SI-extent.pdf",
+        "quality_information_document": "https://documentation.marine.copernicus.eu/QUID/CMEMS-GLO-QUID-CLIMATE-SI-antarctic-extent.pdf"
         },
         {
         "title": "Antarctic Monthly Sea Ice Extent from Observations Reprocessing",
@@ -38,7 +40,9 @@ Here the first 2 products are shown:
             "Satellite observations"
         ],
         "processing_level": null,
-        "production_center": "MET Norway"
+        "production_center": "MET Norway",
+        "product_user_manual": "https://documentation.marine.copernicus.eu/PUM/CMEMS-SEAICE-PUM-CLIMATE-SI-extent-ant-obs.pdf",
+        "quality_information_document": "https://documentation.marine.copernicus.eu/QUID/CMEMS-SEAICE-QUID-CLIMATE-SI-extent-obs.pdf"
         },
     ]
     }
