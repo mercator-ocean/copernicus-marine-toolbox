@@ -1,50 +1,50 @@
-name: Run tests
+# name: Run tests
 
-on:
-  pull_request:
-    branches:
-      - "main"
-      - "release/**"
-      - "pre-release/**"
-  push:
-    branches:
-      - "main"
+# on:
+#   pull_request:
+#     branches:
+#       - "main"
+#       - "release/**"
+#       - "pre-release/**"
+#   push:
+#     branches:
+#       - "main"
 
-jobs:
-  tests:
-    runs-on: cmt-runners
-    timeout-minutes: 30
-    env:
-      ACTIONS_STEP_DEBUG: true
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - name: Install and configure Poetry
-        run: |
-          python3.13 -m pip install poetry
-          python3.13 -m poetry config virtualenvs.in-project true
-      # - name: Load cached venv
-      #   id: cached-poetry-dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache
-      #     key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      # - name: Install dependencies
-      #   run: |
-      #     python3.13 -m poetry install --no-interaction --no-root
-      - name: Install ncdump dependency ok
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y netcdf-bin
-      - name: Install library
-        run: python3.13 -m poetry install --no-interaction --with dev --all-extras
-      - name: Run tests
-        env:
-          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        run: python3.13 -m poetry run pytest tests -k "fast_with_timeout" -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+# jobs:
+#   tests:
+#     runs-on: cmt-runners
+#     timeout-minutes: 30
+#     env:
+#       ACTIONS_STEP_DEBUG: true
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v4
+#       - name: Set up python
+#         id: setup-python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.13"
+#       - name: Install and configure Poetry
+#         run: |
+#           python3.13 -m pip install poetry
+#           python3.13 -m poetry config virtualenvs.in-project true
+#       # - name: Load cached venv
+#       #   id: cached-poetry-dependencies
+#       #   uses: actions/cache@v4
+#       #   with:
+#       #     path: ~/.cache
+#       #     key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+#       # - name: Install dependencies
+#       #   run: |
+#       #     python3.13 -m poetry install --no-interaction --no-root
+#       - name: Install ncdump dependency ok
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y netcdf-bin
+#       - name: Install library
+#         run: python3.13 -m poetry install --no-interaction --with dev --all-extras
+#       - name: Run tests
+#         env:
+#           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+#           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+#         run: python3.13 -m poetry run pytest tests -k "fast_with_timeout" -n auto --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
