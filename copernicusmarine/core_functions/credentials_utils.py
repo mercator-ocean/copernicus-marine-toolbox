@@ -1,6 +1,7 @@
 import base64
 import configparser
 import logging
+import os
 import pathlib
 from netrc import netrc
 from platform import system
@@ -528,10 +529,14 @@ def get_and_check_username_password(
     username: str | None,
     password: str | None,
     credentials_file: pathlib.Path | None,
-) -> tuple[str, str]:
+) -> str:
     username, password = get_username_password(
         username=username, password=password, credentials_file=credentials_file
     )
+    if token := os.getenv("COPERNICUSMARINE_MYOCEAN_AUTH"):
+        if not (user_myocean := check_credentials_from_myocean_bearer(token)):
+            raise InvalidUsernameOrPassword("Invalid MyOcean token.")
+        return user_myocean
     user = _validate_and_get_user(
         username,
         password,
@@ -542,7 +547,20 @@ def get_and_check_username_password(
             "https://help.marine.copernicus.eu/en/articles/"
             "4444552-i-forgot-my-username-or-my-password-what-should-i-do"
         )
-    return (user, password)
+    return user
+
+
+def check_credentials_from_myocean_bearer(token: str) -> str:
+    MYOCEAN_AUTH_URL = "https://data-be-prd.marine.copernicus.eu/api/user"
+    session = get_configured_requests_session()
+    bearer_auth = BearerAuth(token)
+    response = session.get(
+        MYOCEAN_AUTH_URL,
+        auth=bearer_auth,
+    )
+    session.close()
+    username = response.json().get("username")
+    return username
 
 
 def get_username_password(
