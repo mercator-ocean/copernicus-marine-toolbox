@@ -14,6 +14,11 @@ New Features
   * ``geopandas`` (>=1.1.4)
   * ``netcdf4`` (<=1.7.2, not available on Windows)
 
+Fixes
+^^^^^
+
+* Fixed the ``pkg_resources is deprecated`` warning emitted by the standalone binaries when running any command.
+
 
 Describe
 --------

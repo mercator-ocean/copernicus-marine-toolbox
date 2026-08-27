@@ -1,4 +1,13 @@
 import multiprocessing
+import warnings
+
+# Silence the pkg_resources deprecation warning emitted by bundled
+# dependencies (e.g. dask/distributed) when running the PyInstaller binary.
+warnings.filterwarnings(
+    "ignore",
+    message="pkg_resources is deprecated as an API.*",
+    category=UserWarning,
+)
 
 multiprocessing.freeze_support()
 
