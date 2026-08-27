@@ -168,7 +168,9 @@ def download_zarr(
         )
         if final_result_size_estimation > 1000:
             non_csv_size_estimation = get_approximation_size_final_result(
-                dataset, axis_coordinate_id_mapping
+                dataset,
+                axis_coordinate_id_mapping,
+                file_format="zarr",
             )
             logger.warning(
                 "The estimated size of the final CSV output is "
@@ -181,7 +183,9 @@ def download_zarr(
             )
     else:
         final_result_size_estimation = get_approximation_size_final_result(
-            dataset, axis_coordinate_id_mapping
+            dataset,
+            axis_coordinate_id_mapping,
+            file_format=subset_request.file_format,
         )
 
     dataset.close()
