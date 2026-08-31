@@ -53,7 +53,39 @@ class CustomDeprecatedClickOption(click.Option):
         super().__init__(*args, **kwargs)
 
 
+class CustomClickOptionsContext(click.Context):
+    @property
+    def command_path(self):
+        if (
+            self.info_name == "split-on"
+            and self.parent is not None
+            and self.parent.command.name == "subset"
+        ):
+            return self.parent.command_path
+        return super().command_path
+
+
+_original_context_command_path = click.Context.command_path
+
+
+def _patched_command_path(self):
+    if (
+        self.info_name == "split-on"
+        and self.parent is not None
+        and getattr(self.parent.command, "name", None) == "subset"
+    ):
+        return self.parent.command_path
+    return _original_context_command_path.__get__(self, type(self))
+
+
+if not getattr(click.Context, "_copernicus_custom_command_path", False):
+    click.Context.command_path = property(_patched_command_path)
+    click.Context._copernicus_custom_command_path = True
+
+
 class CustomClickOptionsCommand(click.Command):
+    context_class = CustomClickOptionsContext
+
     def make_parser(self, ctx: Context):
         parser = super().make_parser(ctx)
 
@@ -66,31 +98,50 @@ class CustomClickOptionsCommand(click.Command):
 
         return parser
 
-    def format_usage(self, ctx: Context, formatter):
-        if (
-            self.name == "split-on"
-            and ctx.parent
-            and ctx.parent.command.name == "subset"
-        ):
-            root = ctx.find_root()
-            formatter.write(
-                f"Usage: {root.info_name} {ctx.parent.command.name} "
-                "[SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]\n"
+    def _split_on_usage(self, ctx: Context) -> str | None:
+        if self.name != "split-on":
+            return None
+
+        root = ctx.find_root()
+        root_name = getattr(root, "info_name", None) or "subset"
+        parent = getattr(ctx, "parent", None)
+        parent_name = getattr(getattr(parent, "command", None), "name", None)
+
+        if parent_name == "subset":
+            return (
+                f"Usage: {root_name} {parent_name} [SUBSET OPTIONS] "
+                f"{self.name} [SPLIT-ON OPTIONS]\n"
             )
+
+        if parent_name is None:
+            return (
+                f"Usage: {root_name or 'subset'} [SUBSET OPTIONS] "
+                f"{self.name} [SPLIT-ON OPTIONS]\n"
+            )
+
+        return None
+
+    def collect_usage_pieces(self, ctx: Context):
+        if self.name == "split-on":
+            parent = getattr(ctx, "parent", None)
+            parent_name = getattr(
+                getattr(parent, "command", None), "name", None
+            )
+            if parent_name == "subset" or parent_name is None:
+                return ["[SUBSET OPTIONS]", "split-on", "[SPLIT-ON OPTIONS]"]
+        return super().collect_usage_pieces(ctx)
+
+    def format_usage(self, ctx: Context, formatter):
+        usage = self._split_on_usage(ctx)
+        if usage is not None:
+            formatter.write(usage)
             return
         return super().format_usage(ctx, formatter)
 
     def get_usage(self, ctx: Context):
-        if (
-            self.name == "split-on"
-            and ctx.parent
-            and ctx.parent.command.name == "subset"
-        ):
-            root = ctx.find_root()
-            return (
-                f"Usage: {root.info_name} {ctx.parent.command.name} "
-                "[SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]\n"
-            )
+        usage = self._split_on_usage(ctx)
+        if usage is not None:
+            return usage
         return super().get_usage(ctx)
 
     def format_epilog(self, ctx, formatter):
