@@ -12,6 +12,33 @@ from copernicusmarine.core_functions.deprecated_options import (
 
 logger = logging.getLogger("copernicusmarine")
 
+try:
+    import sphinx_click.ext as _sphinx_click_ext
+except Exception:  # pragma: no cover - optional doc dependency
+    _sphinx_click_ext = None
+else:
+    _sphinx_click_ext_get_usage = _sphinx_click_ext._get_usage
+
+    def _patched_sphinx_click_get_usage(ctx: click.Context) -> str:
+        command = getattr(ctx, "command", None)
+        if command is None or getattr(command, "name", None) != "split-on":
+            return _sphinx_click_ext_get_usage(ctx)
+
+        parent = getattr(ctx, "parent", None)
+        parent_command = getattr(parent, "command", None)
+        if getattr(parent_command, "name", None) != "subset":
+            return _sphinx_click_ext_get_usage(ctx)
+
+        formatter = ctx.make_formatter()
+        formatter.write_usage(
+            "subset",
+            "[SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]",
+            prefix="",
+        )
+        return formatter.getvalue().rstrip("\n")
+
+    _sphinx_click_ext._get_usage = _patched_sphinx_click_get_usage
+
 
 def _wrap_option_process(option) -> Callable:
     orig_process = option.process
@@ -54,33 +81,7 @@ class CustomDeprecatedClickOption(click.Option):
 
 
 class CustomClickOptionsContext(click.Context):
-    @property
-    def command_path(self):
-        if (
-            self.info_name == "split-on"
-            and self.parent is not None
-            and self.parent.command.name == "subset"
-        ):
-            return self.parent.command_path
-        return super().command_path
-
-
-_original_context_command_path = click.Context.command_path
-
-
-def _patched_command_path(self):
-    if (
-        self.info_name == "split-on"
-        and self.parent is not None
-        and getattr(self.parent.command, "name", None) == "subset"
-    ):
-        return self.parent.command_path
-    return _original_context_command_path.__get__(self, type(self))
-
-
-if not getattr(click.Context, "_copernicus_custom_command_path", False):
-    click.Context.command_path = property(_patched_command_path)
-    click.Context._copernicus_custom_command_path = True
+    pass
 
 
 class CustomClickOptionsCommand(click.Command):
