@@ -66,6 +66,33 @@ class CustomClickOptionsCommand(click.Command):
 
         return parser
 
+    def format_usage(self, ctx: Context, formatter):
+        if (
+            self.name == "split-on"
+            and ctx.parent
+            and ctx.parent.command.name == "subset"
+        ):
+            root = ctx.find_root()
+            formatter.write(
+                f"Usage: {root.info_name} {ctx.parent.command.name} "
+                "[SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]\n"
+            )
+            return
+        return super().format_usage(ctx, formatter)
+
+    def get_usage(self, ctx: Context):
+        if (
+            self.name == "split-on"
+            and ctx.parent
+            and ctx.parent.command.name == "subset"
+        ):
+            root = ctx.find_root()
+            return (
+                f"Usage: {root.info_name} {ctx.parent.command.name} "
+                "[SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]\n"
+            )
+        return super().get_usage(ctx)
+
     def format_epilog(self, ctx, formatter):
         if self.epilog:
             formatter.write_paragraph()
