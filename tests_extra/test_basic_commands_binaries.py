@@ -33,6 +33,16 @@ class TestBasicCommandsBinaries:
         self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
 
+    def test_no_pkg_resources_deprecation_warning(self):
+        command = [
+            BINARY,
+            "describe",
+        ]
+        self.output = execute_in_terminal(command, shell=False)
+        assert self.output.returncode == 0
+        assert "pkg_resources is deprecated" not in self.output.stderr
+        assert "pkg_resources is deprecated" not in self.output.stdout
+
     def test_subset(self):
         command = [
             BINARY,
