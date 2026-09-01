@@ -318,7 +318,7 @@ def create_subset_request(
         if "credentials_file" in json_content and not credentials_file:
             credentials_file = pathlib.Path(json_content["credentials_file"])
 
-    username, _ = get_and_check_username_password(
+    username = get_and_check_username_password(
         username,
         password,
         credentials_file,
@@ -666,7 +666,7 @@ def create_get_request(
         if "credentials_file" in json_content and not credentials_file:
             credentials_file = pathlib.Path(json_content["credentials_file"])
 
-    username, _ = get_and_check_username_password(
+    username = get_and_check_username_password(
         username, password, credentials_file
     )
     get_request = GetRequest(dataset_id=dataset_id or "", username=username)
