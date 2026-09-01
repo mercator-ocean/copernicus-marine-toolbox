@@ -33,7 +33,7 @@ Fixes
 New Features
 ^^^^^^^^^^^^
 
-* Added ``product_user_manual``, ``quality_information_document`` and ``synthesis_quality_overview`` when available to the list of fields returned by the ``describe`` command for a product. These fields contain the URL to the Product User Manual (PUM), Quality Information Document (QUID) and Scientific Quality Overview (SQO) of the product, respectively. See the :ref:`documentation about describe <describe>` for more details.
+* Added ``product_user_manual``, ``quality_information_document`` and ``synthesis_quality_overview`` when available to the list of fields returned by the ``describe`` command for a product. These fields contain the URL to the Product User Manual (PUM), Quality Information Document (QUID) and Synthesis Quality Overview (SQO) of the product, respectively. See the :ref:`documentation about describe <describe>` for more details.
 
 Subset
 ------
