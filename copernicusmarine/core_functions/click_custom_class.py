@@ -12,6 +12,33 @@ from copernicusmarine.core_functions.deprecated_options import (
 
 logger = logging.getLogger("copernicusmarine")
 
+try:
+    import sphinx_click.ext as _sphinx_click_ext
+except Exception:  # pragma: no cover - optional doc dependency
+    _sphinx_click_ext = None
+else:
+    _sphinx_click_ext_get_usage = _sphinx_click_ext._get_usage
+
+    def _patched_sphinx_click_get_usage(ctx: click.Context) -> str:
+        command = getattr(ctx, "command", None)
+        if command is None or getattr(command, "name", None) != "split-on":
+            return _sphinx_click_ext_get_usage(ctx)
+
+        parent = getattr(ctx, "parent", None)
+        parent_command = getattr(parent, "command", None)
+        if getattr(parent_command, "name", None) != "subset":
+            return _sphinx_click_ext_get_usage(ctx)
+
+        formatter = ctx.make_formatter()
+        formatter.write_usage(
+            "subset",
+            "[SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]",
+            prefix="",
+        )
+        return formatter.getvalue().rstrip("\n")
+
+    _sphinx_click_ext._get_usage = _patched_sphinx_click_get_usage
+
 
 def _wrap_option_process(option) -> Callable:
     orig_process = option.process
@@ -53,7 +80,13 @@ class CustomDeprecatedClickOption(click.Option):
         super().__init__(*args, **kwargs)
 
 
+class CustomClickOptionsContext(click.Context):
+    pass
+
+
 class CustomClickOptionsCommand(click.Command):
+    context_class = CustomClickOptionsContext
+
     def make_parser(self, ctx: Context):
         parser = super().make_parser(ctx)
 
@@ -65,6 +98,52 @@ class CustomClickOptionsCommand(click.Command):
             option.process = _wrap_option_process(option)
 
         return parser
+
+    def _split_on_usage(self, ctx: Context) -> str | None:
+        if self.name != "split-on":
+            return None
+
+        root = ctx.find_root()
+        root_name = getattr(root, "info_name", None) or "subset"
+        parent = getattr(ctx, "parent", None)
+        parent_name = getattr(getattr(parent, "command", None), "name", None)
+
+        if parent_name == "subset":
+            return (
+                f"Usage: {root_name} {parent_name} [SUBSET OPTIONS] "
+                f"{self.name} [SPLIT-ON OPTIONS]\n"
+            )
+
+        if parent_name is None:
+            return (
+                f"Usage: {root_name or 'subset'} [SUBSET OPTIONS] "
+                f"{self.name} [SPLIT-ON OPTIONS]\n"
+            )
+
+        return None
+
+    def collect_usage_pieces(self, ctx: Context):
+        if self.name == "split-on":
+            parent = getattr(ctx, "parent", None)
+            parent_name = getattr(
+                getattr(parent, "command", None), "name", None
+            )
+            if parent_name == "subset" or parent_name is None:
+                return ["[SUBSET OPTIONS]", "split-on", "[SPLIT-ON OPTIONS]"]
+        return super().collect_usage_pieces(ctx)
+
+    def format_usage(self, ctx: Context, formatter):
+        usage = self._split_on_usage(ctx)
+        if usage is not None:
+            formatter.write(usage)
+            return
+        return super().format_usage(ctx, formatter)
+
+    def get_usage(self, ctx: Context):
+        usage = self._split_on_usage(ctx)
+        if usage is not None:
+            return usage
+        return super().get_usage(ctx)
 
     def format_epilog(self, ctx, formatter):
         if self.epilog:

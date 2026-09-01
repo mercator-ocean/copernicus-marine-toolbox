@@ -14,7 +14,7 @@ when the hardware resources are limited.
 
     .. code-block:: bash
 
-        copernicusmarine subset [SUBSET-OPTIONS] split-on [OPTIONS]
+        copernicusmarine subset [SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]
 
     Set all the options for the ``subset`` **before** the ``split-on`` command.
     For more information about the ``subset`` module, please refer to :ref:`subset-page`.

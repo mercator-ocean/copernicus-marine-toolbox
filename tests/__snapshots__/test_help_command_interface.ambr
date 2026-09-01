@@ -482,7 +482,7 @@
 # ---
 # name: TestHelpCommandLineInterface.test_help_from_subset_split_on_is_as_expected
   list([
-    'Usage: copernicusmarine subset split-on [OPTIONS]',
+    'Usage: copernicusmarine subset [SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS]',
     '',
     '  Extract a subset of data from a specified dataset using given parameters and',
     '  split the output files based on variable names, time intervals or both. By',
@@ -490,7 +490,7 @@
     '',
     '  The datasetID is required and can be found via the ``describe`` command.',
     '  Accept all the arguments from the subset, and should be entered by order:',
-    '  ``copernicusmarine subset [SUBSET-OPTIONS] split-on [SPLIT-ON-OPTIONS].``',
+    '  ``copernicusmarine subset [SUBSET OPTIONS] split-on [SPLIT-ON OPTIONS].``',
     '',
     'Options:',
     '  --on-variables                  If True, split the output files based on',
