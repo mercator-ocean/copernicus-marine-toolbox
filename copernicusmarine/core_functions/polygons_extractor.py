@@ -54,7 +54,7 @@ def get_bounding_box_from_polygons(
 ) -> tuple[float, float, float, float]:
     gdf = load_polygons_from_user_input(polygons)
     min_lon, min_lat, max_lon, max_lat = gdf.total_bounds
-    return min_lon, min_lat, max_lon, max_lat
+    return min_lon, max_lon, min_lat, max_lat
 
 
 def load_polygons_from_user_input(

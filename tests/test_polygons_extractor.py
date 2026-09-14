@@ -247,7 +247,7 @@ class TestGetBoundingBoxFromPolygons:
         pytest.importorskip("geopandas")
         polygons_file = _write_geojson(tmp_path, SQUARE_POLYGON_GEOJSON)
 
-        min_lon, min_lat, max_lon, max_lat = get_bounding_box_from_polygons(
+        min_lon, max_lon, min_lat, max_lat = get_bounding_box_from_polygons(
             polygons_file
         )
 
