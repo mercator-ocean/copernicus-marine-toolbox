@@ -165,7 +165,7 @@
   		string :platform_code = "B-Sulafjorden" ;
   		string :platform_type = "MO" ;
   		string :institution = "The Norwegian Public Roads Administration" ;
-  		string :doi = "https://doi.org/10.48670/moi-00031" ;
+  		string :doi = "10.21335/NMDC-1838527821 https://doi.org/10.48670/moi-00031" ;
   		string :institution_edmo_code = "5778" ;
   		string :time_coverage_start = "2023-11-25T00:00:00Z" ;
   		string :time_coverage_end = "2023-11-26T03:00:00Z" ;
@@ -249,7 +249,7 @@
   		string :platform_code = "F-Vartdalsfjorden" ;
   		string :platform_type = "MO" ;
   		string :institution = "The Norwegian Public Roads Administration" ;
-  		string :doi = "https://doi.org/10.48670/moi-00031" ;
+  		string :doi = "10.21335/NMDC-1838527821 https://doi.org/10.48670/moi-00031" ;
   		string :institution_edmo_code = "5778" ;
   		string :time_coverage_start = "2023-11-25T00:00:00Z" ;
   		string :time_coverage_end = "2023-11-26T03:00:00Z" ;
