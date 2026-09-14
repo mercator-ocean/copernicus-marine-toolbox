@@ -3,12 +3,12 @@ import logging
 import pathlib
 from typing import TYPE_CHECKING
 
+import pandas as pd
 import xarray
 
 from copernicusmarine.core_functions.exceptions import DependenciesNotAvailable
 
 if TYPE_CHECKING:
-    import pandas as pd
     from geopandas import GeoDataFrame
 
 logger = logging.getLogger("copernicusmarine")
@@ -51,11 +51,11 @@ def extract_polygons_from_dataset(
 
 
 def extract_polygons_from_dataframe(
-    df: "pd.DataFrame",
+    df: pd.DataFrame,
     polygons: pathlib.Path,
     longitude_column: str = "longitude",
     latitude_column: str = "latitude",
-) -> "pd.DataFrame":
+) -> pd.DataFrame:
     _check_polygons_dependencies()
     import geopandas as gpd
 
