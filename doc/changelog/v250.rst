@@ -12,7 +12,7 @@ New Features
 * Added optional dependencies. The following dependencies can be installed with ``pip install copernicusmarine[extra]`` or ``mamba install conda-forge::copernicusmarine-extra`` (see the :ref:`installation page <installation-page>` for more details):
   * ``rioxarray`` (>=0.19.0)
   * ``geopandas`` (>=1.1.4)
-  * ``netcdf4`` (<=1.7.2, not available on Windows)
+  * ``netcdf4`` (<=1.7.2)
 
 Fixes
 ^^^^^
@@ -33,7 +33,7 @@ Fixes
 New Features
 ^^^^^^^^^^^^
 
-* Added ``product_user_manual``, ``quality_information_document`` and ``synthesis_quality_overview`` when available to the list of fields returned by the ``describe`` command for a product. These fields contain the URL to the Product User Manual (PUM), Quality Information Document (QUID) and Scientific Quality Overview (SQO) of the product, respectively. See the :ref:`documentation about describe <describe>` for more details.
+* Added ``product_user_manual``, ``quality_information_document`` and ``synthesis_quality_overview`` when available to the list of fields returned by the ``describe`` command for a product. These fields contain the URL to the Product User Manual (PUM), Quality Information Document (QUID) and Synthesis Quality Overview (SQO) of the product, respectively. See the :ref:`documentation about describe <describe>` for more details.
 
 Subset
 ------
