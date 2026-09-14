@@ -220,7 +220,7 @@ The same request using the Python interface:
 
 .. note::
 
-  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``) or sparse datasets. If you want to see this feature, please open an issue on the repository or contact User Support.
+  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``). If you want to see this feature, please open an issue on the repository or contact User Support.
 
 
 .. _file-format:

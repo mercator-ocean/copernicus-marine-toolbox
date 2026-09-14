@@ -32,6 +32,9 @@ from copernicusmarine.core_functions.models import (  # TimeExtent,
     StatusMessage,
     VerticalAxis,
 )
+from copernicusmarine.core_functions.polygons_extractor import (
+    extract_polygons_from_dataframe,
+)
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
 from copernicusmarine.core_functions.temporary_path_saver import (
@@ -274,6 +277,11 @@ def _read_dataframe_sparse(
             platforms_metadata,
             product_doi,
         )
+        if subset_request.polygons_file and not df.empty:
+            logger.debug("Extracting polygons from dataframe.")
+            df = extract_polygons_from_dataframe(
+                df, subset_request.polygons_file
+            )
     if df.empty:
         logger.info(
             "No data found for the given parameters. "
