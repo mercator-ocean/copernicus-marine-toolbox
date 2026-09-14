@@ -41,5 +41,5 @@ Subset
 New Features
 ^^^^^^^^^^^^
 
-* Added the ``--polygons-file`` option (``polygons_file`` argument) to subset and clip gridded datasets using polygons from a ``.geojson``, ``.shp``, ``.gpkg`` or ``.kml`` file. This relies on optional dependencies installable with ``pip install copernicusmarine[extra]``. See the :ref:`documentation about polygons subsetting <subset-polygons>` for more details.
+* Added the ``--polygons-file`` option (``polygons_file`` argument) to subset and clip datasets using polygons from a ``.geojson``, ``.shp``, ``.gpkg`` or ``.kml`` file. This relies on optional dependencies installable with ``pip install copernicusmarine[extra]``. See the :ref:`documentation about polygons subsetting <subset-polygons>` for more details.
 * New algorithm to better estimate the output file size when subsetting in zarr format.

@@ -3,12 +3,14 @@ import json
 import pathlib
 
 import numpy as np
+import pandas as pd
 import pytest
 import xarray
 
 from copernicusmarine.core_functions.exceptions import DependenciesNotAvailable
 from copernicusmarine.core_functions.polygons_extractor import (
     _check_polygons_dependencies,
+    extract_polygons_from_dataframe,
     extract_polygons_from_dataset,
     get_bounding_box_from_polygons,
     load_polygons_from_user_input,
@@ -276,3 +278,33 @@ class TestExtractPolygonsFromDataset:
         assert float(clipped["latitude"].max()) <= 2.0
         # The CRS has been written on the dataset.
         assert clipped.rio.crs is not None
+
+
+class TestExtractPolygonsFromDataframe:
+    def test_keeps_only_rows_within_polygon(self, tmp_path):
+        pytest.importorskip("geopandas")
+        polygons_file = _write_geojson(tmp_path, SQUARE_POLYGON_GEOJSON)
+        df = pd.DataFrame(
+            {
+                "time": pd.to_datetime(
+                    [
+                        "2020-01-01",
+                        "2020-01-02",
+                        "2020-01-03",
+                        "2020-01-04",
+                    ]
+                ),
+                "latitude": [1.0, 1.0, 5.0, -3.0],
+                "longitude": [1.0, 0.5, 5.0, -3.0],
+                "pressure": [10.0, 20.0, 30.0, 40.0],
+                "value": [100.0, 200.0, 300.0, 400.0],
+            }
+        )
+
+        result = extract_polygons_from_dataframe(df, polygons_file)
+
+        # Only the first two rows fall inside the [0, 2] x [0, 2] polygon.
+        assert len(result) == 2
+        assert result["value"].tolist() == [100.0, 200.0]
+        assert result["latitude"].tolist() == [1.0, 1.0]
+        assert result["longitude"].tolist() == [1.0, 0.5]
