@@ -460,7 +460,10 @@ def _check_credentials_with_cas(username: str, password: str) -> str | None:
         if response_get.status_code == 200:
             response_json = response_get.json()
             return response_json["preferred_username"]
-    elif response_post.status_code == 400:
+    elif (
+        response_post.status_code == 400
+        and "invalid_grant" in response_post.text
+    ):
         # Invalid credentials
         return None
     else:
