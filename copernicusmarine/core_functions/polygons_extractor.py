@@ -3,6 +3,7 @@ import logging
 import pathlib
 from typing import TYPE_CHECKING
 
+import pandas as pd
 import xarray
 
 from copernicusmarine.core_functions.exceptions import DependenciesNotAvailable
@@ -49,12 +50,34 @@ def extract_polygons_from_dataset(
     return dataset
 
 
+def extract_polygons_from_dataframe(
+    df: pd.DataFrame,
+    polygons: pathlib.Path,
+    longitude_column: str = "longitude",
+    latitude_column: str = "latitude",
+) -> pd.DataFrame:
+    _check_polygons_dependencies()
+    import geopandas as gpd
+
+    gdf = load_polygons_from_user_input(polygons)
+    if gdf.crs is None:
+        gdf = gdf.set_crs("EPSG:4326")
+
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(df[longitude_column], df[latitude_column]),
+        index=df.index,
+        crs="EPSG:4326",
+    )
+    within_polygons = points.within(gdf.union_all())
+    return df[within_polygons].reset_index(drop=True)
+
+
 def get_bounding_box_from_polygons(
     polygons: pathlib.Path | str,
 ) -> tuple[float, float, float, float]:
     gdf = load_polygons_from_user_input(polygons)
     min_lon, min_lat, max_lon, max_lat = gdf.total_bounds
-    return min_lon, min_lat, max_lon, max_lat
+    return min_lon, max_lon, min_lat, max_lat
 
 
 def load_polygons_from_user_input(

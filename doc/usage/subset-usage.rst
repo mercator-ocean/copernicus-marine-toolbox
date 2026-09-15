@@ -176,7 +176,7 @@ Option ``--polygons-file``
 """"""""""""""""""""""""""""
 
 The ``--polygons-file`` option lets you subset a gridded dataset using one or more polygons instead of a rectangular bounding box.
-The dataset is first subset to the bounding box of the polygons, then clipped to the polygons so that only the data inside them is kept (points outside are set to ``NaN``).
+The dataset is first subset to the bounding box of the polygons, then clipped to the polygons so that only the data inside them is kept (points outside are set to the `Fill Value <https://docs.unidata.ucar.edu/netcdf-c/4.9.3/fill_values.html>`__ of the variable).
 
 The supported file formats are ``.geojson``, ``.shp``, ``.gpkg`` and ``.kml``.
 
@@ -194,7 +194,7 @@ The supported file formats are ``.geojson``, ``.shp``, ``.gpkg`` and ``.kml``.
 
 When ``--polygons-file`` is set, it takes precedence over the bounding-box options (``--minimum-longitude``, ``--maximum-longitude``, ``--minimum-latitude``, ``--maximum-latitude`` and their ``-x``/``-X``/``-y``/``-Y`` aliases). If any of these are also provided, they are ignored and a warning is emitted.
 
-.. note:
+.. note::
 
   The current implementation needs to load in memory the entire bounding box of the dataset before clipping it to the polygons. This can lead to high memory usage for large datasets. If you encounter memory issues, consider using a smaller bounding box or a different dataset or detail your needs in an issue on the `GitHub repository <https://github.com/copernicus-marine-toolbox/copernicus-marine-toolbox/issues>`_.
 
@@ -220,7 +220,7 @@ The same request using the Python interface:
 
 .. note::
 
-  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``) or sparse datasets. If you want to see this feature, please open an issue on the repository or contact User Support.
+  This option is not available for ``originalGrid`` datasets (dataset part ``originalGrid``). If you want to see this feature, please open an issue on the repository or contact User Support.
 
 
 .. _file-format:

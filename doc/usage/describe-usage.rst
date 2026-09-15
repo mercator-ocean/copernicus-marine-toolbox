@@ -171,7 +171,7 @@ The output will be something like this:
     }
 
 
-``dataset_id`` and ``product_id`` options
+``--dataset_id`` and ``--product_id`` options
 -----------------------------------------
 
 Calling the whole catalogue can be time-consuming. If you know the dataset or product you are looking for, you can use the ``dataset_id`` or ``product_id`` options.
@@ -214,6 +214,15 @@ The output will be something like this:
             }
         ]
     }
+
+.. note::
+
+    describe accepts both versioned and unversioned dataset IDs. For example, the following dataset IDs can both be used:
+
+    dataset_id: ``copernicusmarine describe -i cmems_mod_glo_phy_anfc_0.083deg_P1D-m``
+    dataset_id_version: ``copernicusmarine describe -i cmems_mod_glo_phy_anfc_0.083deg_P1D-m_202406``
+
+    In both cases, describe returns information for all available versions of the dataset. The version tag is therefore not used to restrict the results to a specific version.
 
 ``--show-all-versions`` option
 -------------------------------
