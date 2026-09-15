@@ -118,6 +118,17 @@ To download directly the latest stable releases:
 - Linux (with glibc 2.39): |download_linux_239|
 - Windows: |download_windows|
 
+Each platform also ships an ``-extra`` binary that bundles the optional dependencies
+(``geopandas``, ``rioxarray`` and ``netcdf4``). Use these if you need features that rely
+on the optional dependencies, such as subsetting with polygons. They are larger than the
+core binaries but otherwise behave the same:
+
+- MacOS arm64: |download_macos_arm64_extra|
+- MacOS x86_64: |download_macos_x86_extra|
+- Linux (with glibc 2.35): |download_linux_235_extra|
+- Linux (with glibc 2.39): |download_linux_239_extra|
+- Windows: |download_windows_extra|
+
 
 Once downloaded for the specific platform, you can use the Toolbox by running the binary as follows:
 

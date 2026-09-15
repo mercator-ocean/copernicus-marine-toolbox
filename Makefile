@@ -98,13 +98,47 @@ build-and-prepare-for-binary:
 	pip install distributed
 	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
+# --- Binary build (PyInstaller) -------------------------------------------
+# Two flavours of binaries are produced:
+#   - "core"  (default): only the mandatory dependencies.
+#   - "extra"          : bundles the optional dependencies as well
+#                        (geopandas, rioxarray, netcdf4 and their transitive
+#                        native dependencies).
+# Select the flavour with: make run-using-pyinstaller-<os> VARIANT=extra
+VARIANT ?= core
+PYINSTALLER_ENTRYPOINT = copernicusmarine/command_line_interface/copernicus_marine.py
+
+ifeq ($(VARIANT),extra)
+PIP_INSTALL_TARGET = ".[extra]"
+BINARY_VARIANT_SUFFIX = -extra
+# The optional dependencies are imported lazily, so PyInstaller's static
+# analysis cannot discover them. We collect them (and their data/metadata)
+# explicitly.
+PYINSTALLER_EXTRA_FLAGS = \
+	--collect-all rasterio \
+	--collect-all rioxarray \
+	--collect-all pyproj \
+	--collect-all pyogrio \
+	--collect-all shapely \
+	--collect-all geopandas \
+	--collect-all netCDF4 \
+	--collect-all cftime \
+	--copy-metadata rioxarray \
+	--copy-metadata geopandas \
+	--copy-metadata netCDF4
+else
+PIP_INSTALL_TARGET = .
+BINARY_VARIANT_SUFFIX =
+PYINSTALLER_EXTRA_FLAGS =
+endif
+
 run-using-pyinstaller-windows-latest:
-	pip install -e .
-	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --hidden-import numpy._core._exceptions --collect-submodules=numpy --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine.exe --collect-data dask --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" copernicusmarine/command_line_interface/copernicus_marine.py --onefile --copy-metadata zarr
+	pip install -e $(PIP_INSTALL_TARGET)
+	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --hidden-import numpy._core._exceptions --collect-submodules=numpy --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine$(BINARY_VARIANT_SUFFIX).exe --collect-data dask --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --onefile --copy-metadata zarr
 
 run-using-pyinstaller-macos:
-	pip install -e .
-	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --noconfirm --clean --onefile --copy-metadata xarray --name copernicusmarine_macos-${ARCH}.cli  --copy-metada pandas --collect-data dask --collect-data distributed --collect-data tzdata --copy-metadata copernicusmarine copernicusmarine/command_line_interface/copernicus_marine.py --target-architecture=${ARCH} --copy-metadata zarr
+	pip install -e $(PIP_INSTALL_TARGET)
+	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --noconfirm --clean --onefile --copy-metadata xarray --name copernicusmarine_macos-${ARCH}$(BINARY_VARIANT_SUFFIX).cli --copy-metadata pandas --collect-data dask --collect-data distributed --collect-data tzdata --copy-metadata copernicusmarine $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --target-architecture=${ARCH} --copy-metadata zarr
 
 run-using-pyinstaller-macos-15-intel: ARCH = x86_64
 run-using-pyinstaller-macos-15-intel: run-using-pyinstaller-macos
@@ -113,14 +147,14 @@ run-using-pyinstaller-macos-latest: ARCH = arm64
 run-using-pyinstaller-macos-latest: run-using-pyinstaller-macos
 
 run-using-pyinstaller-linux:
-	pip install -e .
+	pip install -e $(PIP_INSTALL_TARGET)
 	ldd --version
 	which openssl
 	openssl version -a
 	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/lib
 	echo $$LD_LIBRARY_PATH
-	python3 -m PyInstaller --hidden-import deprecated --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}.cli --collect-data distributed --collect-data dask  copernicusmarine/command_line_interface/copernicus_marine.py --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
-	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}.cli
+	python3 -m PyInstaller --hidden-import deprecated --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}$(BINARY_VARIANT_SUFFIX).cli --collect-data distributed --collect-data dask $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
+	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}$(BINARY_VARIANT_SUFFIX).cli
 
 run-using-pyinstaller-ubuntu-22.04: DISTRIBUTION = linux-glibc-2.35
 run-using-pyinstaller-ubuntu-22.04: run-using-pyinstaller-linux
