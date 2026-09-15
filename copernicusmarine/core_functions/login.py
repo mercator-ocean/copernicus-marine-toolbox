@@ -21,12 +21,11 @@ def login_function(
 ) -> bool:
     if check_credentials_valid:
         logger.info("Checking if credentials are valid.")
-        if copernicusmarine_validate_and_get_user(
-            configuration_file, username, password
-        ):
-            return True
-        else:
-            return False
+        return bool(
+            copernicusmarine_validate_and_get_user(
+                configuration_file, username, password
+            )
+        )
     if not force_overwrite:
         (
             existing_valid_credentials,
