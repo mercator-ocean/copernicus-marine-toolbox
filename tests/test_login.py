@@ -362,6 +362,10 @@ class TestLogin:
 
     def create_netrc_file(self, tmp_path, host: str) -> None:
         netrc_file = Path(tmp_path, ".netrc")
+        print("Creating .netrc file for host:", host)
+        print("with")
+        print(f"login {os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}")
+        print(f"password {os.getenv('COPERNICUSMARINE_SERVICE_PASSWORD')}")
         netrc_file.write_text(
             f"machine {host}\n"
             f"   login {os.getenv('COPERNICUSMARINE_SERVICE_USERNAME')}\n"
