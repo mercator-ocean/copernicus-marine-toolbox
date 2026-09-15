@@ -2,9 +2,13 @@ import os
 from json import loads
 from pathlib import Path
 
-from tests.test_utils import execute_in_terminal
+import pytest
+
+from tests.test_utils import execute_in_terminal, get_file_size
 
 BINARY = os.getenv("BINARY_NAME")
+# "core" or "extra": the "extra" binary bundles the optional dependencies.
+BINARY_VARIANT = os.getenv("BINARY_VARIANT", "core")
 
 
 class TestBasicCommandsBinaries:
@@ -135,3 +139,34 @@ class TestBasicCommandsBinaries:
         self.output = execute_in_terminal(command, shell=False)
         assert self.output.returncode == 0
         assert non_existing_directory.is_dir()
+
+    @pytest.mark.skipif(
+        BINARY_VARIANT != "extra",
+        reason="Polygons subsetting relies on the optional dependencies, "
+        "only bundled in the 'extra' binary.",
+    )
+    def test_subset_with_polygons(self, tmp_path):
+        french_coast = "tests/resources/french_coast.geojson"
+        output_filename = "subset_with_polygon.nc"
+        command = [
+            BINARY,
+            "subset",
+            "--dataset-id",
+            "cmems_mod_glo_phy-all_my_0.25deg_P1D-m",
+            "--variable",
+            "mlotst_cglo",
+            "--start-datetime",
+            "2023-01-01",
+            "--end-datetime",
+            "2023-01-01",
+            "--polygons-file",
+            french_coast,
+            "--output-directory",
+            f"{tmp_path}",
+            "--output-filename",
+            output_filename,
+        ]
+        self.output = execute_in_terminal(command, shell=False)
+        assert self.output.returncode == 0
+        # The file without polygon filtering is about 4MB
+        assert get_file_size(Path(tmp_path, output_filename)) < 100 * 1024
