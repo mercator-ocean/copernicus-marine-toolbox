@@ -1,0 +1,37 @@
+# Environment used to build the macOS "extra" binary.
+#
+# The geospatial stack (pyproj, rasterio, shapely, pyogrio, geopandas and
+# rioxarray) is installed from conda-forge instead of PyPI so that every package
+# links against a single shared libproj/libgeos/libgdal.
+#
+# PyPI wheels each vendor their own copy of these native libraries. On macOS
+# PyInstaller deduplicates them by basename, which makes pyproj resolve
+# rasterio's libproj at runtime and crash with:
+#   "Symbol not found: _proj_context_create ... rasterio/.dylibs/libproj.*.dylib"
+# Sharing one libproj from conda-forge avoids the clash entirely.
+#
+# The remaining pure-Python / non-geospatial dependencies (including netCDF4)
+# are still installed from PyPI via `pip install -e .[extra]`.
+dependencies:
+  - python==3.12
+  - poetry==2.2.1
+  - git==2.44.0
+  - pip==24.0
+  - gh==2.45.0
+  - pyinstaller==6.19.0
+  - pytest==8.1.1
+  - numpy==2.1.3
+  - rioxarray>=0.19.0
+  - geopandas>=1.1.4
+  - rasterio
+  - pyproj
+  - shapely
+  - pyogrio
+  - pip:
+      - xarray
+      - distributed
+      - tzdata
+      - pillow
+      - pydantic
+      - pystac
+      - tqdm
