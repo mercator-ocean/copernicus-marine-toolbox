@@ -5,6 +5,10 @@ on:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [core, extra]
     runs-on: windows-latest
     timeout-minutes: 20
 
@@ -27,7 +31,7 @@ jobs:
     - name: Build with PyInstaller
       shell: bash -el {0}
       run: |
-        make run-using-pyinstaller-windows-latest
+        make run-using-pyinstaller-windows-latest VARIANT=${{ matrix.variant }}
 
     - name: Set VERSION environment variable
       id: set-version
@@ -39,4 +43,9 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine.exe#copernicusmarine-binary-windows-for-v${{steps.set-version.outputs.VERSION}}
+          if [ "${{ matrix.variant }}" == "extra" ]; then
+            SUFFIX="-extra"
+          else
+            SUFFIX=""
+          fi
+          gh release upload v${{steps.set-version.outputs.VERSION}} dist/copernicusmarine${SUFFIX}.exe#copernicusmarine-binary-windows${SUFFIX}-for-v${{steps.set-version.outputs.VERSION}}

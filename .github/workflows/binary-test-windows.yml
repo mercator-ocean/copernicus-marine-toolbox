@@ -15,6 +15,10 @@ on:
 
 jobs:
   tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [core, extra]
     runs-on: windows-latest
     timeout-minutes: 20
 
@@ -37,13 +41,14 @@ jobs:
     - name: Build with PyInstaller
       shell: bash -el {0}
       run: |
-        make run-using-pyinstaller-windows-latest
+        make run-using-pyinstaller-windows-latest VARIANT=${{ matrix.variant }}
 
     - name: Run tests
       env:
         COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
         COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        BINARY_NAME: "./dist/copernicusmarine.exe"
+        BINARY_NAME: "./dist/copernicusmarine${{ matrix.variant == 'extra' && '-extra' || '' }}.exe"
+        BINARY_VARIANT: ${{ matrix.variant }}
         PYTHONIOENCODING: utf-8
       run: make run-tests-binaries
       shell: bash -el {0}

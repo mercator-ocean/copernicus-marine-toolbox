@@ -13,6 +13,7 @@ on:
     paths:
       - "pyproject.toml"
       - "conda_environment_binary.yaml"
+      - "conda_environment_binary_extra.yaml"
       - "tests_extra/test_basic_commands_binaries.py"
       - "Makefile"
 
@@ -22,6 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-22.04, macos-15-intel, ubuntu-24.04]
+        variant: [core, extra]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -35,7 +37,7 @@ jobs:
         with:
           micromamba-version: "1.5.6-0"
           micromamba-binary-path: ${{ runner.temp }}/bin/micromamba
-          environment-file: conda_environment_binary.yaml
+          environment-file: ${{ (matrix.variant == 'extra' && startsWith(matrix.os, 'macos')) && 'conda_environment_binary_extra.yaml' || 'conda_environment_binary.yaml' }}
           environment-name: copernicusmarine-binary
           condarc-file: .condarc
           cache-environment: true
@@ -44,7 +46,7 @@ jobs:
       - name: Build with PyInstaller
         shell: micromamba-shell {0}
         run: |
-          make run-using-pyinstaller-${{ matrix.os }}
+          make run-using-pyinstaller-${{ matrix.os }} VARIANT=${{ matrix.variant }}
 
       - name: Standarise name to make the tests easy
         shell: micromamba-shell {0}
@@ -55,5 +57,6 @@ jobs:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
           BINARY_NAME: "./copernicusmarine.cli"
+          BINARY_VARIANT: ${{ matrix.variant }}
         shell: micromamba-shell {0}
         run: make run-tests-binaries
