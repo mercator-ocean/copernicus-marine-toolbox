@@ -98,22 +98,14 @@ build-and-prepare-for-binary:
 	pip install distributed
 	echo "VERSION=$$(poetry version --short)" >> ${GITHUB_OUTPUT}
 
-# --- Binary build (PyInstaller) -------------------------------------------
-# Two flavours of binaries are produced:
-#   - "core"  (default): only the mandatory dependencies.
-#   - "extra"          : bundles the optional dependencies as well
-#                        (geopandas, rioxarray, netcdf4 and their transitive
-#                        native dependencies).
-# Select the flavour with: make run-using-pyinstaller-<os> VARIANT=extra
+# Will install dependencies based on the selected variant (core or extra)
 VARIANT ?= core
 PYINSTALLER_ENTRYPOINT = copernicusmarine/command_line_interface/copernicus_marine.py
 
 ifeq ($(VARIANT),extra)
 PIP_INSTALL_TARGET = ".[extra]"
 BINARY_VARIANT_SUFFIX = -extra
-# The optional dependencies are imported lazily, so PyInstaller's static
-# analysis cannot discover them. We collect them (and their data/metadata)
-# explicitly.
+
 PYINSTALLER_EXTRA_FLAGS = \
 	--collect-all rasterio \
 	--collect-all rioxarray \
