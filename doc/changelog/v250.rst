@@ -14,6 +14,7 @@ New Features
   * ``geopandas`` (>=1.1.4)
   * ``netcdf4`` (<=1.7.2)
 * Added standalone binaries bundling the optional dependencies. For each platform an ``-extra`` binary is now published alongside the core one (see the :ref:`installation page <installation-page>`).
+* Added the extra dependencies in the Docker image.
 
 Fixes
 ^^^^^
