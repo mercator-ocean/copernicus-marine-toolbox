@@ -1,4 +1,5 @@
 import logging
+import os
 import ssl
 from typing import Any, Literal
 
@@ -44,6 +45,9 @@ except ValueError:
     HTTPS_RETRIES = 5
 
 
+COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS = 10
+
+
 def get_ssl_context() -> ssl.SSLContext | None:
     if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
         return None
@@ -52,6 +56,32 @@ def get_ssl_context() -> ssl.SSLContext | None:
             capath=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH
         )
     return ssl.create_default_context(cafile=certifi.where())
+
+
+def get_max_pool_connections() -> int:
+    if (
+        env_default := os.environ.get(
+            "COPERNICUSMARINE_MAX_POOL_CONNECTIONS", None
+        )
+    ) and env_default.strip():
+        try:
+            value = int(env_default)
+            if value > 0:
+                return value
+            else:
+                logger.warning(
+                    f"Max pool connections must be greater than 0, but '{env_default}' was provided. "
+                    f"Using default value {COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS}."
+                )
+                return COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS
+        except ValueError:
+            logger.warning(
+                f"Max pool connections must be an integer, but '{env_default}' was provided. "
+                f"Using default value {COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS}."
+            )
+            return COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS
+    else:
+        return COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS
 
 
 def get_configured_boto3_session(
@@ -63,6 +93,7 @@ def get_configured_boto3_session(
     config_boto3 = botocore.config.Config(
         signature_version=botocore.UNSIGNED,
         retries={"max_attempts": 10, "mode": "adaptive"},
+        max_pool_connections=get_max_pool_connections(),
     )
     s3_session = boto3.Session()
     s3_client = s3_session.client(
