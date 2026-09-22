@@ -11,7 +11,12 @@ on:
     branches:
       - "main"
     paths:
-      - 'pyproject.toml'
+      - "pyproject.toml"
+      - "conda_environment_binary.yaml"
+      - "conda_environment_binary_extra.yaml"
+      - "tests_extra/test_basic_commands_binaries.py"
+      - "Makefile"
+      - ".github/workflows/binary-test-windows.yml"
 
 jobs:
   tests:

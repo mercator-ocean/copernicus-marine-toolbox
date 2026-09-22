@@ -126,11 +126,11 @@ endif
 
 run-using-pyinstaller-windows-latest:
 	pip install -e $(PIP_INSTALL_TARGET)
-	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --hidden-import numpy._core._exceptions --collect-submodules=numpy --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine$(BINARY_VARIANT_SUFFIX).exe --collect-data dask --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --onefile --copy-metadata zarr
+	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --hidden-import numpy._core._exceptions --collect-submodules=numpy --copy-metadata copernicusmarine --icon=toolbox_icon.png --copy-metadata xarray --name copernicusmarine$(BINARY_VARIANT_SUFFIX).exe --collect-data dask --add-data "C:\Users\runneradmin\micromamba\envs\copernicusmarine-binary\Lib\site-packages\distributed\distributed.yaml;.\distributed" $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --onefile --copy-metadata zarr --copy-metadata numcodecs
 
 run-using-pyinstaller-macos:
 	pip install -e $(PIP_INSTALL_TARGET)
-	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --noconfirm --clean --onefile --copy-metadata xarray --name copernicusmarine_macos-${ARCH}$(BINARY_VARIANT_SUFFIX).cli --copy-metadata pandas --collect-data dask --collect-data distributed --collect-data tzdata --copy-metadata copernicusmarine $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --target-architecture=${ARCH} --copy-metadata zarr
+	python -m PyInstaller --hiddenimport deprecated --hidden-import numpy --noconfirm --clean --onefile --copy-metadata xarray --name copernicusmarine_macos-${ARCH}$(BINARY_VARIANT_SUFFIX).cli --copy-metadata pandas --collect-data dask --collect-data distributed --collect-data tzdata --copy-metadata copernicusmarine $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --target-architecture=${ARCH} --copy-metadata zarr --copy-metadata numcodecs
 
 run-using-pyinstaller-macos-15-intel: ARCH = x86_64
 run-using-pyinstaller-macos-15-intel: run-using-pyinstaller-macos
@@ -145,7 +145,7 @@ run-using-pyinstaller-linux:
 	openssl version -a
 	export LD_LIBRARY_PATH=/home/runner/micromamba/envs/copernicusmarine-binary/lib
 	echo $$LD_LIBRARY_PATH
-	python3 -m PyInstaller --hidden-import deprecated --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}$(BINARY_VARIANT_SUFFIX).cli --collect-data distributed --collect-data dask $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr
+	python3 -m PyInstaller --hidden-import deprecated --hidden-import numpy --collect-all tzdata --copy-metadata copernicusmarine --name copernicusmarine_${DISTRIBUTION}$(BINARY_VARIANT_SUFFIX).cli --collect-data distributed --collect-data dask $(PYINSTALLER_EXTRA_FLAGS) $(PYINSTALLER_ENTRYPOINT) --onefile --path /opt/hostedtoolcache/Python/3.12.6/x64/lib/python3.12/site-packages --copy-metadata xarray --copy-metadata zarr --copy-metadata numcodecs
 	chmod +rwx /home/runner/work/copernicus-marine-toolbox/copernicus-marine-toolbox/dist/copernicusmarine_${DISTRIBUTION}$(BINARY_VARIANT_SUFFIX).cli
 
 run-using-pyinstaller-ubuntu-22.04: DISTRIBUTION = linux-glibc-2.35
