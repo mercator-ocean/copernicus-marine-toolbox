@@ -560,6 +560,7 @@ def check_credentials_from_myocean_bearer(token: str) -> str:
     response = session.get(
         MYOCEAN_AUTH_URL,
         auth=bearer_auth,
+        headers={"X-Auth-App": "cmems"},
     )
     session.close()
     username = response.json().get("username")
