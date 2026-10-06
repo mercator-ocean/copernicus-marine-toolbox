@@ -554,7 +554,7 @@ def get_and_check_username_password(
 
 
 def check_credentials_from_myocean_bearer(token: str) -> str:
-    MYOCEAN_AUTH_URL = "https://data-be-prd.marine.copernicus.eu/api/user"
+    MYOCEAN_AUTH_URL = "https://data-be-prd.marine.copernicus.eu/api/username"
     session = get_configured_requests_session()
     bearer_auth = BearerAuth(token)
     response = session.get(
