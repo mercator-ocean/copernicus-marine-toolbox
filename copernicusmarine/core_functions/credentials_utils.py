@@ -530,13 +530,16 @@ def get_and_check_username_password(
     password: str | None,
     credentials_file: pathlib.Path | None,
 ) -> str:
-    username, password = get_username_password(
-        username=username, password=password, credentials_file=credentials_file
-    )
+    # As an alternative to the main flow, obtain the username
+    # from the refresh token contained in envvar COPERNICUSMARINE_MYOCEAN_AUTH.
     if token := os.getenv("COPERNICUSMARINE_MYOCEAN_AUTH"):
         if not (user_myocean := check_credentials_from_myocean_bearer(token)):
             raise InvalidUsernameOrPassword("Invalid MyOcean token.")
         return user_myocean
+
+    username, password = get_username_password(
+        username=username, password=password, credentials_file=credentials_file
+    )
     user = _validate_and_get_user(
         username,
         password,
