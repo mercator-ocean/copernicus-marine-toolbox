@@ -55,8 +55,6 @@ class NetCDFCompressionNotAvailable(Exception):
     with the current Python libraries.
     """
 
-    pass
-
 
 class WrongDatetimeFormat(Exception):
     """

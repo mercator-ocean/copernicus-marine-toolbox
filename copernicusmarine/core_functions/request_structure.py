@@ -13,6 +13,7 @@ from dateutil.tz import UTC
 from pydantic import BaseModel, ValidationError, field_validator
 
 from copernicusmarine.catalogue_parser.models import (
+    CopernicusMarineService,
     get_version_from_dataset_id,
 )
 from copernicusmarine.core_functions.credentials_utils import (
@@ -25,6 +26,7 @@ from copernicusmarine.core_functions.deprecated_options import (
 from copernicusmarine.core_functions.exceptions import (
     LonLatSubsetNotAvailableInOriginalGridDatasets,
     MutuallyExclusiveArguments,
+    VariableDoesNotExistInTheDataset,
     XYNotAvailableInNonOriginalGridDatasets,
 )
 from copernicusmarine.core_functions.models import (
@@ -207,6 +209,27 @@ class SubsetRequest(BaseModel):
             coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
         )
 
+    def update_and_check_variables_name(
+        self, service: CopernicusMarineService
+    ) -> None:
+        if not self.variables:
+            return
+        new_requested_variables = []
+        standard_short_name_mapping = service.get_variables_names_mapping()
+        short_names = {v for v in standard_short_name_mapping.values()}
+        for requested_variable_name in self.variables:
+            if (
+                requested_variable_name not in short_names
+                and requested_variable_name not in standard_short_name_mapping
+            ):
+                raise VariableDoesNotExistInTheDataset(requested_variable_name)
+            new_requested_variables.append(
+                standard_short_name_mapping.get(
+                    requested_variable_name, requested_variable_name
+                )
+            )
+        self.variables = new_requested_variables
+
 
 def convert_motu_api_request_to_structure(
     motu_api_request: str,
@@ -247,7 +270,7 @@ def convert_motu_api_request_to_structure(
         {
             conversion_dict[key]: value
             for key, value in motu_api_request_dict.items()
-            if key in conversion_dict.keys()
+            if key in conversion_dict
         }
     )
     return subset_request
@@ -305,9 +328,8 @@ def create_subset_request(
             "Data will come from the staging environment."
         )
 
-    if overwrite:
-        if skip_existing:
-            raise MutuallyExclusiveArguments("overwrite", "skip_existing")
+    if overwrite and skip_existing:
+        raise MutuallyExclusiveArguments("overwrite", "skip_existing")
     if request_file:
         with open(request_file) as json_file:
             json_content = json.load(json_file)

@@ -401,3 +401,23 @@ class TestSparseSubset:
             and line.strip() != ""
         )
         assert stdout == snapshot(name=str(nc_file.name) + ".txt")
+
+    def test_can_subset_on_variable_standard_name(self, tmp_path):
+        base_request = {
+            "dataset_id": "cmems_obs-ins_arc_phybgcwav_mynrt_na_irr",
+            "start_datetime": "2026-02-12",
+            "end_datetime": "2026-02-12",
+            "minimum_depth": 2,
+            "variables": ["sea_water_practical_salinity"],
+            "dataset_part": "history",
+        }
+        subset(
+            **base_request,
+            output_directory=tmp_path,
+        )
+        assert True
+
+        df = read_dataframe(**base_request)
+
+        assert not df.empty
+        assert "PSAL" in df["variable"].values
