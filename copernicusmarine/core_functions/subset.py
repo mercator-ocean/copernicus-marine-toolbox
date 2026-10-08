@@ -82,6 +82,7 @@ def retrieve_metadata_and_check_request(
         coordinates_selection_method=subset_request.coordinates_selection_method,
         axis_coordinate_id_mapping=retrieval_service.axis_coordinate_id_mapping,
     )
+    subset_request.update_and_check_variables_name(retrieval_service.service)
     return retrieval_service
 
 

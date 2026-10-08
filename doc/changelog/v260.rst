@@ -1,0 +1,12 @@
+Release 2.6.0
+=============
+
+This release introduces new features and improvements.
+
+Subset
+------
+
+New Features
+^^^^^^^^^^^^
+
+* Added a missing feature for sparse datasets. Sparse datasets can now be subsetted by specifying the standard names of the variables.

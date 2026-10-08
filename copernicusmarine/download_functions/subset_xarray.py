@@ -17,7 +17,6 @@ from copernicusmarine.catalogue_parser.models import (
 from copernicusmarine.core_functions.exceptions import (
     CoordinatesOutOfDatasetBounds,
     ServiceNotSupported,
-    VariableDoesNotExistInTheDataset,
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
 from copernicusmarine.core_functions.request_structure import SubsetRequest
@@ -75,11 +74,7 @@ def _choose_extreme_point(
         coord_label != "time"
         and actual_extreme > dataset[coord_label].min()
         and method == "nearest"
-    ):
-        external_point = dataset.sel(
-            {coord_label: actual_extreme}, method=method
-        )[coord_label].values
-    elif (
+    ) or (
         coord_label != "time"
         and actual_extreme > dataset[coord_label].min()
         and actual_extreme < dataset[coord_label].max()
@@ -131,34 +126,31 @@ def _dataset_custom_sel(
     coordinates_selection_method: CoordinatesSelectionMethod,
 ) -> xarray.Dataset:
     if coordinate_label in dataset.sizes:
-        if isinstance(coord_selection, slice):
-            if (
-                len(dataset[coordinate_label].values) > 1
-                and (
-                    dataset[coordinate_label].values[0]
-                    > dataset[coordinate_label].values[1]
-                )
-                and coord_selection.start < coord_selection.stop
-            ):
-                coord_selection = slice(
-                    coord_selection.stop, coord_selection.start
-                )
-        if coordinates_selection_method == "outside":
-            if (
-                isinstance(coord_selection, slice)
-                and coord_selection.stop is not None
-            ):
-                coord_selection = _enlarge_selection(
-                    dataset, coordinate_label, coord_selection
-                )
-        if coordinates_selection_method == "nearest":
-            if (
-                isinstance(coord_selection, slice)
-                and coord_selection.stop is not None
-            ):
-                coord_selection = _nearest_selection(
-                    dataset, coordinate_label, coord_selection
-                )
+        if isinstance(coord_selection, slice) and (
+            len(dataset[coordinate_label].values) > 1
+            and (
+                dataset[coordinate_label].values[0]
+                > dataset[coordinate_label].values[1]
+            )
+            and coord_selection.start < coord_selection.stop
+        ):
+            coord_selection = slice(
+                coord_selection.stop, coord_selection.start
+            )
+        if coordinates_selection_method == "outside" and (
+            isinstance(coord_selection, slice)
+            and coord_selection.stop is not None
+        ):
+            coord_selection = _enlarge_selection(
+                dataset, coordinate_label, coord_selection
+            )
+        if coordinates_selection_method == "nearest" and (
+            isinstance(coord_selection, slice)
+            and coord_selection.stop is not None
+        ):
+            coord_selection = _nearest_selection(
+                dataset, coordinate_label, coord_selection
+            )
         if isinstance(coord_selection, slice):
             tmp_dataset = dataset.sel(
                 {coordinate_label: coord_selection}, method=None
@@ -432,18 +424,6 @@ def _depth_subset(
     return dataset
 
 
-def _get_variable_name_from_standard_name(
-    dataset: xarray.Dataset, standard_name: str
-) -> str | None:
-    for variable_name in dataset.variables:
-        if (
-            hasattr(dataset[variable_name], "standard_name")
-            and dataset[variable_name].standard_name == standard_name
-        ):
-            return str(variable_name)
-    return None
-
-
 def _cast_valid_minmax_to_variable_dtype(
     dataset: xarray.Dataset, variable: str
 ) -> xarray.Dataset:
@@ -485,25 +465,11 @@ def _variables_subset(
     dataset: xarray.Dataset, variables: list[str] | None
 ) -> xarray.Dataset:
     dataset_variables_filter = []
-
-    if variables:
-        for variable in variables:
-            if variable in dataset.variables:
-                dataset_variables_filter.append(variable)
-            else:
-                variable_name_from_standard_name = (
-                    _get_variable_name_from_standard_name(dataset, variable)
-                )
-                if variable_name_from_standard_name is not None:
-                    dataset_variables_filter.append(
-                        variable_name_from_standard_name
-                    )
-                else:
-                    raise VariableDoesNotExistInTheDataset(variable)
+    if not variables:
+        dataset_variables_filter = [str(v) for v in dataset]
     else:
-        dataset_variables_filter = [str(v) for v in dataset.keys()]
-
-    dataset = dataset[numpy.array(dataset_variables_filter)]
+        dataset_variables_filter = [str(v) for v in variables]
+        dataset = dataset[numpy.array(dataset_variables_filter)]
     return _update_variables_attributes(dataset, dataset_variables_filter)
 
 

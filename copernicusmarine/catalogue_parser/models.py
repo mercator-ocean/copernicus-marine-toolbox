@@ -1,5 +1,6 @@
 import logging
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, Type, TypeVar
@@ -105,8 +106,6 @@ class ServiceNotHandled(Exception):
     the result of the :func:`~copernicusmarine.describe` command
     for this specific dataset, version and part.
     """
-
-    pass
 
 
 # service formats
@@ -412,6 +411,26 @@ class CopernicusMarineService(BaseModel):
                 ] = coordinate.coordinate_id
 
         return axis_coordinate_id_mapping
+
+    def get_variables_names_mapping(self) -> dict[str, list[str]]:
+        """
+        Returns a mapping between the variable standard_name and short_name:
+
+        Example:
+            {
+                "sea_surface_temperature": ["sst"],
+                "sea_surface_salinity": ["sss"],
+                "sea_surface_wave_significant_height": ["VAVH", "VAVH_UNFILTERED"],
+            }
+        """
+        mapping: dict[str, list[str]] = defaultdict(list)
+        for variable in self.variables:
+            if variable.standard_name:
+                mapping[variable.standard_name].append(variable.short_name)
+        return dict(mapping)
+
+    def get_variables_short_names(self) -> set[str]:
+        return {variable.short_name for variable in self.variables}
 
 
 VersionPart = TypeVar("VersionPart", bound="CopernicusMarinePart")
