@@ -214,7 +214,7 @@ class SubsetRequest(BaseModel):
     ) -> None:
         if not self.variables:
             return
-        new_requested_variables: set[str] = set()
+        new_requested_variables: list[str] = []
         standard_short_name_mapping = service.get_variables_names_mapping()
         short_names = service.get_variables_short_names()
         for requested_variable_name in self.variables:
@@ -223,12 +223,12 @@ class SubsetRequest(BaseModel):
                 and requested_variable_name not in standard_short_name_mapping
             ):
                 raise VariableDoesNotExistInTheDataset(requested_variable_name)
-            new_requested_variables.update(
+            new_requested_variables.extend(
                 standard_short_name_mapping.get(
-                    requested_variable_name, {requested_variable_name}
+                    requested_variable_name, [requested_variable_name]
                 )
             )
-        self.variables = list(new_requested_variables)
+        self.variables = list(dict.fromkeys(new_requested_variables))
 
 
 def convert_motu_api_request_to_structure(
