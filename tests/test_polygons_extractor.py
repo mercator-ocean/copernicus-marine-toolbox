@@ -1,12 +1,14 @@
 import importlib.util
 import json
 import pathlib
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 import xarray
 
+from copernicusmarine import open_dataset, subset
 from copernicusmarine.core_functions.exceptions import DependenciesNotAvailable
 from copernicusmarine.core_functions.polygons_extractor import (
     _check_polygons_dependencies,
@@ -15,6 +17,7 @@ from copernicusmarine.core_functions.polygons_extractor import (
     get_bounding_box_from_polygons,
     load_polygons_from_user_input,
 )
+from tests.test_utils import get_file_size
 
 SQUARE_POLYGON_GEOJSON = {
     "type": "FeatureCollection",
@@ -308,3 +311,33 @@ class TestExtractPolygonsFromDataframe:
         assert result["value"].tolist() == [100.0, 200.0]
         assert result["latitude"].tolist() == [1.0, 1.0]
         assert result["longitude"].tolist() == [1.0, 0.5]
+
+    def test_subset_with_polygons(self, tmp_path):
+        french_coast = "tests/resources/french_coast.geojson"
+        output_filename = "subset_with_polygon.nc"
+        dataset_id = "cmems_mod_glo_phy-all_my_0.25deg_P1D-m"
+        request = {
+            "variables": ["mlotst_cglo"],
+            "start_datetime": "2023-01-01",
+            "end_datetime": "2023-01-01",
+            "polygons_file": french_coast,
+        }
+        subset(
+            dataset_id=dataset_id,
+            **request,
+            output_directory=tmp_path,
+            output_filename=output_filename,
+        )
+
+        # The file without polygon filtering is about 4MB
+        assert get_file_size(Path(tmp_path, output_filename)) < 100 * 1024
+
+        ds_from_subset = xarray.open_dataset(Path(tmp_path, output_filename))
+
+        dataset = open_dataset(dataset_id=dataset_id, **request)
+        assert isinstance(dataset, xarray.Dataset)
+        assert "mlotst_cglo" in dataset.data_vars
+        assert dataset.mlotst_cglo.values == ds_from_subset.mlotst_cglo.values
+
+        ds_from_subset.close()
+        dataset.close()

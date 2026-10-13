@@ -53,6 +53,7 @@ def open_dataset(
     raise_if_updating: bool = False,
     chunk_size_limit: int = -1,
     staging: bool = False,
+    polygons_file: pathlib.Path | str | None = None,
 ) -> xarray.Dataset:
     """
     Load an xarray dataset using 'lazy-loading' mode from a Copernicus Marine data source.
@@ -111,6 +112,11 @@ def open_dataset(
         If set, raises a :class:`copernicusmarine.DatasetUpdating` error if the dataset is being updated and the subset interval requested overpasses the updating start date of the dataset. Otherwise, a simple warning is displayed.
     chunk_size_limit : int, default -1
         Limit the size of the chunks in the dask array. Default is set to -1 which behaves similarly to 'chunks=auto' from ``xarray``. Positive integer values and '-1' are accepted. This is an experimental feature.
+    polygons_file : pathlib.Path | str, optional
+        Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
+        If specified, the polygons replace other geographical selection options. Depth and time selections still apply.
+        Not supported for originalGrid datasets. Requires ``pip install copernicusmarine[extra]``.
+        See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
 
     Returns
     -------
@@ -152,6 +158,7 @@ def open_dataset(
         staging=staging,
         chunk_size_limit=chunk_size_limit,
         raise_if_updating=raise_if_updating,
+        polygons_file=(pathlib.Path(polygons_file) if polygons_file else None),
     )
     return open_dataset_function(
         subset_request=subset_request,
