@@ -74,8 +74,10 @@ class TestDocumentation:
                 continue
             if name_of_variable == "platform_ids":
                 assert parameter_desc == [
-                    "List of platform IDs to extract. "
-                    "Only available for platform chunked datasets."
+                    (
+                        "List of platform IDs to extract. "
+                        "Only available for platform chunked datasets."
+                    )
                 ]
                 continue
             if name_of_variable in LIST_OF_EXCEPTIONS:
@@ -158,8 +160,10 @@ class TestDocumentation:
                 continue
             if name_of_variable == "platform_ids":
                 assert parameter_desc == [
-                    "List of platform IDs to extract. "
-                    "Only available for platform chunked datasets."
+                    (
+                        "List of platform IDs to extract. "
+                        "Only available for platform chunked datasets."
+                    )
                 ]
                 continue
             if name_of_variable == "dataset_id":

@@ -117,8 +117,8 @@ def read_dataframe(
         List of platform IDs to extract. Only available for platform chunked datasets.
     polygons_file : pathlib.Path | str, optional
         Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
-        If specified, the polygons replace other geographical selection options. Depth and time selections still apply.
-        Not supported for originalGrid datasets. Requires ``pip install copernicusmarine[extra]``.
+        If specified, the subset will be based on the polygons and all other spatial selection options will be ignored.
+        You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.
         See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
 
     Returns
