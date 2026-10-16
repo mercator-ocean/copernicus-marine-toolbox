@@ -223,6 +223,7 @@ The same request using the Python interface:
       polygons_file="my_polygons.geojson",
   )
 
+This option is also available for the ``open_dataset`` and ``read_dataframe`` functions in the Python interface.
 
 .. _file-format:
 
