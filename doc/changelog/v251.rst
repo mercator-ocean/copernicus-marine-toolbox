@@ -1,0 +1,20 @@
+Release 2.5.1
+=============
+
+Patch that brings that polygons file selection for ``read_dataframe`` and ``open_dataset`` functions.
+
+Subset
+-------
+
+Fixes
+^^^^^
+
+- Added support for polygons file selection in ``read_dataframe`` and ``open_dataset`` functions. It is now consistent with the subset function.
+
+General
+-------
+
+Fixes
+^^^^^
+
+- Update the end-of-life policy to reflect the release of version 2.5.0 and 2.5.1.

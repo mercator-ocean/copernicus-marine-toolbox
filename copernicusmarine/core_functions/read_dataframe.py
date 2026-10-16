@@ -5,6 +5,9 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceNames,
 )
 from copernicusmarine.core_functions.exceptions import ServiceNotSupported
+from copernicusmarine.core_functions.polygons_extractor import (
+    extract_polygons_from_dataset,
+)
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.services_utils import RetrievalService
 from copernicusmarine.core_functions.subset import (
@@ -54,4 +57,8 @@ def read_dataframe_function(
             is_original_grid=retrieval_service.is_original_grid,
             dataset_valid_start_date=retrieval_service.dataset_valid_start_date,
         )
+        if subset_request.polygons_file:
+            dataset = extract_polygons_from_dataset(
+                dataset=dataset, polygons=subset_request.polygons_file
+            )
         return dataset.to_dataframe()

@@ -43,7 +43,7 @@ def read_dataframe(
     maximum_y: float | None = None,
     minimum_depth: float | None = None,
     maximum_depth: float | None = None,
-    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,  # noqa
+    vertical_axis: VerticalAxis = DEFAULT_VERTICAL_AXIS,
     start_datetime: datetime | pd.Timestamp | str | None = None,
     end_datetime: datetime | pd.Timestamp | str | None = None,
     coordinates_selection_method: CoordinatesSelectionMethod = (
@@ -55,6 +55,7 @@ def read_dataframe(
     disable_progress_bar: bool = False,
     platform_ids: list[str] | None = None,
     staging: bool = False,
+    polygons_file: pathlib.Path | str | None = None,
 ) -> pd.DataFrame:
     """
     Immediately loads a Pandas DataFrame into memory from a specified dataset.
@@ -114,6 +115,11 @@ def read_dataframe(
         Flag to hide progress bar.
     platform_ids : list[str], optional
         List of platform IDs to extract. Only available for platform chunked datasets.
+    polygons_file : pathlib.Path | str, optional
+        Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
+        If specified, the subset will be based on the polygons and all other spatial selection options will be ignored.
+        You need to install extra dependencies to use this option: ``pip install copernicusmarine[extra]``.
+        See :ref:`subset-polygons <subset-polygons>` in the documentation for more information.
 
     Returns
     -------
@@ -155,6 +161,7 @@ def read_dataframe(
         staging=staging,
         raise_if_updating=raise_if_updating,
         platform_ids=platform_ids,
+        polygons_file=(pathlib.Path(polygons_file) if polygons_file else None),
     )
 
     return read_dataframe_function(
