@@ -15,6 +15,7 @@ from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
     COPERNICUSMARINE_HTTPS_RETRIES,
     COPERNICUSMARINE_HTTPS_TIMEOUT,
+    COPERNICUSMARINE_MAX_POOL_CONNECTIONS,
     COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
     COPERNICUSMARINE_TRUST_ENV,
     COPERNICUSMARINE_USE_THREADS,
@@ -42,6 +43,10 @@ try:
     HTTPS_RETRIES = int(COPERNICUSMARINE_HTTPS_RETRIES)
 except ValueError:
     HTTPS_RETRIES = 5
+try:
+    MAX_POOL_CONNECTIONS = int(COPERNICUSMARINE_MAX_POOL_CONNECTIONS)
+except ValueError:
+    MAX_POOL_CONNECTIONS = 10
 
 
 def get_ssl_context() -> ssl.SSLContext | None:
@@ -63,6 +68,7 @@ def get_configured_boto3_session(
     config_boto3 = botocore.config.Config(
         signature_version=botocore.UNSIGNED,
         retries={"max_attempts": 10, "mode": "adaptive"},
+        max_pool_connections=MAX_POOL_CONNECTIONS,
     )
     s3_session = boto3.Session()
     s3_client = s3_session.client(
@@ -157,6 +163,7 @@ class ConfiguredRequestsSession(requests.Session):
             self.mount(
                 "https://",
                 HTTPAdapter(
+                    pool_maxsize=MAX_POOL_CONNECTIONS,
                     max_retries=Retry(
                         total=retries,
                         backoff_factor=1,
@@ -169,7 +176,7 @@ class ConfiguredRequestsSession(requests.Session):
                             504,
                         ],
                         allowed_methods=None,
-                    )
+                    ),
                 ),
             )
         self.timeout = timeout
