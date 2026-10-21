@@ -1,5 +1,4 @@
 import logging
-import os
 import ssl
 from typing import Any, Literal
 
@@ -16,6 +15,7 @@ from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
     COPERNICUSMARINE_HTTPS_RETRIES,
     COPERNICUSMARINE_HTTPS_TIMEOUT,
+    COPERNICUSMARINE_MAX_POOL_CONNECTIONS,
     COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
     COPERNICUSMARINE_TRUST_ENV,
     COPERNICUSMARINE_USE_THREADS,
@@ -43,9 +43,10 @@ try:
     HTTPS_RETRIES = int(COPERNICUSMARINE_HTTPS_RETRIES)
 except ValueError:
     HTTPS_RETRIES = 5
-
-
-COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS = 10
+try:
+    MAX_POOL_CONNECTIONS = int(COPERNICUSMARINE_MAX_POOL_CONNECTIONS)
+except ValueError:
+    MAX_POOL_CONNECTIONS = 10
 
 
 def get_ssl_context() -> ssl.SSLContext | None:
@@ -58,32 +59,6 @@ def get_ssl_context() -> ssl.SSLContext | None:
     return ssl.create_default_context(cafile=certifi.where())
 
 
-def get_max_pool_connections() -> int:
-    if (
-        env_default := os.environ.get(
-            "COPERNICUSMARINE_MAX_POOL_CONNECTIONS", None
-        )
-    ) and env_default.strip():
-        try:
-            value = int(env_default)
-            if value > 0:
-                return value
-            else:
-                logger.warning(
-                    f"Max pool connections must be greater than 0, but '{env_default}' was provided. "
-                    f"Using default value {COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS}."
-                )
-                return COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS
-        except ValueError:
-            logger.warning(
-                f"Max pool connections must be an integer, but '{env_default}' was provided. "
-                f"Using default value {COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS}."
-            )
-            return COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS
-    else:
-        return COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS
-
-
 def get_configured_boto3_session(
     endpoint_url: str,
     operation_type: list[Literal["ListObjectsV2", "HeadObject", "GetObject"]],
@@ -93,7 +68,7 @@ def get_configured_boto3_session(
     config_boto3 = botocore.config.Config(
         signature_version=botocore.UNSIGNED,
         retries={"max_attempts": 10, "mode": "adaptive"},
-        max_pool_connections=get_max_pool_connections(),
+        max_pool_connections=MAX_POOL_CONNECTIONS,
     )
     s3_session = boto3.Session()
     s3_client = s3_session.client(
@@ -188,6 +163,7 @@ class ConfiguredRequestsSession(requests.Session):
             self.mount(
                 "https://",
                 HTTPAdapter(
+                    pool_maxsize=MAX_POOL_CONNECTIONS,
                     max_retries=Retry(
                         total=retries,
                         backoff_factor=1,
@@ -200,7 +176,7 @@ class ConfiguredRequestsSession(requests.Session):
                             504,
                         ],
                         allowed_methods=None,
-                    )
+                    ),
                 ),
             )
         self.timeout = timeout
