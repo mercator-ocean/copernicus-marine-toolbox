@@ -52,8 +52,11 @@ run-cov-tests:
 run-quick-tests:
 	poetry run pytest tests -m "not credentials" -k "fast_with_timeout" --dist=loadgroup --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
-run-login-tests:
+run-login-tests-unix:
 	poetry run pytest tests -m "credentials" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
+
+run-login-tests-windows:
+	poetry run pytest tests -m "credentials" -k "not prompt" -n auto --verbose -vv --durations=0 --log-cli-level=info --basetemp="tests/downloads" --junitxml=report.xml --log-format "%(asctime)s %(levelname)s %(message)s" --log-date-format "%Y-%m-%d %H:%M:%S"
 
 
 release-bump-patch:

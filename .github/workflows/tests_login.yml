@@ -1,20 +1,4 @@
 name: Run login tests
-
-# These tests exercise the authentication against the Copernicus Marine
-# Authentication System and therefore require valid credentials (secrets).
-# Secrets are not exposed to pull requests coming from forks, so there is no
-# point running these tests there (they would fail for lack of credentials).
-#
-# GitHub Actions does not allow the `secrets` context in `if:` conditions, so
-# we use a lightweight gate job that maps the secret into an env var, turns
-# "is it set?" into a job output, and the actual test job depends on it. This
-# way the tests are automatically skipped whenever the secrets are unavailable
-# (forks, or a repository where they are simply not configured), without ever
-# hard-coding which repository is "the main one".
-#
-# The rest of the test suite runs without secrets (see tests.yml and
-# tests_on_oss.yml) and therefore works on forks.
-
 on:
   pull_request:
     branches:
@@ -48,8 +32,15 @@ jobs:
   login-tests:
     needs: check-secrets
     if: needs.check-secrets.outputs.has-credentials == 'true'
-    runs-on: cmt-runners
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-latest, cmt-runners]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     env:
       ACTIONS_STEP_DEBUG: true
 
@@ -62,26 +53,34 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install and configure Poetry
-        run: |
-          python3.13 -m pip install poetry
-          python3.13 -m poetry config virtualenvs.in-project true
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
           path: ~/.cache
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential
-          python3.13 -m poetry install --no-interaction --no-root
-      - name: Install ncdump dependency
-        run: sudo apt-get install -y netcdf-bin
+          sudo apt-get install -y build-essential netcdf-bin
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root --with dev
       - name: Install library
-        run: python3.13 -m poetry install --no-interaction --with dev --all-extras
+        run: poetry install --no-interaction --with dev --all-extras
       - name: Run login tests
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
-        run: python3.13 -m poetry run make run-login-tests
+          PYTHONIOENCODING: utf-8
+        run: |
+          source $VENV
+          if [[ "${{ contains(matrix.os, 'windows') }}" == "true" ]]; then
+            make run-login-tests-windows
+          else
+            make run-login-tests-unix
+          fi
