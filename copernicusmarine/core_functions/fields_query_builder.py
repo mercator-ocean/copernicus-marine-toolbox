@@ -86,11 +86,7 @@ def build_query(
             result = build_query(
                 fields_to_include_or_exclude,
                 base_model,
-                (
-                    query[field_name]["__all__"]
-                    if in_an_iterable
-                    else query[field_name]
-                ),
+                (query[field_name]["__all__"] if in_an_iterable else query[field_name]),
             )
             if not result:
                 del query[field_name]
@@ -105,22 +101,16 @@ def _get_base_models_in_type(
     if check_type_is_base_model(type_to_check):
         return {type_to_check: "__all__" if in_an_iterable else None}
     elif get_origin(type_to_check) is list:
-        result = _get_base_models_in_type(
-            get_args(type_to_check)[0], in_an_iterable=True
-        )
+        result = _get_base_models_in_type(get_args(type_to_check)[0], in_an_iterable=True)
         if result:
             models.update(result)
     elif get_origin(type_to_check) is dict:
-        result = _get_base_models_in_type(
-            get_args(type_to_check)[1], in_an_iterable=True
-        )
+        result = _get_base_models_in_type(get_args(type_to_check)[1], in_an_iterable=True)
         if result:
             models.update(result)
     elif get_origin(type_to_check) is UnionType:
         for union_type in get_args(type_to_check):
-            result = _get_base_models_in_type(
-                union_type, in_an_iterable=in_an_iterable
-            )
+            result = _get_base_models_in_type(union_type, in_an_iterable=in_an_iterable)
             if result:
                 models.update(result)
     return models

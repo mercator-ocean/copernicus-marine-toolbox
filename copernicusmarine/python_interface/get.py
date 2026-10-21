@@ -4,17 +4,11 @@ from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     deprecated_python_option,
 )
-from copernicusmarine.core_functions.exceptions import (
-    MutuallyExclusiveArguments,
-)
+from copernicusmarine.core_functions.exceptions import MutuallyExclusiveArguments
 from copernicusmarine.core_functions.get import get_function
 from copernicusmarine.core_functions.models import ResponseGet
-from copernicusmarine.core_functions.request_structure import (
-    create_get_request,
-)
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+from copernicusmarine.core_functions.request_structure import create_get_request
+from copernicusmarine.python_interface.exception_handler import log_exception_and_exit
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
@@ -121,12 +115,8 @@ def get(
         if sync_delete:
             raise MutuallyExclusiveArguments("sync_delete", "no_directories")
 
-    output_directory = (
-        pathlib.Path(output_directory) if output_directory else None
-    )
-    credentials_file = (
-        pathlib.Path(credentials_file) if credentials_file else None
-    )
+    output_directory = pathlib.Path(output_directory) if output_directory else None
+    credentials_file = pathlib.Path(credentials_file) if credentials_file else None
     file_list = pathlib.Path(file_list) if file_list else None
     request_file = pathlib.Path(request_file) if request_file else None
     get_request = create_get_request(

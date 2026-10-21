@@ -13,15 +13,9 @@ from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     VerticalAxis,
 )
-from copernicusmarine.core_functions.read_dataframe import (
-    read_dataframe_function,
-)
-from copernicusmarine.core_functions.request_structure import (
-    create_subset_request,
-)
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+from copernicusmarine.core_functions.read_dataframe import read_dataframe_function
+from copernicusmarine.core_functions.request_structure import create_subset_request
+from copernicusmarine.python_interface.exception_handler import log_exception_and_exit
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
@@ -154,9 +148,7 @@ def read_dataframe(
         maximum_y=maximum_y,
         coordinates_selection_method=coordinates_selection_method,
         service=service,
-        credentials_file=(
-            pathlib.Path(credentials_file) if credentials_file else None
-        ),
+        credentials_file=(pathlib.Path(credentials_file) if credentials_file else None),
         disable_progress_bar=disable_progress_bar,
         staging=staging,
         raise_if_updating=raise_if_updating,

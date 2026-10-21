@@ -23,9 +23,7 @@ def _build_test_dataset(shape: tuple[int, int]) -> xarray.Dataset:
     variable.encoding["scale_factor"] = 0.001
     variable.encoding["add_offset"] = 10.0
     variable.encoding["chunks"] = (25, 25)
-    variable.encoding["compressors"] = (
-        _FakeCompressor("lz4", clevel=5, shuffle="SHUFFLE"),
-    )
+    variable.encoding["compressors"] = (_FakeCompressor("lz4", clevel=5, shuffle="SHUFFLE"),)
     return xarray.Dataset({"thetao": variable})
 
 
@@ -107,9 +105,7 @@ def test_zarr_compression_ratio_uses_level_scale_and_offset_and_shuffle() -> Non
 
     stronger = _estimate_zarr_compression_ratio(variable, chunk_count=1)
 
-    variable.encoding["compressors"] = (
-        _FakeCompressor("lz4", clevel=0, shuffle="NOSHUFFLE"),
-    )
+    variable.encoding["compressors"] = (_FakeCompressor("lz4", clevel=0, shuffle="NOSHUFFLE"),)
     variable.encoding.pop("scale_factor", None)
     variable.encoding.pop("add_offset", None)
     weaker = _estimate_zarr_compression_ratio(variable, chunk_count=1)
@@ -130,16 +126,10 @@ def test_zarr_compression_ratio_is_clamped_to_bounds() -> None:
     dataset = _build_test_dataset((100, 100))
     variable = dataset["thetao"]
 
-    variable.encoding["compressors"] = (
-        _FakeCompressor("zstd", clevel=9, shuffle="SHUFFLE"),
-    )
-    very_small = _estimate_zarr_compression_ratio(
-        variable, chunk_count=10**9
-    )
+    variable.encoding["compressors"] = (_FakeCompressor("zstd", clevel=9, shuffle="SHUFFLE"),)
+    very_small = _estimate_zarr_compression_ratio(variable, chunk_count=10**9)
 
-    variable.encoding["compressors"] = (
-        _FakeCompressor("unknown", clevel=0, shuffle="NOSHUFFLE"),
-    )
+    variable.encoding["compressors"] = (_FakeCompressor("unknown", clevel=0, shuffle="NOSHUFFLE"),)
     variable.encoding.pop("scale_factor", None)
     variable.encoding.pop("add_offset", None)
     very_large = _estimate_zarr_compression_ratio(variable, chunk_count=1)

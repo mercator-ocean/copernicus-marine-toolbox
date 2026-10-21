@@ -81,9 +81,7 @@ class FormatNotSupported(Exception):
     Please try other commands or use datasets with the supported format.
     """  # noqa
 
-    def __init__(
-        self, format_type: str, command_type: str, recommended_command: str
-    ):
+    def __init__(self, format_type: str, command_type: str, recommended_command: str):
         super().__init__(
             f"Lazy loading of format type '{format_type}' not "
             f"supported with command '{command_type}'. "
@@ -130,9 +128,7 @@ class MutuallyExclusiveArguments(Exception):
     """
 
     def __init__(self, arg1, arg2):
-        super().__init__(
-            f"Arguments '{arg1}' and '{arg2}' are mutually exclusive."
-        )
+        super().__init__(f"Arguments '{arg1}' and '{arg2}' are mutually exclusive.")
 
 
 class LonLatSubsetNotAvailableInOriginalGridDatasets(Exception):
@@ -197,8 +193,7 @@ class NotEnoughPlatformMetadata(Exception):
 
     def __init__(self):
         super().__init__(
-            "Not enough platform metadata. "
-            "Please make sure the platform metadata is available."
+            "Not enough platform metadata. " "Please make sure the platform metadata is available."
         )
 
 

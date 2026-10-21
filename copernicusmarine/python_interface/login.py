@@ -1,17 +1,13 @@
 import pathlib
 
-from copernicusmarine.core_functions.credentials_utils import (
-    DEFAULT_CLIENT_BASE_DIRECTORY,
-)
+from copernicusmarine.core_functions.credentials_utils import DEFAULT_CLIENT_BASE_DIRECTORY
 from copernicusmarine.core_functions.login import login_function
 
 
 def login(
     username: str | None = None,
     password: str | None = None,
-    configuration_file_directory: (
-        pathlib.Path | str
-    ) = DEFAULT_CLIENT_BASE_DIRECTORY,
+    configuration_file_directory: pathlib.Path | str = DEFAULT_CLIENT_BASE_DIRECTORY,
     force_overwrite: bool = False,
     check_credentials_valid: bool = False,
     credentials_file: pathlib.Path | None = None,
@@ -44,9 +40,7 @@ def login(
         True value if the login was successfully completed, False otherwise.
     """  # noqa
     if isinstance(configuration_file_directory, str):
-        configuration_file_directory = pathlib.Path(
-            configuration_file_directory
-        )
+        configuration_file_directory = pathlib.Path(configuration_file_directory)
     return login_function(
         username=username,
         password=password,

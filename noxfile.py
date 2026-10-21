@@ -72,6 +72,4 @@ def tests(
 def format_to_correct_pip_command(package_name: str, version: str):
     if ">" in version or "<" in version:
         return f"{package_name}{version}"
-    return (
-        f"{package_name}=={version}" if version != "latest" else package_name
-    )
+    return f"{package_name}=={version}" if version != "latest" else package_name

@@ -5,9 +5,7 @@ from click import Context, Option, UsageError
 from click.core import ParameterSource
 
 from copernicusmarine.core_functions import documentation_utils
-from copernicusmarine.core_functions.click_custom_class import (
-    CustomDeprecatedClickOption,
-)
+from copernicusmarine.core_functions.click_custom_class import CustomDeprecatedClickOption
 
 
 class MutuallyExclusiveOption(Option):
@@ -27,14 +25,8 @@ class MutuallyExclusiveOption(Option):
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
-        excluded_option_to_snake_case = {
-            name.replace("-", "_") for name in self.mutually_exclusive
-        }
-        if (
-            excluded_option_to_snake_case.intersection(opts)
-            and self.name
-            and self.name in opts
-        ):
+        excluded_option_to_snake_case = {name.replace("-", "_") for name in self.mutually_exclusive}
+        if excluded_option_to_snake_case.intersection(opts) and self.name and self.name in opts:
             raise UsageError(
                 f"Illegal usage: arguments '{self.name.replace('_', '-')}' and "
                 f"'{', '.join(self.mutually_exclusive)}'"
@@ -60,8 +52,7 @@ def assert_cli_args_are_not_set_except_create_template(
 ) -> None:
     if context.meta.get("command") == "split-on":
         raise NotImplementedError(
-            "Request files cannot be used with the split-on "
-            "command options."
+            "Request files cannot be used with the split-on " "command options."
         )
     for key in context.params:
         if key not in ["create_template", "log_level"]:

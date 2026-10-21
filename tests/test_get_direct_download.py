@@ -14,17 +14,14 @@ DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_EXTENDED = FileToCheck(
 ).get_path()
 
 DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_WITH_ONE_WRONG = FileToCheck(
-    "tests/resources/file_list_examples/"
-    "direct_download_file_list_with_one_wrong.txt"
+    "tests/resources/file_list_examples/" "direct_download_file_list_with_one_wrong.txt"
 ).get_path()
 DIRECT_DOWNLOAD_FILE_LIST_EXAMPLE_DIFERENT_PATH_TYPES = FileToCheck(
-    "tests/resources/file_list_examples/"
-    "direct_download_file_list_different_path_types.txt"
+    "tests/resources/file_list_examples/" "direct_download_file_list_different_path_types.txt"
 ).get_path()
 
 DIRECT_DOWNLOAD_FAILS_BUT_LISTING_SUCCEEDS = FileToCheck(
-    "tests/resources/file_list_examples/"
-    "direct_download_fails_listing_succeeds.txt"
+    "tests/resources/file_list_examples/" "direct_download_fails_listing_succeeds.txt"
 ).get_path()
 
 
@@ -55,18 +52,10 @@ class TestGetDirectDownload:
             "cmems_obs-ins_glo_phybgcwav_mynrt_na_irr_202311/"
             "history/BO/AR_PR_BO_58JM.nc"
         ).get_path()
-        assert [
-            "nice"
-            for file_get in response_get["files"]
-            if to_check in file_get["file_path"]
-        ]
+        assert ["nice" for file_get in response_get["files"] if to_check in file_get["file_path"]]
         assert "Skipping" not in self.output.stderr
-        self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_58JM.nc"
-        )
-        self._assert_insitu_file_exists_locally(
-            tmp_path, "history/BO/AR_PR_BO_58US.nc"
-        )
+        self._assert_insitu_file_exists_locally(tmp_path, "history/BO/AR_PR_BO_58JM.nc")
+        self._assert_insitu_file_exists_locally(tmp_path, "history/BO/AR_PR_BO_58US.nc")
         assert self.output.returncode == 0
 
     def if_skip_option_skipped_with_same_list(self, tmp_path):
@@ -114,9 +103,7 @@ class TestGetDirectDownload:
             "history/BO/AR_PR_BO_LHUW.nc"
         ).get_path()
         assert [
-            "found"
-            for file_get in response_get["files"]
-            if file_to_check in file_get["file_path"]
+            "found" for file_get in response_get["files"] if file_to_check in file_get["file_path"]
         ]
 
         self._assert_insitu_file_exists_locally(
@@ -135,9 +122,7 @@ class TestGetDirectDownload:
         "copernicusmarine.download_functions.download_original_files._download_header",
         return_value=None,
     )
-    def test_get_direct_download_list_file_only_one_not_found(
-        self, mock_download_header, tmp_path
-    ):
+    def test_get_direct_download_list_file_only_one_not_found(self, mock_download_header, tmp_path):
         self.command = [
             "copernicusmarine",
             "get",
@@ -178,8 +163,7 @@ class TestGetDirectDownload:
         self.output = execute_in_terminal(self.command)
         if "WARNING" in self.output.stderr:
             assert (
-                "Using a pre-release or a non-official version of the client."
-                in self.output.stderr
+                "Using a pre-release or a non-official version of the client." in self.output.stderr
             )
         else:
             assert "WARNING" not in self.output.stderr
@@ -199,10 +183,7 @@ class TestGetDirectDownload:
         ]
         self.output = execute_in_terminal(self.command)
         assert "Skipping" in self.output.stderr
-        assert (
-            "No files found to download for direct download."
-            in self.output.stderr
-        )
+        assert "No files found to download for direct download." in self.output.stderr
         to_check = FileToCheck(
             "/IBI_MULTIYEAR_PHY_005_002/"
             "cmems_mod_ibi_phy-wcur_my_0.027deg_P1M-m_202511/"

@@ -15,12 +15,8 @@ from copernicusmarine.core_functions.models import (
     VerticalAxis,
 )
 from copernicusmarine.core_functions.open_dataset import open_dataset_function
-from copernicusmarine.core_functions.request_structure import (
-    create_subset_request,
-)
-from copernicusmarine.python_interface.exception_handler import (
-    log_exception_and_exit,
-)
+from copernicusmarine.core_functions.request_structure import create_subset_request
+from copernicusmarine.python_interface.exception_handler import log_exception_and_exit
 
 
 @deprecated_python_option(DEPRECATED_OPTIONS)
@@ -126,9 +122,7 @@ def open_dataset(
     if variables is not None:
         _check_type(variables, list, "variables")
 
-    credentials_file = (
-        pathlib.Path(credentials_file) if credentials_file else None
-    )
+    credentials_file = pathlib.Path(credentials_file) if credentials_file else None
 
     subset_request = create_subset_request(
         dataset_id=dataset_id,
@@ -152,9 +146,7 @@ def open_dataset(
         maximum_y=maximum_y,
         coordinates_selection_method=coordinates_selection_method,
         service=service,
-        credentials_file=(
-            pathlib.Path(credentials_file) if credentials_file else None
-        ),
+        credentials_file=(pathlib.Path(credentials_file) if credentials_file else None),
         staging=staging,
         chunk_size_limit=chunk_size_limit,
         raise_if_updating=raise_if_updating,

@@ -4,33 +4,19 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.core_functions.exceptions import (
-    FormatNotSupported,
-    ServiceNotSupported,
-)
-from copernicusmarine.core_functions.polygons_extractor import (
-    extract_polygons_from_dataset,
-)
+from copernicusmarine.core_functions.exceptions import FormatNotSupported, ServiceNotSupported
+from copernicusmarine.core_functions.polygons_extractor import extract_polygons_from_dataset
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.services_utils import RetrievalService
-from copernicusmarine.core_functions.subset import (
-    retrieve_metadata_and_check_request,
-)
-from copernicusmarine.download_functions.download_zarr import (
-    get_dataset_and_parameters,
-)
+from copernicusmarine.core_functions.subset import retrieve_metadata_and_check_request
+from copernicusmarine.download_functions.download_zarr import get_dataset_and_parameters
 
 
 def open_dataset_function(
     subset_request: SubsetRequest,
 ) -> xarray.Dataset:
-    retrieval_service: RetrievalService = retrieve_metadata_and_check_request(
-        subset_request
-    )
-    if (
-        retrieval_service.service.service_format
-        == CopernicusMarineServiceFormat.SQLITE
-    ):
+    retrieval_service: RetrievalService = retrieve_metadata_and_check_request(subset_request)
+    if retrieval_service.service.service_format == CopernicusMarineServiceFormat.SQLITE:
         raise FormatNotSupported(
             CopernicusMarineServiceFormat.SQLITE.value,
             "open_dataset",

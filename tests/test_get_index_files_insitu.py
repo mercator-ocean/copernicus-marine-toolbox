@@ -17,9 +17,7 @@ class TestGetIndexInsituFiles:
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
         response_get = loads(self.output.stdout)
-        s3_addresses_results = {
-            result["s3_url"] for result in response_get["files"]
-        }
+        s3_addresses_results = {result["s3_url"] for result in response_get["files"]}
         assert len(s3_addresses_results) == 4
         assert (
             "s3://mdl-native-01/native/INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"

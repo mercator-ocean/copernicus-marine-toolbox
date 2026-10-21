@@ -54,9 +54,7 @@ class TemporaryPathSaver:
 
         return False
 
-    def mkstemp_directory(
-        self, prefix: str, dir: pathlib.Path
-    ) -> pathlib.Path:
+    def mkstemp_directory(self, prefix: str, dir: pathlib.Path) -> pathlib.Path:
         """
         Retrying to avoid collision.
         """
@@ -70,6 +68,4 @@ class TemporaryPathSaver:
             except FileExistsError:
                 continue
         else:
-            raise FileExistsError(
-                "Could not create a unique temporary directory after 5 attempts"
-            )
+            raise FileExistsError("Could not create a unique temporary directory after 5 attempts")

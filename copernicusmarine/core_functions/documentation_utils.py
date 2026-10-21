@@ -9,8 +9,7 @@ SHARED: dict[str, str] = {
         "If not set, search for environment variable COPERNICUSMARINE_SERVICE_PASSWORD, then search for a credentials file, else ask for user input."  # noqa
     ),  # a little hardcoding in Python API
     "LOG_LEVEL_HELP": (
-        "Set the details printed to console by the command "
-        "(based on standard logging library)."
+        "Set the details printed to console by the command " "(based on standard logging library)."
     ),
     "CREATE_TEMPLATE_HELP": (
         "Option to create a file <argument>_template.json in your current directory "
@@ -35,8 +34,7 @@ SHARED: dict[str, str] = {
         "To return all fields, use 'all'."
     ),
     "OUTPUT_DIRECTORY_HELP": (
-        "The destination folder for the downloaded files. Default is the current "
-        "directory."
+        "The destination folder for the downloaded files. Default is the current " "directory."
     ),
     "REQUEST_FILE_HELP": (
         "Option to pass a file containing the arguments. For more information "
@@ -57,9 +55,7 @@ LOGIN: dict[str, str] = {
         "Create a configuration file with your Copernicus Marine credentials"
         " under the ``$HOME/.copernicusmarine`` directory."
     ),
-    "LOGIN_RESPONSE_HELP": (
-        "Exit code\n 0 if the login was successfully completed, 1 otherwise."
-    ),
+    "LOGIN_RESPONSE_HELP": ("Exit code\n 0 if the login was successfully completed, 1 otherwise."),
     "USERNAME_HELP": (
         "If not set, search for environment variable COPERNICUSMARINE_SERVICE_USERNAME, else ask for user input."  # noqa
     ),
@@ -69,9 +65,7 @@ LOGIN: dict[str, str] = {
     "CONFIGURATION_FILE_DIRECTORY_HELP": (
         "Path to the directory where the configuration file will be stored."
     ),
-    "FORCE_OVERWRITE_HELP": (
-        "Flag to skip confirmation before overwriting configuration file."
-    ),
+    "FORCE_OVERWRITE_HELP": ("Flag to skip confirmation before overwriting configuration file."),
     "CHECK_CREDENTIALS_VALID_HELP": (
         """Flag to check if the credentials are valid. No other action will be performed. The validity will be check in this order:
 1. Check if the credentials are valid with the provided username and password.
@@ -89,15 +83,13 @@ When any is found (valid or not valid), will return immediately."""  # noqa
 
 DESCRIBE: dict[str, str] = {
     "DESCRIBE_DESCRIPTION_HELP": (
-        "Retrieve and parse the metadata information "
-        "from the Copernicus Marine catalogue."
+        "Retrieve and parse the metadata information " "from the Copernicus Marine catalogue."
     ),
     "DESCRIBE_RESPONSE_HELP": (
         "JSON\n A dictionary containing the retrieved metadata information."
     ),
     "SHOW_ALL_VERSIONS_HELP": (
-        "Include dataset versions in output. By default, shows only the default "
-        "version."
+        "Include dataset versions in output. By default, shows only the default " "version."
     ),
     "RETURN_FIELDS_HELP": (
         "Option to specify the fields to return in the output. "
@@ -108,8 +100,7 @@ DESCRIBE: dict[str, str] = {
         "The fields are separated by a comma."
     ),
     "CONTAINS_HELP": (
-        "Filter catalogue output. Returns products with attributes matching a string "
-        "token."
+        "Filter catalogue output. Returns products with attributes matching a string " "token."
     ),
     "PRODUCT_ID_HELP": (
         "Force the productID to be used for the describe command. Will not parse the "
@@ -136,9 +127,7 @@ SUBSET: dict[str, str] = {
         "\n\nThe datasetID is required and can be found via the ``describe`` "
         "command. "  # has some hardcoding in CLI and python API
     ),
-    "SUBSET_RESPONSE_HELP": (
-        "JSON \n A description of the downloaded data and its destination."
-    ),
+    "SUBSET_RESPONSE_HELP": ("JSON \n A description of the downloaded data and its destination."),
     "SERVICE_HELP": (
         f"Force download through one of the available services using the service name "
         f"among {CommandType.SUBSET.service_names()} or "
@@ -150,44 +139,30 @@ SUBSET: dict[str, str] = {
         "to the interval [-180; 360[."
     ),
     "MINIMUM_X_HELP": (
-        "Minimum x-axis value for the subset. "
-        "The units are considered in length (m, 100km...)."
+        "Minimum x-axis value for the subset. " "The units are considered in length (m, 100km...)."
     ),
-    "ALIAS_MIN_X_HELP": (
-        "Alias for ``--minimum-longitude`` and ``--minimum-x``."
-    ),
+    "ALIAS_MIN_X_HELP": ("Alias for ``--minimum-longitude`` and ``--minimum-x``."),
     "MAXIMUM_LONGITUDE_HELP": (
         "Maximum longitude for the subset. The value will be transposed"
         " to the interval [-180; 360[."
     ),
-    "ALIAS_MAX_X_HELP": (
-        "Alias for ``--maximum-longitude`` and ``--maximum-x``."
-    ),
+    "ALIAS_MAX_X_HELP": ("Alias for ``--maximum-longitude`` and ``--maximum-x``."),
     "MAXIMUM_X_HELP": (
-        "Maximum x-axis value for the subset. "
-        "The units are considered in length (m, 100km...)."
+        "Maximum x-axis value for the subset. " "The units are considered in length (m, 100km...)."
     ),
     "MINIMUM_LATITUDE_HELP": (
-        "Minimum latitude for the subset. Requires a float from -90 "
-        "degrees to +90."
+        "Minimum latitude for the subset. Requires a float from -90 " "degrees to +90."
     ),
-    "ALIAS_MIN_Y_HELP": (
-        "Alias for ``--minimum-latitude`` and ``--minimum-y``."
-    ),
+    "ALIAS_MIN_Y_HELP": ("Alias for ``--minimum-latitude`` and ``--minimum-y``."),
     "MINIMUM_Y_HELP": (
-        "Minimum y-axis value for the subset. "
-        "The units are considered in length (m, 100km...)."
+        "Minimum y-axis value for the subset. " "The units are considered in length (m, 100km...)."
     ),
     "MAXIMUM_LATITUDE_HELP": (
-        "Maximum latitude for the subset. Requires a float from -90 degrees "
-        "to +90."
+        "Maximum latitude for the subset. Requires a float from -90 degrees " "to +90."
     ),
-    "ALIAS_MAX_Y_HELP": (
-        "Alias for ``--maximum-latitude`` and ``--maximum-y``."
-    ),
+    "ALIAS_MAX_Y_HELP": ("Alias for ``--maximum-latitude`` and ``--maximum-y``."),
     "MAXIMUM_Y_HELP": (
-        "Maximum y-axis value for the subset. "
-        "The units are considered in length (m, 100km...)."
+        "Maximum y-axis value for the subset. " "The units are considered in length (m, 100km...)."
     ),
     "POLYGONS_FILE_HELP": (
         """Path to a file containing polygons for the subset. Supported formats: .geojson, .shp, .gpkg, .kml.
@@ -249,9 +224,7 @@ See :ref:`subset-polygons <subset-polygons>` in the documentation for more infor
         "Specify a compression level to apply on the NetCDF output file. A value of 0 "
         "means no compression, and 9 is the highest level of compression available."
     ),  # some hardcoding in CLI to add the flag value
-    "NETCDF3_COMPATIBLE_HELP": (
-        "Enable downloading the dataset in a netCDF3 compatible format."
-    ),
+    "NETCDF3_COMPATIBLE_HELP": ("Enable downloading the dataset in a netCDF3 compatible format."),
     "CHUNK_SIZE_LIMIT_HELP": (
         "Limit the size of the chunks in the dask array. Default is set to -1 which "
         "behaves similarly to 'chunks=auto' from ``xarray``. Positive integer"
@@ -284,15 +257,10 @@ GET: dict[str, str] = {
         "pool executor to manage concurrent requests. If set to 0, no parallel"
         " executions are used."
     ),
-    "GET_RESPONSE_HELP": (
-        "JSON \n A list of files that were downloaded and some metadata."
-    ),
-    "FILTER_HELP": (
-        "A pattern that must match the absolute paths of the files to download."
-    ),
+    "GET_RESPONSE_HELP": ("JSON \n A list of files that were downloaded and some metadata."),
+    "FILTER_HELP": ("A pattern that must match the absolute paths of the files to download."),
     "REGEX_HELP": (
-        "The regular expression that must match the absolute paths of the files to "
-        "download."
+        "The regular expression that must match the absolute paths of the files to " "download."
     ),
     "FILE_LIST_HELP": (
         "Path to a '.txt' file containing a "
@@ -316,12 +284,8 @@ GET: dict[str, str] = {
         "Option to delete local files that are not present on the remote server while "
         "applying sync. Requires to set ``--dataset-version``."
     ),
-    "INDEX_PARTS_HELP": (
-        "Option to get the index files of an INSITU dataset."
-    ),
-    "NO_DIRECTORIES_HELP": (
-        "If True, downloaded files will not be organized into directories."
-    ),
+    "INDEX_PARTS_HELP": ("Option to get the index files of an INSITU dataset."),
+    "NO_DIRECTORIES_HELP": ("If True, downloaded files will not be organized into directories."),
 }
 
 SUBSET_SPLIT_ON: dict[str, str] = {
@@ -338,8 +302,7 @@ SUBSET_SPLIT_ON: dict[str, str] = {
         "If True, split the output files based on variable names, by default False."
     ),
     "ON_TIME_HELP": (
-        "If provided, split the output files based on specified time intervals, "
-        "by default None."
+        "If provided, split the output files based on specified time intervals, " "by default None."
     ),
     "CONCURRENT_PROCESSES_HELP": (
         "Number of concurrent processes to use for downloading data, "

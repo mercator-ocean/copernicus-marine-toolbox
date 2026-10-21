@@ -6,9 +6,7 @@ from typing import Callable
 import click
 from click import Context
 
-from copernicusmarine.core_functions.deprecated_options import (
-    log_deprecated_message,
-)
+from copernicusmarine.core_functions.deprecated_options import log_deprecated_message
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -46,8 +44,7 @@ def _wrap_option_process(option) -> Callable:
     custom_deprecated = getattr(option.obj, "custom_deprecated", ())
     preferred = getattr(option.obj, "preferred", None)
     allow_multiple = bool(
-        getattr(option.obj, "multiple", False)
-        or getattr(option.obj, "count", None)
+        getattr(option.obj, "multiple", False) or getattr(option.obj, "count", None)
     )
 
     if is_deprecated:
@@ -63,9 +60,7 @@ def _wrap_option_process(option) -> Callable:
             del frame
         if not allow_multiple and option.dest in state.opts:
             option_repr = ", ".join(option.obj.opts)
-            raise click.UsageError(
-                f"Option '{option_repr}' was provided multiple times."
-            )
+            raise click.UsageError(f"Option '{option_repr}' was provided multiple times.")
         if is_deprecated and opt in custom_deprecated:
             log_deprecated_message(opt, preferred)
         return orig_process(value, state)
@@ -125,9 +120,7 @@ class CustomClickOptionsCommand(click.Command):
     def collect_usage_pieces(self, ctx: Context):
         if self.name == "split-on":
             parent = getattr(ctx, "parent", None)
-            parent_name = getattr(
-                getattr(parent, "command", None), "name", None
-            )
+            parent_name = getattr(getattr(parent, "command", None), "name", None)
             if parent_name == "subset" or parent_name is None:
                 return ["[SUBSET OPTIONS]", "split-on", "[SPLIT-ON OPTIONS]"]
         return super().collect_usage_pieces(ctx)

@@ -58,6 +58,23 @@ cf-units = { version = "3.3.0", markers = "sys_platform != 'win32'"}
 black = "^26.10.1"
 
 
+[tool.ruff]
+line-length = 100
+extend-exclude = [
+    "tests/resources",
+    "copernicusmarine/command_line_interface/copernicus_marine.py",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+
+
+[tool.ruff.lint.per-file-ignores]
+"dataset_product_mapping.py" = ["E501"]
+"conf.py" = ["E501"]
+"test_several_metadata_catalogues.py" = ["E501"]
+"test_subset_split_on.py" = ["E501"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

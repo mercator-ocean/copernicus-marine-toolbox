@@ -9,22 +9,14 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import xarray as xr
-from arcosparse import (
-    Entity,
-    UserConfiguration,
-    get_entities,
-    subset_and_return_dataframe,
-)
+from arcosparse import Entity, UserConfiguration, get_entities, subset_and_return_dataframe
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineService
 from copernicusmarine.core_functions.environment_variables import (
     COPERNICUSMARINE_DISABLE_SSL_CONTEXT,
     COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
 )
-from copernicusmarine.core_functions.exceptions import (
-    NotEnoughPlatformMetadata,
-    WrongPlatformID,
-)
+from copernicusmarine.core_functions.exceptions import NotEnoughPlatformMetadata, WrongPlatformID
 from copernicusmarine.core_functions.models import (  # TimeExtent,
     FileStatus,
     ResponseSubset,
@@ -32,14 +24,10 @@ from copernicusmarine.core_functions.models import (  # TimeExtent,
     StatusMessage,
     VerticalAxis,
 )
-from copernicusmarine.core_functions.polygons_extractor import (
-    extract_polygons_from_dataframe,
-)
+from copernicusmarine.core_functions.polygons_extractor import extract_polygons_from_dataframe
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.sessions import TRUST_ENV
-from copernicusmarine.core_functions.temporary_path_saver import (
-    TemporaryPathSaver,
-)
+from copernicusmarine.core_functions.temporary_path_saver import TemporaryPathSaver
 from copernicusmarine.core_functions.utils import (
     construct_query_params_for_marine_data_store_monitoring,
     datetime_parser,
@@ -139,11 +127,7 @@ def download_sparse(
     if subset_request.skip_existing and output_path.exists():
         response.file_status = FileStatus.IGNORED
         return response
-    elif (
-        subset_request.overwrite
-        and output_path.exists()
-        and output_path.is_dir()
-    ):
+    elif subset_request.overwrite and output_path.exists() and output_path.is_dir():
         shutil.rmtree(output_path)
 
     if subset_request.output_directory:
@@ -154,8 +138,7 @@ def download_sparse(
     if subset_request.file_format == "netcdf":
         user_configuration = _get_user_configuration(username)
         platforms_metadata = {
-            entity.entity_id: entity
-            for entity in get_entities(metadata_url, user_configuration)
+            entity.entity_id: entity for entity in get_entities(metadata_url, user_configuration)
         }
         file_names = _dataframe_to_netcdf_per_platform(
             df=df,
@@ -214,8 +197,7 @@ def _read_dataframe_sparse(
     """
     user_configuration = _get_user_configuration(username)
     platforms_metadata = {
-        entity.entity_id: entity
-        for entity in get_entities(metadata_url, user_configuration)
+        entity.entity_id: entity for entity in get_entities(metadata_url, user_configuration)
     }
     if subset_request.platform_ids:
         platform_ids = _get_plaform_ids_to_subset(
@@ -225,9 +207,7 @@ def _read_dataframe_sparse(
         )
     else:
         platform_ids = []
-    variables = subset_request.variables or [
-        variable.short_name for variable in service.variables
-    ]
+    variables = subset_request.variables or [variable.short_name for variable in service.variables]
     if dry_run:
         return pd.DataFrame(), variables, platform_ids
     progress_bar_configuration = {
@@ -243,14 +223,10 @@ def _read_dataframe_sparse(
             minimum_longitude=subset_request.minimum_x,
             maximum_longitude=subset_request.maximum_x,
             minimum_elevation=(
-                -subset_request.maximum_depth
-                if subset_request.maximum_depth is not None
-                else None
+                -subset_request.maximum_depth if subset_request.maximum_depth is not None else None
             ),
             maximum_elevation=(
-                -subset_request.minimum_depth
-                if subset_request.minimum_depth is not None
-                else None
+                -subset_request.minimum_depth if subset_request.minimum_depth is not None else None
             ),
             minimum_time=(
                 subset_request.start_datetime.timestamp()
@@ -279,13 +255,10 @@ def _read_dataframe_sparse(
         )
         if subset_request.polygons_file and not df.empty:
             logger.debug("Extracting polygons from dataframe.")
-            df = extract_polygons_from_dataframe(
-                df, subset_request.polygons_file
-            )
+            df = extract_polygons_from_dataframe(df, subset_request.polygons_file)
     if df.empty:
         logger.info(
-            "No data found for the given parameters. "
-            "Please check your request and try again."
+            "No data found for the given parameters. " "Please check your request and try again."
         )
     return (
         df,
@@ -300,9 +273,7 @@ def _get_user_configuration(username: str) -> UserConfiguration:
         trust_env=TRUST_ENV,
         ssl_certificate_path=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH,
         max_concurrent_requests=20,
-        extra_params=construct_query_params_for_marine_data_store_monitoring(
-            username
-        ),
+        extra_params=construct_query_params_for_marine_data_store_monitoring(username),
     )
 
 
@@ -318,21 +289,15 @@ def _get_plaform_ids_to_subset(
     platforms_without_types_mapping: dict[str, list] = defaultdict(list)
     for platform_name in platforms_metadata_names:
         platform_name_without_type = platform_name.split("___")[0]
-        platforms_without_types_mapping[platform_name_without_type].append(
-            platform_name
-        )
+        platforms_without_types_mapping[platform_name_without_type].append(platform_name)
         platforms_names_with_types.add(platform_name)
     for platform_id in platform_ids:
         if platform_id in platforms_names_with_types:
             platforms_to_subset.append(platform_id)
         if platform_id in platforms_without_types_mapping:
-            platforms_to_subset.extend(
-                platforms_without_types_mapping[platform_id]
-            )
+            platforms_to_subset.extend(platforms_without_types_mapping[platform_id])
     if not platforms_to_subset:
-        raise WrongPlatformID(
-            platform_ids, retrieval_service.platforms_metadata
-        )
+        raise WrongPlatformID(platform_ids, retrieval_service.platforms_metadata)
     return platforms_to_subset
 
 
@@ -408,16 +373,10 @@ def _transform_dataframe(
         return df
     # Needs to be done before striping the type to the platform_id
     df["institution"] = df["platform_id"].apply(
-        lambda x: (
-            platforms_metadata[x].institution
-            if x in platforms_metadata
-            else None
-        )
+        lambda x: (platforms_metadata[x].institution if x in platforms_metadata else None)
     )
     df["doi"] = df["platform_id"].apply(
-        lambda x: (
-            platforms_metadata[x].doi if x in platforms_metadata else None
-        )
+        lambda x: (platforms_metadata[x].doi if x in platforms_metadata else None)
     )
 
     df["product_doi"] = (
@@ -430,16 +389,12 @@ def _transform_dataframe(
     # column platform_type
     df["platform_id"] = df["platform_id"].str.split("___").str[0]
 
-    df["time"] = df["time"].apply(
-        lambda x: datetime_to_isoformat(timestamp_parser(x, unit="s"))
-    )
+    df["time"] = df["time"].apply(lambda x: datetime_to_isoformat(timestamp_parser(x, unit="s")))
 
     # Some depth values comes from the arcoification of the data
     # and are calculated from the pressure some others come
     # directly from the producer (ie native/original data)
-    df["is_depth_from_producer"] = df["is_approx_elevation"].apply(
-        lambda x: 0 if x else 1
-    )
+    df["is_depth_from_producer"] = df["is_approx_elevation"].apply(lambda x: 0 if x else 1)
     df.drop(columns=["is_approx_elevation"], inplace=True)
 
     if vertical_axis == "elevation":
@@ -514,15 +469,9 @@ def _dataframe_to_netcdf_per_platform(
                 )
 
             produced_paths.append(platform_filename)
-            logger.debug(
-                f"Written NetCDF file for platform '{platform_id}': "
-                f"{output_path}"
-            )
+            logger.debug(f"Written NetCDF file for platform '{platform_id}': " f"{output_path}")
 
-        logger.info(
-            f"Produced {len(produced_paths)} NetCDF file(s) "
-            f"in {output_path}"
-        )
+        logger.info(f"Produced {len(produced_paths)} NetCDF file(s) " f"in {output_path}")
     return produced_paths
 
 
@@ -543,9 +492,7 @@ def _platform_dataframe_to_dataset(
     obs_df = platform_df.drop(columns=metadata_cols, errors="ignore")
     obs_df = obs_df.dropna(axis=1, how="all")
     non_nans_cols = obs_df.columns.to_list()
-    aux_cols = [
-        col for col in non_nans_cols if col not in index_cols + variable_cols
-    ]
+    aux_cols = [col for col in non_nans_cols if col not in index_cols + variable_cols]
     vertical_col = [c for c in index_cols if c != "time"][0]
     if arco_sparse_type != "cmemsAltimetry":
         pivot_columns = ["time", vertical_col]
@@ -561,10 +508,7 @@ def _platform_dataframe_to_dataset(
         values=values_columns,  # type: ignore[list-item]
         aggfunc="first",
     )
-    pivot.columns = [
-        f"{var}_QC" if metric == "value_qc" else var
-        for metric, var in pivot.columns
-    ]
+    pivot.columns = [f"{var}_QC" if metric == "value_qc" else var for metric, var in pivot.columns]
 
     spatial_and_aux = obs_df.groupby(pivot_columns)[aux_cols].first()
 
@@ -580,17 +524,11 @@ def _platform_dataframe_to_dataset(
         merged = merged.set_index(["time"])
 
     if vertical_col in non_nans_cols:
-        merged.loc[
-            merged["is_depth_from_producer"] == 0, vertical_col
-        ] = np.nan
-        merged = merged.drop(
-            columns=["is_depth_from_producer"], errors="ignore"
-        )
+        merged.loc[merged["is_depth_from_producer"] == 0, vertical_col] = np.nan
+        merged = merged.drop(columns=["is_depth_from_producer"], errors="ignore")
         if merged[vertical_col].isna().all():
             merged = merged.drop(columns=[vertical_col], errors="ignore")
-            non_nans_cols = [
-                coln for coln in non_nans_cols if coln != vertical_col
-            ]
+            non_nans_cols = [coln for coln in non_nans_cols if coln != vertical_col]
 
     ds = merged.to_xarray()
     if "pressure" in non_nans_cols:
@@ -603,11 +541,7 @@ def _platform_dataframe_to_dataset(
         ds = ds.set_coords(vertical_col)
 
     ds = ds.set_coords("time")
-    if (
-        "depth_level" in ds.data_vars
-        or "depth_level" in ds.coords
-        or "depth_level" in ds.indexes
-    ):
+    if "depth_level" in ds.data_vars or "depth_level" in ds.coords or "depth_level" in ds.indexes:
         ds = ds.drop_vars("depth_level")
     ds.time.attrs["units"] = "seconds since 1970-01-01T00:00:00Z"
     return ds
@@ -674,13 +608,11 @@ def _add_attributes_to_dataset(
             ds.attrs["doi"] = metadata_info["product_doi"]
     if metadata_info.get("platform_type"):
         platform_id_type = platform_id + "___" + metadata_info["platform_type"]
-        platform_metadata = platforms_metadata.get(
-            platform_id_type
-        ) or platforms_metadata.get(platform_id)
+        platform_metadata = platforms_metadata.get(platform_id_type) or platforms_metadata.get(
+            platform_id
+        )
         if platform_metadata and platform_metadata.institution_edmo_code:
-            ds.attrs[
-                "institution_edmo_code"
-            ] = platform_metadata.institution_edmo_code
+            ds.attrs["institution_edmo_code"] = platform_metadata.institution_edmo_code
 
     ds.attrs["time_coverage_start"] = datetime_to_isoformat(
         datetime_parser(str(platform_df["time"].min()))
@@ -694,9 +626,7 @@ def _add_attributes_to_dataset(
         ds.attrs["geospatial_lat_max"] = float(platform_df["latitude"].max())
         ds.attrs["last_latitude_observation"] = unpack(
             ds.sel(
-                time=datetime_to_timestamp(
-                    datetime_parser(ds.attrs["last_date_observation"])
-                ),
+                time=datetime_to_timestamp(datetime_parser(ds.attrs["last_date_observation"])),
                 method="nearest",
             )["latitude"].values
         )
@@ -705,23 +635,15 @@ def _add_attributes_to_dataset(
         ds.attrs["geospatial_lon_max"] = float(platform_df["longitude"].max())
         ds.attrs["last_longitude_observation"] = unpack(
             ds.sel(
-                time=datetime_to_timestamp(
-                    datetime_parser(ds.attrs["last_date_observation"])
-                ),
+                time=datetime_to_timestamp(datetime_parser(ds.attrs["last_date_observation"])),
                 method="nearest",
             )["longitude"].values
         )
     if vertical_axis in platform_df.columns:
-        ds.attrs["geospatial_vertical_min"] = float(
-            platform_df[vertical_axis].min()
-        )
-        ds.attrs["geospatial_vertical_max"] = float(
-            platform_df[vertical_axis].max()
-        )
+        ds.attrs["geospatial_vertical_min"] = float(platform_df[vertical_axis].min())
+        ds.attrs["geospatial_vertical_max"] = float(platform_df[vertical_axis].max())
     ds.attrs["references"] = "http://marine.copernicus.eu"
-    ds.attrs[
-        "license"
-    ] = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    ds.attrs["license"] = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
     ds.attrs["download_date"] = datetime_to_isoformat(datetime.now())
     ds.attrs["copernicusmarine_toolbox_version"] = toolbox_version
     if product_id:
@@ -729,8 +651,7 @@ def _add_attributes_to_dataset(
     ds.attrs["dataset_id"] = subset_request.dataset_id
     ds.attrs["Conventions"] = "CF-1.9 ACDD-1.3"
     ds.attrs["title"] = (
-        f"Subset of dataset {subset_request.dataset_id} "
-        f"with Copernicus Marine Toolbox"
+        f"Subset of dataset {subset_request.dataset_id} " f"with Copernicus Marine Toolbox"
     )
     ds.attrs["contact"] = "servicedesk.cmems@mercator-ocean.eu"
     ds.attrs[
@@ -779,9 +700,7 @@ def _add_attributes_to_dataset(
         ds["longitude"].attrs["standard_name"] = "longitude"
 
     # variables
-    variables_info = {
-        variable.short_name: variable for variable in service.variables
-    }
+    variables_info = {variable.short_name: variable for variable in service.variables}
     axis_order = ["T", "Z", "Y", "X", "other"]
     coordinates = [str(axis) for axis in ds.coords]
     coordinates = sorted(
@@ -801,9 +720,7 @@ def _add_attributes_to_dataset(
         else:
             variable_without_qc = variable.replace("_QC", "")
             variable_info = variables_info[variable_without_qc]
-            ds[variable].attrs[
-                "long_name"
-            ] = f"Quality control flag for {variable_without_qc}"
+            ds[variable].attrs["long_name"] = f"Quality control flag for {variable_without_qc}"
             ds[variable].attrs["flags_values"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
             ds[variable].attrs["flags_meanings"] = (
                 "no_qc_performed "

@@ -13,10 +13,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.core_functions.exceptions import (
-    FormatNotSupported,
-    ServiceNotSupported,
-)
+from copernicusmarine.core_functions.exceptions import FormatNotSupported, ServiceNotSupported
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     ResponseSubset,
@@ -33,9 +30,7 @@ from copernicusmarine.core_functions.utils import (
     run_multiprocessors,
     timestamp_or_datestring_to_datetime,
 )
-from copernicusmarine.download_functions.utils import (
-    build_filename_from_request,
-)
+from copernicusmarine.download_functions.utils import build_filename_from_request
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -50,9 +45,7 @@ def subset_split_on_function(
     concurrent_processes: int | None,
 ) -> list[ResponseSubset]:
     if not on_variables and not on_time:
-        raise ValueError(
-            "Split on should be requested either on variables or on time."
-        )
+        raise ValueError("Split on should be requested either on variables or on time.")
 
     retrieval_service = retrieve_metadata_and_check_request(subset_request)
     if retrieval_service.service_name not in [
@@ -63,10 +56,7 @@ def subset_split_on_function(
         CopernicusMarineServiceNames.STATIC_ARCO,
     ]:
         raise ServiceNotSupported(retrieval_service.service_name)
-    if (
-        retrieval_service.service_format
-        == CopernicusMarineServiceFormat.SQLITE
-    ):
+    if retrieval_service.service_format == CopernicusMarineServiceFormat.SQLITE:
         raise FormatNotSupported(
             CopernicusMarineServiceFormat.SQLITE.value,
             "split-on",
@@ -111,17 +101,12 @@ def subset_split_on_function(
                 new_parameters.append({"variables": [variable]})
     elif time_keys:
         new_parameters = [
-            {"start_datetime": start, "end_datetime": end}
-            for start, end in time_keys
+            {"start_datetime": start, "end_datetime": end} for start, end in time_keys
         ]
     elif variables:
         new_parameters = [{"variables": [var]} for var in variables]
-    dataset_variables = [
-        variable.short_name for variable in retrieval_service.service.variables
-    ]
-    download_function_parameters: list[
-        tuple[SubsetRequest, RetrievalService, dict]
-    ] = [
+    dataset_variables = [variable.short_name for variable in retrieval_service.service.variables]
+    download_function_parameters: list[tuple[SubsetRequest, RetrievalService, dict]] = [
         (
             _update_output_filename(
                 SubsetRequest(
@@ -177,13 +162,10 @@ def subset_split_on_function(
                 )
                 pbar.update(1)
 
-    total_size_downloaded = sum(
-        response.file_size or 0 for response in responses
-    )
+    total_size_downloaded = sum(response.file_size or 0 for response in responses)
     if total_size_downloaded:
         logger.info(
-            f"Total size of the download: "
-            f"{human_readable_size(total_size_downloaded)}."
+            f"Total size of the download: " f"{human_readable_size(total_size_downloaded)}."
         )
     return responses
 
@@ -195,19 +177,13 @@ def get_split_time_keys_from_metadata(
     requested_maximum_time: datetime | None,
     coordinate_selection_method: CoordinatesSelectionMethod,
 ) -> list[tuple[datetime, datetime]]:
-    time_coordinate, _, _ = part.get_coordinates().get(
-        "time", (None, None, None)
-    )
+    time_coordinate, _, _ = part.get_coordinates().get("time", (None, None, None))
     if not time_coordinate:
-        raise ValueError(
-            "No time coordinate found in the part metadata. Cannot split on time."
-        )
+        raise ValueError("No time coordinate found in the part metadata. Cannot split on time.")
 
     values = time_coordinate.values
     if values:
-        values_datetime = [
-            timestamp_or_datestring_to_datetime(v) for v in values
-        ]
+        values_datetime = [timestamp_or_datestring_to_datetime(v) for v in values]
 
     else:
         minimum_time = timestamp_or_datestring_to_datetime(
@@ -216,12 +192,11 @@ def get_split_time_keys_from_metadata(
         maximum_time = timestamp_or_datestring_to_datetime(
             time_coordinate.maximum_value  # type: ignore
         )
-        step = timestamp_or_datestring_to_datetime(
-            time_coordinate.step  # type: ignore
-        ) - datetime(1970, 1, 1, tzinfo=UTC)
+        step = timestamp_or_datestring_to_datetime(time_coordinate.step) - datetime(  # type: ignore
+            1970, 1, 1, tzinfo=UTC
+        )
         values_datetime = [
-            minimum_time + i * step
-            for i in range(int((maximum_time - minimum_time) / step) + 1)
+            minimum_time + i * step for i in range(int((maximum_time - minimum_time) / step) + 1)
         ]
 
     values_datetime.sort()
@@ -278,10 +253,7 @@ def get_split_time_keys_from_metadata(
         datetimes=selected_values,
         time_frequence=time_frequence,
     )
-    return [
-        (group_df["time"].min(), group_df["time"].max())
-        for _, group_df in groups
-    ]
+    return [(group_df["time"].min(), group_df["time"].max()) for _, group_df in groups]
 
 
 def group_per_frequency(
@@ -322,9 +294,7 @@ def name_progress_bar(
 ) -> str:
     message = ""
     if split_on_parameter.get("start_datetime"):
-        message += (
-            f"{split_on_parameter['start_datetime'].strftime('%Y-%m-%d')}"
-        )
+        message += f"{split_on_parameter['start_datetime'].strftime('%Y-%m-%d')}"
     if split_on_parameter.get("end_datetime"):
         if message:
             message += " - "
@@ -358,10 +328,7 @@ def _update_output_filename(
             return subset_request.update(
                 {
                     "output_filename": (
-                        ".".join(parsed_filename[:-1])
-                        + suffix
-                        + "."
-                        + parsed_filename[-1]
+                        ".".join(parsed_filename[:-1]) + suffix + "." + parsed_filename[-1]
                     )
                 }
             )

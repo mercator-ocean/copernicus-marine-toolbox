@@ -193,8 +193,7 @@ class TestOriginalGridDatasets:
             "Lon lat subset not available in original grid datasets: "
             "You cannot specify longitude and latitude when using the"
             " 'originalGrid' dataset part. Try using ``--minimum-x``"
-            ", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``."
-            in self.output.stderr
+            ", ``--maximum-x``, ``--minimum-y`` and ``--maximum-y``." in self.output.stderr
         )
 
     def test_originalGrid_error_with_open_dataset(self):
@@ -277,9 +276,7 @@ class TestOriginalGridDatasets:
         dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename))
         assert self.output.returncode == 0
         assert "DEBUG" in self.output.stderr
-        assert datetime_parser("2020-01-01") == datetime_parser(
-            dataset.time.values[0]
-        )
+        assert datetime_parser("2020-01-01") == datetime_parser(dataset.time.values[0])
         assert len(dataset.x.values) > 0
         assert len(dataset.y.values) > 0
         returned_value = loads(self.output.stdout)
@@ -336,16 +333,10 @@ class TestOriginalGridDatasets:
             key=lambda the_dict: the_dict["coordinate_id"],
             reverse=True,
         )
-        assert (
-            coordinates[0]["coordinate_id"] == "y"
-            or coordinates[0]["coordinate_id"] == "yc"
-        )
+        assert coordinates[0]["coordinate_id"] == "y" or coordinates[0]["coordinate_id"] == "yc"
         assert coordinates[0]["maximum"] <= float(max_y)
         assert coordinates[0]["minimum"] >= float(min_y)
-        assert (
-            coordinates[1]["coordinate_id"] == "x"
-            or coordinates[1]["coordinate_id"] == "xc"
-        )
+        assert coordinates[1]["coordinate_id"] == "x" or coordinates[1]["coordinate_id"] == "xc"
         assert coordinates[1]["maximum"] <= float(max_x)
         assert coordinates[1]["minimum"] >= float(min_x)
 
@@ -376,13 +367,11 @@ class TestOriginalGridDatasets:
         assert "WARNING" in self.output.stderr
         assert (
             "Some of your subset selection [-100.0, 100.0] for the"
-            " x dimension exceed the dataset coordinates [-36.0, 38.0]"
-            in self.output.stderr
+            " x dimension exceed the dataset coordinates [-36.0, 38.0]" in self.output.stderr
         )
         assert (
             "Some of your subset selection [-100.0, 100.0] for the "
-            "y dimension exceed the dataset coordinates [-43.0, 28.0]"
-            in self.output.stderr
+            "y dimension exceed the dataset coordinates [-43.0, 28.0]" in self.output.stderr
         )
 
     def test_out_of_bounds_w_error(self):
@@ -414,8 +403,7 @@ class TestOriginalGridDatasets:
         assert "ERROR" in self.output.stderr
         assert (
             "Some of your subset selection [-100.0, 100.0] for the y"
-            " dimension exceed the dataset coordinates [-43.0, 28.0]"
-            in self.output.stderr
+            " dimension exceed the dataset coordinates [-43.0, 28.0]" in self.output.stderr
         )
 
     def test_subset_w_python_interface(self, tmp_path):

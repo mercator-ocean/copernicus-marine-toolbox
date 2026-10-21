@@ -11,9 +11,7 @@ from copernicusmarine.core_functions.models import ResponseGet, ResponseSubset
 class TestQueryBuilder:
     # For the catalogue
     def test_query_builder_catalogue(self, snapshot):
-        query = build_query(
-            ({"product_id", "dataset_id"}), CopernicusMarineCatalogue
-        )
+        query = build_query(({"product_id", "dataset_id"}), CopernicusMarineCatalogue)
         assert query == snapshot
 
     def test_query_builder_catalogue_deep_inside(self, snapshot):
@@ -34,15 +32,11 @@ class TestQueryBuilder:
 
     # For the subset
     def test_basic_query_builder_responsesubset(self, snapshot):
-        query = build_query(
-            ({"file_path", "output_directory"}), ResponseSubset
-        )
+        query = build_query(({"file_path", "output_directory"}), ResponseSubset)
         assert query == snapshot
 
     def test_subset_optional_float(self, snapshot):
-        query = build_query(
-            ({"file_size", "data_transfer_size"}), ResponseSubset
-        )
+        query = build_query(({"file_size", "data_transfer_size"}), ResponseSubset)
         assert query == snapshot
 
     def test_subset_optional_status(self, snapshot):
@@ -62,9 +56,7 @@ class TestQueryBuilder:
         self.when_I_run_with_model("get", snapshot)
         self.when_I_run_with_model("subset", snapshot)
 
-    def when_I_run_with_model(
-        self, command: Literal["get", "describe", "subset"], snapshot
-    ):
+    def when_I_run_with_model(self, command: Literal["get", "describe", "subset"], snapshot):
         if command == "describe":
             model = CopernicusMarineCatalogue
         else:

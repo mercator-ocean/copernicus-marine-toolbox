@@ -12,10 +12,7 @@ import xarray
 from pydantic import BaseModel
 
 import copernicusmarine
-from copernicusmarine import (
-    CopernicusMarineCoordinate,
-    CopernicusMarineService,
-)
+from copernicusmarine import CopernicusMarineCoordinate, CopernicusMarineService
 from copernicusmarine.core_functions.utils import run_concurrently
 from tests.test_utils import execute_in_terminal
 
@@ -42,9 +39,7 @@ def test_download_variable_and_test_compliance(
     number_of_datasets: int | None = None,
     dataset_id: str | None = None,
     product_id: str | None = None,
-    service_to_test: Literal[
-        "arco-time-series", "arco-geo-series"
-    ] = "arco-time-series",
+    service_to_test: Literal["arco-time-series", "arco-geo-series"] = "arco-time-series",
     keep_going: bool = True,
     concurrent_requests: int = 8,
     log_file: str = "data_to_delete/some_file.txt",
@@ -80,18 +75,14 @@ def test_download_variable_and_test_compliance(
                     for service in part.services:
                         # TODO: test on more services
                         if service.service_name != service_to_test or (
-                            service.service_format
-                            and "sql" in service.service_format
+                            service.service_format and "sql" in service.service_format
                         ):
                             continue
                         subset_arguments = SubsetArguments(
                             dataset_id=dataset_id,
                             version=version.label,
                             part=part.name,
-                            variables=[
-                                variable.short_name
-                                for variable in service.variables
-                            ],
+                            variables=[variable.short_name for variable in service.variables],
                             output_filename=f"{dataset_id}___{part.name}___{service.service_name}.nc",  # noqa
                             start_datetime=None,
                             end_datetime=None,
@@ -109,9 +100,7 @@ def test_download_variable_and_test_compliance(
                             service=service,
                         )
                         if subset_arguments_updated:
-                            all_tasks.append(
-                                tuple(subset_arguments.model_dump().values())
-                            )
+                            all_tasks.append(tuple(subset_arguments.model_dump().values()))
 
     print(f"Found {len(all_tasks)} tasks")
     if number_of_datasets:
@@ -152,13 +141,9 @@ def _get_subset_arguments(
                 return None
             if coordinate_id == "time":
                 start_datetime = extract_minimum_value(coordinate)
-                if isinstance(start_datetime, int) or isinstance(
-                    start_datetime, float
-                ):
+                if isinstance(start_datetime, int) or isinstance(start_datetime, float):
                     start_datetime = (
-                        (pendulum.from_timestamp(start_datetime / 1000))
-                        .naive()
-                        .isoformat()
+                        (pendulum.from_timestamp(start_datetime / 1000)).naive().isoformat()
                     )
                 subset_arguments.start_datetime = start_datetime
                 subset_arguments.end_datetime = start_datetime
@@ -283,9 +268,7 @@ def open_dataset_and_snapshot_ncdump(
         message += f"Command to reproduce: {command_to_reproduce}"
         return message + "\n", 0, 0
     try:
-        message += json.dumps(
-            then_it_is_cf_compliant(dataset_id, tmp_path, output_filename)
-        )
+        message += json.dumps(then_it_is_cf_compliant(dataset_id, tmp_path, output_filename))
     except Exception as e:
         if not keep_going:
             raise e
@@ -328,9 +311,7 @@ def then_it_is_cf_compliant(dataset_id, tmp_path, output_filename) -> dict:
     dict_result = {}
     dict_result["dataset_id"] = dataset_id
     dict_result["scored_points"] = data[f"cf:{cf_convention}"]["scored_points"]
-    dict_result["possible_points"] = data[f"cf:{cf_convention}"][
-        "possible_points"
-    ]
+    dict_result["possible_points"] = data[f"cf:{cf_convention}"]["possible_points"]
     dict_result["messages"] = []
     for dictionary in sorted(
         data[f"cf:{cf_convention}"]["all_priorities"], key=lambda x: x["name"]

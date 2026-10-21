@@ -5,17 +5,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from copernicusmarine import (
-    describe,
-    get,
-    login,
-    open_dataset,
-    read_dataframe,
-    subset,
-)
-from copernicusmarine.download_functions.utils import (
-    timestamp_or_datestring_to_datetime,
-)
+from copernicusmarine import describe, get, login, open_dataset, read_dataframe, subset
+from copernicusmarine.download_functions.utils import timestamp_or_datestring_to_datetime
 
 
 class TestOpenDatasetAndReadDataFrame:
@@ -56,9 +47,7 @@ class TestOpenDatasetAndReadDataFrame:
         assert inspect.signature(get).parameters[common_key_parameter]
         assert inspect.signature(subset).parameters[common_key_parameter]
         assert inspect.signature(open_dataset).parameters[common_key_parameter]
-        assert inspect.signature(read_dataframe).parameters[
-            common_key_parameter
-        ]
+        assert inspect.signature(read_dataframe).parameters[common_key_parameter]
 
     def test_iso8601_datetime_format_as_string(
         self,
@@ -79,9 +68,7 @@ class TestOpenDatasetAndReadDataFrame:
                 latitude=0,
                 longitude=0.2,
                 elevation=0,
-                time=datetime.strptime(
-                    "2023-09-15T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"
-                ),
+                time=datetime.strptime("2023-09-15T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"),
                 method="nearest",
             ).size
             == 1
@@ -123,9 +110,9 @@ class TestOpenDatasetAndReadDataFrame:
         dataset = open_dataset(
             dataset_id="cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
         )
-        assert timestamp_or_datestring_to_datetime(
-            dataset.time.values.min()
-        ) >= datetime(2024, 8, 31, 0, 0, 0, tzinfo=timezone.utc)
+        assert timestamp_or_datestring_to_datetime(dataset.time.values.min()) >= datetime(
+            2024, 8, 31, 0, 0, 0, tzinfo=timezone.utc
+        )
 
     def test_open_dataset_with_retention_date_and_only_values_in_metadata(
         self,
@@ -133,9 +120,9 @@ class TestOpenDatasetAndReadDataFrame:
         dataset = open_dataset(
             dataset_id="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M",
         )
-        assert timestamp_or_datestring_to_datetime(
-            dataset.time.values.min()
-        ) >= datetime(2024, 6, 1, 0, 0, 0, tzinfo=timezone.utc)
+        assert timestamp_or_datestring_to_datetime(dataset.time.values.min()) >= datetime(
+            2024, 6, 1, 0, 0, 0, tzinfo=timezone.utc
+        )
 
     def test_inverted_min_max_raises_error_or_warning(self, caplog):
         dataset_id = "cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M"
@@ -145,10 +132,7 @@ class TestOpenDatasetAndReadDataFrame:
                 minimum_longitude=10.0,
                 maximum_longitude=5.0,
             )
-            assert (
-                "Minimum longitude greater than maximum longitude"
-                in caplog.text
-            )
+            assert "Minimum longitude greater than maximum longitude" in caplog.text
         with pytest.raises(
             ValueError,
             match="Minimum latitude greater than maximum latitude",

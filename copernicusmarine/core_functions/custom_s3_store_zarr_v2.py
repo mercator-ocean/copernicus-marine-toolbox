@@ -59,9 +59,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         def fn():
             full_key = f"{self._root_path}/{key}"
             try:
-                resp = self._get_session().get_object(
-                    bucket_name=self._bucket, object_key=full_key
-                )
+                resp = self._get_session().get_object(bucket_name=self._bucket, object_key=full_key)
                 res = resp["Body"].read()
                 return res
             except botocore.exceptions.ClientError as e:
@@ -74,9 +72,7 @@ class CustomS3StoreZarrV2(MutableMapping):
 
         def fn():
             try:
-                self._get_session().s3_client.head_object(
-                    Bucket=self._bucket, Key=full_key
-                )
+                self._get_session().s3_client.head_object(Bucket=self._bucket, Key=full_key)
                 return True
             except botocore.exceptions.ClientError as e:
                 if "404" in str(e) or "403" in str(e):
@@ -98,9 +94,7 @@ class CustomS3StoreZarrV2(MutableMapping):
     def __delitem__(self, key):
         def fn():
             full_key = f"{self._root_path}/{key}"
-            self._get_session().s3_client.delete_object(
-                Bucket=self._bucket, Key=full_key
-            )
+            self._get_session().s3_client.delete_object(Bucket=self._bucket, Key=full_key)
 
         return self.with_retries(fn)
 
@@ -116,10 +110,7 @@ class CustomS3StoreZarrV2(MutableMapping):
                 Bucket=self._bucket, Prefix=self._root_path, StartAfter=cursor
             )
             entries = resp.get("Contents", [])
-            keys += [
-                o["Key"].removeprefix(self._root_path).lstrip("/")
-                for o in entries
-            ]
+            keys += [o["Key"].removeprefix(self._root_path).lstrip("/") for o in entries]
             if not resp["IsTruncated"]:
                 break
             cursor = entries[-1]["Key"]
@@ -137,9 +128,7 @@ class CustomS3StoreZarrV2(MutableMapping):
         idx = 0
         while idx < len(keys):
             some_keys = keys[idx : idx + 1000]
-            objects = list(
-                map(lambda k: {"Key": f"{self._root_path}/{k}"}, some_keys)
-            )
+            objects = list(map(lambda k: {"Key": f"{self._root_path}/{k}"}, some_keys))
             self._get_session().s3_client.delete_objects(
                 Bucket=self._bucket, Delete={"Objects": objects}
             )

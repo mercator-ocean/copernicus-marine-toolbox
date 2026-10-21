@@ -2,9 +2,7 @@ MOCK_PRODUCT_NWSHELF = {
     "id": "NWSHELF_MULTIYEAR_BGC_004_011",
     "type": "Collection",
     "stac_version": "1.0.0",
-    "stac_extensions": [
-        "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
-    ],
+    "stac_extensions": ["https://stac-extensions.github.io/scientific/v1.0.0/schema.json"],
     "title": "Atlantic- European North West Shelf- Ocean Biogeochemistry Reanalysis",
     "description": "**Short  Description:**\n\nThe ocean biogeochemistry reanalysis for the North-West European Shelf is produced using the European Regional Seas Ecosystem Model (ERSEM), coupled online to the forecasting ocean assimilation model at 7 km horizontal resolution, NEMO-NEMOVAR. ERSEM (Butensch&ouml;n et al. 2016) is developed and maintained at Plymouth Marine Laboratory. NEMOVAR system was used to assimilate observations of sea surface chlorophyll concentration from ocean colour satellite data and all the physical variables described in [NWSHELF_MULTIYEAR_PHY_004_009](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_PHY_004_009). Biogeochemical boundary conditions and river inputs used climatologies; nitrogen deposition at the surface used time-varying data.\n\nThe description of the model and its configuration, including the products validation is provided in the [CMEMS-NWS-QUID-004-011](http://catalogue.marine.copernicus.eu/documents/QUID/CMEMS-NWS-QUID-004-011.pdf). \n\nProducts are provided as monthly and daily 25-hour, de-tided, averages. The datasets available are concentration of chlorophyll, nitrate, phosphate, oxygen, phytoplankton biomass, net primary production, light attenuation coefficient, pH, surface partial pressure of CO2, concentration of diatoms expressed as chlorophyll, concentration of dinoflagellates expressed as chlorophyll, concentration of nanophytoplankton expressed as chlorophyll, concentration of picophytoplankton expressed as chlorophyll in sea water. All, as multi-level variables, are interpolated from the model 51 hybrid s-sigma terrain-following system to 24 standard geopotential depths (z-levels). Grid-points near to the model boundaries are masked. The product is updated biannually,  providing a six-month extension of the time series. See [CMEMS-NWS-PUM-004-009_011](http://resources.marine.copernicus.eu/documents/PUM/CMEMS-NWS-PUM-004-009_011.pdf) for details.\n\n**Associated products:**\n\nThis model is coupled with a hydrodynamic model (NEMO) available as CMEMS product [NWSHELF_MULTIYEAR_PHY_004_009](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_PHY_004_009).\nAn analysis-forecast product is available from: [NWSHELF_MULTIYEAR_BGC_004_011](https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=NWSHELF_MULTIYEAR_BGC_004_011).\n\n**DOI (product):**   \nhttps://doi.org/10.48670/moi-00058\n\n**References:**\n\n* Ciavatta, S., Brewin, R. J. W., Skákala, J., Polimene, L., de Mora, L., Artioli, Y., & Allen, J. I. (2018). [https://doi.org/10.1002/2017JC013490 Assimilation of ocean‐color plankton functional types to improve marine ecosystem simulations]. Journal of Geophysical Research: Oceans, 123, 834–854. https://doi.org/10.1002/2017JC013490\n",
     "license": "proprietary",
@@ -127,9 +125,7 @@ MOCK_PRODUCT_NWSHELF = {
                 ]
             ]
         },
-        "temporal": {
-            "interval": [["1993-01-01T00:00:00Z", "2024-01-01T00:00:00Z"]]
-        },
+        "temporal": {"interval": [["1993-01-01T00:00:00Z", "2024-01-01T00:00:00Z"]]},
     },
     "assets": {
         "thumbnail": {

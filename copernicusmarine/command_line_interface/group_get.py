@@ -3,9 +3,7 @@ import pathlib
 
 import click
 
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_and_exit,
-)
+from copernicusmarine.command_line_interface.exception_handler import log_exception_and_exit
 from copernicusmarine.command_line_interface.utils import (
     MutuallyExclusiveOption,
     assert_cli_args_are_not_set_except_create_template,
@@ -16,21 +14,14 @@ from copernicusmarine.command_line_interface.utils import (
     tqdm_disable_option,
 )
 from copernicusmarine.core_functions import documentation_utils
-from copernicusmarine.core_functions.click_custom_class import (
-    CustomClickOptionsCommand,
-)
+from copernicusmarine.core_functions.click_custom_class import CustomClickOptionsCommand
 from copernicusmarine.core_functions.fields_query_builder import (
     build_query,
     get_queryable_requested_fields,
 )
-from copernicusmarine.core_functions.get import (
-    create_get_template,
-    get_function,
-)
+from copernicusmarine.core_functions.get import create_get_template, get_function
 from copernicusmarine.core_functions.models import ResponseGet
-from copernicusmarine.core_functions.request_structure import (
-    create_get_request,
-)
+from copernicusmarine.core_functions.request_structure import create_get_request
 
 logger = logging.getLogger("copernicusmarine")
 blank_logger = logging.getLogger("copernicusmarine_blank_logger")
@@ -263,9 +254,7 @@ def get(
         logger.debug("DEBUG mode activated")
 
     if create_template:
-        assert_cli_args_are_not_set_except_create_template(
-            click.get_current_context()
-        )
+        assert_cli_args_are_not_set_except_create_template(click.get_current_context())
         create_get_template()
         return
 

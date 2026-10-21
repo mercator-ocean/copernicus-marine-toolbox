@@ -2,9 +2,7 @@ MOCK_DATASET_W_ERRORS = {
     "id": "dataset_w_errors",
     "type": "Feature",
     "stac_version": "1.0.0",
-    "stac_extensions": [
-        "https://stac-extensions.github.io/datacube/v2.1.0/schema.json"
-    ],
+    "stac_extensions": ["https://stac-extensions.github.io/datacube/v2.1.0/schema.json"],
     "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -470,9 +468,7 @@ MOCK_DATASET_W_ERRORS = {
                 "unit": 3,  # Intentionally invalid value for testing error handling
                 "standardName": "mass_concentration_of_chlorophyll_a_in_sea_water",
                 "abbreviation": "chl",
-                "name": {
-                    "en": "Mass Concentration of chlorophyll in Sea Water"
-                },
+                "name": {"en": "Mass Concentration of chlorophyll in Sea Water"},
                 "unitConversion": None,
                 "missingValue": -32768,
                 "offset": None,
@@ -972,9 +968,7 @@ MOCK_DATASET_W_ERRORS = {
                     },
                 },
             },
-            "viewVariables": {
-                "chl": {"dtype": "<f4", "itemSize": 4, "chunkSize": 1320000}
-            },
+            "viewVariables": {"chl": {"dtype": "<f4", "itemSize": 4, "chunkSize": 1320000}},
             "isAggregated": False,
         },
         "geoChunked": {

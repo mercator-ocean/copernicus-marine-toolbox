@@ -3,33 +3,19 @@ from tests.test_utils import execute_in_terminal
 
 class TestMutuallyExclusive:
     def test_all_mutually_exclusive_arguments(self):
-        self.mutually_exclusive_arguments_returns_error(
-            "get", "--skip-existing", "--overwrite"
-        )
-        self.mutually_exclusive_arguments_returns_error(
-            "get", "--skip-existing", "--sync"
-        )
-        self.mutually_exclusive_arguments_returns_error(
-            "get", "--skip-existing", "--sync-delete"
-        )
-        self.mutually_exclusive_arguments_returns_error(
-            "get", "--sync", "--overwrite"
-        )
-        self.mutually_exclusive_arguments_returns_error(
-            "get", "--sync-delete", "--overwrite"
-        )
+        self.mutually_exclusive_arguments_returns_error("get", "--skip-existing", "--overwrite")
+        self.mutually_exclusive_arguments_returns_error("get", "--skip-existing", "--sync")
+        self.mutually_exclusive_arguments_returns_error("get", "--skip-existing", "--sync-delete")
+        self.mutually_exclusive_arguments_returns_error("get", "--sync", "--overwrite")
+        self.mutually_exclusive_arguments_returns_error("get", "--sync-delete", "--overwrite")
         self.mutually_exclusive_arguments_returns_error(
             "subset", "--skip-existing", "--no-directories"
         )
-        self.mutually_exclusive_arguments_returns_error(
-            "subset", "--no-directories", "--overwrite"
-        )
+        self.mutually_exclusive_arguments_returns_error("subset", "--no-directories", "--overwrite")
         self.mutually_exclusive_arguments_returns_error(
             "subset", "--sync-delete", "--no-directories"
         )
-        self.mutually_exclusive_arguments_returns_error(
-            "subset", "--sync", "--no-directories"
-        )
+        self.mutually_exclusive_arguments_returns_error("subset", "--sync", "--no-directories")
 
     def mutually_exclusive_arguments_returns_error(self, com, arg1, arg2):
         if com == "subset":

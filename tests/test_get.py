@@ -107,12 +107,8 @@ class TestGet:
             f"cmems_mod_ibi_phy-temp_my_0.027deg_P1Y-m_202511/"
             f"CMEMS_v6r1_IBI_PHY_MY_NL_01yav_temp_"
         )
-        assert os.path.exists(
-            start_path + "20010101_20011231_R20251125_RE01.nc"
-        )
-        assert not os.path.exists(
-            start_path + "20010101_20011231_R20251125_RE01_(1).nc"
-        )
+        assert os.path.exists(start_path + "20010101_20011231_R20251125_RE01.nc")
+        assert not os.path.exists(start_path + "20010101_20011231_R20251125_RE01_(1).nc")
         assert returned_value["total_size"] == "0.00 MB"
 
     def test_get_download_with_dry_run_option(self, tmp_path):
@@ -189,18 +185,14 @@ class TestGet:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (
-            "Some ``--response-fields`` fields are invalid:"
-            " wrong_field" in self.output.stderr
-        )
+        assert "Some ``--response-fields`` fields are invalid:" " wrong_field" in self.output.stderr
 
         command[-1] = "wrong_field1, wrong_field2"
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
             "Wrong fields error: All ``--response-fields`` "
-            "fields are invalid: wrong_field1, wrong_field2"
-            in self.output.stderr
+            "fields are invalid: wrong_field1, wrong_field2" in self.output.stderr
         )
 
     def test_get_download_s3_with_wildcard_filter(self, tmp_path):
@@ -248,10 +240,7 @@ class TestGet:
         assert len(downloaded_files) == 5
 
         for filename in downloaded_files:
-            assert (
-                fnmatch.fnmatch(filename, filter_option)
-                or re.match(regex, filename) is not None
-            )
+            assert fnmatch.fnmatch(filename, filter_option) or re.match(regex, filename) is not None
 
     def test_get_download_no_files(self):
         regex = "toto"
@@ -274,9 +263,7 @@ class TestGet:
         self, tmp_path, output_directory=None
     ):
         download_folder = (
-            tmp_path
-            if not output_directory
-            else str(Path(tmp_path) / Path(output_directory))
+            tmp_path if not output_directory else str(Path(tmp_path) / Path(output_directory))
         )
 
         filter_ = "*_200[12]*.nc"
@@ -297,18 +284,14 @@ class TestGet:
 
         assert self.output.returncode == 0
 
-    def then_files_are_created_without_tree_folder(
-        self, tmp_path, output_directory=None
-    ):
+    def then_files_are_created_without_tree_folder(self, tmp_path, output_directory=None):
         expected_files = [
             "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_temp_20010101_20011231_R20251125_RE01.nc",
             "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_temp_20020101_20021231_R20251125_RE01.nc",
         ]
 
         download_folder = (
-            Path(tmp_path)
-            if not output_directory
-            else Path(tmp_path) / Path(output_directory)
+            Path(tmp_path) if not output_directory else Path(tmp_path) / Path(output_directory)
         )
 
         downloaded_files = [path.name for path in download_folder.iterdir()]
@@ -316,16 +299,12 @@ class TestGet:
         assert set(expected_files).issubset(downloaded_files)
 
     def test_no_directories_option_original_files(self, tmp_path):
-        self.when_i_run_copernicus_marine_command_using_no_directories_option(
-            tmp_path
-        )
+        self.when_i_run_copernicus_marine_command_using_no_directories_option(tmp_path)
         self.then_files_are_created_without_tree_folder(tmp_path)
         self.when_i_run_copernicus_marine_command_using_no_directories_option(
             tmp_path, output_directory="test"
         )
-        self.then_files_are_created_without_tree_folder(
-            tmp_path, output_directory="test"
-        )
+        self.then_files_are_created_without_tree_folder(tmp_path, output_directory="test")
 
     def test_get_2023_08_original_files(self):
         command = [
@@ -398,16 +377,13 @@ class TestGet:
             lines = file.read().splitlines()
             assert len(lines) == 3
             assert (
-                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20010101_20011231_R20251216_RE01.nc"
-                in lines[0]
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20010101_20011231_R20251216_RE01.nc" in lines[0]
             )
             assert (
-                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20020101_20021231_R20251216_RE01.nc"
-                in lines[1]
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20020101_20021231_R20251216_RE01.nc" in lines[1]
             )
             assert (
-                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20030101_20031231_R20251216_RE01.nc"
-                in lines[2]
+                "CMEMS_v6r1_IBI_PHY_MY_NL_01yav_ssh_20030101_20031231_R20251216_RE01.nc" in lines[2]
             )
 
     def test_last_modified_date_is_set_with_s3(self, tmp_path):
@@ -430,9 +406,7 @@ class TestGet:
         five_minutes_ago = datetime.now() - timedelta(minutes=5)
 
         assert self.output.returncode == 0
-        assert datetime.fromtimestamp(os.path.getmtime(output_file)) < (
-            five_minutes_ago
-        )
+        assert datetime.fromtimestamp(os.path.getmtime(output_file)) < (five_minutes_ago)
 
     def test_get_goes_to_staging(self):
         command = [
@@ -446,10 +420,7 @@ class TestGet:
             "--dry-run",
         ]
         self.output = execute_in_terminal(command)
-        assert (
-            "mdl-metadata-dta/dataset_product_id_mapping.json"
-            in self.output.stderr
-        )
+        assert "mdl-metadata-dta/dataset_product_id_mapping.json" in self.output.stderr
 
     def test_get_function(self, tmp_path):
         get_result = get(
@@ -462,9 +433,7 @@ class TestGet:
         assert all(result.file_path.exists() for result in get_result.files)
 
     @mock.patch("os.utime", side_effect=PermissionError)
-    def test_permission_denied_for_modification_date(
-        self, mock_utime, tmp_path, caplog
-    ):
+    def test_permission_denied_for_modification_date(self, mock_utime, tmp_path, caplog):
         get(
             dataset_id="METOFFICE-GLO-SST-L4-REP-OBS-SST",
             filter="*2022053112000*",
@@ -478,9 +447,7 @@ class TestGet:
             "20220531120000-UKMO-L4_GHRSST-SSTfnd-OSTIA-GLOB_REP-v02.0-fv02.0.nc",
         )
         five_minutes_ago = datetime.now() - timedelta(minutes=5)
-        assert datetime.fromtimestamp(os.path.getmtime(output_file)) > (
-            five_minutes_ago
-        )
+        assert datetime.fromtimestamp(os.path.getmtime(output_file)) > (five_minutes_ago)
 
     def test_static_are_correctly_printed_in_get(self):
         command = [
@@ -506,8 +473,7 @@ class TestGet:
                 dry_run=True,
             )
             assert (
-                "The dataset version has been included in the dataset_id argument."
-                in caplog.text
+                "The dataset version has been included in the dataset_id argument." in caplog.text
             )
             assert "WARNING" in caplog.text
             assert 'Selected dataset version: "202511"' in caplog.text

@@ -20,9 +20,7 @@ from copernicusmarine.core_functions.exceptions import (
 )
 from copernicusmarine.core_functions.models import CoordinatesSelectionMethod
 from copernicusmarine.core_functions.request_structure import SubsetRequest
-from copernicusmarine.core_functions.utils import (
-    timestamp_or_datestring_to_datetime,
-)
+from copernicusmarine.core_functions.utils import timestamp_or_datestring_to_datetime
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -30,9 +28,7 @@ from copernicusmarine.download_functions.subset_parameters import (
     XParameters,
     YParameters,
 )
-from copernicusmarine.download_functions.utils import (
-    get_coordinate_ids_from_parameters,
-)
+from copernicusmarine.download_functions.utils import get_coordinate_ids_from_parameters
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -56,20 +52,18 @@ def _choose_extreme_point(
     if (
         coord_label == "time"
         and actual_extreme
-        >= timestamp_or_datestring_to_datetime(
-            dataset[coord_label].values.min()
-        ).replace(tzinfo=None)
+        >= timestamp_or_datestring_to_datetime(dataset[coord_label].values.min()).replace(
+            tzinfo=None
+        )
         and actual_extreme
-        <= timestamp_or_datestring_to_datetime(
-            dataset[coord_label].values.max()
-        ).replace(tzinfo=None)
+        <= timestamp_or_datestring_to_datetime(dataset[coord_label].values.max()).replace(
+            tzinfo=None
+        )
     ):
-        external_point = dataset.sel(
-            {coord_label: actual_extreme}, method=method
-        )[coord_label].values
-        external_point = timestamp_or_datestring_to_datetime(
-            external_point
-        ).replace(tzinfo=None)
+        external_point = dataset.sel({coord_label: actual_extreme}, method=method)[
+            coord_label
+        ].values
+        external_point = timestamp_or_datestring_to_datetime(external_point).replace(tzinfo=None)
     elif (
         coord_label != "time"
         and actual_extreme > dataset[coord_label].min()
@@ -79,9 +73,9 @@ def _choose_extreme_point(
         and actual_extreme > dataset[coord_label].min()
         and actual_extreme < dataset[coord_label].max()
     ):
-        external_point = dataset.sel(
-            {coord_label: actual_extreme}, method=method
-        )[coord_label].values
+        external_point = dataset.sel({coord_label: actual_extreme}, method=method)[
+            coord_label
+        ].values
     else:
         external_point = actual_extreme
     return external_point
@@ -92,13 +86,9 @@ def _enlarge_selection(
     coord_label: str,
     coord_selection: slice,
 ) -> slice:
-    external_minimum = _choose_extreme_point(
-        dataset, coord_label, coord_selection.start, "pad"
-    )
+    external_minimum = _choose_extreme_point(dataset, coord_label, coord_selection.start, "pad")
 
-    external_maximum = _choose_extreme_point(
-        dataset, coord_label, coord_selection.stop, "backfill"
-    )
+    external_maximum = _choose_extreme_point(dataset, coord_label, coord_selection.stop, "backfill")
 
     return slice(external_minimum, external_maximum)
 
@@ -108,13 +98,9 @@ def _nearest_selection(
     coord_label: str,
     coord_selection: slice,
 ) -> slice:
-    external_minimum = _choose_extreme_point(
-        dataset, coord_label, coord_selection.start, "nearest"
-    )
+    external_minimum = _choose_extreme_point(dataset, coord_label, coord_selection.start, "nearest")
 
-    external_maximum = _choose_extreme_point(
-        dataset, coord_label, coord_selection.stop, "nearest"
-    )
+    external_maximum = _choose_extreme_point(dataset, coord_label, coord_selection.stop, "nearest")
 
     return slice(external_minimum, external_maximum)
 
@@ -128,54 +114,33 @@ def _dataset_custom_sel(
     if coordinate_label in dataset.sizes:
         if isinstance(coord_selection, slice) and (
             len(dataset[coordinate_label].values) > 1
-            and (
-                dataset[coordinate_label].values[0]
-                > dataset[coordinate_label].values[1]
-            )
+            and (dataset[coordinate_label].values[0] > dataset[coordinate_label].values[1])
             and coord_selection.start < coord_selection.stop
         ):
-            coord_selection = slice(
-                coord_selection.stop, coord_selection.start
-            )
+            coord_selection = slice(coord_selection.stop, coord_selection.start)
         if coordinates_selection_method == "outside" and (
-            isinstance(coord_selection, slice)
-            and coord_selection.stop is not None
+            isinstance(coord_selection, slice) and coord_selection.stop is not None
         ):
-            coord_selection = _enlarge_selection(
-                dataset, coordinate_label, coord_selection
-            )
+            coord_selection = _enlarge_selection(dataset, coordinate_label, coord_selection)
         if coordinates_selection_method == "nearest" and (
-            isinstance(coord_selection, slice)
-            and coord_selection.stop is not None
+            isinstance(coord_selection, slice) and coord_selection.stop is not None
         ):
-            coord_selection = _nearest_selection(
-                dataset, coordinate_label, coord_selection
-            )
+            coord_selection = _nearest_selection(dataset, coordinate_label, coord_selection)
         if isinstance(coord_selection, slice):
-            tmp_dataset = dataset.sel(
-                {coordinate_label: coord_selection}, method=None
-            )
+            tmp_dataset = dataset.sel({coordinate_label: coord_selection}, method=None)
         else:
-            tmp_dataset = dataset.sel(
-                {coordinate_label: coord_selection}, method="nearest"
-            )
+            tmp_dataset = dataset.sel({coordinate_label: coord_selection}, method="nearest")
         if tmp_dataset.coords[coordinate_label].size == 0 or (
             coordinate_label not in tmp_dataset.sizes
         ):
             target = (
-                coord_selection.start
-                if isinstance(coord_selection, slice)
-                else coord_selection
+                coord_selection.start if isinstance(coord_selection, slice) else coord_selection
             )
-            nearest_neighbour_value = dataset.sel(
-                {coordinate_label: target}, method="nearest"
-            )[coordinate_label].values
+            nearest_neighbour_value = dataset.sel({coordinate_label: target}, method="nearest")[
+                coordinate_label
+            ].values
             dataset = dataset.sel(
-                {
-                    coordinate_label: slice(
-                        nearest_neighbour_value, nearest_neighbour_value
-                    )
-                }
+                {coordinate_label: slice(nearest_neighbour_value, nearest_neighbour_value)}
             )
         else:
             dataset = tmp_dataset
@@ -197,8 +162,7 @@ def get_size_of_coordinate_subset(
         )
     else:
         raise KeyError(
-            f"Could not subset on {coordinate_label}. "
-            "Didn't find an equivalent in the dataset."
+            f"Could not subset on {coordinate_label}. " "Didn't find an equivalent in the dataset."
         )
 
 
@@ -222,9 +186,7 @@ def _shift_longitude_dimension(
             minimum_longitude_modulus,
             "nearest",
         )  # type: ignore
-    window = (
-        minimum_longitude_modulus + 180
-    )  # compute the degrees needed to move the dataset
+    window = minimum_longitude_modulus + 180  # compute the degrees needed to move the dataset
     if coordinate_id in dataset.sizes:
         attrs = dataset[coordinate_id].attrs
         if "valid_min" in attrs:
@@ -232,12 +194,7 @@ def _shift_longitude_dimension(
         if "valid_max" in attrs:
             attrs["valid_max"] += window
         dataset = dataset.assign_coords(
-            {
-                coordinate_id: (
-                    (dataset[coordinate_id] + (180 - window)) % 360
-                )
-                - (180 - window)
-            }
+            {coordinate_id: ((dataset[coordinate_id] + (180 - window)) % 360) - (180 - window)}
         ).sortby(coordinate_id)
         dataset[coordinate_id].attrs = attrs
     return dataset
@@ -251,11 +208,7 @@ def _y_axis_subset(
     minimum_y = y_parameters.minimum_y
     maximum_y = y_parameters.maximum_y
     if minimum_y is not None or maximum_y is not None:
-        y_selection = (
-            minimum_y
-            if minimum_y == maximum_y
-            else slice(minimum_y, maximum_y)
-        )
+        y_selection = minimum_y if minimum_y == maximum_y else slice(minimum_y, maximum_y)
         return _dataset_custom_sel(
             dataset,
             y_parameters.coordinate_id,
@@ -286,11 +239,7 @@ def x_axis_selection(
                 maximum_x += 360
                 shift_window = True
 
-        return (
-            minimum_x
-            if minimum_x == maximum_x
-            else slice(minimum_x, maximum_x)
-        ), shift_window
+        return (minimum_x if minimum_x == maximum_x else slice(minimum_x, maximum_x)), shift_window
     if minimum_x is not None:
         return slice(minimum_x, None), shift_window
     elif maximum_x is not None:
@@ -398,22 +347,14 @@ def _depth_subset(
     minimum_depth = depth_parameters.minimum_depth
     maximum_depth = depth_parameters.maximum_depth
     if minimum_depth is not None or maximum_depth is not None:
-        coords = (
-            dataset.coords if isinstance(dataset, xarray.Dataset) else dataset
-        )
+        coords = dataset.coords if isinstance(dataset, xarray.Dataset) else dataset
         if "elevation" in coords:
-            minimum_depth = (
-                minimum_depth * -1.0 if minimum_depth is not None else None
-            )
-            maximum_depth = (
-                maximum_depth * -1.0 if maximum_depth is not None else None
-            )
+            minimum_depth = minimum_depth * -1.0 if minimum_depth is not None else None
+            maximum_depth = maximum_depth * -1.0 if maximum_depth is not None else None
             minimum_depth, maximum_depth = maximum_depth, minimum_depth
 
         depth_selection = (
-            minimum_depth
-            if minimum_depth == maximum_depth
-            else slice(minimum_depth, maximum_depth)
+            minimum_depth if minimum_depth == maximum_depth else slice(minimum_depth, maximum_depth)
         )
         dataset = _dataset_custom_sel(
             dataset,
@@ -424,9 +365,7 @@ def _depth_subset(
     return dataset
 
 
-def _cast_valid_minmax_to_variable_dtype(
-    dataset: xarray.Dataset, variable: str
-) -> xarray.Dataset:
+def _cast_valid_minmax_to_variable_dtype(dataset: xarray.Dataset, variable: str) -> xarray.Dataset:
     dataset[variable].attrs["valid_min"] = numpy.array(
         [dataset[variable].attrs["valid_min"]],
         dtype=dataset[variable].encoding["dtype"],
@@ -438,32 +377,23 @@ def _cast_valid_minmax_to_variable_dtype(
     return dataset
 
 
-def _cast_valid_range_to_variable_dtype(
-    dataset: xarray.Dataset, variable: str
-) -> xarray.Dataset:
+def _cast_valid_range_to_variable_dtype(dataset: xarray.Dataset, variable: str) -> xarray.Dataset:
     dataset[variable].attrs["valid_range"] = numpy.array(
         dataset[variable].attrs["valid_range"],
     ).astype(dataset[variable].encoding["dtype"])
     return dataset
 
 
-def _update_variables_attributes(
-    dataset: xarray.Dataset, variables: list[str]
-) -> xarray.Dataset:
+def _update_variables_attributes(dataset: xarray.Dataset, variables: list[str]) -> xarray.Dataset:
     for variable in variables:
-        if (
-            "valid_min" in dataset[variable].attrs
-            and "valid_max" in dataset[variable].attrs
-        ):
+        if "valid_min" in dataset[variable].attrs and "valid_max" in dataset[variable].attrs:
             _cast_valid_minmax_to_variable_dtype(dataset, variable)
         if "valid_range" in dataset[variable].attrs:
             _cast_valid_range_to_variable_dtype(dataset, variable)
     return dataset
 
 
-def _variables_subset(
-    dataset: xarray.Dataset, variables: list[str] | None
-) -> xarray.Dataset:
+def _variables_subset(dataset: xarray.Dataset, variables: list[str] | None) -> xarray.Dataset:
     dataset_variables_filter = []
     if not variables:
         dataset_variables_filter = [str(v) for v in dataset]
@@ -486,16 +416,12 @@ def _update_dataset_coordinate_attributes(
         if coordinate_id in dataset.sizes:
             coord = dataset[coordinate_id]
             attrs = coord.attrs
-            coordinate_attributes = (
-                NETCDF_CONVENTION_COORDINATE_ATTRIBUTES.copy()
-            )
+            coordinate_attributes = NETCDF_CONVENTION_COORDINATE_ATTRIBUTES.copy()
             if "time" in coordinate_id:
                 attrs["standard_name"] = "time"
                 attrs["long_name"] = "Time"
                 attrs["axis"] = "T"
-                attrs["unit_long"] = (
-                    coord.encoding["units"].replace("_", " ").title()
-                )
+                attrs["unit_long"] = coord.encoding["units"].replace("_", " ").title()
                 coordinate_attributes.remove("units")
             elif coordinate_id in ["depth", "elevation"]:
                 coordinate_attributes.append("positive")
@@ -543,9 +469,7 @@ def subset(
         coordinates_selection_method,
     )
 
-    dataset = _temporal_subset(
-        dataset, temporal_parameters, coordinates_selection_method
-    )
+    dataset = _temporal_subset(dataset, temporal_parameters, coordinates_selection_method)
 
     dataset = _depth_subset(
         dataset,
@@ -607,14 +531,10 @@ def check_dataset_subset_bounds(
         coordinate, _, _ = all_coordinates[coordinate_id]
         minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
         user_minimum_coordinate_value = (
-            dataset_subset.minimum_y
-            if dataset_subset.minimum_y is not None
-            else minimum_value
+            dataset_subset.minimum_y if dataset_subset.minimum_y is not None else minimum_value
         )
         user_maximum_coordinate_value = (
-            dataset_subset.maximum_y
-            if dataset_subset.maximum_y is not None
-            else maximum_value
+            dataset_subset.maximum_y if dataset_subset.maximum_y is not None else maximum_value
         )
         _check_coordinate_overlap(
             dimension=coordinate_id,
@@ -641,14 +561,10 @@ def check_dataset_subset_bounds(
             )
         else:
             user_minimum_coordinate_value = (
-                dataset_subset.minimum_x
-                if dataset_subset.minimum_x is not None
-                else minimum_value
+                dataset_subset.minimum_x if dataset_subset.minimum_x is not None else minimum_value
             )
             user_maximum_coordinate_value = (
-                dataset_subset.maximum_x
-                if dataset_subset.maximum_x is not None
-                else maximum_value
+                dataset_subset.maximum_x if dataset_subset.maximum_x is not None else maximum_value
             )
         _check_coordinate_overlap(
             dimension=coordinate_id,
@@ -662,12 +578,8 @@ def check_dataset_subset_bounds(
         coordinate_id = axis_coordinate_id_mapping["t"]
         coordinate, _, _ = all_coordinates[coordinate_id]
         minimum_value, maximum_value = _get_minimun_maximum_dataset(coordinate)
-        dataset_minimum_coordinate_value = timestamp_or_datestring_to_datetime(
-            minimum_value
-        )
-        dataset_maximum_coordinate_value = timestamp_or_datestring_to_datetime(
-            maximum_value
-        )
+        dataset_minimum_coordinate_value = timestamp_or_datestring_to_datetime(minimum_value)
+        dataset_maximum_coordinate_value = timestamp_or_datestring_to_datetime(maximum_value)
         user_minimum_coordinate_value = (
             dataset_subset.start_datetime
             if dataset_subset.start_datetime is not None
@@ -742,19 +654,13 @@ def _check_coordinate_overlap(
             dataset_maximum_coordinate_value = 180
         elif dataset_maximum_coordinate_value == 180:
             dataset_minimum_coordinate_value = -180
-        (
-            longitude_overlap,
-            longitude_request_contained,
-        ) = _check_longitude_overlap_and_contained(
+        (longitude_overlap, longitude_request_contained,) = _check_longitude_overlap_and_contained(
             user_minimum_coordinate_value,
             user_maximum_coordinate_value,
             dataset_minimum_coordinate_value,
             dataset_maximum_coordinate_value,
         )
-    if (
-        user_maximum_coordinate_value < dataset_minimum_coordinate_value
-        and not longitude_overlap
-    ):
+    if user_maximum_coordinate_value < dataset_minimum_coordinate_value and not longitude_overlap:
         if user_minimum_coordinate_value == dataset_minimum_coordinate_value:
             message = (
                 f"{prefix_message}"
@@ -762,10 +668,7 @@ def _check_coordinate_overlap(
                 f"{suffix_message}"
             )
         raise CoordinatesOutOfDatasetBounds(message)
-    elif (
-        user_minimum_coordinate_value > dataset_maximum_coordinate_value
-        and not longitude_overlap
-    ):
+    elif user_minimum_coordinate_value > dataset_maximum_coordinate_value and not longitude_overlap:
         if user_maximum_coordinate_value == dataset_maximum_coordinate_value:
             message = (
                 f"{prefix_message}"
@@ -814,23 +717,18 @@ def _check_longitude_overlap_and_contained(
         # Dataset overlaps if intersects [user_min, 180] ∪ [-180, user_max]
         return (
             dataset_maximum_coordinate_value >= user_minimum_coordinate_value
-            or dataset_minimum_coordinate_value
-            <= user_maximum_coordinate_value,
+            or dataset_minimum_coordinate_value <= user_maximum_coordinate_value,
             eastern_contained and western_contained,
         )
     else:
         return (
             not (
-                user_maximum_coordinate_value
-                < dataset_minimum_coordinate_value
-                or dataset_maximum_coordinate_value
-                < user_minimum_coordinate_value
+                user_maximum_coordinate_value < dataset_minimum_coordinate_value
+                or dataset_maximum_coordinate_value < user_minimum_coordinate_value
             ),
             (
-                user_minimum_coordinate_value
-                >= dataset_minimum_coordinate_value
-                and user_maximum_coordinate_value
-                <= dataset_maximum_coordinate_value
+                user_minimum_coordinate_value >= dataset_minimum_coordinate_value
+                and user_maximum_coordinate_value <= dataset_maximum_coordinate_value
             ),
         )
 

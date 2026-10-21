@@ -3,24 +3,18 @@ from dataclasses import dataclass
 
 import semver
 
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_CONFIG_URL,
-)
+from copernicusmarine.core_functions.environment_variables import COPERNICUSMARINE_CONFIG_URL
 from copernicusmarine.core_functions.sessions import JsonParserConnection
 from copernicusmarine.versioner import __version__ as toolbox_version
 
 logger = logging.getLogger("copernicusmarine")
 
-MARINE_DATASTORE_CONFIG_URL_CDN = (
-    "https://stac.marine.copernicus.eu/clients-config-v1"
-)
+MARINE_DATASTORE_CONFIG_URL_CDN = "https://stac.marine.copernicus.eu/clients-config-v1"
 MARINE_DATASTORE_CONFIG_URL_DIRECT = (
     COPERNICUSMARINE_CONFIG_URL
     or "https://s3.waw3-1.cloudferro.com/mdl-metadata/clientsConfigV1.json"
 )
-MARINE_DATASTORE_CONFIG_URL_STAGING = (
-    "https://stac-dta.marine.copernicus.eu/clients-config-v1"
-)
+MARINE_DATASTORE_CONFIG_URL_STAGING = "https://stac-dta.marine.copernicus.eu/clients-config-v1"
 
 MARINE_DATASTORE_SERVICES_MAPPING: dict[str, list[str]] = {
     "describe": ["mds", "mds/serverlessArco/meta"],
@@ -78,9 +72,7 @@ def _check_version(function_name: str, staging: bool) -> MarineDataStoreConfig:
     for service in MARINE_DATASTORE_SERVICES_MAPPING[function_name]:
         required_version = marine_datastore_versions[service]
         try:
-            if not semver.Version.parse(toolbox_version).match(
-                required_version
-            ):
+            if not semver.Version.parse(toolbox_version).match(required_version):
                 logger.debug(
                     f"Client version {toolbox_version} is not compatible with "
                     f"{service}. Service needs version {required_version}."
@@ -98,16 +90,12 @@ def _get_required_versions_and_config(
     staging: bool,
 ) -> tuple[dict[str, str], MarineDataStoreConfig]:
     url_mds_versions = (
-        MARINE_DATASTORE_CONFIG_URL_STAGING
-        if staging
-        else MARINE_DATASTORE_CONFIG_URL_DIRECT
+        MARINE_DATASTORE_CONFIG_URL_STAGING if staging else MARINE_DATASTORE_CONFIG_URL_DIRECT
     )
     logger.debug(f"Getting required versions from {url_mds_versions}")
     mds_config: dict = {}
     try:
-        with JsonParserConnection(
-            timeout=2, retries=1
-        ) as connection_without_retries:
+        with JsonParserConnection(timeout=2, retries=1) as connection_without_retries:
             mds_config = connection_without_retries.get_json_file(
                 url_mds_versions,
             )
@@ -115,9 +103,7 @@ def _get_required_versions_and_config(
         if staging:
             raise e
         else:
-            logger.debug(
-                f"Failed to get the configuration file from {url_mds_versions}. "
-            )
+            logger.debug(f"Failed to get the configuration file from {url_mds_versions}. ")
             with JsonParserConnection() as connection:
                 mds_config = connection.get_json_file(
                     MARINE_DATASTORE_CONFIG_URL_CDN,
@@ -138,9 +124,7 @@ def _get_required_versions_and_config(
                     dataset_product_mapping_url=catalogue["idMapping"],
                     root_metadata_url=(
                         root_metadata_url[:-1]
-                        if (
-                            root_metadata_url := catalogue["stacRoot"]
-                        ).endswith("/")
+                        if (root_metadata_url := catalogue["stacRoot"]).endswith("/")
                         else root_metadata_url
                     ),
                 )

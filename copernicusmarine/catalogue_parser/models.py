@@ -8,13 +8,8 @@ from typing import Literal, Type, TypeVar
 import pystac
 from pydantic import BaseModel, ConfigDict
 
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_debug,
-)
-from copernicusmarine.core_functions.utils import (
-    datetime_parser,
-    next_or_raise_exception,
-)
+from copernicusmarine.command_line_interface.exception_handler import log_exception_debug
+from copernicusmarine.core_functions.utils import datetime_parser, next_or_raise_exception
 
 VERSION_DEFAULT = "default"
 PART_DEFAULT = "default"
@@ -164,21 +159,12 @@ class CopernicusMarineCoordinate(BaseModel):
         minimum_value = None
         coordinate_values = None
         if dimension == "time":
-            if (
-                arco_data_metadata_producer_valid_start_date
-            ) and coordinates_info.get("min"):
-                minimum_value = (
-                    CopernicusMarineCoordinate._format_admp_valid_start_date(
-                        arco_data_metadata_producer_valid_start_date,
-                        to_timestamp=isinstance(
-                            coordinates_info.get("min"), int
-                        ),
-                    )
+            if (arco_data_metadata_producer_valid_start_date) and coordinates_info.get("min"):
+                minimum_value = CopernicusMarineCoordinate._format_admp_valid_start_date(
+                    arco_data_metadata_producer_valid_start_date,
+                    to_timestamp=isinstance(coordinates_info.get("min"), int),
                 )
-            elif (
-                arco_data_metadata_producer_valid_start_index
-                and coordinates_info.get("values")
-            ):
+            elif arco_data_metadata_producer_valid_start_index and coordinates_info.get("values"):
                 coordinate_values = coordinates_info.get("values")[
                     arco_data_metadata_producer_valid_start_index:
                 ]
@@ -199,9 +185,9 @@ class CopernicusMarineCoordinate(BaseModel):
             chunking_length=chunking_length,
             chunk_type=dimension_metadata.get("chunkType"),
             chunk_reference_coordinate=dimension_metadata.get("chunkRefCoord"),
-            chunk_geometric_factor=dimension_metadata.get(
-                "chunkGeometricFactor", {}
-            ).get(variable_id),
+            chunk_geometric_factor=dimension_metadata.get("chunkGeometricFactor", {}).get(
+                variable_id
+            ),
             axis=axis,
         )
         if dimension == "elevation":
@@ -215,10 +201,7 @@ class CopernicusMarineCoordinate(BaseModel):
     ) -> str | int:
         if to_timestamp:
             return int(
-                datetime_parser(
-                    arco_data_metadata_producer_valid_start_date
-                ).timestamp()
-                * 1000
+                datetime_parser(arco_data_metadata_producer_valid_start_date).timestamp() * 1000
             )
         return arco_data_metadata_producer_valid_start_date
 
@@ -226,15 +209,11 @@ class CopernicusMarineCoordinate(BaseModel):
         self.coordinate_id = "depth"
         minimum_elevation = self.minimum_value
         maximum_elevation = self.maximum_value
-        if minimum_elevation is not None and isinstance(
-            minimum_elevation, (int, float)
-        ):
+        if minimum_elevation is not None and isinstance(minimum_elevation, (int, float)):
             self.maximum_value = -minimum_elevation
         else:
             self.maximum_value = None
-        if maximum_elevation is not None and isinstance(
-            maximum_elevation, (int, float)
-        ):
+        if maximum_elevation is not None and isinstance(maximum_elevation, (int, float)):
             self.minimum_value = -maximum_elevation
         else:
             self.minimum_value = None
@@ -338,16 +317,10 @@ class CopernicusMarineService(BaseModel):
             service_uri = asset.get_absolute_href()
             if not service_uri:
                 raise ServiceNotHandled(service_name)
-            service_name_parsed = _service_type_from_web_api_string(
-                service_name
-            )
-            service_short_name = short_name_from_service_name(
-                service_name_parsed
-            )
+            service_name_parsed = _service_type_from_web_api_string(service_name)
+            service_short_name = short_name_from_service_name(service_name_parsed)
             service_format = None
-            admp_in_preparation = metadata_item.properties.get(
-                "admp_in_preparation"
-            )
+            admp_in_preparation = metadata_item.properties.get("admp_in_preparation")
             arco_sparse_type = metadata_item.properties.get("admp_sparse_type")
             if asset.media_type and "zarr" in asset.media_type:
                 service_format = CopernicusMarineServiceFormat.ZARR
@@ -356,21 +329,14 @@ class CopernicusMarineService(BaseModel):
 
             if not service_uri.endswith("/"):
                 if admp_in_preparation and (
-                    service_name_parsed
-                    == CopernicusMarineServiceNames.GEOSERIES
-                    or service_name_parsed
-                    == CopernicusMarineServiceNames.TIMESERIES
+                    service_name_parsed == CopernicusMarineServiceNames.GEOSERIES
+                    or service_name_parsed == CopernicusMarineServiceNames.TIMESERIES
                 ):
                     return None
                 else:
                     platforms_metadata = None
-                    if (
-                        service_name_parsed
-                        == CopernicusMarineServiceNames.PLATFORMSERIES
-                    ):
-                        platforms_asset = metadata_item.get_assets().get(
-                            "platforms"
-                        )
+                    if service_name_parsed == CopernicusMarineServiceNames.PLATFORMSERIES:
+                        platforms_asset = metadata_item.get_assets().get("platforms")
                         if platforms_asset is not None:
                             platforms_metadata = platforms_asset.href
 
@@ -383,9 +349,7 @@ class CopernicusMarineService(BaseModel):
                             CopernicusMarineVariable.from_metadata_item(
                                 metadata_item, asset, var_cube["id"], bbox
                             )
-                            for var_cube in metadata_item.properties[
-                                "cube:variables"
-                            ].values()
+                            for var_cube in metadata_item.properties["cube:variables"].values()
                         ],
                         service_format=service_format,
                         platforms_metadata=platforms_metadata,
@@ -406,9 +370,7 @@ class CopernicusMarineService(BaseModel):
                     continue
                 if len(axis_coordinate_id_mapping) == 4:
                     return axis_coordinate_id_mapping
-                axis_coordinate_id_mapping[
-                    coordinate.axis
-                ] = coordinate.coordinate_id
+                axis_coordinate_id_mapping[coordinate.axis] = coordinate.coordinate_id
 
         return axis_coordinate_id_mapping
 
@@ -474,12 +436,8 @@ class CopernicusMarinePart(BaseModel):
         retired_date = metadata_item.properties.get("admp_retired_date")
         released_date = metadata_item.properties.get("admp_released_date")
         arco_updated_date = metadata_item.properties.get("admp_updated_data")
-        arco_updating_start_date = metadata_item.properties.get(
-            "admp_updating_start_date"
-        )
-        if retired_date and datetime_parser(retired_date) < datetime_parser(
-            "now"
-        ):
+        arco_updating_start_date = metadata_item.properties.get("admp_updating_start_date")
+        if retired_date and datetime_parser(retired_date) < datetime_parser("now"):
             return None
         services = [
             service
@@ -507,11 +465,7 @@ class CopernicusMarinePart(BaseModel):
     def get_service_by_service_name(
         self, service_name: CopernicusMarineServiceNames
     ) -> CopernicusMarineService:
-        return next(
-            service
-            for service in self.services
-            if service.service_name == service_name
-        )
+        return next(service for service in self.services if service.service_name == service_name)
 
     def get_coordinates(
         self,
@@ -552,12 +506,8 @@ class CopernicusMarinePart(BaseModel):
                             [service.service_name],
                         )
                     else:
-                        coordinates[coordinate_id][1].append(
-                            variable.short_name
-                        )
-                        coordinates[coordinate_id][2].append(
-                            service.service_name
-                        )
+                        coordinates[coordinate_id][1].append(variable.short_name)
+                        coordinates[coordinate_id][2].append(service.service_name)
         return coordinates
 
 
@@ -585,8 +535,7 @@ class CopernicusMarineVersion(BaseModel):
         not_released_parts = {
             part.name
             for part in self.parts
-            if part.released_date
-            and datetime_parser(part.released_date) > datetime_parser("now")
+            if part.released_date and datetime_parser(part.released_date) > datetime_parser("now")
         }
         will_be_retired_parts = {
             part.name: datetime_parser(part.retired_date).timestamp()
@@ -600,8 +549,7 @@ class CopernicusMarineVersion(BaseModel):
             self.parts,
             key=lambda x: (
                 x.name in not_released_parts,
-                max_retired_timestamp
-                - will_be_retired_parts.get(x.name, max_retired_timestamp),
+                max_retired_timestamp - will_be_retired_parts.get(x.name, max_retired_timestamp),
                 -(x.name == PART_DEFAULT),
                 -(x.name == "latest"),  # for INSITU datasets
                 -(x.name == "bathy"),  # for STATIC datasets
@@ -648,9 +596,7 @@ class CopernicusMarineDataset(BaseModel):
     #: List of versions of the dataset.
     versions: list[CopernicusMarineVersion]
 
-    def get_version(
-        self, force_version: str | None
-    ) -> CopernicusMarineVersion:
+    def get_version(self, force_version: str | None) -> CopernicusMarineVersion:
         if not force_version:
             return self.versions[0]
         for version in self.versions:
@@ -663,9 +609,7 @@ class CopernicusMarineDataset(BaseModel):
         retired_dates = {}
         for version in self.versions:
             released_date, retired_date = version.sort_parts()
-            if released_date and datetime_parser(
-                released_date
-            ) > datetime_parser("now"):
+            if released_date and datetime_parser(released_date) > datetime_parser("now"):
                 not_released_versions.add(version.label)
             if retired_date:
                 retired_dates[version.label] = retired_date
@@ -701,10 +645,7 @@ class CopernicusMarineDataset(BaseModel):
                         f"Failed to parse part {dataset_item.parsed_part} "
                         f"for dataset {dataset_item.parsed_id}.",
                     )
-                    logger.error(
-                        "Stopping describe. "
-                        "Check option raise_on_error if needed."
-                    )
+                    logger.error("Stopping describe. " "Check option raise_on_error if needed.")
                     raise e
                 else:
                     log_exception_debug(
@@ -725,9 +666,7 @@ class CopernicusMarineDataset(BaseModel):
                         break
             else:
                 all_versions.add(dataset_version)
-                version = CopernicusMarineVersion(
-                    label=dataset_version, parts=[part]
-                )
+                version = CopernicusMarineVersion(label=dataset_version, parts=[part])
                 self.versions.append(version)
 
 
@@ -782,9 +721,9 @@ class CopernicusMarineCatalogue(BaseModel):
                 latest_version = dataset.versions[0]
                 parts_to_remove = []
                 for part in latest_version.parts:
-                    if part.released_date and datetime_parser(
-                        part.released_date
-                    ) > datetime_parser("now"):
+                    if part.released_date and datetime_parser(part.released_date) > datetime_parser(
+                        "now"
+                    ):
                         parts_to_remove.append(part)
                 for part_to_remove in parts_to_remove:
                     latest_version.parts.remove(part_to_remove)
@@ -828,17 +767,14 @@ class DatasetVersionNotFound(Exception):
     `Copernicus Marine website <https://help.marine.copernicus.eu/en/>`_).
     """
 
-    def __init__(
-        self, dataset: CopernicusMarineDataset, force_version: str | None
-    ):
+    def __init__(self, dataset: CopernicusMarineDataset, force_version: str | None):
         if force_version:
             message = (
                 f"The specified version '{force_version}' cannot be "
                 f"found for dataset {dataset.dataset_id}."
             )
             message += (
-                "\nAvailable versions are: "
-                f"{[version.label for version in dataset.versions]}."
+                "\nAvailable versions are: " f"{[version.label for version in dataset.versions]}."
             )
         else:
             message = f"No version found for dataset {dataset.dataset_id}."
@@ -930,9 +866,7 @@ def get_version_and_part_from_full_dataset_id(
     return dataset_name, version, part
 
 
-def get_version_from_dataset_id(
-    dataset_id: str, raise_on_error: bool
-) -> tuple[str, str | None]:
+def get_version_from_dataset_id(dataset_id: str, raise_on_error: bool) -> tuple[str, str | None]:
     pattern = rf"^(.*?)(?:_({REGEX_PATTERN_DATE_YYYYMM}))?$"
     match = re.match(pattern, dataset_id)
     if match:
