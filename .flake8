@@ -1,5 +1,5 @@
 [flake8]
-max-line-length = 88
+max-line-length = 79
 ignore =
     # Import not on top of file
     # E402, N813, E501
