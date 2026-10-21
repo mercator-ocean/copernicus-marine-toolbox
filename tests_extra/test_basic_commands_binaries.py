@@ -13,18 +13,12 @@ BINARY_VARIANT = os.getenv("BINARY_VARIANT", "core")
 
 class TestBasicCommandsBinaries:
     def test_help(self):
-        assert (
-            BINARY is not None
-        ), "BINARY_NAME environment variable is not set"
-        self.output = execute_in_terminal(
-            [BINARY, "describe", "--help"], shell=False
-        )
+        assert BINARY is not None, "BINARY_NAME environment variable is not set"
+        self.output = execute_in_terminal([BINARY, "describe", "--help"], shell=False)
         assert self.output.returncode == 0
         self.output = execute_in_terminal([BINARY, "get", "-h"], shell=False)
         assert self.output.returncode == 0
-        self.output = execute_in_terminal(
-            [BINARY, "subset", "-h"], shell=False
-        )
+        self.output = execute_in_terminal([BINARY, "subset", "-h"], shell=False)
         assert self.output.returncode == 0
         self.output = execute_in_terminal([BINARY, "login", "-h"], shell=False)
         assert self.output.returncode == 0

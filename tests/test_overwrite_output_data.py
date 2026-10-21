@@ -7,9 +7,7 @@ from tests.test_utils import execute_in_terminal
 
 
 class TestOverwriteOutputData:
-    def expected_downloaded_filepath_with_counter(
-        self, counter: int | None = None
-    ):
+    def expected_downloaded_filepath_with_counter(self, counter: int | None = None):
         if counter is None:
             return self.expected_downloaded_filepath
         else:
@@ -47,13 +45,9 @@ class TestOverwriteOutputData:
     def _test_download_without_overwrite_option(self):
         self.given_output_data_already_exists()
         self.when_overwrite_option_is_not_provided()
-        self.then_output_data_is_not_overwritten_and_new_files_are_created(
-            counter=1
-        )
+        self.then_output_data_is_not_overwritten_and_new_files_are_created(counter=1)
         self.when_overwrite_option_is_not_provided()
-        self.then_output_data_is_not_overwritten_and_new_files_are_created(
-            counter=2
-        )
+        self.then_output_data_is_not_overwritten_and_new_files_are_created(counter=2)
 
     def given_output_data_already_exists(self):
         self.request_data_download(
@@ -80,12 +74,7 @@ class TestOverwriteOutputData:
         )
 
     def then_output_data_is_overwritten(self):
-        assert (
-            pathlib.Path(
-                self.tmp_path, self.expected_downloaded_filepath
-            ).exists()
-            is True
-        )
+        assert pathlib.Path(self.tmp_path, self.expected_downloaded_filepath).exists() is True
         assert (
             pathlib.Path(
                 self.tmp_path,
@@ -94,26 +83,17 @@ class TestOverwriteOutputData:
             is False
         )
 
-    def then_output_data_is_not_overwritten_and_new_files_are_created(
-        self, counter
-    ):
+    def then_output_data_is_not_overwritten_and_new_files_are_created(self, counter):
         assert (
             self.overwritten_output_data_modification_time
             == self.initial_output_data_modification_time
         )
-        assert (
-            pathlib.Path(
-                self.tmp_path, self.expected_downloaded_filepath
-            ).exists()
-            is True
-        )
+        assert pathlib.Path(self.tmp_path, self.expected_downloaded_filepath).exists() is True
 
         assert (
             pathlib.Path(
                 self.tmp_path,
-                self.expected_downloaded_filepath_with_counter(
-                    counter=counter
-                ),
+                self.expected_downloaded_filepath_with_counter(counter=counter),
             ).exists()
             is True
         )
@@ -121,33 +101,23 @@ class TestOverwriteOutputData:
 
     def check_responses_has_expected_file_path(self, counter):
         if "file_path" in self.response_json:
-            assert pathlib.Path(
-                self.response_json["file_path"]
-            ) == pathlib.Path(
+            assert pathlib.Path(self.response_json["file_path"]) == pathlib.Path(
                 self.tmp_path,
-                self.expected_downloaded_filepath_with_counter(
-                    counter=counter
-                ),
+                self.expected_downloaded_filepath_with_counter(counter=counter),
             )
             assert (
                 self.response_json["filename"]
-                == self.expected_downloaded_filepath_with_counter(
-                    counter=counter
-                ).name
+                == self.expected_downloaded_filepath_with_counter(counter=counter).name
             )
         elif "files" in self.response_json:
             file_response = self.response_json["files"][0]
             assert pathlib.Path(file_response["file_path"]) == pathlib.Path(
                 self.tmp_path,
-                self.expected_downloaded_filepath_with_counter(
-                    counter=counter
-                ),
+                self.expected_downloaded_filepath_with_counter(counter=counter),
             )
             assert (
                 file_response["filename"]
-                == self.expected_downloaded_filepath_with_counter(
-                    counter=counter
-                ).name
+                == self.expected_downloaded_filepath_with_counter(counter=counter).name
             )
         else:
             raise ValueError(
@@ -218,22 +188,16 @@ class TestOverwriteOutputData:
         if command == "get":
             if service == "original-files":
                 last_modification_time = (
-                    pathlib.Path(folder, self.expected_downloaded_filepath)
-                    .stat()
-                    .st_mtime
+                    pathlib.Path(folder, self.expected_downloaded_filepath).stat().st_mtime
                 )
         elif command == "subset":
             if service == "arco-time-series":
                 last_modification_time = (
-                    pathlib.Path(folder, self.expected_downloaded_filepath)
-                    .stat()
-                    .st_mtime
+                    pathlib.Path(folder, self.expected_downloaded_filepath).stat().st_mtime
                 )
             elif service == "arco-geo-series":
                 last_modification_time = (
-                    pathlib.Path(folder, self.expected_downloaded_filepath)
-                    .stat()
-                    .st_mtime
+                    pathlib.Path(folder, self.expected_downloaded_filepath).stat().st_mtime
                 )
 
         attribute = (
@@ -245,9 +209,7 @@ class TestOverwriteOutputData:
 
         assert self.output.returncode == 0, self.output.stderr
 
-    def test_that_overwrite_option_does_not_create_subdirectory(
-        self, tmp_path
-    ):
+    def test_that_overwrite_option_does_not_create_subdirectory(self, tmp_path):
         """Unit test that verify that sub-directory is not created if data is
         overwritten and provided filepath is relative.
 
@@ -259,16 +221,12 @@ class TestOverwriteOutputData:
         pathlib.Path.mkdir(relative_folder, parents=True, exist_ok=True)
         filename = "test_file"
         file_extension = ".txt"
-        relative_filepath = pathlib.Path(
-            relative_folder, filename + file_extension
-        )
+        relative_filepath = pathlib.Path(relative_folder, filename + file_extension)
         Path(relative_filepath).touch()
         unique_filepath = get_unique_filepath(
             filepath=relative_filepath,
         )
-        assert unique_filepath == pathlib.Path(
-            relative_folder, filename + "_(1)" + file_extension
-        )
+        assert unique_filepath == pathlib.Path(relative_folder, filename + "_(1)" + file_extension)
 
 
 def command_from_service(service: str) -> str | None:

@@ -2,9 +2,7 @@ MOCK_PRODUCT_GLO = {
     "id": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
     "type": "Collection",
     "stac_version": "1.0.0",
-    "stac_extensions": [
-        "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
-    ],
+    "stac_extensions": ["https://stac-extensions.github.io/scientific/v1.0.0/schema.json"],
     "title": "Global Ocean Physics Analysis and Forecast",
     "description": "The Operational Mercator global ocean analysis and forecast system at 1/12 degree is providing 10 days of 3D global ocean forecasts updated daily. The time series is aggregated in time in order to reach a two full year’s time series sliding window.\n\nThis product includes daily and monthly mean files of temperature, salinity, currents, sea level, mixed layer depth and ice parameters from the top to the bottom over the global ocean. It also includes hourly mean surface fields for sea level height, temperature and currents. The global ocean output files are displayed with a 1/12 degree horizontal resolution with regular longitude/latitude equirectangular projection.\n\n50 vertical levels are ranging from 0 to 5500 meters.\n\nThis product also delivers a special dataset for surface current which also includes wave and tidal drift called SMOC (Surface merged Ocean Current).\n\n**DOI (product):**   \nhttps://doi.org/10.48670/moi-00016",
     "license": "proprietary",
@@ -160,9 +158,7 @@ MOCK_PRODUCT_GLO = {
     ],
     "extent": {
         "spatial": {"bbox": [[-180, -80, 179.9169921875, 90]]},
-        "temporal": {
-            "interval": [["2020-11-01T00:00:00Z", "2024-05-02T23:00:00Z"]]
-        },
+        "temporal": {"interval": [["2020-11-01T00:00:00Z", "2024-05-02T23:00:00Z"]]},
     },
     "assets": {
         "thumbnail": {

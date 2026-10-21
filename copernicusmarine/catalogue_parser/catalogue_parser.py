@@ -17,9 +17,7 @@ from copernicusmarine.catalogue_parser.models import (
     DatasetNotFound,
     get_version_and_part_from_full_dataset_id,
 )
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_debug,
-)
+from copernicusmarine.command_line_interface.exception_handler import log_exception_debug
 from copernicusmarine.core_functions.marine_datastore_config import (
     CatalogueConfig,
     MarineDataStoreConfig,
@@ -42,56 +40,39 @@ def get_dataset_metadata(
         try:
             with JsonParserConnection() as connection:
                 stac_url = catalogue.root_metadata_url
-                dataset_product_mapping_url = (
-                    catalogue.dataset_product_mapping_url
-                )
-                product_ids = connection.get_json_file(
-                    dataset_product_mapping_url
-                ).get(dataset_id)
+                dataset_product_mapping_url = catalogue.dataset_product_mapping_url
+                product_ids = connection.get_json_file(dataset_product_mapping_url).get(dataset_id)
                 if not product_ids:
                     continue
                 for product_id in product_ids.split(","):
                     url = f"{stac_url}/{product_id}/product.stac.json"
                     product_json = connection.get_json_file(url)
-                    product_collection = pystac.Collection.from_dict(
-                        product_json
-                    )
-                    product_datasets_metadata_links = (
-                        product_collection.get_item_links()
-                    )
+                    product_collection = pystac.Collection.from_dict(product_json)
+                    product_datasets_metadata_links = product_collection.get_item_links()
                     digital_object_identifier = (
                         product_collection.extra_fields.get("sci:doi", None)
                         if product_collection.extra_fields
                         else None
                     )
                     datasets_metadata_links = []
-                    for (
-                        dataset_metadata_link
-                    ) in product_datasets_metadata_links:
+                    for dataset_metadata_link in product_datasets_metadata_links:
                         if (
                             dataset_id in dataset_metadata_link.href
-                            and dataset_metadata_link.href
-                            not in seen_dataset_links
+                            and dataset_metadata_link.href not in seen_dataset_links
                         ):
-                            datasets_metadata_links.append(
-                                dataset_metadata_link
-                            )
+                            datasets_metadata_links.append(dataset_metadata_link)
                             seen_dataset_links.add(dataset_metadata_link.href)
 
                     for link in datasets_metadata_links:
                         url = f"{stac_url}/{product_id}/{link.href}"
                         dataset_json = connection.get_json_file(url)
-                        dataset_item = _parse_dataset_json_to_pystac_item(
-                            dataset_json
-                        )
+                        dataset_item = _parse_dataset_json_to_pystac_item(dataset_json)
                         if dataset_item:
                             (
                                 parsed_id,
                                 parsed_version,
                                 parsed_part,
-                            ) = get_version_and_part_from_full_dataset_id(
-                                dataset_item.id
-                            )
+                            ) = get_version_and_part_from_full_dataset_id(dataset_item.id)
                             dataset_items.append(
                                 DatasetItem(
                                     url=url,
@@ -112,19 +93,13 @@ def get_dataset_metadata(
         raise first_error
     else:
         for error, catalogue_root in catalogue_errors:
-            logger.debug(
-                f"Error while fetching dataset metadata from {catalogue_root}: {error}"
-            )
+            logger.debug(f"Error while fetching dataset metadata from {catalogue_root}: {error}")
 
     if not dataset_items:
         raise DatasetNotFound(dataset_id)
 
     return _parse_and_sort_dataset_items(
-        [
-            dataset_item
-            for dataset_item in dataset_items
-            if dataset_item.parsed_id == dataset_id
-        ],
+        [dataset_item for dataset_item in dataset_items if dataset_item.parsed_id == dataset_id],
         raise_on_error=raise_on_error,
     )
 
@@ -173,9 +148,7 @@ def _parse_and_sort_dataset_items(
     if dataset_without_parts:
         dataset_item_example = dataset_without_parts[0]
         dataset_id = dataset_item_example.parsed_id
-        dataset_title = dataset_item_example.stac_item.properties.get(
-            "title", dataset_id
-        )
+        dataset_title = dataset_item_example.stac_item.properties.get("title", dataset_id)
 
     else:
         dataset_item_example = dataset_items[0]
@@ -212,9 +185,7 @@ def _construct_marine_data_store_product(
     )
 
     digital_object_identifier = (
-        stac_product.extra_fields.get("sci:doi", None)
-        if stac_product.extra_fields
-        else None
+        stac_product.extra_fields.get("sci:doi", None) if stac_product.extra_fields else None
     )
 
     datasets = [
@@ -239,10 +210,7 @@ def _construct_marine_data_store_product(
                 raise_on_error=raise_on_error,
             )
         )
-        and (
-            not force_dataset_id
-            or dataset_metadata.dataset_id == force_dataset_id
-        )
+        and (not force_dataset_id or dataset_metadata.dataset_id == force_dataset_id)
     ]
 
     production_center = [
@@ -273,9 +241,7 @@ def _construct_marine_data_store_product(
     )
 
     sources = _get_stac_product_property(stac_product, "sources") or []
-    processing_level = _get_stac_product_property(
-        stac_product, "processingLevel"
-    )
+    processing_level = _get_stac_product_property(stac_product, "processingLevel")
 
     try:
         return CopernicusMarineProduct(
@@ -303,13 +269,9 @@ def _construct_marine_data_store_product(
         return None
 
 
-def _get_stac_product_property(
-    stac_product: pystac.Collection, property_key: str
-) -> Any:
+def _get_stac_product_property(stac_product: pystac.Collection, property_key: str) -> Any:
     properties: dict[str, str] = (
-        stac_product.extra_fields.get("properties", {})
-        if stac_product.extra_fields
-        else {}
+        stac_product.extra_fields.get("properties", {}) if stac_product.extra_fields else {}
     )
     return properties.get(property_key)
 
@@ -343,9 +305,7 @@ def fetch_dataset_items(
             item_json = connection.get_json_file(url)
             item = _parse_dataset_json_to_pystac_item(item_json)
         except Exception as e:
-            logger.debug(
-                f"Failed to fetch or parse JSON for dataset URL: {url}"
-            )
+            logger.debug(f"Failed to fetch or parse JSON for dataset URL: {url}")
             if raise_on_error:
                 raise e
             log_exception_debug(e)
@@ -486,21 +446,17 @@ def parse_catalogue(
         disable=disable_progress_bar,
     )
     dataset_product_mapping_url = catalogue_config.dataset_product_mapping_url
-    product_ids_to_search: list[str] | None = (
-        [force_product_id] if force_product_id else None
-    )
+    product_ids_to_search: list[str] | None = [force_product_id] if force_product_id else None
     with JsonParserConnection() as connection:
         if force_dataset_id:
-            product_id_from_mapping = connection.get_json_file(
-                dataset_product_mapping_url
-            ).get(force_dataset_id)
+            product_id_from_mapping = connection.get_json_file(dataset_product_mapping_url).get(
+                force_dataset_id
+            )
             if not product_id_from_mapping:
                 raise DatasetNotFound(force_dataset_id)
             product_ids = product_id_from_mapping.split(",")
             if force_product_id and force_product_id not in product_ids:
-                raise DatasetIsNotPartOfTheProduct(
-                    force_dataset_id, force_product_id
-                )
+                raise DatasetIsNotPartOfTheProduct(force_dataset_id, force_product_id)
             elif force_product_id:
                 product_ids = [force_product_id]
             product_ids_to_search = product_ids
@@ -556,9 +512,7 @@ def _check_product(
     return bool(product.datasets)
 
 
-def search_and_filter(
-    model: BaseModel, search_str: set[str]
-) -> BaseModel | None:
+def search_and_filter(model: BaseModel, search_str: set[str]) -> BaseModel | None:
     filtered_fields = {}
     search_str = {s.lower() for s in search_str}
     for field, value in model:
@@ -574,9 +528,7 @@ def search_and_filter(
                     filtered_item = search_and_filter(item, search_str)
                     if filtered_item:
                         filtered_list.append(filtered_item)
-                elif isinstance(item, str) and any(
-                    s in item.lower() for s in search_str
-                ):
+                elif isinstance(item, str) and any(s in item.lower() for s in search_str):
                     filtered_list.append(item)
 
             if filtered_list and isinstance(value, list):
@@ -592,9 +544,7 @@ def search_and_filter(
                     filtered_val = search_and_filter(val, search_str)
                     if filtered_val:
                         filtered_dict[key] = filtered_val
-                elif isinstance(val, str) and any(
-                    s in val.lower() for s in search_str
-                ):
+                elif isinstance(val, str) and any(s in val.lower() for s in search_str):
                     filtered_dict[key] = val
 
             if filtered_dict:
@@ -604,9 +554,7 @@ def search_and_filter(
             if any(s in value.name.lower() for s in search_str):
                 filtered_fields[field] = value
 
-        elif isinstance(value, str) and any(
-            s in value.lower() for s in search_str
-        ):
+        elif isinstance(value, str) and any(s in value.lower() for s in search_str):
             filtered_fields[field] = value
     if filtered_fields:
         return model.model_copy(update=filtered_fields)
@@ -660,8 +608,7 @@ def merge_catalogues(
                                 dataset.dataset_id,
                             )
                             if version.label not in {
-                                version.label
-                                for version in merge_dataset.versions
+                                version.label for version in merge_dataset.versions
                             }:
                                 merge_dataset.versions.append(version)
                             else:
@@ -671,10 +618,7 @@ def merge_catalogues(
                                         "label",
                                         version.label,
                                     )
-                                    if part.name not in {
-                                        part.name
-                                        for part in merge_version.parts
-                                    }:
+                                    if part.name not in {part.name for part in merge_version.parts}:
                                         merge_version.parts.append(part)
 
     return merged_catalogue

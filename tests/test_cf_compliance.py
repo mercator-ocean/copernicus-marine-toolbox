@@ -5,11 +5,7 @@ from pathlib import Path
 import xarray
 
 from copernicusmarine import ResponseSubset, subset
-from tests.test_utils import (
-    FileToCheck,
-    execute_in_terminal,
-    main_checks_when_file_is_downloaded,
-)
+from tests.test_utils import FileToCheck, execute_in_terminal, main_checks_when_file_is_downloaded
 
 
 def get_cf_convention(dataset: xarray.Dataset) -> str:
@@ -35,9 +31,7 @@ class TestCFCompliance:
         self.then_it_is_cf_compliant(dataset_id, response, snapshot)
 
     def test_subset_with_warns_cfcompliant(self, tmp_path, snapshot):
-        dataset_id = (
-            "cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m"
-        )
+        dataset_id = "cmems_obs-sst_med_phy-sst_nrt_diurnal-oi-0.0625deg_PT1H-m"
         response = self.if_i_subset_a_dataset(
             dataset_id,
             tmp_path,
@@ -87,9 +81,7 @@ class TestCFCompliance:
             end_datetime=end_datetime,
         )
         assert (response.file_path).exists()
-        main_checks_when_file_is_downloaded(
-            response.file_path, response.model_dump()
-        )
+        main_checks_when_file_is_downloaded(response.file_path, response.model_dump())
         return response
 
     def then_it_is_cf_compliant(
@@ -106,9 +98,7 @@ class TestCFCompliance:
             if attr in dataset.attrs:
                 del dataset.attrs[attr]
         if delete_attributes:
-            response_subset.file_path = Path(
-                f"{response_subset.file_path}tmp.nc"
-            )
+            response_subset.file_path = Path(f"{response_subset.file_path}tmp.nc")
             dataset.to_netcdf(
                 response_subset.file_path,
                 format="NETCDF4",
@@ -116,8 +106,7 @@ class TestCFCompliance:
             )
         cf_convention = get_cf_convention(dataset)
         result_compliance_path = FileToCheck(
-            f"{response_subset.output_directory}"
-            f"/{dataset_id}_cf_complicance_checked.json"
+            f"{response_subset.output_directory}" f"/{dataset_id}_cf_complicance_checked.json"
         ).get_path()
         command = [
             "compliance-checker",

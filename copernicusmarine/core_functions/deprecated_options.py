@@ -7,9 +7,7 @@ logger = logging.getLogger("copernicusmarine")
 
 
 class DeprecatedOption:
-    def __init__(
-        self, old_name, new_name, replace=True, do_not_pass=False
-    ) -> None:
+    def __init__(self, old_name, new_name, replace=True, do_not_pass=False) -> None:
         self.old_name = old_name
         self.new_name = new_name
         self.replace = replace
@@ -51,9 +49,7 @@ DEPRECATED_OPTIONS: DeprecatedOptionMapping = DeprecatedOptionMapping(
 
 
 def get_deprecated_message(old_value, preferred_value):
-    return (
-        f"'{old_value}' has been deprecated, use '{preferred_value}' instead."
-    )
+    return f"'{old_value}' has been deprecated, use '{preferred_value}' instead."
 
 
 def log_deprecated_message(old_value, preferred_value):
@@ -82,9 +78,7 @@ def deprecated_python_option(aliases: DeprecatedOptionMapping) -> Callable:
     return deco
 
 
-def rename_kwargs(
-    func_name: str, kwargs: dict[str, Any], aliases: DeprecatedOptionMapping
-):
+def rename_kwargs(func_name: str, kwargs: dict[str, Any], aliases: DeprecatedOptionMapping):
     for old, alias_info in aliases.deprecated_options_by_old_names.items():
         new = alias_info.new_name
         if old in kwargs:

@@ -1,5 +1,4 @@
 import logging
-import ssl
 from typing import Any, Literal
 
 import boto3
@@ -44,21 +43,11 @@ except ValueError:
     HTTPS_RETRIES = 5
 
 
-def get_ssl_context() -> ssl.SSLContext | None:
-    if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
-        return None
-    if COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH:
-        return ssl.create_default_context(
-            capath=COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH
-        )
-    return ssl.create_default_context(cafile=certifi.where())
-
-
 def get_configured_boto3_session(
     endpoint_url: str,
     operation_type: list[Literal["ListObjectsV2", "HeadObject", "GetObject"]],
     username: str | None = None,
-    return_ressources: bool = False,
+    return_resources: bool = False,
 ) -> tuple[Any, Any]:
     config_boto3 = botocore.config.Config(
         signature_version=botocore.UNSIGNED,
@@ -77,7 +66,7 @@ def get_configured_boto3_session(
             f"before-call.s3.{operation}",
             create_custom_query_function(username),
         )
-    if not return_ressources:
+    if not return_resources:
         return s3_client, None
     s3_resource = boto3.resource(
         "s3",
@@ -91,9 +80,7 @@ class ConfiguredBoto3Session:
     def __init__(
         self,
         endpoint_url: str,
-        operation_type: list[
-            Literal["ListObjectsV2", "HeadObject", "GetObject"]
-        ],
+        operation_type: list[Literal["ListObjectsV2", "HeadObject", "GetObject"]],
         username: str | None = None,
         need_resources: bool = False,
     ):
@@ -101,7 +88,7 @@ class ConfiguredBoto3Session:
             endpoint_url,
             operation_type,
             username,
-            return_ressources=need_resources,
+            return_resources=need_resources,
         )
         self.use_threads = COPERNICUSMARINE_USE_THREADS
 
@@ -116,9 +103,7 @@ class ConfiguredBoto3Session:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def download_file(
-        self, bucket_name: str, object_key: str, file_path: str
-    ) -> None:
+    def download_file(self, bucket_name: str, object_key: str, file_path: str) -> None:
         self.s3_client.download_file(
             bucket_name,
             object_key,
@@ -127,9 +112,7 @@ class ConfiguredBoto3Session:
         )
 
     def get_object(self, bucket_name: str, object_key: str) -> Any:
-        response = self.s3_client.get_object(
-            Bucket=bucket_name, Key=object_key
-        )
+        response = self.s3_client.get_object(Bucket=bucket_name, Key=object_key)
         return response
 
 
@@ -149,9 +132,7 @@ class ConfiguredRequestsSession(requests.Session):
         if COPERNICUSMARINE_DISABLE_SSL_CONTEXT == "True":
             self.verify = False
         else:
-            self.verify = (
-                COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
-            )
+            self.verify = COPERNICUSMARINE_SET_SSL_CERTIFICATE_PATH or certifi.where()
         self.proxies = PROXIES
         if retries:
             self.mount(
@@ -185,14 +166,15 @@ def get_configured_requests_session(
     return ConfiguredRequestsSession(timeout=timeout, retries=retries)
 
 
-# from https://stackoverflow.com/questions/29931671/making-an-api-call-in-python-with-an-api-that-requires-a-bearer-token # noqa
+# from https://stackoverflow.com/questions/29931671/making-an-api-call-in-python-with-an-api-that-requires-a-bearer-token # noqa: E501
 class BearerAuth(requests.auth.AuthBase):
     """
-    Allow to pass the bearer as "auth" argument to the requests.get method and not as a header.
+    Allow to pass the bearer as "auth" argument to the requests.get method
+    and not as a header.
 
     Hence the headers are not overwritten by the netrc file as stated here:
     https://requests.readthedocs.io/en/latest/user/authentication/#netrc-authentication
-    """  # noqa
+    """
 
     def __init__(self, token):
         self.token = token
@@ -203,9 +185,7 @@ class BearerAuth(requests.auth.AuthBase):
 
 
 class JsonParserConnection:
-    def __init__(
-        self, timeout: float = HTTPS_TIMEOUT, retries: int = HTTPS_RETRIES
-    ) -> None:
+    def __init__(self, timeout: float = HTTPS_TIMEOUT, retries: int = HTTPS_RETRIES) -> None:
         self.session = get_configured_requests_session(timeout, retries)
 
     def get_json_file(self, url: str) -> dict[str, Any]:

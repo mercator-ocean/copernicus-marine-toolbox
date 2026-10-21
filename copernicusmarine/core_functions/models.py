@@ -18,13 +18,9 @@ FileExtension = Literal[".nc", ".zarr", ".csv"]
 DEFAULT_FILE_EXTENSION: FileExtension = ".nc"
 DEFAULT_FILE_EXTENSIONS = list(get_args(FileExtension))
 
-CoordinatesSelectionMethod = Literal[
-    "inside", "strict-inside", "nearest", "outside"
-]
+CoordinatesSelectionMethod = Literal["inside", "strict-inside", "nearest", "outside"]
 DEFAULT_COORDINATES_SELECTION_METHOD: CoordinatesSelectionMethod = "inside"
-DEFAULT_COORDINATES_SELECTION_METHODS = list(
-    get_args(CoordinatesSelectionMethod)
-)
+DEFAULT_COORDINATES_SELECTION_METHODS = list(get_args(CoordinatesSelectionMethod))
 
 VerticalAxis = Literal["depth", "elevation"]
 DEFAULT_VERTICAL_AXIS: VerticalAxis = "depth"
@@ -64,7 +60,9 @@ class StatusMessage(str, Enum):
     SUCCESS = "The request was successful."
     DRY_RUN = "The request was run with the dry-run option. No data was downloaded."  # noqa: E501
     FILE_LIST_CREATED = "The request created a file list and then stopped."
-    NO_DATA_TO_DOWNLOAD = "No data to download from the remote server corresponding to your request."  # noqa: E501
+    NO_DATA_TO_DOWNLOAD = (
+        "No data to download from the remote server corresponding to your request."  # noqa: E501
+    )
     ERROR = "An error occurred during the request."
 
 
@@ -228,9 +226,7 @@ class ResponseSubset(BaseModel):
     data_transfer_size: float | None
 
     @field_serializer("data_transfer_size")
-    def serialize_data_transfer_size(
-        self, data_transfer_size: float | None
-    ) -> str | None:
+    def serialize_data_transfer_size(self, data_transfer_size: float | None) -> str | None:
         if data_transfer_size is not None:
             return f"{data_transfer_size:.2f} MB"
         return data_transfer_size
@@ -275,9 +271,7 @@ class DatasetChunking:
 
     def get_number_values_variable(self, variable_short_name: str) -> float:
         if variable_short_name in self.chunking_per_variable:
-            return self.chunking_per_variable[
-                variable_short_name
-            ].number_values
+            return self.chunking_per_variable[variable_short_name].number_values
         return 0
 
     def get_number_chunks_coordinate(self, coordinate_id: str) -> float | None:
@@ -299,10 +293,7 @@ class Command:
     service_names_by_priority: list[CopernicusMarineServiceNames]
 
     def service_names(self) -> list[str]:
-        return [
-            service_name.value
-            for service_name in self.service_names_by_priority
-        ]
+        return [service_name.value for service_name in self.service_names_by_priority]
 
     def short_names_services(self) -> list[str]:
         return [
@@ -316,9 +307,7 @@ class Command:
             available_services.append(service_name.value)
             short_name = short_name_from_service_name(service_name)
             if short_name != service_name:
-                available_services.append(
-                    short_name_from_service_name(service_name).value
-                )
+                available_services.append(short_name_from_service_name(service_name).value)
         return available_services
 
 

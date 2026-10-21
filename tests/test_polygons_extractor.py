@@ -138,9 +138,7 @@ class TestPolygonsDependencyCheck:
         assert "dependency is" in str(exception)
         assert "rioxarray" in str(exception)
 
-    def test_load_polygons_raises_clear_error_when_missing(
-        self, monkeypatch, tmp_path
-    ):
+    def test_load_polygons_raises_clear_error_when_missing(self, monkeypatch, tmp_path):
         monkeypatch.setattr(
             importlib.util,
             "find_spec",
@@ -150,9 +148,7 @@ class TestPolygonsDependencyCheck:
         with pytest.raises(DependenciesNotAvailable):
             load_polygons_from_user_input(polygons_file)
 
-    def test_get_bounding_box_raises_clear_error_when_missing(
-        self, monkeypatch, tmp_path
-    ):
+    def test_get_bounding_box_raises_clear_error_when_missing(self, monkeypatch, tmp_path):
         monkeypatch.setattr(
             importlib.util,
             "find_spec",
@@ -162,9 +158,7 @@ class TestPolygonsDependencyCheck:
         with pytest.raises(DependenciesNotAvailable):
             get_bounding_box_from_polygons(polygons_file)
 
-    def test_extract_polygons_raises_clear_error_when_missing(
-        self, monkeypatch
-    ):
+    def test_extract_polygons_raises_clear_error_when_missing(self, monkeypatch):
         monkeypatch.setattr(
             importlib.util,
             "find_spec",
@@ -224,27 +218,20 @@ class TestLoadPolygonsFromUserInput:
         gpd = pytest.importorskip("geopandas")
         shapely_geometry = pytest.importorskip("shapely.geometry")
 
-        geometry = shapely_geometry.shape(
-            SQUARE_POLYGON_GEOJSON["features"][0]["geometry"]
-        )
+        geometry = shapely_geometry.shape(SQUARE_POLYGON_GEOJSON["features"][0]["geometry"])
         gdf = gpd.GeoDataFrame({"geometry": [geometry]}, crs="EPSG:4326")
         polygons_file = tmp_path / f"polygons{suffix}"
 
         try:
             gdf.to_file(polygons_file, driver=driver)
         except Exception as exception:
-            pytest.skip(
-                f"Driver for '{suffix}' not available in this "
-                f"environment: {exception}"
-            )
+            pytest.skip(f"Driver for '{suffix}' not available in this " f"environment: {exception}")
 
         loaded = load_polygons_from_user_input(polygons_file)
 
         assert len(loaded) == 1
         min_lon, min_lat, max_lon, max_lat = loaded.total_bounds
-        assert (min_lon, min_lat, max_lon, max_lat) == pytest.approx(
-            (0.0, 0.0, 2.0, 2.0)
-        )
+        assert (min_lon, min_lat, max_lon, max_lat) == pytest.approx((0.0, 0.0, 2.0, 2.0))
 
 
 class TestGetBoundingBoxFromPolygons:
@@ -252,9 +239,7 @@ class TestGetBoundingBoxFromPolygons:
         pytest.importorskip("geopandas")
         polygons_file = _write_geojson(tmp_path, SQUARE_POLYGON_GEOJSON)
 
-        min_lon, max_lon, min_lat, max_lat = get_bounding_box_from_polygons(
-            polygons_file
-        )
+        min_lon, max_lon, min_lat, max_lat = get_bounding_box_from_polygons(polygons_file)
 
         assert min_lon == pytest.approx(0.0)
         assert min_lat == pytest.approx(0.0)
@@ -269,9 +254,7 @@ class TestExtractPolygonsFromDataset:
         polygons_file = _write_geojson(tmp_path, LARGER_SQUARE_POLYGON_GEOJSON)
         dataset = _make_lonlat_dataset()
 
-        clipped = extract_polygons_from_dataset(
-            dataset=dataset, polygons=polygons_file
-        )
+        clipped = extract_polygons_from_dataset(dataset=dataset, polygons=polygons_file)
 
         assert isinstance(clipped, xarray.Dataset)
         # Points outside the polygon (-1 and 3) are dropped.
@@ -339,12 +322,8 @@ def test_subset_with_polygons(tmp_path):
     dataset = open_dataset(dataset_id=dataset_id, **request)
     assert isinstance(dataset, xarray.Dataset)
     assert "mlotst_cglo" in dataset.data_vars
-    assert len(
-        dataset.mlotst_cglo.values[~np.isnan(dataset.mlotst_cglo.values)]
-    ) == len(
-        ds_from_subset.mlotst_cglo.values[
-            ~np.isnan(ds_from_subset.mlotst_cglo.values)
-        ]
+    assert len(dataset.mlotst_cglo.values[~np.isnan(dataset.mlotst_cglo.values)]) == len(
+        ds_from_subset.mlotst_cglo.values[~np.isnan(ds_from_subset.mlotst_cglo.values)]
     )
 
     ds_from_subset.close()

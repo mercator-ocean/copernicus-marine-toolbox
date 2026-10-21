@@ -352,7 +352,7 @@ For now, it does not seem like there is a one-size-fits-all solution and you mig
   The lower the chunk size, the more tasks you will see in the progress bar.
 
 To sum up, the ``--chunk-size-limit`` option allows you to play with the chunk size of the process.
-The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the ressources needed.
+The bigger the chunk size, the bigger the individual process will be (in terms of memory usage) and the bigger the resources needed.
 If the chunk size is too small, many tasks are being created and handled by dask which means a consequent dask graph need to be handled.
 The latter can lead to huge overhead and slow down the process.
 

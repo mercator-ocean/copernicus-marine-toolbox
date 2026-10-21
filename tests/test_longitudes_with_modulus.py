@@ -7,9 +7,7 @@ from tests.test_utils import execute_in_terminal
 
 
 class TestLongitudesWithModulus:
-    def _build_custom_command(
-        self, folder, output_filename, min_longitude, max_longitude
-    ):
+    def _build_custom_command(self, folder, output_filename, min_longitude, max_longitude):
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
         return [
             "copernicusmarine",
@@ -44,12 +42,8 @@ class TestLongitudesWithModulus:
         filename_dataset1 = "dataset1.nc"
         filename_dataset2 = "dataset2.nc"
 
-        command1 = self._build_custom_command(
-            tmp_path, filename_dataset1, -9.84, -4.82
-        )
-        command2 = self._build_custom_command(
-            tmp_path, filename_dataset2, 350.16, 355.18
-        )
+        command1 = self._build_custom_command(tmp_path, filename_dataset1, -9.84, -4.82)
+        command2 = self._build_custom_command(tmp_path, filename_dataset2, 350.16, 355.18)
 
         output1 = execute_in_terminal(command1)
         output2 = execute_in_terminal(command2)
@@ -82,12 +76,8 @@ class TestLongitudesWithModulus:
         filename_dataset1 = "dataset1.nc"
         filename_dataset2 = "dataset2.nc"
 
-        command1 = self._build_custom_command(
-            tmp_path, filename_dataset1, -9.84, -9.84
-        )
-        command2 = self._build_custom_command(
-            tmp_path, filename_dataset2, 350.16, 350.16
-        )
+        command1 = self._build_custom_command(tmp_path, filename_dataset1, -9.84, -9.84)
+        command2 = self._build_custom_command(tmp_path, filename_dataset2, 350.16, 350.16)
 
         output1 = execute_in_terminal(command1)
         output2 = execute_in_terminal(command2)
@@ -117,9 +107,7 @@ class TestLongitudesWithModulus:
     def test_subset_with_longitude_over_antemeridian(self, tmp_path):
         filename_dataset = "dataset.nc"
 
-        command = self._build_custom_command(
-            tmp_path, filename_dataset, -190, -170
-        )
+        command = self._build_custom_command(tmp_path, filename_dataset, -190, -170)
 
         self.output = execute_in_terminal(command)
 
@@ -132,14 +120,10 @@ class TestLongitudesWithModulus:
         assert longitudes.min() == 170
         assert longitudes.max() == 190
 
-    def test_subset_with_longitude_over_antemeridian_and_below_0(
-        self, tmp_path
-    ):
+    def test_subset_with_longitude_over_antemeridian_and_below_0(self, tmp_path):
         filename_dataset = "dataset.nc"
 
-        command = self._build_custom_command(
-            tmp_path, filename_dataset, -145, 180
-        )
+        command = self._build_custom_command(tmp_path, filename_dataset, -145, 180)
 
         self.output = execute_in_terminal(command)
 
@@ -155,9 +139,7 @@ class TestLongitudesWithModulus:
     def test_subset_with_longitude_range_over_360(self, tmp_path):
         filename_dataset = "dataset.nc"
 
-        command = self._build_custom_command(
-            tmp_path, filename_dataset, 240, 800
-        )
+        command = self._build_custom_command(tmp_path, filename_dataset, 240, 800)
 
         self.output = execute_in_terminal(command)
 

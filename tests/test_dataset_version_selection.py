@@ -115,9 +115,7 @@ class TestDatasetVersionSelection:
         )
         assert 'Selected dataset version: "default"' in caplog.text
 
-    def test_dataset_version_is_specifiable_in_python_with_subset(
-        self, caplog
-    ):
+    def test_dataset_version_is_specifiable_in_python_with_subset(self, caplog):
         copernicusmarine.subset(
             dataset_id="SST_MED_SST_L4_NRT_OBSERVATIONS_010_004_a_V2",
             variables=["analysed_sst"],

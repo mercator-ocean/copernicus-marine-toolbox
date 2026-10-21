@@ -40,13 +40,9 @@ def _remove_logging_prefix(full_message: str) -> str:
 def remove_extra_logging_prefix_info(multi_line_message: str) -> str:
     if platform.system() == "Windows":
         multi_line_message = multi_line_message.rstrip("\r\n")
-        return "\n".join(
-            map(_remove_logging_prefix, multi_line_message.split("\r\n"))
-        )
+        return "\n".join(map(_remove_logging_prefix, multi_line_message.split("\r\n")))
     multi_line_message = multi_line_message.rstrip("\n")
-    return "\n".join(
-        map(_remove_logging_prefix, multi_line_message.split("\n"))
-    )
+    return "\n".join(map(_remove_logging_prefix, multi_line_message.split("\n")))
 
 
 FIVE_MINUTES = 5 * 60
@@ -137,22 +133,11 @@ def main_checks_when_file_is_downloaded(
     response_file_size = parse_size(response["file_size"]) / 1048e3  # in MB
 
     if file_path.suffix == ".csv":
-        assert (
-            file_size <= response_file_size * (1 + size_variance) + offset_size
-        )
-        assert (
-            file_size >= response_file_size * (1 - size_variance) - offset_size
-        )
+        assert file_size <= response_file_size * (1 + size_variance) + offset_size
+        assert file_size >= response_file_size * (1 - size_variance) - offset_size
         return
 
     if file_path.suffix == ".nc":
-        assert (
-            file_size <= response_file_size * (1 + size_variance) + offset_size
-        )
-        assert (
-            file_size >= response_file_size * (1 - size_variance) - offset_size
-        )
-    assert (
-        response_file_size
-        <= parse_size(response["data_transfer_size"]) / 1048e3
-    )
+        assert file_size <= response_file_size * (1 + size_variance) + offset_size
+        assert file_size >= response_file_size * (1 - size_variance) - offset_size
+    assert response_file_size <= parse_size(response["data_transfer_size"]) / 1048e3

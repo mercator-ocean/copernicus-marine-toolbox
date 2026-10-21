@@ -2,9 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Literal
 
-from copernicusmarine.catalogue_parser.catalogue_parser import (
-    get_dataset_metadata,
-)
+from copernicusmarine.catalogue_parser.catalogue_parser import get_dataset_metadata
 from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineDataset,
     CopernicusMarinePart,
@@ -21,21 +19,11 @@ from copernicusmarine.core_functions.exceptions import (
     ServiceDoesNotExistForCommand,
     ServiceNotAvailable,
 )
-from copernicusmarine.core_functions.marine_datastore_config import (
-    MarineDataStoreConfig,
-)
+from copernicusmarine.core_functions.marine_datastore_config import MarineDataStoreConfig
 from copernicusmarine.core_functions.models import CommandType, DatasetChunking
-from copernicusmarine.core_functions.request_structure import (
-    GetRequest,
-    SubsetRequest,
-)
-from copernicusmarine.core_functions.utils import (
-    datetime_parser,
-    next_or_raise_exception,
-)
-from copernicusmarine.download_functions.chunk_calculator import (
-    get_dataset_chunking,
-)
+from copernicusmarine.core_functions.request_structure import GetRequest, SubsetRequest
+from copernicusmarine.core_functions.utils import datetime_parser, next_or_raise_exception
+from copernicusmarine.download_functions.chunk_calculator import get_dataset_chunking
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -112,10 +100,7 @@ def _get_best_arco_service_type(
         f"download for geoseries and "
         f"{dataset_chunking_timeseries.number_chunks} chunks for timeseries"
     )
-    if (
-        dataset_chunking_timeseries.number_chunks
-        >= dataset_chunking_geoseries.number_chunks
-    ):
+    if dataset_chunking_timeseries.number_chunks >= dataset_chunking_geoseries.number_chunks:
         return (
             CopernicusMarineServiceNames.GEOSERIES,
             dataset_chunking_geoseries,
@@ -155,10 +140,8 @@ def _select_service_by_priority(
     )
     subset_request = request if isinstance(request, SubsetRequest) else None
     if (
-        CopernicusMarineServiceNames.GEOSERIES
-        in dataset_available_service_names
-        and CopernicusMarineServiceNames.TIMESERIES
-        in dataset_available_service_names
+        CopernicusMarineServiceNames.GEOSERIES in dataset_available_service_names
+        and CopernicusMarineServiceNames.TIMESERIES in dataset_available_service_names
         and command_type
         in [
             CommandType.SUBSET,
@@ -166,10 +149,7 @@ def _select_service_by_priority(
             CommandType.READ_DATAFRAME,
         ]
     ) and subset_request:
-        if (
-            first_available_service.service_format
-            == CopernicusMarineServiceFormat.SQLITE
-        ):
+        if first_available_service.service_format == CopernicusMarineServiceFormat.SQLITE:
             if subset_request.platform_ids:
                 try:
                     return (
@@ -187,9 +167,7 @@ def _select_service_by_priority(
             dataset_version_part,
         )
         return (
-            dataset_version_part.get_service_by_service_name(
-                best_arco_service_type
-            ),
+            dataset_version_part.get_service_by_service_name(best_arco_service_type),
             dataset_chunking,
         )
     return first_available_service, None
@@ -276,20 +254,14 @@ def _get_retrieval_service_from_dataset_version(
     dataset_part = dataset_version.get_part(request.dataset_part)
     logger.info(f'Selected dataset part: "{dataset_part.name}"')
     if dataset_part.retired_date:
-        _warning_dataset_will_be_deprecated(
-            dataset_id, dataset_version, dataset_part
-        )
-    if dataset_part.released_date and datetime_parser(
-        dataset_part.released_date
-    ) > datetime_parser("now"):
-        _warning_dataset_not_yet_released(
-            dataset_id, dataset_version, dataset_part
-        )
+        _warning_dataset_will_be_deprecated(dataset_id, dataset_version, dataset_part)
+    if dataset_part.released_date and datetime_parser(dataset_part.released_date) > datetime_parser(
+        "now"
+    ):
+        _warning_dataset_not_yet_released(dataset_id, dataset_version, dataset_part)
 
     # check that the dataset is not being updated
-    if dataset_part.arco_updating_start_date and isinstance(
-        request, SubsetRequest
-    ):
+    if dataset_part.arco_updating_start_date and isinstance(request, SubsetRequest):
         updating_date = datetime_parser(dataset_part.arco_updating_start_date)
         if not request.end_datetime or request.end_datetime > updating_date:
             error_message = _warning_dataset_updating(
@@ -426,8 +398,7 @@ def _service_not_available_error(
         if service.service_name in command_type.service_names_by_priority
     ]
     return ServiceNotAvailable(
-        f"Available services for dataset: "
-        f"{dataset_available_service_names}"
+        f"Available services for dataset: " f"{dataset_available_service_names}"
     )
 
 
@@ -435,8 +406,7 @@ def _no_service_available_for_command(
     command_type: CommandType,
 ) -> NoServiceAvailable:
     return NoServiceAvailable(
-        f"No service available for dataset "
-        f"with command {command_type.command_name.value}"
+        f"No service available for dataset " f"with command {command_type.command_name.value}"
     )
 
 
@@ -447,8 +417,7 @@ def _service_name_from_string(
         (
             service_name
             for service_name in command_type.service_names_by_priority
-            if string
-            in {service_name, short_name_from_service_name(service_name)}
+            if string in {service_name, short_name_from_service_name(service_name)}
         ),
         _service_does_not_exist_for_command(string, command_type),
     )

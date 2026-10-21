@@ -33,12 +33,8 @@ class TestWarningsSubsetBounds:
         ]
 
     def test_subset_send_warning_with_method_nearest(self):
-        dataset_id = (
-            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-        )
-        command = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "nearest"
-        )
+        dataset_id = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
+        command = self._build_custom_command(dataset_id, "CHL", -180, 180, "nearest")
         self.output = execute_in_terminal(command)
 
         assert "WARNING" in self.output.stderr
@@ -53,9 +49,7 @@ class TestWarningsSubsetBounds:
         # The first call should return a warning, the second one should not
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
-        command = self._build_custom_command(
-            dataset_id, "thetao", -179.9, 179.9, "nearest"
-        )
+        command = self._build_custom_command(dataset_id, "thetao", -179.9, 179.9, "nearest")
         self.output = execute_in_terminal(command)
 
         assert (
@@ -66,16 +60,10 @@ class TestWarningsSubsetBounds:
     def test_subset_warnings_when_surpassing(self):
         # Dataset with longitude bounds from [-179.9791717529297, 179.9791717529297]
         # Both calls should return the same warning
-        dataset_id = (
-            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-        )
+        dataset_id = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
 
-        command1 = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "nearest"
-        )
-        command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.99, 179.99, "nearest"
-        )
+        command1 = self._build_custom_command(dataset_id, "CHL", -180, 180, "nearest")
+        command2 = self._build_custom_command(dataset_id, "CHL", -179.99, 179.99, "nearest")
         self.output1 = execute_in_terminal(command1)
         self.output2 = execute_in_terminal(command2)
 
@@ -91,16 +79,10 @@ class TestWarningsSubsetBounds:
         ) in self.output2.stderr
 
     def test_subset_strict_error(self):
-        dataset_id = (
-            "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-        )
+        dataset_id = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
 
-        command1 = self._build_custom_command(
-            dataset_id, "CHL", -180, 180, "strict-inside"
-        )
-        command2 = self._build_custom_command(
-            dataset_id, "CHL", -179.9, 179.9, "strict-inside"
-        )
+        command1 = self._build_custom_command(dataset_id, "CHL", -180, 180, "strict-inside")
+        command2 = self._build_custom_command(dataset_id, "CHL", -179.9, 179.9, "strict-inside")
         self.output1 = execute_in_terminal(command1)
         self.output2 = execute_in_terminal(command2)
         assert ("ERROR") in self.output1.stderr
@@ -119,14 +101,10 @@ class TestWarningsSubsetBounds:
     def test_subset_handle_180_point_correctly(self):
         dataset_id = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
 
-        command = self._build_custom_command(
-            dataset_id, "thetao", -150, 180, "strict-inside"
-        )
+        command = self._build_custom_command(dataset_id, "thetao", -150, 180, "strict-inside")
         self.output = execute_in_terminal(command)
         assert ("ERROR") not in self.output.stderr
-        assert (
-            "Some or all of your subset selection"
-        ) not in self.output.stderr
+        assert ("Some or all of your subset selection") not in self.output.stderr
 
     def test_warn_depth_out_of_dataset_bounds(self, tmp_path):
         output_filename = "output.nc"
@@ -228,8 +206,7 @@ class TestWarningsSubsetBounds:
             _ = subset(
                 dataset_id="cmems_mod_glo_phy_anfc_0.083deg_P1D-m",
                 start_datetime=datetime.today() + timedelta(10),
-                end_datetime=datetime.today()
-                + timedelta(days=10, hours=23, minutes=59),
+                end_datetime=datetime.today() + timedelta(days=10, hours=23, minutes=59),
                 output_directory=tmp_path,
                 dry_run=True,
             )
@@ -280,13 +257,9 @@ class TestWarningsSubsetBounds:
         ) in self.output.stderr
 
     def test_subset_strict_method(self):
-        self.when_i_request_a_dataset_with_coordinates_selection_method_option(
-            "strict-inside"
-        )
+        self.when_i_request_a_dataset_with_coordinates_selection_method_option("strict-inside")
         self.then_i_can_read_an_error_in_stdout()
 
     def test_subset_nearest_method(self):
-        self.when_i_request_a_dataset_with_coordinates_selection_method_option(
-            "nearest"
-        )
+        self.when_i_request_a_dataset_with_coordinates_selection_method_option("nearest")
         self.then_i_can_read_a_warning_in_stdout()

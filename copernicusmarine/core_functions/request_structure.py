@@ -16,9 +16,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineService,
     get_version_from_dataset_id,
 )
-from copernicusmarine.core_functions.credentials_utils import (
-    get_and_check_username_password,
-)
+from copernicusmarine.core_functions.credentials_utils import get_and_check_username_password
 from copernicusmarine.core_functions.deprecated_options import (
     DEPRECATED_OPTIONS,
     log_deprecated_message,
@@ -38,9 +36,7 @@ from copernicusmarine.core_functions.models import (
     FileFormat,
     VerticalAxis,
 )
-from copernicusmarine.core_functions.polygons_extractor import (
-    get_bounding_box_from_polygons,
-)
+from copernicusmarine.core_functions.polygons_extractor import get_bounding_box_from_polygons
 from copernicusmarine.core_functions.utils import datetime_parser
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
@@ -80,9 +76,7 @@ class SubsetRequest(BaseModel):
     start_datetime: datetime | None = None
     end_datetime: datetime | None = None
     platform_ids: list[str] | None = None
-    coordinates_selection_method: CoordinatesSelectionMethod = (
-        DEFAULT_COORDINATES_SELECTION_METHOD
-    )
+    coordinates_selection_method: CoordinatesSelectionMethod = DEFAULT_COORDINATES_SELECTION_METHOD
     output_filename: str | None = None
     file_format: FileFormat = DEFAULT_FILE_FORMAT
     service: str | None = None
@@ -102,8 +96,7 @@ class SubsetRequest(BaseModel):
         filtered_dict = {
             key: value
             for key, value in new_dict.items()
-            if value is not None
-            and not (isinstance(value, (list, tuple, str)) and not value)
+            if value is not None and not (isinstance(value, (list, tuple, str)) and not value)
         }
         data = self.model_dump(
             exclude_defaults=True,
@@ -115,9 +108,7 @@ class SubsetRequest(BaseModel):
 
     @field_validator("start_datetime", "end_datetime", mode="before")
     @classmethod
-    def parse_datetime(
-        cls, v: datetime | pd.Timestamp | str | None
-    ) -> datetime | None:
+    def parse_datetime(cls, v: datetime | pd.Timestamp | str | None) -> datetime | None:
         if v is None or v == "":
             return None
         if isinstance(v, str):
@@ -199,9 +190,7 @@ class SubsetRequest(BaseModel):
             projection="originalGrid" if is_original_grid else "lonlat",
         )
 
-    def get_depth_parameters(
-        self, axis_coordinate_id_mapping: dict[str, str]
-    ) -> DepthParameters:
+    def get_depth_parameters(self, axis_coordinate_id_mapping: dict[str, str]) -> DepthParameters:
         return DepthParameters(
             minimum_depth=self.minimum_depth,
             maximum_depth=self.maximum_depth,
@@ -209,9 +198,7 @@ class SubsetRequest(BaseModel):
             coordinate_id=axis_coordinate_id_mapping.get("z", "depth"),
         )
 
-    def update_and_check_variables_name(
-        self, service: CopernicusMarineService
-    ) -> None:
+    def update_and_check_variables_name(self, service: CopernicusMarineService) -> None:
         if not self.variables:
             return
         new_requested_variables: list[str] = []
@@ -224,9 +211,7 @@ class SubsetRequest(BaseModel):
             ):
                 raise VariableDoesNotExistInTheDataset(requested_variable_name)
             new_requested_variables.extend(
-                standard_short_name_mapping.get(
-                    requested_variable_name, [requested_variable_name]
-                )
+                standard_short_name_mapping.get(requested_variable_name, [requested_variable_name])
             )
         self.variables = list(dict.fromkeys(new_requested_variables))
 
@@ -240,9 +225,7 @@ def convert_motu_api_request_to_structure(
     arguments = [
         substr.strip() for substr in string.split("--")[1:]
     ]  # for subsubstr in substr.split(" ", maxsplit=1)]
-    arg_value_tuples = [
-        tuple(substr.split(" ", maxsplit=1)) for substr in arguments
-    ]
+    arg_value_tuples = [tuple(substr.split(" ", maxsplit=1)) for substr in arguments]
     motu_api_request_dict: dict[str, Any] = {}
     for arg, value in arg_value_tuples:
         if arg == "variable":
@@ -350,9 +333,7 @@ def create_subset_request(
         username=username,
     )
     if request_file:
-        subset_request = SubsetRequest.from_file(
-            request_file, username=username
-        )
+        subset_request = SubsetRequest.from_file(request_file, username=username)
         if dataset_id:
             subset_request.dataset_id = dataset_id
     if motu_api_request:
@@ -360,9 +341,7 @@ def create_subset_request(
             motu_api_request, username=username
         )
         subset_request = subset_request.update(
-            motu_api_subset_request.model_dump(
-                exclude_unset=True, exclude_none=True
-            )
+            motu_api_subset_request.model_dump(exclude_unset=True, exclude_none=True)
         )
     (
         subset_request.dataset_id,
@@ -381,12 +360,7 @@ def create_subset_request(
             f"package is required. "
             f"Please see {documentation_url}."
         )
-    (
-        minimum_x_axis,
-        maximum_x_axis,
-        minimum_y_axis,
-        maximum_y_axis,
-    ) = get_geographical_inputs(
+    (minimum_x_axis, maximum_x_axis, minimum_y_axis, maximum_y_axis,) = get_geographical_inputs(
         minimum_longitude,
         maximum_longitude,
         minimum_latitude,
@@ -412,18 +386,10 @@ def create_subset_request(
     request_update_dict = {
         "dataset_part": dataset_part,
         "variables": variables,
-        "minimum_x": (
-            minimum_x_axis if minimum_x_axis is not None else alias_min_x
-        ),
-        "maximum_x": (
-            maximum_x_axis if maximum_x_axis is not None else alias_max_x
-        ),
-        "minimum_y": (
-            minimum_y_axis if minimum_y_axis is not None else alias_min_y
-        ),
-        "maximum_y": (
-            maximum_y_axis if maximum_y_axis is not None else alias_max_y
-        ),
+        "minimum_x": (minimum_x_axis if minimum_x_axis is not None else alias_min_x),
+        "maximum_x": (maximum_x_axis if maximum_x_axis is not None else alias_max_x),
+        "minimum_y": (minimum_y_axis if minimum_y_axis is not None else alias_min_y),
+        "maximum_y": (maximum_y_axis if maximum_y_axis is not None else alias_max_y),
         "minimum_depth": minimum_depth,
         "maximum_depth": maximum_depth,
         "vertical_axis": vertical_axis,
@@ -443,15 +409,11 @@ def create_subset_request(
     if overwrite:
         request_update_dict["overwrite"] = overwrite
     if netcdf_compression_level:
-        request_update_dict[
-            "netcdf_compression_level"
-        ] = netcdf_compression_level
+        request_update_dict["netcdf_compression_level"] = netcdf_compression_level
     if netcdf3_compatible:
         request_update_dict["netcdf3_compatible"] = netcdf3_compatible
     if coordinates_selection_method != DEFAULT_COORDINATES_SELECTION_METHOD:
-        request_update_dict[
-            "coordinates_selection_method"
-        ] = coordinates_selection_method
+        request_update_dict["coordinates_selection_method"] = coordinates_selection_method
     if raise_if_updating:
         request_update_dict["raise_if_updating"] = raise_if_updating
     if dry_run:
@@ -462,8 +424,7 @@ def create_subset_request(
         request_update_dict["disable_progress_bar"] = True
     if (
         output_filename
-        and (suffix := pathlib.Path(output_filename).suffix)
-        in DEFAULT_FILE_EXTENSIONS
+        and (suffix := pathlib.Path(output_filename).suffix) in DEFAULT_FILE_EXTENSIONS
     ):
         if suffix == ".nc":
             request_update_dict["file_format"] = "netcdf"
@@ -535,9 +496,7 @@ def get_geographical_inputs(
         ):
             raise LonLatSubsetNotAvailableInOriginalGridDatasets
         elif polygons_file is not None:
-            raise ValueError(
-                "Polygons file is not supported for originalGrid datasets."
-            )
+            raise ValueError("Polygons file is not supported for originalGrid datasets.")
         else:
             return minimum_x, maximum_x, minimum_y, maximum_y
     elif polygons_file is not None:
@@ -553,9 +512,7 @@ def get_geographical_inputs(
                 minimum_longitude is not None,
             )
         ):
-            logger.warning(
-                "Polygons file is provided. Ignoring any other geographical inputs."
-            )
+            logger.warning("Polygons file is provided. Ignoring any other geographical inputs.")
         return get_bounding_box_from_polygons(polygons_file)
 
     else:
@@ -600,8 +557,7 @@ class GetRequest(BaseModel):
         filtered_dict = {
             key: value
             for key, value in new_dict.items()
-            if value is not None
-            and not (isinstance(value, (list, tuple, str)) and not value)
+            if value is not None and not (isinstance(value, (list, tuple, str)) and not value)
         }
         data = self.model_dump(
             exclude_defaults=True,
@@ -643,14 +599,10 @@ class GetRequest(BaseModel):
         full_regex = self.regex
         if self.filter:
             filter_regex = filter_to_regex(self.filter)
-            full_regex = overload_regex_with_additional_filter(
-                filter_regex, full_regex
-            )
+            full_regex = overload_regex_with_additional_filter(filter_regex, full_regex)
         if self.file_list:
             file_list_regex = file_list_to_regex(self.file_list)
-            full_regex = overload_regex_with_additional_filter(
-                file_list_regex, full_regex
-            )
+            full_regex = overload_regex_with_additional_filter(file_list_regex, full_regex)
         self.regex = full_regex
 
 
@@ -688,19 +640,14 @@ def create_get_request(
         if "credentials_file" in json_content and not credentials_file:
             credentials_file = pathlib.Path(json_content["credentials_file"])
 
-    username = get_and_check_username_password(
-        username, password, credentials_file
-    )
+    username = get_and_check_username_password(username, password, credentials_file)
     get_request = GetRequest(dataset_id=dataset_id or "", username=username)
 
     if request_file:
         get_request.from_file(request_file)
         if dataset_id:
             get_request.dataset_id = dataset_id
-    (
-        get_request.dataset_id,
-        get_request.dataset_version,
-    ) = process_dataset_id_and_dataset_version(
+    (get_request.dataset_id, get_request.dataset_version,) = process_dataset_id_and_dataset_version(
         get_request.dataset_id,
         dataset_version or get_request.dataset_version,
     )
@@ -724,15 +671,12 @@ def create_get_request(
     if filter:
         get_request.regex = filter_to_regex(filter)
     if regex:
-        get_request.regex = overload_regex_with_additional_filter(
-            regex, get_request.regex
-        )
+        get_request.regex = overload_regex_with_additional_filter(regex, get_request.regex)
     if sync or sync_delete:
         request_update_dict["sync"] = True
         if not get_request.dataset_version:
             raise ValueError(
-                "Sync requires to set a dataset version. "
-                "Please use --dataset-version option."
+                "Sync requires to set a dataset version. " "Please use --dataset-version option."
             )
     if sync_delete:
         request_update_dict["sync_delete"] = sync_delete
@@ -742,10 +686,7 @@ def create_get_request(
             filter_to_regex("*index_*"), get_request.regex
         )
     if create_file_list is not None:
-        if not (
-            create_file_list.endswith(".txt")
-            or create_file_list.endswith(".csv")
-        ):
+        if not (create_file_list.endswith(".txt") or create_file_list.endswith(".csv")):
             raise ValueError(
                 "Download file list must be a '.txt' or '.csv' file. "
                 f"Got '{create_file_list}' instead."
@@ -772,9 +713,7 @@ def file_list_to_regex(file_list_path: pathlib.Path) -> str:
     return pattern
 
 
-def overload_regex_with_additional_filter(
-    regex: str, filter: str | None
-) -> str:
+def overload_regex_with_additional_filter(regex: str, filter: str | None) -> str:
     return "(" + regex + "|" + filter + ")" if filter else regex
 
 

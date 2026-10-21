@@ -2,9 +2,7 @@ MOCK_DATASET_NWSHELF_P1M_M_202012 = {
     "id": "cmems_mod_nws_bgc-chl_my_7km-3D_P1M-m_202012",
     "type": "Feature",
     "stac_version": "1.0.0",
-    "stac_extensions": [
-        "https://stac-extensions.github.io/datacube/v2.1.0/schema.json"
-    ],
+    "stac_extensions": ["https://stac-extensions.github.io/datacube/v2.1.0/schema.json"],
     "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -470,9 +468,7 @@ MOCK_DATASET_NWSHELF_P1M_M_202012 = {
                 "unit": "mg m-3",
                 "standardName": "mass_concentration_of_chlorophyll_a_in_sea_water",
                 "abbreviation": "chl",
-                "name": {
-                    "en": "Mass Concentration of chlorophyll in Sea Water"
-                },
+                "name": {"en": "Mass Concentration of chlorophyll in Sea Water"},
                 "unitConversion": None,
                 "missingValue": -32768,
                 "offset": None,
@@ -972,9 +968,7 @@ MOCK_DATASET_NWSHELF_P1M_M_202012 = {
                     },
                 },
             },
-            "viewVariables": {
-                "chl": {"dtype": "<f4", "itemSize": 4, "chunkSize": 1320000}
-            },
+            "viewVariables": {"chl": {"dtype": "<f4", "itemSize": 4, "chunkSize": 1320000}},
             "isAggregated": False,
         },
         "geoChunked": {

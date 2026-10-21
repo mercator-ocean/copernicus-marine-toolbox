@@ -2,9 +2,7 @@ MOCK_PRODUCT_GLO_OTHER = {
     "id": "GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER",
     "type": "Collection",
     "stac_version": "1.0.0",
-    "stac_extensions": [
-        "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
-    ],
+    "stac_extensions": ["https://stac-extensions.github.io/scientific/v1.0.0/schema.json"],
     "title": "Global Ocean Physics Analysis and Forecast Other",
     "description": "A different product whose ID contains GLOBAL_ANALYSISFORECAST_PHY_001_024.",
     "license": "proprietary",
@@ -39,9 +37,7 @@ MOCK_PRODUCT_GLO_OTHER = {
     ],
     "extent": {
         "spatial": {"bbox": [[-180, -80, 179.9169921875, 90]]},
-        "temporal": {
-            "interval": [["2020-11-01T00:00:00Z", "2024-05-02T23:00:00Z"]]
-        },
+        "temporal": {"interval": [["2020-11-01T00:00:00Z", "2024-05-02T23:00:00Z"]]},
     },
     "assets": {
         "thumbnail": {

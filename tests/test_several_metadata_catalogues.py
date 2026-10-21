@@ -14,9 +14,7 @@ from copernicusmarine.core_functions.marine_datastore_config import (
 
 
 class TestSeveralMetadataCatalogues:
-    def test_can_select_dataset_from_two_catalogues_and_well_sorted(
-        self, caplog
-    ):
+    def test_can_select_dataset_from_two_catalogues_and_well_sorted(self, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             dataset_id = "cmems_mod_glo_phy_anfc_0.083deg_P1D-m"
 
@@ -101,17 +99,14 @@ class TestSeveralMetadataCatalogues:
         )
         assert len(one_dataset_describe.products) == 1
         assert len(one_dataset_describe.products[0].datasets) == 1
-        assert (
-            "s3.waw3-1.cloudferro.com"
-            not in one_dataset_describe.model_dump_json(
-                exclude={
-                    "products": {
-                        "__all__": {
-                            "thumbnail_url",
-                        }
+        assert "s3.waw3-1.cloudferro.com" not in one_dataset_describe.model_dump_json(
+            exclude={
+                "products": {
+                    "__all__": {
+                        "thumbnail_url",
                     }
                 }
-            )
+            }
         )
 
         one_product_describe = describe(
@@ -120,10 +115,7 @@ class TestSeveralMetadataCatalogues:
         )
         assert len(one_product_describe.products) == 1
         assert one_product_describe.products[0].datasets
-        assert (
-            "s3.waw4-1.cloudferro.com"
-            not in one_product_describe.model_dump_json()
-        )
+        assert "s3.waw4-1.cloudferro.com" not in one_product_describe.model_dump_json()
 
     def test_describe_fails_wrong_ids(self):
         with pytest.raises(ProductNotFound):
@@ -155,8 +147,6 @@ class TestSeveralMetadataCatalogues:
                 json=None,
                 status=400,
             )
-            _ = describe(
-                dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m"
-            )
+            _ = describe(dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m")
 
             assert MARINE_DATASTORE_CONFIG_URL_CDN in caplog.text

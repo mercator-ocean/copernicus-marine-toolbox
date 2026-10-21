@@ -68,8 +68,7 @@ class CustomS3StoreZarrV3(Store):
             and self._root_path == value._root_path
             and self._bucket == value._bucket
             and self._endpoint == value._endpoint
-            and self._copernicus_marine_username
-            == value._copernicus_marine_username
+            and self._copernicus_marine_username == value._copernicus_marine_username
         )
 
     async def get(
@@ -102,10 +101,7 @@ class CustomS3StoreZarrV3(Store):
         prototype: BufferPrototype,
         key_ranges: Iterable[tuple[str, ByteRequest | None]],
     ) -> list[Buffer | None]:
-        return [
-            await self.get(key, prototype, byte_range)
-            for key, byte_range in key_ranges
-        ]
+        return [await self.get(key, prototype, byte_range) for key, byte_range in key_ranges]
 
     async def exists(self, key: str) -> bool:
         return (await self.get(key, default_buffer_prototype())) is not None
@@ -144,10 +140,7 @@ class CustomS3StoreZarrV3(Store):
                 StartAfter=cursor,
             )
             entries = resp.get("Contents", [])
-            keys += [
-                o["Key"].removeprefix(self._root_path).lstrip("/")
-                for o in entries
-            ]
+            keys += [o["Key"].removeprefix(self._root_path).lstrip("/") for o in entries]
             if not resp["IsTruncated"]:
                 break
             cursor = entries[-1]["Key"]

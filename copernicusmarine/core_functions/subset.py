@@ -6,28 +6,17 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineServiceFormat,
     CopernicusMarineServiceNames,
 )
-from copernicusmarine.core_functions.exceptions import (
-    ServiceNotSupported,
-    WrongFormatRequested,
-)
+from copernicusmarine.core_functions.exceptions import ServiceNotSupported, WrongFormatRequested
 from copernicusmarine.core_functions.marine_datastore_config import (
     get_config_and_check_version_subset,
 )
 from copernicusmarine.core_functions.models import CommandType, ResponseSubset
 from copernicusmarine.core_functions.request_structure import SubsetRequest
-from copernicusmarine.core_functions.services_utils import (
-    RetrievalService,
-    get_retrieval_service,
-)
-from copernicusmarine.core_functions.utils import (
-    get_unique_filepath,
-    human_readable_size,
-)
+from copernicusmarine.core_functions.services_utils import RetrievalService, get_retrieval_service
+from copernicusmarine.core_functions.utils import get_unique_filepath, human_readable_size
 from copernicusmarine.download_functions.download_sparse import download_sparse
 from copernicusmarine.download_functions.download_zarr import download_zarr
-from copernicusmarine.download_functions.subset_xarray import (
-    check_dataset_subset_bounds,
-)
+from copernicusmarine.download_functions.subset_xarray import check_dataset_subset_bounds
 
 logger = logging.getLogger("copernicusmarine")
 
@@ -51,8 +40,7 @@ def subset_function(
     )
     if subset_response.file_size:
         logger.info(
-            f"Total size of the download: "
-            f"{human_readable_size(subset_response.file_size)}."
+            f"Total size of the download: " f"{human_readable_size(subset_response.file_size)}."
         )
     return subset_response
 
@@ -60,9 +48,7 @@ def subset_function(
 def retrieve_metadata_and_check_request(
     subset_request: SubsetRequest,
 ) -> RetrievalService:
-    marine_datastore_config = get_config_and_check_version_subset(
-        subset_request.staging
-    )
+    marine_datastore_config = get_config_and_check_version_subset(subset_request.staging)
 
     retrieval_service: RetrievalService = get_retrieval_service(
         request=subset_request,
@@ -100,9 +86,7 @@ def download_zarr_or_sparse(
                 requested_format=subset_request.file_format,
                 supported_formats=["netcdf", "zarr", "csv"],
             )
-        logger.debug(
-            f"Downloading data in {subset_request.file_format} format."
-        )
+        logger.debug(f"Downloading data in {subset_request.file_format} format.")
         return download_zarr(
             subset_request=subset_request,
             dataset_url=retrieval_service.uri,
@@ -113,10 +97,7 @@ def download_zarr_or_sparse(
             dataset_chunking=retrieval_service.dataset_chunking,
             tdqm_configuration=tdqm_configuration,
         )
-    if (
-        retrieval_service.service_format
-        == CopernicusMarineServiceFormat.SQLITE
-    ):
+    if retrieval_service.service_format == CopernicusMarineServiceFormat.SQLITE:
         raise_when_all_dataset_requested(subset_request, True)
         if "file_format" not in subset_request.model_fields_set:
             subset_request.file_format = "csv"
@@ -125,9 +106,7 @@ def download_zarr_or_sparse(
                 requested_format=subset_request.file_format,
                 supported_formats=["parquet", "csv", "netcdf"],
             )
-        logger.debug(
-            f"Downloading data in {subset_request.file_format} format."
-        )
+        logger.debug(f"Downloading data in {subset_request.file_format} format.")
         if subset_request.coordinates_selection_method not in [
             "inside",
             "strict-inside",
@@ -182,9 +161,7 @@ def create_subset_template() -> None:
     logger.info(f"Template created at: {filename}")
 
 
-def raise_when_all_dataset_requested(
-    subset_request: SubsetRequest, sparse_data: bool
-) -> None:
+def raise_when_all_dataset_requested(subset_request: SubsetRequest, sparse_data: bool) -> None:
     """
     Raise an error if the subset request is not a subsetting request
     and all the dataset would be downloaded.
@@ -217,9 +194,7 @@ def raise_when_all_dataset_requested(
             "To retrieve a complete dataset, please use instead: "
             f"copernicusmarine get --dataset-id {subset_request.dataset_id}"
         )
-        raise ValueError(
-            "Missing subset option. Try 'copernicusmarine subset --help'."
-        )
+        raise ValueError("Missing subset option. Try 'copernicusmarine subset --help'.")
 
 
 def check_requested_area_time_valid(
@@ -235,10 +210,7 @@ def check_requested_area_time_valid(
         and subset_request.maximum_x is not None
         and subset_request.minimum_x > subset_request.maximum_x
     ):
-        if (
-            service_format == CopernicusMarineServiceFormat.ZARR
-            and not is_original_grid
-        ):
+        if service_format == CopernicusMarineServiceFormat.ZARR and not is_original_grid:
             logger.warning(
                 "Minimum longitude greater than maximum longitude. "
                 "Your selection will wrap around the 180° meridian: "

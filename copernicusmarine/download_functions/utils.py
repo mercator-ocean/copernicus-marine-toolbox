@@ -15,9 +15,7 @@ from copernicusmarine.core_functions.models import (
     TimeExtent,
 )
 from copernicusmarine.core_functions.request_structure import SubsetRequest
-from copernicusmarine.core_functions.utils import (
-    timestamp_or_datestring_to_datetime,
-)
+from copernicusmarine.core_functions.utils import timestamp_or_datestring_to_datetime
 from copernicusmarine.download_functions.subset_parameters import (
     DepthParameters,
     GeographicalParameters,
@@ -68,9 +66,7 @@ def _build_filename_from_dataset(
     axis_coordinate_id_mapping: dict[str, str],
     geographical_parameters: GeographicalParameters,
 ) -> str:
-    dataset_variables = "-".join(
-        [str(variable_name) for variable_name in dataset.data_vars]
-    )
+    dataset_variables = "-".join([str(variable_name) for variable_name in dataset.data_vars])
     variables = (
         "multi-vars"
         if (len(dataset_variables) > 15 and len(list(dataset.keys())) > 1)
@@ -113,12 +109,8 @@ def _build_filename_from_dataset(
 
     datetimes = None
     if "t" in axis_coordinate_id_mapping:
-        min_time_coordinate = _get_min_coordinate(
-            dataset, axis_coordinate_id_mapping["t"]
-        )
-        max_time_coordinate = _get_max_coordinate(
-            dataset, axis_coordinate_id_mapping["t"]
-        )
+        min_time_coordinate = _get_min_coordinate(dataset, axis_coordinate_id_mapping["t"])
+        max_time_coordinate = _get_max_coordinate(dataset, axis_coordinate_id_mapping["t"])
         datetimes = _format_datetimes(
             (
                 timestamp_or_datestring_to_datetime(min_time_coordinate)
@@ -156,19 +148,13 @@ def build_filename_from_request(
     """  # noqa
 
     dataset_variables = "-".join(variables)
-    dataset_variables = (
-        "multi-vars" if len(variables) > 15 else dataset_variables
-    )
+    dataset_variables = "multi-vars" if len(variables) > 15 else dataset_variables
     platform_ids_text = "-".join(platform_ids)
-    platform_ids_text = (
-        "multi-platforms" if len(platform_ids) > 15 else platform_ids_text
-    )
+    platform_ids_text = "multi-platforms" if len(platform_ids) > 15 else platform_ids_text
     longitudes = None
     if "x" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["x"] == "longitude":
-            longitudes = _format_longitudes(
-                request.minimum_x, request.maximum_x
-            )
+            longitudes = _format_longitudes(request.minimum_x, request.maximum_x)
         if axis_coordinate_id_mapping["x"] == "x":
             longitudes = _format_xy_axis(
                 request.minimum_x,
@@ -190,15 +176,11 @@ def build_filename_from_request(
     depths = None
     if "z" in axis_coordinate_id_mapping:
         if axis_coordinate_id_mapping["z"] == "depth":
-            depths = _format_depths(
-                request.minimum_depth, request.maximum_depth
-            )
+            depths = _format_depths(request.minimum_depth, request.maximum_depth)
 
     datetimes = None
     if "t" in axis_coordinate_id_mapping:
-        datetimes = _format_datetimes(
-            request.start_datetime, request.end_datetime, time_format
-        )
+        datetimes = _format_datetimes(request.start_datetime, request.end_datetime, time_format)
     filename = "_".join(
         filter(
             None,
@@ -253,9 +235,7 @@ def _get_unit_coordinate(dataset: xarray.Dataset, coordinate_id: str) -> Any:
     return None
 
 
-def _format_longitudes(
-    minimum_longitude: float | None, maximum_longitude: float | None
-) -> str:
+def _format_longitudes(minimum_longitude: float | None, maximum_longitude: float | None) -> str:
     if minimum_longitude is None or maximum_longitude is None:
         return ""
     else:
@@ -272,9 +252,7 @@ def _format_longitudes(
         return longitude
 
 
-def _format_latitudes(
-    minimum_latitude: float | None, maximum_latitude: float | None
-) -> str:
+def _format_latitudes(minimum_latitude: float | None, maximum_latitude: float | None) -> str:
     if minimum_latitude is None or maximum_latitude is None:
         return ""
     else:
@@ -306,15 +284,12 @@ def _format_xy_axis(
             minimum_suffix = coordinate_id
             maximum_suffix = coordinate_id.upper()
             value = (
-                f"{(minimum_value):.2f}{minimum_suffix}_"
-                f"{(maximum_value):.2f}{maximum_suffix}"
+                f"{(minimum_value):.2f}{minimum_suffix}_" f"{(maximum_value):.2f}{maximum_suffix}"
             )
         return value
 
 
-def _format_depths(
-    minimum_depth: float | None, maximum_depth: float | None
-) -> str:
+def _format_depths(minimum_depth: float | None, maximum_depth: float | None) -> str:
     if minimum_depth is None or maximum_depth is None:
         return ""
     else:
@@ -334,9 +309,7 @@ def _format_datetimes(
     if minimum_datetime is None or maximum_datetime is None:
         return ""
     else:
-        if minimum_datetime.strftime(time_format) == maximum_datetime.strftime(
-            time_format
-        ):
+        if minimum_datetime.strftime(time_format) == maximum_datetime.strftime(time_format):
             formatted_datetime = f"{minimum_datetime.strftime(time_format)}"
         else:
             formatted_datetime = (
@@ -352,9 +325,7 @@ def get_dataset_coordinates_extent(
     coordinates_extent = []
     for coord_axis in ["x", "y", "t", "z"]:
         if coordinate_id := axis_coordinate_id_mapping.get(coord_axis):
-            if coordinate_extent := _get_coordinate_extent(
-                dataset, coordinate_id
-            ):
+            if coordinate_extent := _get_coordinate_extent(dataset, coordinate_id):
                 coordinates_extent.append(coordinate_extent)
 
     return coordinates_extent
@@ -399,9 +370,7 @@ def get_approximation_size_final_result(
     for variable_name in dataset.data_vars:
         variable = dataset[variable_name]
         if file_format == "zarr":
-            total_values_size_bytes += _estimate_zarr_variable_size_bytes(
-                variable
-            )
+            total_values_size_bytes += _estimate_zarr_variable_size_bytes(variable)
         else:
             storage_dtype = variable.encoding.get("dtype", variable.dtype)
             item_size = numpy.dtype(storage_dtype).itemsize
@@ -416,10 +385,7 @@ def get_approximation_size_final_result(
         # Zarr containers include metadata files and chunk key/index overhead.
         # Keep a small fixed overhead to avoid underestimation for tiny outputs.
         coordinate_overhead += 8 * 1024
-    estimate_size = (
-        baseline_size
-        + (total_values_size_bytes + coordinate_overhead) / 1048e3
-    )
+    estimate_size = baseline_size + (total_values_size_bytes + coordinate_overhead) / 1048e3
 
     return estimate_size
 
@@ -489,13 +455,9 @@ def _estimate_zarr_compression_ratio(
     if compressor is None:
         return 1.0
 
-    compressor_name = (
-        getattr(compressor, "cname", None) or compressor.__class__.__name__
-    ).lower()
+    compressor_name = (getattr(compressor, "cname", None) or compressor.__class__.__name__).lower()
     clevel = getattr(compressor, "clevel", None)
-    compression_level: float = (
-        clevel if clevel is not None else getattr(compressor, "level", 5)
-    )
+    compression_level: float = clevel if clevel is not None else getattr(compressor, "level", 5)
 
     ratio = 0.7
     if "lz4" in compressor_name:
@@ -516,10 +478,7 @@ def _estimate_zarr_compression_ratio(
         if str(shuffle).upper() not in {"NOSHUFFLE", "0", "NONE"}:
             ratio -= 0.04
 
-    if (
-        "scale_factor" in variable.encoding
-        or "add_offset" in variable.encoding
-    ):
+    if "scale_factor" in variable.encoding or "add_offset" in variable.encoding:
         ratio -= 0.03
 
     # Large numbers of chunks often correlate with stronger effective

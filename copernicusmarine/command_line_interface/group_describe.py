@@ -3,14 +3,10 @@ import logging
 import click
 
 from copernicusmarine.catalogue_parser.models import CopernicusMarineCatalogue
-from copernicusmarine.command_line_interface.exception_handler import (
-    log_exception_and_exit,
-)
+from copernicusmarine.command_line_interface.exception_handler import log_exception_and_exit
 from copernicusmarine.command_line_interface.utils import tqdm_disable_option
 from copernicusmarine.core_functions import documentation_utils
-from copernicusmarine.core_functions.click_custom_class import (
-    CustomClickOptionsCommand,
-)
+from copernicusmarine.core_functions.click_custom_class import CustomClickOptionsCommand
 from copernicusmarine.core_functions.describe import describe_function
 from copernicusmarine.core_functions.fields_query_builder import (
     build_query,
@@ -177,16 +173,12 @@ def _create_include_and_exclude(
                 CopernicusMarineCatalogue,
                 "--return-fields",
             )
-            include_query = build_query(
-                queryable_fields, CopernicusMarineCatalogue
-            )
+            include_query = build_query(queryable_fields, CopernicusMarineCatalogue)
     if exclude_fields:
         exclude_from_output = set(exclude_fields.replace(" ", "").split(","))
         queryable_fields = get_queryable_requested_fields(
             exclude_from_output, CopernicusMarineCatalogue, "--exclude-fields"
         )
-        exclude_query = build_query(
-            queryable_fields, CopernicusMarineCatalogue
-        )
+        exclude_query = build_query(queryable_fields, CopernicusMarineCatalogue)
 
     return include_query, exclude_query

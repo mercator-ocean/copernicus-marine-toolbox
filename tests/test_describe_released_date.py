@@ -6,9 +6,7 @@ from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata
     mocked_stac_requests_get,
 )
 
-exclude_query = build_query(
-    {"description", "keywords"}, CopernicusMarineCatalogue
-)
+exclude_query = build_query({"description", "keywords"}, CopernicusMarineCatalogue)
 
 
 class TestDescribeReleaseDate:
@@ -45,12 +43,8 @@ class TestDescribeReleaseDate:
         )
 
     def test_describe_all_versions(self, snapshot):
-        describe_result = self.when_I_describe_the_marine_data_store(
-            show_all_versions=True
-        )
-        self.then_I_get_all_products_versions_and_datasets(
-            describe_result, snapshot
-        )
+        describe_result = self.when_I_describe_the_marine_data_store(show_all_versions=True)
+        self.then_I_get_all_products_versions_and_datasets(describe_result, snapshot)
 
     def then_I_get_all_products_versions_and_datasets(
         self, describe_result: CopernicusMarineCatalogue, snapshot

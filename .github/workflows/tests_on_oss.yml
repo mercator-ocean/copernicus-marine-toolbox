@@ -48,8 +48,6 @@ jobs:
         run: poetry install --no-interaction --with dev --all-extras
       - name: Run tests
         env:
-          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
-          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
           PYTHONIOENCODING: utf-8
         run: |
           source $VENV

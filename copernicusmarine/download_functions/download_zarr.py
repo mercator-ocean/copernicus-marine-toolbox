@@ -8,9 +8,7 @@ from multiprocessing import current_process
 import xarray
 import zarr
 
-from copernicusmarine.core_functions.temporary_path_saver import (
-    TemporaryPathSaver,
-)
+from copernicusmarine.core_functions.temporary_path_saver import TemporaryPathSaver
 
 if zarr.__version__.startswith("2"):
     from zarr.storage import DirectoryStore
@@ -32,9 +30,7 @@ from copernicusmarine.catalogue_parser.models import (
     CopernicusMarineService,
 )
 from copernicusmarine.core_functions import custom_open_zarr
-from copernicusmarine.core_functions.exceptions import (
-    NetCDFCompressionNotAvailable,
-)
+from copernicusmarine.core_functions.exceptions import NetCDFCompressionNotAvailable
 from copernicusmarine.core_functions.models import (
     CoordinatesSelectionMethod,
     DatasetChunking,
@@ -43,9 +39,7 @@ from copernicusmarine.core_functions.models import (
     StatusCode,
     StatusMessage,
 )
-from copernicusmarine.core_functions.polygons_extractor import (
-    extract_polygons_from_dataset,
-)
+from copernicusmarine.core_functions.polygons_extractor import extract_polygons_from_dataset
 from copernicusmarine.core_functions.request_structure import SubsetRequest
 from copernicusmarine.core_functions.utils import (
     add_copernicusmarine_version_in_dataset_attributes,
@@ -80,13 +74,8 @@ def get_dataset_and_parameters(
     dataset_valid_start_date: str | int | float | None,
 ) -> tuple[xarray.Dataset, GeographicalParameters, DepthParameters]:
     if dataset_valid_start_date:
-        minimum_start_date = timestamp_or_datestring_to_datetime(
-            dataset_valid_start_date
-        )
-        if (
-            not subset_request.start_datetime
-            or subset_request.start_datetime < minimum_start_date
-        ):
+        minimum_start_date = timestamp_or_datestring_to_datetime(dataset_valid_start_date)
+        if not subset_request.start_datetime or subset_request.start_datetime < minimum_start_date:
             subset_request.start_datetime = minimum_start_date
 
     if subset_request.chunk_size_limit and dataset_chunking:
@@ -134,11 +123,7 @@ def download_zarr(
     is_original_grid: bool,
     tdqm_configuration: dict,
 ) -> ResponseSubset:
-    (
-        dataset,
-        geographical_parameters,
-        depth_parameters,
-    ) = get_dataset_and_parameters(
+    (dataset, geographical_parameters, depth_parameters,) = get_dataset_and_parameters(
         subset_request=subset_request,
         dataset_url=dataset_url,
         axis_coordinate_id_mapping=axis_coordinate_id_mapping,
@@ -163,9 +148,7 @@ def download_zarr(
     logger.debug("Starting download. Please wait...")
 
     if subset_request.file_format == "csv":
-        final_result_size_estimation = get_approximation_size_final_result_csv(
-            dataset
-        )
+        final_result_size_estimation = get_approximation_size_final_result_csv(dataset)
         if final_result_size_estimation > 1000:
             non_csv_size_estimation = get_approximation_size_final_result(
                 dataset,
@@ -219,9 +202,7 @@ def download_zarr(
         file_size=final_result_size_estimation,
         data_transfer_size=data_needed_approximation,
         variables=list(dataset.data_vars),
-        coordinates_extent=get_dataset_coordinates_extent(
-            dataset, axis_coordinate_id_mapping
-        ),
+        coordinates_extent=get_dataset_coordinates_extent(dataset, axis_coordinate_id_mapping),
         status=StatusCode.SUCCESS,
         message=StatusMessage.SUCCESS,
         file_status=FileStatus.DOWNLOADED,
@@ -239,8 +220,7 @@ def download_zarr(
     if "position" not in tdqm_configuration and current._identity:
         tdqm_configuration["position"] = current._identity[0]
     if (
-        "disable" not in tdqm_configuration
-        or not tdqm_configuration["disable"]
+        "disable" not in tdqm_configuration or not tdqm_configuration["disable"]
     ) and subset_request.file_format == "csv":
         tdqm_configuration["disable"] = True
 
@@ -339,9 +319,7 @@ def get_coordinates_dask_and_zarr_chunks_info(
         if chunking_length is None:
             continue
         coordinate_zarr_chunk_length[coordinate_id] = int(chunking_length)
-        number_of_zarr_chunks_needed = (
-            dataset_chunking.get_number_chunks_coordinate(coordinate_id)
-        )
+        number_of_zarr_chunks_needed = dataset_chunking.get_number_chunks_coordinate(coordinate_id)
         if number_of_zarr_chunks_needed is None:
             continue
         max_dask_chunk_factor[coordinate_id] = number_of_zarr_chunks_needed
@@ -390,9 +368,7 @@ def get_optimum_dask_chunking(
     (
         max_dask_chunk_factor,
         coordinate_zarr_chunk_length,
-    ) = get_coordinates_dask_and_zarr_chunks_info(
-        service, variables, dataset_chunking
-    )
+    ) = get_coordinates_dask_and_zarr_chunks_info(service, variables, dataset_chunking)
     zarr_chunks_to_download = dataset_chunking.number_chunks
     # it seems that dask chunks increases more
     # with the number of variables
@@ -431,9 +407,7 @@ def get_optimum_dask_chunking(
         and (z_coordinate := axis_coordinate_id_mapping["z"]) != "elevation"
         and z_coordinate in optimum_dask_chunking
     ):
-        optimum_dask_chunking["elevation"] = optimum_dask_chunking[
-            z_coordinate
-        ]
+        optimum_dask_chunking["elevation"] = optimum_dask_chunking[z_coordinate]
         del optimum_dask_chunking[z_coordinate]
     return optimum_dask_chunking
 
@@ -450,19 +424,13 @@ def _get_optimum_factors(
     limit: int,
     axis_coordinate_id_mapping: dict[str, str],
 ) -> dict[str, int]:
-    optimum_factors = {
-        coordinate_name: 1
-        for coordinate_name in coordinate_max_dask_chunk_factor
-    }
+    optimum_factors = {coordinate_name: 1 for coordinate_name in coordinate_max_dask_chunk_factor}
     coordinate_selection_pool = {
         coordinate_name
         for coordinate_name, max_factor in coordinate_max_dask_chunk_factor.items()
         if max_factor > 1
     }
-    while (
-        _product(optimum_factors.values()) < limit
-        and coordinate_selection_pool
-    ):
+    while _product(optimum_factors.values()) < limit and coordinate_selection_pool:
         selected_coordinate = max(
             coordinate_selection_pool,
             key=lambda x: (
@@ -475,9 +443,9 @@ def _get_optimum_factors(
         )
 
         optimum_factors[selected_coordinate] += 1
-        if optimum_factors[
+        if optimum_factors[selected_coordinate] == coordinate_max_dask_chunk_factor[
             selected_coordinate
-        ] == coordinate_max_dask_chunk_factor[selected_coordinate] or (
+        ] or (
             len(coordinate_selection_pool) > 1
             and optimum_factors[selected_coordinate] >= limit // 2
         ):
@@ -511,9 +479,7 @@ def _save_dataset_locally(
             _download_dataset_as_csv(dataset, temp_path)
 
 
-def _download_dataset_as_zarr(
-    dataset: xarray.Dataset, output_path: pathlib.Path
-):
+def _download_dataset_as_zarr(dataset: xarray.Dataset, output_path: pathlib.Path):
     logger.debug("Writing dataset to Zarr.")
     store = DirectoryStore(output_path)
     if ZARR_FORMAT is None:
@@ -532,9 +498,7 @@ def _download_dataset_as_netcdf(
     for coord in dataset.coords:
         dataset[coord].encoding["_FillValue"] = None
     if netcdf_compression_level > 0:
-        logger.debug(
-            f"NetCDF compression enabled with level {netcdf_compression_level}"
-        )
+        logger.debug(f"NetCDF compression enabled with level {netcdf_compression_level}")
         comp = {
             "zlib": True,
             "complevel": netcdf_compression_level,
@@ -551,11 +515,7 @@ def _download_dataset_as_netcdf(
         }
         encoding = {
             name: {
-                **{
-                    key: value
-                    for key, value in var.encoding.items()
-                    if key in keys_to_keep
-                },
+                **{key: value for key, value in var.encoding.items() if key in keys_to_keep},
                 **comp,
             }
             for name, var in dataset.data_vars.items()
@@ -574,9 +534,7 @@ def _download_dataset_as_netcdf(
     )
 
 
-def _download_dataset_as_csv(
-    dataset: xarray.Dataset, output_path: pathlib.Path
-):
+def _download_dataset_as_csv(dataset: xarray.Dataset, output_path: pathlib.Path):
     logger.debug("Writing dataset to CSV.")
     df = dataset.to_dataframe()
     df.to_csv(output_path)

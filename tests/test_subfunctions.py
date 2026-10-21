@@ -2,10 +2,7 @@ import datetime
 import random
 
 import copernicusmarine as cm
-from copernicusmarine.download_functions.subset_xarray import (
-    _dataset_custom_sel,
-    longitude_modulus,
-)
+from copernicusmarine.download_functions.subset_xarray import _dataset_custom_sel, longitude_modulus
 
 
 class TestSubfunctions:
@@ -46,28 +43,20 @@ class TestSubfunctions:
         min_value = 1
         max_value = 49
         coord_selection = slice(min_value, max_value)
-        dataset_1 = _dataset_custom_sel(
-            dataset, "longitude", coord_selection, "strict-inside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset, "longitude", coord_selection, "strict-inside")
         assert dataset_1.longitude.values.min() >= min_value
         assert dataset_1.longitude.max().values <= max_value
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "latitude", coord_selection, "strict-inside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "latitude", coord_selection, "strict-inside")
         assert dataset_1.latitude.values.min() >= min_value
         assert dataset_1.latitude.values.max() <= max_value
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "depth", coord_selection, "strict-inside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "depth", coord_selection, "strict-inside")
         assert dataset_1.depth.values.min() >= min_value
         assert dataset_1.depth.values.max() <= max_value
         coord_selection = slice(
             datetime.datetime(2023, 1, 1),
             datetime.datetime(2023, 1, 3),
         )
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "time", coord_selection, "strict-inside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "time", coord_selection, "strict-inside")
         assert datetime.datetime.strptime(
             str(dataset_1.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.datetime.strptime("2023-01-01", "%Y-%m-%d")
@@ -78,28 +67,20 @@ class TestSubfunctions:
         min_value = 20
         max_value = 39.9
         coord_selection = slice(min_value, max_value)
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "longitude", coord_selection, "outside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "longitude", coord_selection, "outside")
         assert dataset_1.longitude.values.min() <= min_value
         assert dataset_1.longitude.max().values >= max_value
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "latitude", coord_selection, "outside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "latitude", coord_selection, "outside")
         assert dataset_1.latitude.values.min() <= min_value
         assert dataset_1.latitude.values.max() >= max_value
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "depth", coord_selection, "outside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "depth", coord_selection, "outside")
         assert dataset_1.depth.values.min() <= min_value
         assert dataset_1.depth.values.max() >= max_value
         coord_selection = slice(
             datetime.datetime(2023, 1, 2),
             datetime.datetime(2023, 1, 2),
         )
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "time", coord_selection, "outside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "time", coord_selection, "outside")
         assert datetime.datetime.strptime(
             str(dataset_1.time.values.min()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.datetime.strptime("2023-01-02", "%Y-%m-%d")
@@ -111,8 +92,6 @@ class TestSubfunctions:
         # the returned makes sense
 
         coord_selection = slice(10, 45)
-        dataset_1 = _dataset_custom_sel(
-            dataset_1, "longitude", coord_selection, "outside"
-        )
+        dataset_1 = _dataset_custom_sel(dataset_1, "longitude", coord_selection, "outside")
         assert dataset_1.longitude.values.min() >= 20  # the old values
         assert dataset_1.longitude.max().values <= 39.92

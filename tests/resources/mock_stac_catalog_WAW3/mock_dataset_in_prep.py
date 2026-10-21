@@ -3,9 +3,7 @@ MOCK_DATASET_IN_PREP = {
     "id": "cmems_obs-oc_glo_bgc-plankton_my_l3-olci-300m_P1D_202211",
     "type": "Feature",
     "stac_version": "1.0.0",
-    "stac_extensions": [
-        "https://stac-extensions.github.io/datacube/v2.1.0/schema.json"
-    ],
+    "stac_extensions": ["https://stac-extensions.github.io/datacube/v2.1.0/schema.json"],
     "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -148,9 +146,7 @@ MOCK_DATASET_IN_PREP = {
                 "unit": "milligram m-3",
                 "standardName": "mass_concentration_of_chlorophyll_a_in_sea_water",
                 "abbreviation": "CHL",
-                "name": {
-                    "en": "Chlorophyll concentration - Mean of the binned pixels"
-                },
+                "name": {"en": "Chlorophyll concentration - Mean of the binned pixels"},
                 "unitConversion": None,
                 "missingValue": -999,
                 "offset": None,

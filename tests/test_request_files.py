@@ -31,9 +31,7 @@ class TestRequestFiles:
         # TODO: add a snapshot of the result: ncdump or str(dataset)
         # problem is that it is difficult to have sorting
         # and stable snapshots
-        filepath = get_path_to_request_file(
-            "test_subset_request_with_request_file"
-        )
+        filepath = get_path_to_request_file("test_subset_request_with_request_file")
 
         command = build_command(filepath, "subset")
         command += [
@@ -48,18 +46,13 @@ class TestRequestFiles:
         assert 'Selected dataset version: "default"' in self.output.stderr
 
     def test_subset_request_without_subset(self):
-        filepath = get_path_to_request_file(
-            "test_subset_request_without_subset"
-        )
+        filepath = get_path_to_request_file("test_subset_request_without_subset")
 
         command = build_command(filepath, "subset")
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        assert (
-            "Missing subset option. Try 'copernicusmarine subset --help'."
-            in self.output.stderr
-        )
+        assert "Missing subset option. Try 'copernicusmarine subset --help'." in self.output.stderr
         assert (
             "To retrieve a complete dataset, please use instead: "
             "copernicusmarine get --dataset-id "
@@ -67,9 +60,7 @@ class TestRequestFiles:
         ) in self.output.stderr
 
     def test_subset_request_with_dataset_not_in_catalog(self):
-        filepath = get_path_to_request_file(
-            "test_subset_request_with_dataset_not_in_catalog"
-        )
+        filepath = get_path_to_request_file("test_subset_request_with_dataset_not_in_catalog")
 
         command = build_command(filepath, "subset")
 
@@ -77,9 +68,7 @@ class TestRequestFiles:
         assert self.output.returncode == 1
 
     def test_subset_error_when_forced_service_does_not_exist(self):
-        filepath = get_path_to_request_file(
-            "test_subset_error_when_forced_service_does_not_exist"
-        )
+        filepath = get_path_to_request_file("test_subset_error_when_forced_service_does_not_exist")
 
         command = build_command(filepath, "subset")
 
@@ -90,9 +79,7 @@ class TestRequestFiles:
         assert error_msg + services in self.output.stderr
 
     def test_get_download_s3_with_wildcard_filter_and_regex(self, tmp_path):
-        filepath = get_path_to_request_file(
-            "test_get_download_s3_with_wildcard_filter_and_regex"
-        )
+        filepath = get_path_to_request_file("test_get_download_s3_with_wildcard_filter_and_regex")
 
         command = build_command(filepath, "get")
         command += [
@@ -126,9 +113,7 @@ class TestRequestFiles:
         assert self.output.returncode == 0
 
     def test_get_request_with_request_file(self, tmp_path):
-        filepath = get_path_to_request_file(
-            "test_get_request_with_request_file"
-        )
+        filepath = get_path_to_request_file("test_get_request_with_request_file")
 
         command = build_command(filepath, "get")
         command += [
@@ -141,9 +126,7 @@ class TestRequestFiles:
         assert self.output.returncode == 0
 
     def test_get_request_with_one_wrong_attribute(self, tmp_path):
-        filepath = get_path_to_request_file(
-            "test_get_request_with_one_wrong_attribute"
-        )
+        filepath = get_path_to_request_file("test_get_request_with_one_wrong_attribute")
 
         command = build_command(filepath, "get")
         command += [
@@ -165,9 +148,7 @@ class TestRequestFiles:
         assert "Invalid request in file" in self.output.stderr
 
     def test_subset_works_deprecated_options(self):
-        filepath = get_path_to_request_file(
-            "test_subset_works_deprecated_options"
-        )
+        filepath = get_path_to_request_file("test_subset_works_deprecated_options")
 
         command = build_command(filepath, "subset") + ["--dry-run"]
         self.output = execute_in_terminal(command)
@@ -185,9 +166,8 @@ class TestRequestFiles:
         self.output = execute_in_terminal(command)
         print(self.output.stderr)
         print(remove_extra_logging_prefix_info(self.output.stderr))
-        assert (
-            "Template created at: subset_template.json"
-            == remove_extra_logging_prefix_info(self.output.stderr)
+        assert "Template created at: subset_template.json" == remove_extra_logging_prefix_info(
+            self.output.stderr
         )
         assert Path("subset_template.json").is_file()
 
@@ -209,9 +189,8 @@ class TestRequestFiles:
 
         self.output = execute_in_terminal(command)
 
-        assert (
-            "Template created at: get_template.json"
-            == remove_extra_logging_prefix_info(self.output.stderr)
+        assert "Template created at: get_template.json" == remove_extra_logging_prefix_info(
+            self.output.stderr
         )
         assert Path("get_template.json").is_file()
 
@@ -234,17 +213,13 @@ class TestRequestFiles:
         with pytest.raises(copernicusmarine.DatasetNotFound):
             copernicusmarine.get(
                 dataset_id="wrong_dataset_id",
-                request_file=get_path_to_request_file(
-                    "test_get_request_with_request_file"
-                ),
+                request_file=get_path_to_request_file("test_get_request_with_request_file"),
                 dry_run=True,
             )
 
         with pytest.raises(copernicusmarine.DatasetNotFound):
             copernicusmarine.subset(
                 dataset_id="wrong_dataset_id",
-                request_file=get_path_to_request_file(
-                    "test_subset_request_with_request_file"
-                ),
+                request_file=get_path_to_request_file("test_subset_request_with_request_file"),
                 dry_run=True,
             )

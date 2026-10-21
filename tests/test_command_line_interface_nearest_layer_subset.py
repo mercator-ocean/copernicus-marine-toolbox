@@ -135,9 +135,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
         ]
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(
-            pathlib.Path(tmp_path, output_filename), engine="zarr"
-        )
+        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename), engine="zarr")
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -155,9 +153,7 @@ class TestCommandLineInterfaceNearestLayerSubset:
 
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(
-            pathlib.Path(tmp_path, output_filename), engine="zarr"
-        )
+        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename), engine="zarr")
         min_depth = dataset.depth.values.min()
         max_depth = dataset.depth.values.max()
 
@@ -166,13 +162,9 @@ class TestCommandLineInterfaceNearestLayerSubset:
         assert min_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
         assert max_depth == SUBSET_NEAREST_LAYER_OPTIONS["expected_depth"]
 
-    def test_subset_same_depth_with_vertical_dimension_as_originally_produced(
-        self, tmp_path
-    ):
+    def test_subset_same_depth_with_vertical_dimension_as_originally_produced(self, tmp_path):
         dataset_id = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
-        output_filename = (
-            "test_subset_same_depth_with_originial_vertical_dimension.nc"
-        )
+        output_filename = "test_subset_same_depth_with_originial_vertical_dimension.nc"
 
         command = [
             "copernicusmarine",
@@ -228,19 +220,13 @@ class TestCommandLineInterfaceNearestLayerSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        dataset = xarray.open_dataset(
-            pathlib.Path(tmp_path, output_filename), engine="zarr"
-        )
+        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename), engine="zarr")
         min_datetime = dataset.time.values.min()
         max_datetime = dataset.time.values.max()
 
         assert dataset.time.size == 1
-        assert (
-            min_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
-        )
-        assert (
-            max_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
-        )
+        assert min_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
+        assert max_datetime == SUBSET_NEAREST_LAYER_OPTIONS["expected_datetime"]
 
     # -----------------------#
     # Test on same longitude #
@@ -256,20 +242,14 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(
-            pathlib.Path(tmp_path, output_filename), engine="zarr"
-        )
+        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename), engine="zarr")
         min_elevation = dataset.longitude.values.min()
         max_elevation = dataset.longitude.values.max()
 
         assert self.output.returncode == 0
         assert dataset.longitude.size == 1
-        assert (
-            min_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
-        )
-        assert (
-            max_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
-        )
+        assert min_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
+        assert max_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_longitude"]
 
     # ----------------------#
     # Test on same latitude #
@@ -285,24 +265,16 @@ class TestCommandLineInterfaceNearestLayerSubset:
         )
         self.output = execute_in_terminal(command)
 
-        dataset = xarray.open_dataset(
-            pathlib.Path(tmp_path, output_filename), engine="zarr"
-        )
+        dataset = xarray.open_dataset(pathlib.Path(tmp_path, output_filename), engine="zarr")
         min_elevation = dataset.latitude.values.min()
         max_elevation = dataset.latitude.values.max()
 
         assert self.output.returncode == 0
         assert dataset.latitude.size == 1
-        assert (
-            min_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
-        )
-        assert (
-            max_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
-        )
+        assert min_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
+        assert max_elevation == SUBSET_NEAREST_LAYER_OPTIONS["expected_latitude"]
 
-    def test_subset_with_coordinates_range_falling_between_two_values(
-        self, tmp_path
-    ):
+    def test_subset_with_coordinates_range_falling_between_two_values(self, tmp_path):
         output_filename = "data.nc"
         command = [
             "copernicusmarine",

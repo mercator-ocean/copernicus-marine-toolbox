@@ -13,9 +13,7 @@ from dateutil.parser._parser import ParserError
 from requests import PreparedRequest
 from tqdm import tqdm
 
-from copernicusmarine.core_functions.environment_variables import (
-    COPERNICUSMARINE_USE_THREADS,
-)
+from copernicusmarine.core_functions.environment_variables import COPERNICUSMARINE_USE_THREADS
 from copernicusmarine.core_functions.exceptions import WrongDatetimeFormat
 from copernicusmarine.versioner import __version__ as copernicusmarine_version
 
@@ -52,18 +50,14 @@ def get_unique_directorypath(
 _T = TypeVar("_T")
 
 
-def next_or_raise_exception(
-    iterator: Iterator[_T], exception_to_raise: Exception
-) -> _T:
+def next_or_raise_exception(iterator: Iterator[_T], exception_to_raise: Exception) -> _T:
     try:
         return next(iterator)
     except Exception as exception:
         raise exception_to_raise from exception
 
 
-def construct_url_with_query_params(
-    url: str, query_params: dict[str, str]
-) -> str | None:
+def construct_url_with_query_params(url: str, query_params: dict[str, str]) -> str | None:
     req = PreparedRequest()
     req.prepare_url(url, query_params)
     return req.url
@@ -96,32 +90,24 @@ def datetime_parser(date: str | numpy.datetime64) -> datetime:
     raise WrongDatetimeFormat(date)
 
 
-def timestamp_parser(
-    timestamp: int | float, unit: Literal["s", "ms"] = "ms"
-) -> datetime:
+def timestamp_parser(timestamp: int | float, unit: Literal["s", "ms"] = "ms") -> datetime:
     """
     Convert a timestamp in milliseconds to a datetime object.
     The unit can be changed to seconds by passing "s".
     """
-    delta = (
-        timedelta(seconds=timestamp)
-        if unit == "s"
-        else timedelta(milliseconds=timestamp)
-    )
+    delta = timedelta(seconds=timestamp) if unit == "s" else timedelta(milliseconds=timestamp)
     return datetime(1970, 1, 1, tzinfo=timezone.utc) + delta
 
 
-def datetime_to_timestamp(
-    date: datetime, unit: Literal["s", "ms"] = "ms"
-) -> int | float:
+def datetime_to_timestamp(date: datetime, unit: Literal["s", "ms"] = "ms") -> int | float:
     """
     Should be Windows compatible for datetime before 1970
     Returns a timestamp corresponding to the seconds or
     milliseconds since the epoch (January 1, 1970, 00:00:00 UTC).
     """
-    return (
-        calendar.timegm(date.timetuple()) + date.microsecond / 1_000_000
-    ) * (1000 if unit == "ms" else 1)
+    return (calendar.timegm(date.timetuple()) + date.microsecond / 1_000_000) * (
+        1000 if unit == "ms" else 1
+    )
 
 
 def timestamp_or_datestring_to_datetime(
@@ -209,9 +195,7 @@ def run_multiprocessors(
                     pbar.update(1)
                 return out
             except KeyboardInterrupt:
-                logger.warning(
-                    "Terminating all parallel processes, this could take a while..."
-                )
+                logger.warning("Terminating all parallel processes, this could take a while...")
                 executor.shutdown(wait=False, cancel_futures=True)
                 raise
 
@@ -224,18 +208,14 @@ def parse_access_dataset_url(
     data_path: str, only_dataset_root_path: bool = False
 ) -> tuple[str, str, str]:
 
-    match = re.search(
-        r"^(http|https):\/\/([\w\-\.]+)(:[\d]+)?(\/.*)", data_path
-    )
+    match = re.search(r"^(http|https):\/\/([\w\-\.]+)(:[\d]+)?(\/.*)", data_path)
     if match:
         endpoint_url = match.group(1) + "://" + match.group(2)
         full_path = match.group(4)
         segments = full_path.split("/")
         bucket = segments[1]
         path = (
-            "/".join(segments[2:])
-            if not only_dataset_root_path
-            else "/".join(segments[2:5]) + "/"
+            "/".join(segments[2:]) if not only_dataset_root_path else "/".join(segments[2:5]) + "/"
         )
         return endpoint_url, bucket, path
     else:

@@ -93,10 +93,7 @@ class TestSparseSubset:
         response = loads(self.output.stdout)
         assert response["filename"] == "sparse_data.parquet"
         output_path = pathlib.Path(response["file_path"])
-        assert (
-            output_path == tmp_path / "sparse_data.parquet"
-            and output_path.exists()
-        )
+        assert output_path == tmp_path / "sparse_data.parquet" and output_path.exists()
 
     def test_skip_existing_overwrite_default(self, tmp_path):
         command = BASIC_COMMAND + [
@@ -213,10 +210,7 @@ class TestSparseSubset:
         caplog.clear()
         response_subset = subset(**empty_request)
         assert "No data found for the given parameters" in caplog.text
-        assert (
-            response_subset.file_path
-            and not response_subset.file_path.exists()
-        )
+        assert response_subset.file_path and not response_subset.file_path.exists()
 
     def test_can_subset_along_track_data(self, tmp_path):
         command = [
@@ -263,15 +257,11 @@ class TestSparseSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
         response = loads(self.output.stdout)
-        assert os.path.exists(response["file_path"]) and os.path.isdir(
-            response["file_path"]
-        )
+        assert os.path.exists(response["file_path"]) and os.path.isdir(response["file_path"])
 
         nc_files = sorted(pathlib.Path(response["file_path"]).glob("*.nc"))
         assert len(nc_files) == 2
-        assert sorted(response["file_names"]) == sorted(
-            nc_file.name for nc_file in nc_files
-        )
+        assert sorted(response["file_names"]) == sorted(nc_file.name for nc_file in nc_files)
 
         ds = xr.open_dataset(nc_files[0])
         assert "time" in ds.dims
@@ -324,8 +314,7 @@ class TestSparseSubset:
             stdout = "\n".join(
                 line
                 for line in self.netcdf_output.stdout.splitlines()
-                if all(attr not in line for attr in attrs_to_exclude)
-                and line.strip() != ""
+                if all(attr not in line for attr in attrs_to_exclude) and line.strip() != ""
             )
             assert stdout == snapshot(name=str(nc_file.name) + ".txt")
 
@@ -376,9 +365,7 @@ class TestSparseSubset:
         dataset = xr.open_dataset(nc_file)
         assert "time" in dataset.dims and len(dataset.dims) == 1
         assert dataset.coords.keys() == {"latitude", "longitude", "time"}
-        assert not [
-            var for var in dataset.data_vars if var.endswith("_QC")  # type: ignore
-        ]
+        assert not [var for var in dataset.data_vars if var.endswith("_QC")]  # type: ignore
         dataset.close()
 
         attrs_to_exclude = [
@@ -397,8 +384,7 @@ class TestSparseSubset:
         stdout = "\n".join(
             line
             for line in self.netcdf_output.stdout.splitlines()
-            if all(attr not in line for attr in attrs_to_exclude)
-            and line.strip() != ""
+            if all(attr not in line for attr in attrs_to_exclude) and line.strip() != ""
         )
         assert stdout == snapshot(name=str(nc_file.name) + ".txt")
 

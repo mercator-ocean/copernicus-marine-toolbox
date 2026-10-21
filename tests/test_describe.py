@@ -6,12 +6,7 @@ from unittest import mock
 import pytest
 from pydantic import ValidationError
 
-from copernicusmarine import (
-    CopernicusMarineCatalogue,
-    CopernicusMarineServiceNames,
-    describe,
-    get,
-)
+from copernicusmarine import CopernicusMarineCatalogue, CopernicusMarineServiceNames, describe, get
 from copernicusmarine.catalogue_parser.models import (
     PART_DEFAULT,
     REGEX_PATTERN_DATE_YYYYMM,
@@ -44,14 +39,10 @@ class TestDescribe:
         dataset_id = "cmems_mod_glo_phy_my_0.083deg_P1D-m"
         product_id = "GLOBAL_MULTIYEAR_PHY_001_030"
         different_product_id = "ANTARCTIC_OMI_SI_extent"
-        self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
-            product_id, None
-        )
+        self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(product_id, None)
         self.then_stdout_can_be_load_as_json()
         self.then_I_have_only_one_product()
-        self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
-            None, dataset_id
-        )
+        self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(None, dataset_id)
         self.then_stdout_can_be_load_as_json()
         self.then_I_have_only_one_product_and_one_dataset()
         self.when_I_run_copernicus_marine_describe_with_product_id_and_dataset_id(
@@ -93,9 +84,7 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_raise_on_error_error_in_stac(
-        self, mocked_requests, caplog
-    ):
+    def test_describe_with_raise_on_error_error_in_stac(self, mocked_requests, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             with pytest.raises(Exception):
                 describe(
@@ -108,35 +97,27 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_raise_on_error_unavailable_dataset(
-        self, mocked_requests, caplog
-    ):
+    def test_describe_with_raise_on_error_unavailable_dataset(self, mocked_requests, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             with pytest.raises(Exception):
                 describe(
                     raise_on_error=True,
                     product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024",
                 )
-            assert (
-                "Failed to fetch or parse JSON for dataset URL:" in caplog.text
-            )
+            assert "Failed to fetch or parse JSON for dataset URL:" in caplog.text
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_raise_on_error_unavailable_product(
-        self, mocked_requests, caplog
-    ):
+    def test_describe_with_raise_on_error_unavailable_product(self, mocked_requests, caplog):
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             with pytest.raises(Exception):
                 describe(
                     raise_on_error=True,
                     product_id="UNAVAILABLE_PRODUCT",
                 )
-            assert (
-                "Failed to fetch or parse JSON for product URL:" in caplog.text
-            )
+            assert "Failed to fetch or parse JSON for product URL:" in caplog.text
             assert "UNAVAILABLE_PRODUCT" in caplog.text
 
     @mock.patch(
@@ -164,9 +145,7 @@ class TestDescribe:
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_with_raise_on_error_product_w_errors(
-        self, mocked_requests, caplog
-    ):
+    def test_describe_with_raise_on_error_product_w_errors(self, mocked_requests, caplog):
 
         with caplog.at_level(logging.DEBUG, logger="copernicusmarine"):
             with pytest.raises(ValidationError):
@@ -239,14 +218,9 @@ class TestDescribe:
             raise_on_error=False,
             show_all_versions=True,
         )
-        all_dataset_ids = [
-            d.dataset_id for p in result.products for d in p.datasets
-        ]
+        all_dataset_ids = [d.dataset_id for p in result.products for d in p.datasets]
         assert "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m" in all_dataset_ids
-        assert (
-            "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other"
-            not in all_dataset_ids
-        )
+        assert "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_other" not in all_dataset_ids
 
     def when_I_run_copernicus_marine_describe_with_default_arguments(self):
         command = ["copernicusmarine", "describe"]
@@ -265,23 +239,17 @@ class TestDescribe:
             assert product["title"] is not None
             assert product["product_id"] is not None
             assert product["thumbnail_url"] is not None
-            seen_digital_object_identifier = (
-                seen_digital_object_identifier
-                or ("digital_object_identifier" in product)
+            seen_digital_object_identifier = seen_digital_object_identifier or (
+                "digital_object_identifier" in product
             )
             assert product["sources"] is not None
-            seen_processing_level = (
-                seen_processing_level or "processing_level" in product
-            )
+            seen_processing_level = seen_processing_level or "processing_level" in product
             assert product["production_center"] is not None
         assert seen_processing_level
         assert seen_digital_object_identifier
 
     def and_there_are_no_warnings_about_backend_versions(self):
-        assert (
-            "Please update to the latest client version."
-            not in self.output.stderr
-        )
+        assert "Please update to the latest client version." not in self.output.stderr
 
     def then_omi_services_are_not_in_the_catalog(self):
         json_result = loads(self.output.stdout)
@@ -289,9 +257,7 @@ class TestDescribe:
             for dataset in product["datasets"]:
                 for version in dataset["versions"]:
                     for part in version["parts"]:
-                        assert "omi" not in [
-                            x["service_name"] for x in part["services"]
-                        ]
+                        assert "omi" not in [x["service_name"] for x in part["services"]]
 
     def then_products_from_marine_data_store_catalog_are_available(self):
         expected_product_id = "NWSHELF_ANALYSISFORECAST_PHY_004_013"
@@ -313,19 +279,14 @@ class TestDescribe:
         product = expected_product[0]
         product_datasets = product["datasets"]
         expected_dataset = [
-            product
-            for product in product_datasets
-            if product["dataset_id"] == expected_dataset_id
+            product for product in product_datasets if product["dataset_id"] == expected_dataset_id
         ]
         assert len(expected_dataset) == 1
         dataset = expected_dataset[0]
         expected_dataset_services = [
-            x["service_name"]
-            for x in dataset["versions"][0]["parts"][0]["services"]
+            x["service_name"] for x in dataset["versions"][0]["parts"][0]["services"]
         ]
-        assert all(
-            map(lambda x: x in expected_services, expected_dataset_services)
-        )
+        assert all(map(lambda x: x in expected_services, expected_dataset_services))
 
     def remove_maximum_time_from_service(self, service: dict):
         """Remove fields that are not relevant for the snapshot testing."""
@@ -352,9 +313,7 @@ class TestDescribe:
         product = expected_product[0]
         product_datasets = product["datasets"]
         expected_dataset = [
-            product
-            for product in product_datasets
-            if product["dataset_id"] == expected_dataset_id
+            product for product in product_datasets if product["dataset_id"] == expected_dataset_id
         ]
         dataset = expected_dataset[0]
         wanted_services_in_dataset = [
@@ -388,27 +347,19 @@ class TestDescribe:
         dataset = expected_dataset[0]
 
         for version in dataset["versions"]:
-            non_default_parts = [
-                part
-                for part in version["parts"]
-                if part["name"] != PART_DEFAULT
-            ]
+            non_default_parts = [part for part in version["parts"] if part["name"] != PART_DEFAULT]
 
             assert len(non_default_parts) > 0
 
         version_ordered = sorted(
             dataset["versions"],
-            key=lambda x: (
-                x["label"] if x["label"] != VERSION_DEFAULT else "110001"
-            ),
+            key=lambda x: (x["label"] if x["label"] != VERSION_DEFAULT else "110001"),
             reverse=True,
         )
 
         latest_version = version_ordered[0]
         maybe_default_part = [
-            part
-            for part in latest_version["parts"]
-            if part["name"] == PART_DEFAULT
+            part for part in latest_version["parts"] if part["name"] == PART_DEFAULT
         ]
 
         assert len(maybe_default_part) == 0
@@ -481,19 +432,14 @@ class TestDescribe:
             assert product["title"] is not None
             assert product["product_id"] is not None
             assert product["thumbnail_url"] is not None
-            seen_digital_object_identifier = (
-                seen_digital_object_identifier
-                or ("digital_object_identifier" in product)
+            seen_digital_object_identifier = seen_digital_object_identifier or (
+                "digital_object_identifier" in product
             )
             assert product["sources"] is not None
-            seen_processing_level = (
-                seen_processing_level or "processing_level" in product
-            )
+            seen_processing_level = seen_processing_level or "processing_level" in product
             assert product["production_center"] is not None
             assert "datasets" in product
-            assert product[
-                "datasets"
-            ], f"No datasets found for product {product['product_id']}"
+            assert product["datasets"], f"No datasets found for product {product['product_id']}"
             for dataset in product["datasets"]:
                 assert dataset["dataset_id"] is not None
                 assert dataset["dataset_name"] is not None
@@ -515,10 +461,7 @@ class TestDescribe:
                         assert len(services) != 0, dataset["dataset_id"]
                         service_names = [x["service_name"] for x in services]
                         assert len(service_names) == len(set(service_names))
-                        if (
-                            CopernicusMarineServiceNames.OMI_ARCO.value  # noqa
-                            in service_names
-                        ):
+                        if CopernicusMarineServiceNames.OMI_ARCO.value in service_names:  # noqa
                             assert (
                                 CopernicusMarineServiceNames.GEOSERIES.value  # noqa
                                 not in service_names
@@ -531,10 +474,7 @@ class TestDescribe:
                                 CopernicusMarineServiceNames.STATIC_ARCO.value  # noqa
                                 not in service_names
                             )
-                        if (
-                            CopernicusMarineServiceNames.STATIC_ARCO.value  # noqa
-                            in service_names
-                        ):
+                        if CopernicusMarineServiceNames.STATIC_ARCO.value in service_names:  # noqa
                             assert (
                                 CopernicusMarineServiceNames.GEOSERIES.value  # noqa
                                 not in service_names
@@ -598,10 +538,7 @@ class TestDescribe:
         self.output = execute_in_terminal(command, safe_quoting=True)
 
     def then_I_check_that_the_urls_contains_only_dta(self):
-        assert (
-            "https://s3.waw3-1.cloudferro.com/mdl-metadata/"
-            not in self.output.stdout
-        )
+        assert "https://s3.waw3-1.cloudferro.com/mdl-metadata/" not in self.output.stdout
 
     def when_I_run_copernicus_marine_describe_with_return_fields(self):
         command = [
@@ -636,20 +573,13 @@ class TestDescribe:
     def test_describe_fails_or_warns_with_wrong_return_fields(self):
         # Test with one wrong invalid return fields
         return_fields = "product_id,datasets, invalid_field"
-        self.when_I_describe_with_invalid_return_fields(
-            include_fields=return_fields
-        )
+        self.when_I_describe_with_invalid_return_fields(include_fields=return_fields)
         assert self.output.returncode == 0
-        assert (
-            "Some ``--return-fields`` fields are invalid: invalid_field"
-            in self.output.stderr
-        )
+        assert "Some ``--return-fields`` fields are invalid: invalid_field" in self.output.stderr
 
         # Test with multiple all invalid return fields
         return_fields = "invalid_field1, invalid_field2"
-        self.when_I_describe_with_invalid_return_fields(
-            include_fields=return_fields
-        )
+        self.when_I_describe_with_invalid_return_fields(include_fields=return_fields)
         assert self.output.returncode == 1
         assert (
             "All ``--return-fields`` fields are invalid: "
@@ -658,20 +588,13 @@ class TestDescribe:
 
         # Test with one wrong invalid exclude fields
         exclude_fields = "product_id,wrong_field"
-        self.when_I_describe_with_invalid_return_fields(
-            exclude_fields=exclude_fields
-        )
+        self.when_I_describe_with_invalid_return_fields(exclude_fields=exclude_fields)
         assert self.output.returncode == 0
-        assert (
-            "Some ``--exclude-fields`` fields are invalid: wrong_field"
-            in self.output.stderr
-        )
+        assert "Some ``--exclude-fields`` fields are invalid: wrong_field" in self.output.stderr
 
         # Test with multiple all invalid exclude fields
         exclude_fields = "wrong_field1, wrong_field2"
-        self.when_I_describe_with_invalid_return_fields(
-            exclude_fields=exclude_fields
-        )
+        self.when_I_describe_with_invalid_return_fields(exclude_fields=exclude_fields)
         assert self.output.returncode == 1
         assert (
             "All ``--exclude-fields`` fields are invalid: "
@@ -703,18 +626,13 @@ class TestDescribe:
 
     def test_describe_function_with_contains(self):
         nwshelf_catalog = describe(contains=["NWSHELF"])
-        assert (
-            len([product.product_id for product in nwshelf_catalog.products])
-            == 9
-        )
+        assert len([product.product_id for product in nwshelf_catalog.products]) == 9
 
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get,
     )
-    def test_describe_and_get_a_dataset_in_several_products(
-        self, mocked_stac_requests_get
-    ):
+    def test_describe_and_get_a_dataset_in_several_products(self, mocked_stac_requests_get):
         dataset_id = "cmems_mod_nws_bgc-chl_my_7km-3D_P1D-m"
         describe_result = describe(
             dataset_id=dataset_id,
@@ -727,9 +645,7 @@ class TestDescribe:
 
     def test_describe_dataset_id_with_version(self, caplog):
         with caplog.at_level(logging.INFO, logger="copernicusmarine"):
-            result = describe(
-                dataset_id="cmems_mod_glo_phy_my_0.083deg_P1M-m_202311"
-            )
+            result = describe(dataset_id="cmems_mod_glo_phy_my_0.083deg_P1M-m_202311")
             assert result
             assert "WARNING" in caplog.text
             assert "The dataset version has been included" in caplog.text

@@ -42,9 +42,7 @@ def download_original_files(
     disable_progress_bar: bool,
     create_file_list: str | None,
 ) -> ResponseGet:
-    endpoint, bucket, path = parse_access_dataset_url(
-        str(get_request.dataset_url)
-    )
+    endpoint, bucket, path = parse_access_dataset_url(str(get_request.dataset_url))
     if get_request.direct_download:
         files_headers = _download_header_for_direct_download(
             files_to_download=get_request.direct_download,
@@ -60,17 +58,10 @@ def download_original_files(
         )
     else:
         files_headers = S3FilesDescriptor(endpoint=endpoint, bucket=bucket)
-    if (
-        not get_request.direct_download
-        or files_headers.files_not_found
-        or get_request.regex
-    ):
+    if not get_request.direct_download or files_headers.files_not_found or get_request.regex:
         if files_headers.files_not_found:
             files_not_found_regex = "|".join(
-                [
-                    re.escape(file_not_found)
-                    for file_not_found in files_headers.files_not_found
-                ]
+                [re.escape(file_not_found) for file_not_found in files_headers.files_not_found]
             )
             get_request.regex = overload_regex_with_additional_filter(
                 files_not_found_regex, get_request.regex
@@ -109,9 +100,7 @@ def download_original_files(
             files_headers.bucket = files_headers_listing.bucket
             files_headers.s3_files.extend(files_headers_listing.s3_files)
             files_headers.total_size += files_headers_listing.total_size
-            files_headers.files_not_found.extend(
-                files_headers_listing.files_not_found
-            )
+            files_headers.files_not_found.extend(files_headers_listing.files_not_found)
 
     logger.info(
         "Total size of the download: %s.",
@@ -141,9 +130,7 @@ def download_original_files(
                 files_headers, get_request, "NO_DATA_TO_DOWNLOAD"
             )
 
-    response = create_response_get_from_files_headers(
-        files_headers, get_request, "SUCCESS"
-    )
+    response = create_response_get_from_files_headers(files_headers, get_request, "SUCCESS")
 
     if get_request.dry_run:
         response.status = StatusCode.DRY_RUN
@@ -192,18 +179,11 @@ def create_response_get_from_files_headers(
             for s3_file in files_headers.s3_files
         ],
         files_deleted=(
-            [
-                str(file_to_delete)
-                for file_to_delete in files_headers.files_to_delete
-            ]
+            [str(file_to_delete) for file_to_delete in files_headers.files_to_delete]
             if files_headers.files_to_delete
             else None
         ),
-        files_not_found=(
-            files_headers.files_not_found
-            if files_headers.files_not_found
-            else None
-        ),
+        files_not_found=(files_headers.files_not_found if files_headers.files_not_found else None),
         number_of_files_to_download=len(
             [
                 file_to_download
@@ -214,20 +194,12 @@ def create_response_get_from_files_headers(
         status=(
             StatusCode.NO_DATA_TO_DOWNLOAD
             if status == "NO_DATA_TO_DOWNLOAD"
-            else (
-                StatusCode.DRY_RUN
-                if status == "DRY_RUN"
-                else StatusCode.SUCCESS
-            )
+            else (StatusCode.DRY_RUN if status == "DRY_RUN" else StatusCode.SUCCESS)
         ),
         message=(
             StatusMessage.NO_DATA_TO_DOWNLOAD
             if status == "NO_DATA_TO_DOWNLOAD"
-            else (
-                StatusMessage.DRY_RUN
-                if status == "DRY_RUN"
-                else StatusMessage.SUCCESS
-            )
+            else (StatusMessage.DRY_RUN if status == "DRY_RUN" else StatusMessage.SUCCESS)
         ),
         total_size=size_to_MB(files_headers.total_size),
     )
@@ -239,9 +211,7 @@ def _get_files_to_delete_with_sync(
 ) -> S3FilesDescriptor:
     if not files_information.s3_files:
         return files_information
-    filenames_out = {
-        s3_file.filename_out for s3_file in files_information.s3_files
-    }
+    filenames_out = {s3_file.filename_out for s3_file in files_information.s3_files}
     product_structure = _local_path_from_s3_url(
         files_information.s3_files[0].filename_in, pathlib.Path("")
     ).parts
@@ -292,9 +262,7 @@ def download_files(
             desc="Downloading files",
         ) as pbar:
             for in_file, out_file in zip(filenames_in, filenames_out):
-                _download_one_file(
-                    username, endpoint_url, bucket, in_file, str(out_file)
-                )
+                _download_one_file(username, endpoint_url, bucket, in_file, str(out_file))
                 pbar.update(1)
 
 
@@ -403,14 +371,11 @@ def _download_header_for_direct_download(
     for file_to_download in files_to_download:
         file_path = file_to_download.split(f"{dataset_id_with_tag}/")[-1]
         if not file_path:
-            logger.warning(
-                f"{file_to_download} does not seem to be valid. Skipping."
-            )
+            logger.warning(f"{file_to_download} does not seem to be valid. Skipping.")
             files_headers.files_not_found.append(file_to_download)
             continue
         full_path = (
-            f"s3://{bucket}/{root_folder}/{product_id}/"
-            f"{dataset_id_with_tag}/{file_path}"
+            f"s3://{bucket}/{root_folder}/{product_id}/" f"{dataset_id_with_tag}/{file_path}"
         )
         size_last_modified_and_etag = _get_file_size_last_modified_and_etag(
             endpoint_url, bucket, full_path, username
@@ -461,9 +426,7 @@ def _check_already_exists(
     directory_out: pathlib.Path,
     no_directories: bool,
 ) -> bool:
-    filename_out = _create_filename_out(
-        filename, directory_out, no_directories
-    )
+    filename_out = _create_filename_out(filename, directory_out, no_directories)
     return filename_out.is_file()
 
 
@@ -485,9 +448,7 @@ def _check_needs_to_be_synced(
     src <= dst  |  src == dst  |  ❌
 
     """
-    filename_out = _create_filename_out(
-        filename, directory_out, no_directories
-    )
+    filename_out = _create_filename_out(filename, directory_out, no_directories)
     if not filename_out.is_file():
         return True
     else:
@@ -495,14 +456,10 @@ def _check_needs_to_be_synced(
         if file_stats.st_size != size:
             return True
         else:
-            last_created_datetime_out = timestamp_parser(
-                file_stats.st_mtime, unit="s"
-            )
+            last_created_datetime_out = timestamp_parser(file_stats.st_mtime, unit="s")
             # boto3.s3_resource.Object.last_modified is without microsecond
             # boto3.paginate s3_object["LastModified"] is with microsecond
-            last_modified_datetime = last_modified_datetime.replace(
-                microsecond=0
-            )
+            last_modified_datetime = last_modified_datetime.replace(microsecond=0)
             return last_modified_datetime > last_created_datetime_out
 
 
@@ -515,10 +472,7 @@ def _check_should_be_ignored(
     sync: bool,
     no_directories: bool,
 ) -> bool:
-    return (
-        skip_existing
-        and _check_already_exists(filename, directory_out, no_directories)
-    ) or (
+    return (skip_existing and _check_already_exists(filename, directory_out, no_directories)) or (
         sync
         and not _check_needs_to_be_synced(
             filename,
@@ -555,9 +509,7 @@ def _check_should_be_overwritten(
     )
 
 
-def _local_path_from_s3_url(
-    s3_url: str, local_directory: pathlib.Path
-) -> pathlib.Path:
+def _local_path_from_s3_url(s3_url: str, local_directory: pathlib.Path) -> pathlib.Path:
     return local_directory / pathlib.Path("/".join(s3_url.split("/")[4:]))
 
 
@@ -569,9 +521,7 @@ def _list_files_on_marine_data_lake_s3(
     recursive: bool,
     disable_progress_bar: bool,
 ) -> list[tuple[str, int, datetime, str]]:
-    with ConfiguredBoto3Session(
-        endpoint_url, ["ListObjectsV2", "HeadObject"], username
-    ) as session:
+    with ConfiguredBoto3Session(endpoint_url, ["ListObjectsV2", "HeadObject"], username) as session:
         if not prefix.endswith("/"):
             try:
                 session.s3_client.head_object(Bucket=bucket, Key=prefix)
@@ -611,9 +561,7 @@ def _list_files_on_marine_data_lake_s3(
 def _get_file_size_last_modified_and_etag(
     endpoint_url: str, bucket: str, file_in: str, username: str
 ) -> tuple[int, datetime, str] | None:
-    with ConfiguredBoto3Session(
-        endpoint_url, ["HeadObject"], username
-    ) as session:
+    with ConfiguredBoto3Session(endpoint_url, ["HeadObject"], username) as session:
         try:
             s3_object = session.s3_client.head_object(
                 Bucket=bucket,
@@ -626,9 +574,7 @@ def _get_file_size_last_modified_and_etag(
             )
         except ClientError as e:
             if "404" in str(e):
-                logger.warning(
-                    f"File {file_in} not found on the server. Skipping."
-                )
+                logger.warning(f"File {file_in} not found on the server. Skipping.")
                 return None
             else:
                 raise e
@@ -658,13 +604,10 @@ def _download_one_file(
         )
 
     try:
-        os.utime(
-            file_out, (last_modified_date_epoch, last_modified_date_epoch)
-        )
+        os.utime(file_out, (last_modified_date_epoch, last_modified_date_epoch))
     except PermissionError:
         logger.warning(
-            f"Permission to modify the last modified date "
-            f"of the file {file_out} is denied."
+            f"Permission to modify the last modified date " f"of the file {file_out} is denied."
         )
 
 
@@ -700,9 +643,7 @@ def _create_filename_out(
     no_directories: bool,
 ):
     if no_directories:
-        filename_out = (
-            pathlib.Path(output_directory) / pathlib.Path(file_path).name
-        )
+        filename_out = pathlib.Path(output_directory) / pathlib.Path(file_path).name
     else:
         # filename_in: s3://mdl-native-xx/native/<product-id>..
         filename_out = _local_path_from_s3_url(file_path, output_directory)

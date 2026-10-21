@@ -52,18 +52,12 @@ class TestGetCreateFileList:
         self.output = execute_in_terminal(self.command)
         assert os.path.isfile(tmp_path / "hello.csv")
         with open(tmp_path / "hello.csv") as file:
-            assert (
-                file.readline()
-                == "filename,size,last_modified_datetime,etag\n"
-            )
+            assert file.readline() == "filename,size,last_modified_datetime,etag\n"
 
-    def test_get_create_file_list_without_extension_raises_python(
-        self, tmp_path
-    ):
+    def test_get_create_file_list_without_extension_raises_python(self, tmp_path):
         with pytest.raises(
             ValueError,
-            match="Download file list must be a '.txt' or '.csv' file."
-            " Got 'hello' instead.",
+            match="Download file list must be a '.txt' or '.csv' file." " Got 'hello' instead.",
         ):
             get(
                 dataset_id="cmems_mod_ibi_phy-mld_my_0.027deg_P1M-m",
@@ -90,10 +84,7 @@ class TestGetCreateFileList:
         )
         assert os.path.isfile(tmp_path / "hello_python.csv")
         with open(tmp_path / "hello_python.csv") as file:
-            assert (
-                file.readline()
-                == "filename,size,last_modified_datetime,etag\n"
-            )
+            assert file.readline() == "filename,size,last_modified_datetime,etag\n"
 
     def test_get_create_file_with_overwrite_option(self, tmp_path):
         get(

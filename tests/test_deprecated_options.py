@@ -11,9 +11,7 @@ class TestDeprecatedOptions:
             "some_request",
         ]
         self.output = execute_in_terminal(command)
-        assert (
-            "'--motu-api-request' has been deprecated." in self.output.stderr
-        )
+        assert "'--motu-api-request' has been deprecated." in self.output.stderr
 
     def test_motu_api_request_deprecated_api(self, caplog):
         try:

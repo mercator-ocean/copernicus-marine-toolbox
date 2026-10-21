@@ -63,9 +63,7 @@ class TestSubset:
         assert "000" == subset_result.status
 
     def test_subset_modify_attr_for_depth(self):
-        dataset = open_dataset(
-            dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1D-m"
-        )
+        dataset = open_dataset(dataset_id="cmems_mod_arc_phy_anfc_6km_detided_P1D-m")
         assert dataset.depth.attrs["positive"] == "down"
         assert dataset.depth.attrs["standard_name"] == "depth"
         assert dataset.depth.attrs["long_name"] == "Depth"
@@ -87,9 +85,7 @@ class TestSubset:
             overwrite=True,
         )
 
-        subsetdata = xarray.open_dataset(
-            f"{tmp_path}/netcdf_fillval.nc", decode_cf=False
-        )
+        subsetdata = xarray.open_dataset(f"{tmp_path}/netcdf_fillval.nc", decode_cf=False)
         assert "_FillValue" not in subsetdata.longitude.attrs
         assert "_FillValue" not in subsetdata.time.attrs
         assert "_FillValue" not in subsetdata.latitude.attrs
@@ -141,12 +137,8 @@ class TestSubset:
             netcdf_compression_level=1,
             output_filename="compressed_data.nc",
         )
-        dataset_uncompressed = xarray.open_dataset(
-            tmp_path / "uncompressed_data.nc"
-        )
-        dataset_compressed = xarray.open_dataset(
-            tmp_path / "compressed_data.nc"
-        )
+        dataset_uncompressed = xarray.open_dataset(tmp_path / "uncompressed_data.nc")
+        dataset_compressed = xarray.open_dataset(tmp_path / "compressed_data.nc")
         size_uncompressed = (tmp_path / "uncompressed_data.nc").stat().st_size
         size_compressed = (tmp_path / "compressed_data.nc").stat().st_size
         assert len(dataset_uncompressed.longitude.values) > 4300
@@ -196,9 +188,7 @@ class TestSubset:
             output_directory=tmp_path,
             output_filename="without_lonlat_attrs_dataset.nc",
         )
-        dataset = xarray.open_dataset(
-            tmp_path / "without_lonlat_attrs_dataset.nc"
-        )
+        dataset = xarray.open_dataset(tmp_path / "without_lonlat_attrs_dataset.nc")
 
         assert dataset_response.status == "000"
         assert dataset.longitude.attrs == {
@@ -219,14 +209,8 @@ class TestSubset:
                 "longitude",
                 "latitude",
             ]:  # not time
-                assert (
-                    min(dataset[coordinate.coordinate_id].values)
-                    == coordinate.minimum
-                )
-                assert (
-                    dataset[coordinate.coordinate_id].values.max()
-                    == coordinate.maximum
-                )
+                assert min(dataset[coordinate.coordinate_id].values) == coordinate.minimum
+                assert dataset[coordinate.coordinate_id].values.max() == coordinate.maximum
 
     def test_file_format_option(self):
         self.response = subset(
@@ -252,13 +236,9 @@ class TestSubset:
                 dry_run=True,
             )
 
-    def flatten_request_dict(
-        self, request_dict: dict[str, str | Path | None]
-    ) -> list:
+    def flatten_request_dict(self, request_dict: dict[str, str | Path | None]) -> list:
         flatten_list = list(
-            itertools.chain.from_iterable(
-                [[key, val] for key, val in request_dict.items()]
-            )
+            itertools.chain.from_iterable([[key, val] for key, val in request_dict.items()])
         )
         flatten_list = list(filter(lambda x: x is not None, flatten_list))
         return flatten_list
@@ -306,10 +286,7 @@ class TestSubset:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
-        assert (
-            "Missing subset option. Try 'copernicusmarine subset --help'."
-            in self.output.stderr
-        )
+        assert "Missing subset option. Try 'copernicusmarine subset --help'." in self.output.stderr
         assert (
             "To retrieve a complete dataset, please use instead: "
             f"copernicusmarine get --dataset-id {dataset_id}"
@@ -343,15 +320,11 @@ class TestSubset:
 
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
-        assert (
-            "time       (time) datetime64[ns] 2023" not in self.output.stderr
-        )
+        assert "time       (time) datetime64[ns] 2023" not in self.output.stderr
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(tmp_path / "dataset.nc", response)
 
-    def test_retention_period_works_when_only_values_in_metadata(
-        self, tmp_path
-    ):
+    def test_retention_period_works_when_only_values_in_metadata(self, tmp_path):
         self.command = [
             "copernicusmarine",
             "subset",
@@ -377,9 +350,7 @@ class TestSubset:
 
         self.output = execute_in_terminal(self.command)
         assert self.output.returncode == 0
-        assert (
-            "time       (time) datetime64[ns] 2023" not in self.output.stderr
-        )
+        assert "time       (time) datetime64[ns] 2023" not in self.output.stderr
         response = loads(self.output.stdout)
         main_checks_when_file_is_downloaded(tmp_path / "dataset.nc", response)
 
@@ -400,18 +371,14 @@ class TestSubset:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (
-            "Some ``--response-fields`` fields are invalid:"
-            " wrong_field" in self.output.stderr
-        )
+        assert "Some ``--response-fields`` fields are invalid:" " wrong_field" in self.output.stderr
 
         command[-1] = "wrong_field1, wrong_field2"
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 1
         assert (
             "Wrong fields error: All ``--response-fields`` "
-            "fields are invalid: wrong_field1, wrong_field2"
-            in self.output.stderr
+            "fields are invalid: wrong_field1, wrong_field2" in self.output.stderr
         )
 
     def test_subset_with_dry_run_option(self, tmp_path):
@@ -561,9 +528,7 @@ class TestSubset:
 
         self.output = execute_in_terminal(command)
 
-    def then_i_have_correct_sign_for_depth_coordinates_values(
-        self, output_path, sign
-    ):
+    def then_i_have_correct_sign_for_depth_coordinates_values(self, output_path, sign):
         filepath = pathlib.Path(output_path, "data.zarr")
         dataset = xarray.open_dataset(filepath, engine="zarr")
 
@@ -575,9 +540,7 @@ class TestSubset:
             assert dataset.elevation.min() >= -10
             assert dataset.elevation.max() <= 0
 
-    def then_i_have_correct_attribute_value(
-        self, output_path, dimention_name, attribute_value
-    ):
+    def then_i_have_correct_attribute_value(self, output_path, dimention_name, attribute_value):
         filepath = pathlib.Path(output_path, "data.zarr")
         dataset = xarray.open_dataset(filepath, engine="zarr")
         assert dataset[dimention_name].attrs["standard_name"] == dimention_name
@@ -585,18 +548,12 @@ class TestSubset:
 
     def test_conversion_between_elevation_and_depth(self, tmp_path):
         self.when_i_request_subset_dataset_with_zarr_service(tmp_path, "depth")
-        self.then_i_have_correct_sign_for_depth_coordinates_values(
-            tmp_path, "positive"
-        )
+        self.then_i_have_correct_sign_for_depth_coordinates_values(tmp_path, "positive")
         self.then_i_have_correct_attribute_value(tmp_path, "depth", "down")
 
     def test_force_no_conversion_between_elevation_and_depth(self, tmp_path):
-        self.when_i_request_subset_dataset_with_zarr_service(
-            tmp_path, "elevation"
-        )
-        self.then_i_have_correct_sign_for_depth_coordinates_values(
-            tmp_path, "negative"
-        )
+        self.when_i_request_subset_dataset_with_zarr_service(tmp_path, "elevation")
+        self.then_i_have_correct_sign_for_depth_coordinates_values(tmp_path, "negative")
         self.then_i_have_correct_attribute_value(tmp_path, "elevation", "up")
 
     def test_default_service_for_subset_command(self):
@@ -692,20 +649,13 @@ class TestSubset:
 
         self.output = execute_in_terminal(command)
 
-        assert (
-            "Service ft does not exist for command subset"
-            in self.output.stderr
-        )
+        assert "Service ft does not exist for command subset" in self.output.stderr
 
-    def then_i_can_read_copernicusmarine_version_in_the_dataset_attributes(
-        self, filepath
-    ):
+    def then_i_can_read_copernicusmarine_version_in_the_dataset_attributes(self, filepath):
         dataset = xarray.open_dataset(filepath, engine="zarr")
         assert "copernicusmarine_version" in dataset.attrs
 
-    def test_copernicusmarine_version_in_dataset_attributes_with_arco(
-        self, tmp_path
-    ):
+    def test_copernicusmarine_version_in_dataset_attributes_with_arco(self, tmp_path):
         self.when_i_request_subset_dataset_with_zarr_service(tmp_path)
         self.then_i_can_read_copernicusmarine_version_in_the_dataset_attributes(
             tmp_path / "data.zarr"
@@ -742,14 +692,9 @@ class TestSubset:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (
-            "zos"
-            in xarray.open_zarr(f"{tmp_path}/{output_filename}").variables
-        )
+        assert "zos" in xarray.open_zarr(f"{tmp_path}/{output_filename}").variables
         response = loads(self.output.stdout)
-        main_checks_when_file_is_downloaded(
-            tmp_path / output_filename, response
-        )
+        main_checks_when_file_is_downloaded(tmp_path / output_filename, response)
 
     # see https://github.com/pytest-dev/pytest-xdist/issues/385
     @pytest.mark.xdist_group(name="sequential")
@@ -837,14 +782,9 @@ class TestSubset:
         assert "file_size" in response_subset
         assert "data_transfer_size" in response_subset
         assert parse_size(response_subset["file_size"]) > 0
-        assert (
-            int(parse_size(response_subset["data_transfer_size"]) / 1048e3)
-            == 50
-        )
+        assert int(parse_size(response_subset["data_transfer_size"]) / 1048e3) == 50
 
-    def test_dataset_size_is_displayed_when_downloading_with_arco_service(
-        self, tmp_path
-    ):
+    def test_dataset_size_is_displayed_when_downloading_with_arco_service(self, tmp_path):
         self.when_i_request_subset_dataset_with_zarr_service(tmp_path)
         self.then_i_can_read_dataset_size_in_the_response()
 
@@ -883,18 +823,9 @@ class TestSubset:
 
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
-        assert (
-            len(
-                xarray.open_dataset(
-                    Path(tmp_path) / output_filename
-                ).sizes.keys()
-            )
-            == 4
-        )
+        assert len(xarray.open_dataset(Path(tmp_path) / output_filename).sizes.keys()) == 4
         response = loads(self.output.stdout)
-        main_checks_when_file_is_downloaded(
-            tmp_path / output_filename, response
-        )
+        main_checks_when_file_is_downloaded(tmp_path / output_filename, response)
 
     def test_netcdf_compression_option(self, tmp_path):
         filename_without_option = "without_option.nc"
@@ -929,19 +860,15 @@ class TestSubset:
             f"{tmp_path}",
         ]
 
-        output_without_option = execute_in_terminal(
-            base_command + ["-f", filename_without_option]
-        )
+        output_without_option = execute_in_terminal(base_command + ["-f", filename_without_option])
         output_with_option = execute_in_terminal(
-            base_command
-            + ["-f", filename_with_option, netcdf_compression_option]
+            base_command + ["-f", filename_with_option, netcdf_compression_option]
         )
         output_zarr_without_option = execute_in_terminal(
             base_command + ["-f", filename_zarr_without_option]
         )
         output_zarr_with_option = execute_in_terminal(
-            base_command
-            + ["-f", filename_zarr_with_option, netcdf_compression_option]
+            base_command + ["-f", filename_zarr_with_option, netcdf_compression_option]
         )
 
         assert output_without_option.returncode == 0
@@ -958,9 +885,7 @@ class TestSubset:
 
         dataset_without_option = xarray.open_dataset(filepath_without_option)
         dataset_with_option = xarray.open_dataset(filepath_with_option)
-        assert os.path.exists(
-            pathlib.Path(tmp_path, filename_zarr_without_option)
-        )
+        assert os.path.exists(pathlib.Path(tmp_path, filename_zarr_without_option))
 
         assert dataset_without_option.uo.encoding["zlib"] is False
         assert dataset_without_option.uo.encoding["complevel"] == 0
@@ -999,12 +924,9 @@ class TestSubset:
             f"{tmp_path}",
         ]
 
-        output_without_option = execute_in_terminal(
-            base_command + ["-f", filename_without_option]
-        )
+        output_without_option = execute_in_terminal(base_command + ["-f", filename_without_option])
         output_with_option = execute_in_terminal(
-            base_command
-            + ["-f", filename_with_option, netcdf_compression_option]
+            base_command + ["-f", filename_with_option, netcdf_compression_option]
         )
 
         assert output_without_option.returncode == 0
@@ -1078,9 +1000,7 @@ class TestSubset:
             "--dry-run",
         ]
 
-        self.output = execute_in_terminal(
-            base_command + ["--dataset-part", "bathy"]
-        )
+        self.output = execute_in_terminal(base_command + ["--dataset-part", "bathy"])
         assert self.output.returncode == 0
 
     def test_netcdf_compression_level(self, tmp_path):
@@ -1115,9 +1035,7 @@ class TestSubset:
             f"{forced_comp_level}",
         ]
 
-        output_with_netcdf_compression_enabled = execute_in_terminal(
-            base_command
-        )
+        output_with_netcdf_compression_enabled = execute_in_terminal(base_command)
 
         assert output_with_netcdf_compression_enabled.returncode == 0
 
@@ -1170,9 +1088,7 @@ class TestSubset:
         response_subset = loads(self.output.stdout)
         assert response_subset["data_transfer_size"] == "56876.19 MB"
 
-    def test_requested_interval_fully_included_with_coords_sel_method_outside(
-        self, tmp_path
-    ):
+    def test_requested_interval_fully_included_with_coords_sel_method_outside(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = 0.01
         max_longitude = 1.55
@@ -1229,9 +1145,7 @@ class TestSubset:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) >= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_requested_interval_is_correct_with_coords_sel_method_inside(
-        self, tmp_path
-    ):
+    def test_requested_interval_is_correct_with_coords_sel_method_inside(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = 0.01
         max_longitude = 1.567
@@ -1288,9 +1202,7 @@ class TestSubset:
             str(dataset.time.values.max()), "%Y-%m-%dT%H:%M:%S.000%f"
         ) <= datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
 
-    def test_requested_interval_is_correct_with_coords_sel_method_nearest(
-        self, tmp_path
-    ):
+    def test_requested_interval_is_correct_with_coords_sel_method_nearest(self, tmp_path):
         output_filename = "output.nc"
         min_longitude = 0.08
         max_longitude = 1.567
@@ -1428,10 +1340,7 @@ class TestSubset:
             "--dry-run",
         ]
         self.output = execute_in_terminal(command)
-        assert (
-            "mdl-metadata-dta/dataset_product_id_mapping.json"
-            in self.output.stderr
-        )
+        assert "mdl-metadata-dta/dataset_product_id_mapping.json" in self.output.stderr
 
     def test_subset_optimise_chunks(self, tmp_path):
         """
@@ -1531,9 +1440,7 @@ class TestSubset:
 
         response = loads(output.stdout)
         assert response["coordinates_extent"][0]["minimum"] >= min_longitude
-        assert (
-            response["coordinates_extent"][0]["maximum"] <= max_longitude + 360
-        )
+        assert response["coordinates_extent"][0]["maximum"] <= max_longitude + 360
         assert response["coordinates_extent"][1]["minimum"] >= min_latitude
         assert response["coordinates_extent"][1]["maximum"] <= max_latitude
         assert response["coordinates_extent"][3]["minimum"] >= min_depth
@@ -1629,8 +1536,7 @@ class TestSubset:
         assert output.returncode == 2
         assert (
             "Invalid value for '--file-format': "
-            "'lkdjflkjsf' is not one of 'netcdf', 'zarr', 'csv', 'parquet'."
-            in output.stderr
+            "'lkdjflkjsf' is not one of 'netcdf', 'zarr', 'csv', 'parquet'." in output.stderr
         )
 
     def test_log_level_debug(self, tmp_path):
@@ -1668,9 +1574,7 @@ class TestSubset:
         assert self.output.returncode == 0
         assert "DEBUG - " in self.output.stderr
         response = loads(self.output.stdout)
-        main_checks_when_file_is_downloaded(
-            tmp_path / output_filename, response
-        )
+        main_checks_when_file_is_downloaded(tmp_path / output_filename, response)
 
     def test_netcdf3_option_with_ncdump(self, tmp_path):
         command = [
@@ -1705,9 +1609,7 @@ class TestSubset:
         self.output = execute_in_terminal(command)
         assert self.output.returncode == 0
 
-        output_netcdf_format = execute_in_terminal(
-            ["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"]
-        )
+        output_netcdf_format = execute_in_terminal(["ncdump", "-k", f"{tmp_path / 'dataset.nc'}"])
         assert output_netcdf_format.returncode == 0
         assert output_netcdf_format.stdout == "classic\n"
 
@@ -1760,10 +1662,7 @@ class TestSubset:
                 dry_run=True,
             )
             assert "WARNING" in caplog.text
-            assert (
-                "Minimum longitude greater than maximum longitude"
-                in caplog.text
-            )
+            assert "Minimum longitude greater than maximum longitude" in caplog.text
 
     def test_subset_dataset_in_csv_format(self, tmp_path):
         dataset_id = "cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D"
@@ -1784,9 +1683,7 @@ class TestSubset:
         )
 
         assert response.filename.endswith(".csv")
-        main_checks_when_file_is_downloaded(
-            tmp_path / "to_delete.csv", response.model_dump()
-        )
+        main_checks_when_file_is_downloaded(tmp_path / "to_delete.csv", response.model_dump())
 
     def test_subset_dataset_in_csv_too_big(self, tmp_path, caplog):
         dataset_id = "cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D"
@@ -1844,8 +1741,7 @@ class TestSubset:
                 dry_run=True,
             )
             assert (
-                "The dataset version has been included in the dataset_id argument."
-                in caplog.text
+                "The dataset version has been included in the dataset_id argument." in caplog.text
             )
             assert "WARNING" in caplog.text
             assert 'Selected dataset version: "202511"' in caplog.text
@@ -1860,9 +1756,5 @@ class TestSubset:
             output_directory=tmp_path,
         )
 
-        assert "time" in [
-            coor.coordinate_id for coor in response.coordinates_extent
-        ]
-        assert "nv" not in [
-            coor.coordinate_id for coor in response.coordinates_extent
-        ]
+        assert "time" in [coor.coordinate_id for coor in response.coordinates_extent]
+        assert "nv" not in [coor.coordinate_id for coor in response.coordinates_extent]
