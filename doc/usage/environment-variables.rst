@@ -134,12 +134,12 @@ It can be set this way:
 - on **Windows** platforms: ``set COPERNICUSMARINE_USE_THREADS=False``
 
 
-``COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS``
+``COPERNICUSMARINE_MAX_POOL_CONNECTIONS``
 --------------------------------------------------
 
 This will set the maximum number of connections in the connection pool for the HTTP calls. Default is ``10``. Acceptable values are integers strictly greater than 0.
 
 It can be set this way:
 
-- on **UNIX** platforms: ``export COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS=10``
-- on **Windows** platforms: ``set COPERNICUSMARINE_DEFAULT_MAX_POOL_CONNECTIONS=10``
+- on **UNIX** platforms: ``export COPERNICUSMARINE_MAX_POOL_CONNECTIONS=10``
+- on **Windows** platforms: ``set COPERNICUSMARINE_MAX_POOL_CONNECTIONS=10``
