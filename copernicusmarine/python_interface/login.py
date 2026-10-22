@@ -15,6 +15,7 @@ def login(
     force_overwrite: bool = False,
     check_credentials_valid: bool = False,
     credentials_file: pathlib.Path | None = None,
+    save: bool = True,
 ) -> bool:
     """
     Create a configuration file with your Copernicus Marine credentials under the ``$HOME/.copernicusmarine`` directory (overwritable with the ``force_overwrite`` option).
@@ -37,6 +38,8 @@ def login(
         When any is found (valid or not valid), will return immediately.
     credentials_file : pathlib.Path | str, optional
         Path to a credentials file if not in its default directory (``$HOME/.copernicusmarine``). Accepts .copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini files. Will only be taken into account when checking the credentials validity.
+    save : bool, default True
+        If True, save credentials to a configuration file as usual. If False, validate credentials and keep them only in memory for reuse by subsequent calls in the same Python process. Explicit username and password arguments take priority over in-memory credentials, which take priority over environment variables and credentials files. Existing files are not modified. Ignored when check_credentials_valid is True.
 
     Returns
     -------
@@ -54,4 +57,5 @@ def login(
         force_overwrite=force_overwrite,
         check_credentials_valid=check_credentials_valid,
         configuration_file=credentials_file,
+        save=save,
     )

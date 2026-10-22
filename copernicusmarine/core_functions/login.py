@@ -6,6 +6,7 @@ from copernicusmarine.core_functions.credentials_utils import (
     copernicusmarine_validate_and_get_user,
     credentials_file_builder,
     try_use_existing_credentials_file,
+    validate_and_store_credentials_in_memory,
 )
 
 logger = logging.getLogger("copernicusmarine")
@@ -18,6 +19,7 @@ def login_function(
     force_overwrite: bool,
     check_credentials_valid: bool,
     configuration_file: pathlib.Path | None,
+    save: bool = True,
 ) -> bool:
     if check_credentials_valid:
         logger.info("Checking if credentials are valid.")
@@ -26,6 +28,8 @@ def login_function(
                 configuration_file, username, password
             )
         )
+    if not save:
+        return validate_and_store_credentials_in_memory(username, password)
     if not force_overwrite:
         (
             existing_valid_credentials,
