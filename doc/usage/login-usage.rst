@@ -86,7 +86,7 @@ The python interface allows you to prevent the application from storing your cre
     from copernicusmarine.python_interface.subset import subset
 
     if login(username="your_username", password="your_password", save=False):
-        subset(identifier="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M", x=10, X=-40)
+        subset(dataset_id="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M", x=10, X=-40)
 
 
 When using the command line interface, the way to achieve this is to set the `COPERNICUSMARINE_SERVICE_USERNAME`and `COPERNICUSMARINE_SERVICE_PASSWORD` environment variables before running any command that requires authentication.
