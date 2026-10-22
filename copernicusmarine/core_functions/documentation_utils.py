@@ -85,6 +85,16 @@ When any is found (valid or not valid), will return immediately."""  # noqa
         ".copernicusmarine-credentials / .netrc or _netrc / motuclient-python.ini "
         "files. Will only be taken into account when checking the credentials validity."
     ),
+    "SAVE_HELP": (
+        "If True, save credentials to a configuration file as usual."
+        " If False, validate credentials and keep them only in memory for reuse by"
+        " subsequent calls in the same Python process."
+        " Explicit username and password arguments take priority over in-memory"
+        " credentials, which take priority over environment variables"
+        " and credentials files."
+        " Existing files are not modified."
+        " Ignored when check_credentials_valid is True."
+    ),
 }
 
 DESCRIBE: dict[str, str] = {
