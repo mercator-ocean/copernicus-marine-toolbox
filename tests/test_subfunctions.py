@@ -1,14 +1,25 @@
 import datetime
 import random
 
+import numpy
+import xarray
+
 import copernicusmarine as cm
 from copernicusmarine.download_functions.subset_xarray import (
     _dataset_custom_sel,
+    _update_variables_attributes,
     longitude_modulus,
 )
 
 
 class TestSubfunctions:
+    def test_valid_minmax_out_of_dtype_bounds_does_not_crash(self):
+        dataset = xarray.Dataset({"VCMX": ("x", numpy.zeros(3))})
+        dataset["VCMX"].attrs.update(valid_min=0, valid_max=8000000)
+        dataset["VCMX"].encoding["dtype"] = numpy.dtype("int16")
+        dataset = _update_variables_attributes(dataset, ["VCMX"])
+        assert dataset["VCMX"].attrs["valid_max"] == 8000000
+
     def test_longitude_modulus_values(self):
         longitude_test_examples = [
             {"raw": 520, "expected": 160},
