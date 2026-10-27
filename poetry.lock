@@ -4595,4 +4595,4 @@ extra = ["geopandas", "netcdf4", "rioxarray"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "f30d6e0596f01960a1a3b018f0c0518c5e3ff2126ac3b3854da710f7db61261b"
+content-hash = "cd006741707e963184fafa280c4a498fb574c60421fc6f82bf0822053231218e"
