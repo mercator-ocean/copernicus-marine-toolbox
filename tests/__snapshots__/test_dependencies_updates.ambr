@@ -19,10 +19,10 @@
       'optional': True,
       'version': '<=1.7.2',
     }),
-    'numpy': '>=2.1.0',
+    'numpy': '>=2.3.0',
     'pydantic': '^2.9.1',
     'pystac': '>=1.11.0',
-    'python': '>=3.10',
+    'python': '>=3.11',
     'requests': '>=2.27.1',
     'rioxarray': DynamicInlineTableDict({
       'optional': True,
@@ -30,7 +30,7 @@
     }),
     'semver': '>=3.0.2',
     'tqdm': '>=4.65.0',
-    'xarray': '>=2024.10.0',
-    'zarr': '>=2.18.3',
+    'xarray': '>=2025.07.0',
+    'zarr': '>=2.18.4',
   })
 # ---
