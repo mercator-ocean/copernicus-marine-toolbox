@@ -76,17 +76,18 @@ It is recommended to set appropriate file permissions to restrict access to the 
 
 In case you don't want to store your credentials, you can provide them directly using the ``--username`` and ``--password`` options when running any authenticated command.
 
-The python interface allows you to prevent the application from storing your credentials in a configuration file by setting the ``save`` parameter to ``False`` when calling the ``login`` function. This way, the credentials will only be kept in memory for the duration of the Python process and you will be able to chain multiple commands without having to specify them again.
+Apart from passing the ``username`` and ``password`` as arguments or environment variables, the Python interface also allows you to prevent the application from storing your credentials in a configuration file by setting the ``save`` parameter to ``False`` when calling the ``login`` function. This way, the credentials will be kept in memory for the duration of the Python process as a global variable, and you will be able to chain multiple commands without having to specify your credentials again.
 
 **Example**
 
 .. code-block:: python
 
-    from copernicusmarine.python_interface.login import login
-    from copernicusmarine.python_interface.subset import subset
+    from copernicusmarine import login, subset, get
 
-    if login(username="your_username", password="your_password", save=False):
-        subset(dataset_id="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M", x=10, X=-40)
+    assert login(username="your_username", password="your_password", save=False)
+
+    subset(dataset_id="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M", x=10, X=-40)
+    get(dataset_id="cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M", filter="2026")
 
 
 When using the command line interface, the way to achieve this is to set the `COPERNICUSMARINE_SERVICE_USERNAME` and `COPERNICUSMARINE_SERVICE_PASSWORD` environment variables before running any command that requires authentication.
@@ -96,7 +97,7 @@ When using the command line interface, the way to achieve this is to set the `CO
 .. code-block:: bash
 
     export COPERNICUSMARINE_SERVICE_USERNAME="your_username"
-    export COPERNICUSMARINE_SERVICE_PASSWORD="your_password"
+    export COPERNICUSMARINE_SERVICE_PASSWORD="your_password" # use `set` in Windows
     copernicusmarine subset -i cmems_obs-oc_atl_bgc-pp_nrt_l4-multi-1km_P1M -x 10 -X -40
 
 The credentials won't be stored in a configuration file when using environment variables for authentication. They will only be available for the duration of the current shell session and will be cleared if the terminal window is closed or by unsetting the environment variables using the ``unset`` command, for example:
