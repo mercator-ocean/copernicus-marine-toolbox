@@ -14,7 +14,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Add pre-release warning markdown if title matches
-        uses: actions/github-script@v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # 9.0.0
         with:
           script: |
             const title = context.payload.pull_request.title;

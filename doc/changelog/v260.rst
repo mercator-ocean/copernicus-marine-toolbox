@@ -9,6 +9,7 @@ General
 New Features
 ^^^^^^^^^^^^
 
+* Drop support for Python 3.10. The minimum supported Python version is now 3.11.
 * Added an environment variable ``COPERNICUSMARINE_MAX_POOL_CONNECTIONS`` to set the maximum number of connections in the connection pool for HTTP requests. Default is ``10``.
 
 Subset
