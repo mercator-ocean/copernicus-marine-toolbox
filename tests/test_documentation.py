@@ -3,7 +3,7 @@ from numpydoc.docscrape import FunctionDoc
 import copernicusmarine
 from copernicusmarine.core_functions import documentation_utils
 
-LIST_OF_EXCEPTIONS = ["username", "password", "**kwargs"]
+LIST_OF_EXCEPTIONS = ["username", "password", "**kwargs", "save"]
 PARTS_TO_IGNORE = ["Mutually exclusive"]
 
 

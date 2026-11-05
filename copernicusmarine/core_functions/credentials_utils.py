@@ -61,6 +61,8 @@ DEPRECATED_HOSTS = [
     "my.cmems-du.eu",
 ]
 
+_in_memory_credentials: tuple[str, str] | None = None
+
 
 class CredentialsCannotBeNone(Exception):
     """
@@ -505,6 +507,11 @@ def get_credential(
     hide_input: bool,
     credentials_file: pathlib.Path | None,
 ) -> str:
+    if not credential and _in_memory_credentials is not None:
+        logger.debug("Credentials loaded from memory")
+        return _in_memory_credentials[
+            0 if credential_type == "username" else 1
+        ]
     if not credential:
         credential = _retrieve_credential_from_environment_variable(
             credential_type
@@ -603,6 +610,26 @@ def _get_credential_from_environment_variable_or_prompt(
             if not credential:
                 raise CredentialsCannotBeNone(credential_type)
     return credential
+
+
+def validate_and_store_credentials_in_memory(
+    username: str | None,
+    password: str | None,
+) -> bool:
+    global _in_memory_credentials
+    username = _get_credential_from_environment_variable_or_prompt(
+        username, "username", False
+    )
+    password = _get_credential_from_environment_variable_or_prompt(
+        password, "password", True
+    )
+    if not _validate_and_get_user(username, password):
+        logger.error("Invalid credentials.")
+        logger.info(RECOVER_YOUR_CREDENTIALS_MESSAGE)
+        return False
+    _in_memory_credentials = (username, password)
+    logger.info("Credentials stored in memory for this Python process.")
+    return True
 
 
 def credentials_file_builder(
