@@ -1866,3 +1866,20 @@ class TestSubset:
         assert "nv" not in [
             coor.coordinate_id for coor in response.coordinates_extent
         ]
+
+    def test_subset_with_same_values_works(self):
+        dataset_id = "cmems_mod_glo_bgc_my_0.25deg_P1D-m"
+        response = subset(
+            dataset_id=dataset_id,
+            variables=["no3"],
+            start_datetime="2024",
+            end_datetime="2024",
+            minimum_longitude=141.491667,
+            maximum_longitude=141.491667,
+            minimum_latitude=40.937528,
+            maximum_latitude=40.937528,
+            minimum_depth=0.5057600140571594,
+            maximum_depth=0.5057600140571594,
+            dry_run=True,
+        )
+        assert response.data_transfer_size and response.data_transfer_size < 10
