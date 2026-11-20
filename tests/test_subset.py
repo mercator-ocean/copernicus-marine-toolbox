@@ -1881,5 +1881,6 @@ class TestSubset:
             minimum_depth=0.5057600140571594,
             maximum_depth=0.5057600140571594,
             dry_run=True,
+            service="timeseries",  # would return 350MB before patch 2.5.2
         )
         assert response.data_transfer_size and response.data_transfer_size < 10
