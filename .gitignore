@@ -20,3 +20,6 @@ doc/_build/
 
 # Local configuration files
 .history
+
+# Zed
+.zed/
