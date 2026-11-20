@@ -55,7 +55,6 @@ responses = "^0.25.7"
 pytest = "^8.4.2"
 pandas-stubs = "2.0.3.230814"
 cf-units = { version = "3.3.0", markers = "sys_platform != 'win32'"}
-typed-ast = "^1.5.5"
 
 
 [build-system]
