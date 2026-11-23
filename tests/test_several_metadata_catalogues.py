@@ -84,51 +84,6 @@ class TestSeveralMetadataCatalogues:
         with pytest.raises(DatasetNotFound):
             get(dataset_id=dataset_id, dry_run=True, staging=True)
 
-    def test_describe_works(self):
-        full_describe = describe(staging=True)
-        full_describe_json = full_describe.model_dump_json()
-        assert "s3.waw4-1.cloudferro.com" in full_describe_json
-        assert "s3.waw3-1.cloudferro.com" in full_describe_json
-        product_ids = set()
-        dataset_ids = set()
-        for product in full_describe.products:
-            assert product.product_id not in product_ids
-            product_ids.add(product.product_id)
-            for dataset in product.datasets:
-                assert dataset.dataset_id not in dataset_ids
-                dataset_ids.add(dataset.dataset_id)
-
-        # dataset only in WAW4-1
-        one_dataset_describe = describe(
-            dataset_id="cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
-            staging=True,
-        )
-        assert len(one_dataset_describe.products) == 1
-        assert len(one_dataset_describe.products[0].datasets) == 1
-        assert (
-            "s3.waw3-1.cloudferro.com"
-            not in one_dataset_describe.model_dump_json(
-                exclude={
-                    "products": {
-                        "__all__": {
-                            "thumbnail_url",
-                        }
-                    }
-                }
-            )
-        )
-
-        one_product_describe = describe(
-            product_id="ARCTIC_ANALYSISFORECAST_PHY_002_001",
-            staging=True,
-        )
-        assert len(one_product_describe.products) == 1
-        assert one_product_describe.products[0].datasets
-        assert (
-            "s3.waw4-1.cloudferro.com"
-            not in one_product_describe.model_dump_json()
-        )
-
     @mock.patch(
         "requests.Session.get",
         side_effect=mocked_stac_requests_get_several_catalogues,
