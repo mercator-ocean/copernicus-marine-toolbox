@@ -46,7 +46,7 @@ except ValueError:
 try:
     MAX_POOL_CONNECTIONS = int(COPERNICUSMARINE_MAX_POOL_CONNECTIONS)
 except ValueError:
-    MAX_POOL_CONNECTIONS = 10
+    MAX_POOL_CONNECTIONS = 32
 
 
 def get_ssl_context() -> ssl.SSLContext | None:

@@ -214,7 +214,9 @@ def open_dataset_and_snapshot_ncdump(
     keep_going: bool,
     tmp_path: Path = Path("data_to_delete"),
 ) -> tuple[str, float | None, float | None]:
-    message: str = "------------------------------------------------------------------- \n"  # noqa
+    message: str = (
+        "------------------------------------------------------------------- \n"  # noqa
+    )
     message += f"{dataset_id} \n"
     arguments = [
         str(start_datetime),

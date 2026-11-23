@@ -1,3 +1,4 @@
 MOCK_DATASET_PRODUCT_ID_MAPPING = {
-    "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m": "GLOBAL_ANALYSISFORECAST_PHY_001_024"
+    "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+    "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
 }

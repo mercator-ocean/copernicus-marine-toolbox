@@ -95,6 +95,4 @@ rst_epilog = """
 .. |download_linux_235_extra| replace:: `copernicusmarine_linux-extra <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.35-extra.cli>`__
 .. |download_linux_239_extra| replace:: `copernicusmarine_linux_2.39-extra <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine_linux-glibc-2.39-extra.cli>`__
 .. |download_windows_extra| replace:: `copernicusmarine-extra <https://github.com/mercator-ocean/copernicus-marine-toolbox/releases/download/v{0}/copernicusmarine-extra.exe>`__
-""".format(
-    version
-)
+""".format(version)
