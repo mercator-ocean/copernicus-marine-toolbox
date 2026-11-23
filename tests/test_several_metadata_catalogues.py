@@ -1,4 +1,5 @@
 import logging
+from unittest import mock
 
 import pytest
 import responses
@@ -8,6 +9,9 @@ from copernicusmarine import DatasetNotFound, ProductNotFound, describe, get
 from copernicusmarine.core_functions.marine_datastore_config import (
     MARINE_DATASTORE_CONFIG_URL_CDN,
     MARINE_DATASTORE_CONFIG_URL_DIRECT,
+)
+from tests.resources.mock_stac_catalog_WAW3.mock_marine_data_store_stac_metadata import (  # noqa: E501
+    mocked_stac_requests_get_several_catalogues,
 )
 
 # noqa: E501
@@ -117,6 +121,56 @@ class TestSeveralMetadataCatalogues:
         one_product_describe = describe(
             product_id="ARCTIC_ANALYSISFORECAST_PHY_002_001",
             staging=True,
+        )
+        assert len(one_product_describe.products) == 1
+        assert one_product_describe.products[0].datasets
+        assert (
+            "s3.waw4-1.cloudferro.com"
+            not in one_product_describe.model_dump_json()
+        )
+
+    @mock.patch(
+        "requests.Session.get",
+        side_effect=mocked_stac_requests_get_several_catalogues,
+    )
+    def test_describe_works_with_mocked_catalogues(self, mocked_requests):
+        full_describe = describe()
+        full_describe_json = full_describe.model_dump_json()
+        assert "s3.waw4-1.cloudferro.com" in full_describe_json
+        assert "s3.waw3-1.cloudferro.com" in full_describe_json
+        product_ids = set()
+        for product in full_describe.products:
+            assert product.product_id not in product_ids
+            product_ids.add(product.product_id)
+            # The mock voluntarily has a dataset in several products
+            # so uniqueness is checked per product
+            dataset_ids = set()
+            for dataset in product.datasets:
+                assert dataset.dataset_id not in dataset_ids
+                dataset_ids.add(dataset.dataset_id)
+
+        # dataset only in WAW4-1
+        one_dataset_describe = describe(
+            dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+        )
+        assert len(one_dataset_describe.products) == 1
+        assert len(one_dataset_describe.products[0].datasets) == 1
+        assert (
+            "s3.waw3-1.cloudferro.com"
+            not in one_dataset_describe.model_dump_json(
+                exclude={
+                    "products": {
+                        "__all__": {
+                            "thumbnail_url",
+                        }
+                    }
+                }
+            )
+        )
+
+        # product only in WAW3-1
+        one_product_describe = describe(
+            product_id="GLOBAL_ANALYSISFORECAST_PHY_001_024_OTHER",
         )
         assert len(one_product_describe.products) == 1
         assert one_product_describe.products[0].datasets
