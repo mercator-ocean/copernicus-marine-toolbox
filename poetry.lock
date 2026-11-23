@@ -162,7 +162,7 @@ description = "Units of measure as required by the Climate and Forecast (CF) met
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "sys_platform != \"win32\""
+markers = "sys_platform != \"win32\" and python_version < \"3.14\""
 files = [
     {file = "cf_units-3.3.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:a5eee5c0e5f6a2890673d785e7eea295ce4a41d347ecc123731521f683258d69"},
     {file = "cf_units-3.3.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:53d1f2819f7fb8e8e85edc032f9481143c1e74eee4d13e2da1cff998b83e9360"},
@@ -229,7 +229,7 @@ files = [
     {file = "cftime-1.6.6.1-cp315-cp315t-win_arm64.whl", hash = "sha256:235130e4186cad92b2f68f454bae730f8ebdc5880bcf4800d2678878891f02cb"},
     {file = "cftime-1.6.6.1.tar.gz", hash = "sha256:3eff428a229169c2632c093b554e36dd5277dacc0f7aae8ad73ce6a93304d58d"},
 ]
-markers = {main = "extra == \"extra\"", dev = "sys_platform != \"win32\""}
+markers = {main = "extra == \"extra\"", dev = "sys_platform != \"win32\" and python_version < \"3.14\""}
 
 [package.dependencies]
 numpy = ">=1.23.2"
@@ -4595,4 +4595,4 @@ extra = ["geopandas", "netcdf4", "rioxarray"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "cd006741707e963184fafa280c4a498fb574c60421fc6f82bf0822053231218e"
+content-hash = "93f0b0ef34e7dd492091d7774f0ab6ab231b3c51d1a5e1da051b83158ea5b234"
