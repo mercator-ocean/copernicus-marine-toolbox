@@ -55,11 +55,24 @@ from tests.resources.mock_stac_catalog_WAW3.mock_product_with_errors import (
 from tests.resources.mock_stac_catalog_WAW4.mock_catalog import (
     MOCK_CATALOG as MOCK_CATALOG_WAW4,
 )
+from tests.resources.mock_stac_catalog_WAW4.mock_catalog import (
+    MOCK_CATALOG_WITH_PRODUCTS as MOCK_CATALOG_WITH_PRODUCTS_WAW4,
+)
+from tests.resources.mock_stac_catalog_WAW4.mock_dataset_GLO_glo_phy_thetao import (
+    MOCK_DATASET_GLO_PHY_THETAO as MOCK_DATASET_GLO_PHY_THETAO_WAW4,
+)
+from tests.resources.mock_stac_catalog_WAW4.mock_dataset_product_id_mapping import (
+    MOCK_DATASET_PRODUCT_ID_MAPPING as MOCK_DATASET_PRODUCT_ID_MAPPING_WAW4,
+)
+from tests.resources.mock_stac_catalog_WAW4.mock_product_GLO import (
+    MOCK_PRODUCT_GLO as MOCK_PRODUCT_GLO_WAW4,
+)
 
 BASE_URLS = [
     catalogue["stacRoot"]  # type: ignore
     for catalogue in MARINE_DATASTORE_CONFIG["catalogues"]
 ]
+BASE_URL_WAW4 = BASE_URLS[0]
 BASE_URL_WAW3 = BASE_URLS[1]
 DATASET_PRODUCT_MAPPING_URLS = [
     catalogue["idMapping"]  # type: ignore
@@ -71,25 +84,26 @@ CATALOG_URLS = [
 ]
 
 
+class MockResponse:
+    def __init__(self, json_data: dict | None, status_code: int):
+        self.json_data = json_data
+        self.status_code = status_code
+
+    def json(self) -> dict | None:
+        return self.json_data
+
+    def raise_for_status(self):
+        if self.status_code != 200:
+            raise Exception
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
 def mocked_stac_requests_get(*args, **kwargs):
-    class MockResponse:
-        def __init__(self, json_data: dict | None, status_code: int):
-            self.json_data = json_data
-            self.status_code = status_code
-
-        def json(self) -> dict | None:
-            return self.json_data
-
-        def raise_for_status(self):
-            if self.status_code != 200:
-                raise Exception
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
-
     if args[0] == CATALOG_URLS[1]:
         return MockResponse(MOCK_STAC_CATALOG_WAW3, 200)
     elif args[0] == CATALOG_URLS[0]:
@@ -185,3 +199,35 @@ def mocked_stac_requests_get(*args, **kwargs):
     elif args[0] == MARINE_DATASTORE_CONFIG_URL_DIRECT:
         return MockResponse(MARINE_DATASTORE_CONFIG, 200)
     return MockResponse(None, 404)
+
+
+def mocked_stac_requests_get_several_catalogues(*args, **kwargs):
+    """
+    Same as mocked_stac_requests_get but the WAW4 catalogue is not empty:
+    - GLOBAL_ANALYSISFORECAST_PHY_001_024 is in both WAW4 and WAW3
+    - cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m is only in WAW4
+    - cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m is in both WAW4 and WAW3
+    - all the other products and datasets are only in WAW3
+    """
+    if args[0] == CATALOG_URLS[0]:
+        return MockResponse(MOCK_CATALOG_WITH_PRODUCTS_WAW4, 200)
+    elif args[0] == DATASET_PRODUCT_MAPPING_URLS[0]:
+        return MockResponse(MOCK_DATASET_PRODUCT_ID_MAPPING_WAW4, 200)
+    elif (
+        args[0]
+        == f"{BASE_URL_WAW4}GLOBAL_ANALYSISFORECAST_PHY_001_024/product.stac.json"
+    ):
+        return MockResponse(MOCK_PRODUCT_GLO_WAW4, 200)
+    elif (
+        args[0] == f"{BASE_URL_WAW4}GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+        f"cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m_202406/"
+        f"dataset.stac.json"
+    ):
+        return MockResponse(MOCK_DATASET_GLO_PHY_THETAO_WAW4, 200)
+    elif (
+        args[0] == f"{BASE_URL_WAW4}GLOBAL_ANALYSISFORECAST_PHY_001_024/"
+        f"cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202211/"
+        f"dataset.stac.json"
+    ):
+        return MockResponse(MOCK_DATASET_GLO_PHY_CUR, 200)
+    return mocked_stac_requests_get(*args, **kwargs)

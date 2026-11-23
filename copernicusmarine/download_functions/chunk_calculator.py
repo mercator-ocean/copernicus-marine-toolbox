@@ -190,12 +190,12 @@ def get_dataset_chunking(
             )
             number_chunks_coordinate = chunk_range[1] - chunk_range[0] + 1
             if coordinate.coordinate_id not in coordinate_chunking:
-                coordinate_chunking[
-                    coordinate.coordinate_id
-                ] = CoordinateChunking(
-                    coordinate_id=coordinate.coordinate_id,
-                    chunking_length=chunking_length,
-                    number_of_chunks=number_chunks_coordinate,
+                coordinate_chunking[coordinate.coordinate_id] = (
+                    CoordinateChunking(
+                        coordinate_id=coordinate.coordinate_id,
+                        chunking_length=chunking_length,
+                        number_of_chunks=number_chunks_coordinate,
+                    )
                 )
             number_chunks_per_variable *= number_chunks_coordinate
             number_values_per_variable *= (
@@ -256,6 +256,8 @@ def _extract_requested_min_max(
         )
         if isinstance(x_selection, slice):
             return x_selection.start, x_selection.stop
+        elif isinstance(x_selection, float):
+            return x_selection, x_selection
         else:
             return (None, None)
     if coordinate.coordinate_id in axis_coordinate_id_mapping.get("z", ""):

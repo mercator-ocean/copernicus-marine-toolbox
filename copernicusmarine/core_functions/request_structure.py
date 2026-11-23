@@ -421,15 +421,15 @@ def create_subset_request(
     if overwrite:
         request_update_dict["overwrite"] = overwrite
     if netcdf_compression_level:
-        request_update_dict[
-            "netcdf_compression_level"
-        ] = netcdf_compression_level
+        request_update_dict["netcdf_compression_level"] = (
+            netcdf_compression_level
+        )
     if netcdf3_compatible:
         request_update_dict["netcdf3_compatible"] = netcdf3_compatible
     if coordinates_selection_method != DEFAULT_COORDINATES_SELECTION_METHOD:
-        request_update_dict[
-            "coordinates_selection_method"
-        ] = coordinates_selection_method
+        request_update_dict["coordinates_selection_method"] = (
+            coordinates_selection_method
+        )
     if raise_if_updating:
         request_update_dict["raise_if_updating"] = raise_if_updating
     if dry_run:

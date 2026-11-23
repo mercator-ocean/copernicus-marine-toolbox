@@ -580,9 +580,9 @@ def _platform_dataframe_to_dataset(
         merged = merged.set_index(["time"])
 
     if vertical_col in non_nans_cols:
-        merged.loc[
-            merged["is_depth_from_producer"] == 0, vertical_col
-        ] = np.nan
+        merged.loc[merged["is_depth_from_producer"] == 0, vertical_col] = (
+            np.nan
+        )
         merged = merged.drop(
             columns=["is_depth_from_producer"], errors="ignore"
         )
@@ -678,9 +678,9 @@ def _add_attributes_to_dataset(
             platform_id_type
         ) or platforms_metadata.get(platform_id)
         if platform_metadata and platform_metadata.institution_edmo_code:
-            ds.attrs[
-                "institution_edmo_code"
-            ] = platform_metadata.institution_edmo_code
+            ds.attrs["institution_edmo_code"] = (
+                platform_metadata.institution_edmo_code
+            )
 
     ds.attrs["time_coverage_start"] = datetime_to_isoformat(
         datetime_parser(str(platform_df["time"].min()))
@@ -719,9 +719,9 @@ def _add_attributes_to_dataset(
             platform_df[vertical_axis].max()
         )
     ds.attrs["references"] = "http://marine.copernicus.eu"
-    ds.attrs[
-        "license"
-    ] = "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    ds.attrs["license"] = (
+        "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    )
     ds.attrs["download_date"] = datetime_to_isoformat(datetime.now())
     ds.attrs["copernicusmarine_toolbox_version"] = toolbox_version
     if product_id:
@@ -733,9 +733,9 @@ def _add_attributes_to_dataset(
         f"with Copernicus Marine Toolbox"
     )
     ds.attrs["contact"] = "servicedesk.cmems@mercator-ocean.eu"
-    ds.attrs[
-        "history"
-    ] = f"{datetime_to_isoformat(datetime.now())}: Subset from ARCO data created with Copernicus Marine Toolbox"  # noqa
+    ds.attrs["history"] = (
+        f"{datetime_to_isoformat(datetime.now())}: Subset from ARCO data created with Copernicus Marine Toolbox"  # noqa
+    )
 
     # time attributes
     if "time" in ds.coords:

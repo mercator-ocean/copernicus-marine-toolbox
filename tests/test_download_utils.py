@@ -29,7 +29,9 @@ def _build_test_dataset(shape: tuple[int, int]) -> xarray.Dataset:
     return xarray.Dataset({"thetao": variable})
 
 
-def test_zarr_estimate_is_smaller_than_netcdf_for_compressed_encoding() -> None:
+def test_zarr_estimate_is_smaller_than_netcdf_for_compressed_encoding() -> (
+    None
+):
     dataset = _build_test_dataset((200, 200))
     axis_mapping = {"x": "longitude", "y": "latitude"}
 
@@ -101,7 +103,9 @@ def test_zarr_compression_ratio_respects_compressor_family(
     assert pytest.approx(ratio, rel=1e-6) == expected_base
 
 
-def test_zarr_compression_ratio_uses_level_scale_and_offset_and_shuffle() -> None:
+def test_zarr_compression_ratio_uses_level_scale_and_offset_and_shuffle() -> (
+    None
+):
     dataset = _build_test_dataset((100, 100))
     variable = dataset["thetao"]
 
@@ -133,9 +137,7 @@ def test_zarr_compression_ratio_is_clamped_to_bounds() -> None:
     variable.encoding["compressors"] = (
         _FakeCompressor("zstd", clevel=9, shuffle="SHUFFLE"),
     )
-    very_small = _estimate_zarr_compression_ratio(
-        variable, chunk_count=10**9
-    )
+    very_small = _estimate_zarr_compression_ratio(variable, chunk_count=10**9)
 
     variable.encoding["compressors"] = (
         _FakeCompressor("unknown", clevel=0, shuffle="NOSHUFFLE"),
@@ -148,7 +150,9 @@ def test_zarr_compression_ratio_is_clamped_to_bounds() -> None:
     assert very_large <= 1.0
 
 
-def test_get_zarr_chunk_shape_uses_encoding_chunks_when_not_dask_chunked() -> None:
+def test_get_zarr_chunk_shape_uses_encoding_chunks_when_not_dask_chunked() -> (
+    None
+):
     data_array = xarray.DataArray(
         data=numpy.ones((12, 10), dtype=numpy.float32),
         dims=("latitude", "longitude"),
@@ -171,7 +175,9 @@ def test_get_zarr_chunk_shape_uses_preferred_chunks_as_fallback() -> None:
     assert _get_zarr_chunk_shape(data_array) == (3, 2)
 
 
-def test_get_zarr_chunk_shape_defaults_to_full_shape_without_metadata() -> None:
+def test_get_zarr_chunk_shape_defaults_to_full_shape_without_metadata() -> (
+    None
+):
     data_array = xarray.DataArray(
         data=numpy.ones((12, 10), dtype=numpy.float32),
         dims=("latitude", "longitude"),
