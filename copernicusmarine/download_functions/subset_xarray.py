@@ -427,14 +427,23 @@ def _depth_subset(
 def _cast_valid_minmax_to_variable_dtype(
     dataset: xarray.Dataset, variable: str
 ) -> xarray.Dataset:
-    dataset[variable].attrs["valid_min"] = numpy.array(
-        [dataset[variable].attrs["valid_min"]],
-        dtype=dataset[variable].encoding["dtype"],
-    )[0]
-    dataset[variable].attrs["valid_max"] = numpy.array(
-        [dataset[variable].attrs["valid_max"]],
-        dtype=dataset[variable].encoding["dtype"],
-    )[0]
+    dtype = dataset[variable].encoding["dtype"]
+    try:
+        valid_min = numpy.array(
+            [dataset[variable].attrs["valid_min"]], dtype=dtype
+        )[0]
+        valid_max = numpy.array(
+            [dataset[variable].attrs["valid_max"]], dtype=dtype
+        )[0]
+    except OverflowError:
+        logger.warning(
+            f"valid_min or valid_max attribute of variable "
+            f"'{variable}' does not fit dtype '{dtype}'. "
+            f"Attributes left unchanged."
+        )
+        return dataset
+    dataset[variable].attrs["valid_min"] = valid_min
+    dataset[variable].attrs["valid_max"] = valid_max
     return dataset
 
 
