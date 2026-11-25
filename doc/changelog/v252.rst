@@ -1,0 +1,12 @@
+Release 2.5.2
+=============
+
+Patch a bug that appears when subsetting with equal longitudes.
+
+Subset
+-------
+
+Fixes
+^^^^^
+
+- Fix a bug where the subset would download too much data if the requested longitudes were equal. The result ended up being the same but the download time was way higher. Now, if the longitudes are equal, the subset will download only one longitude.

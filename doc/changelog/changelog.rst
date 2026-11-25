@@ -16,6 +16,7 @@ The toolbox follows the `Semantic Versioning <https://semver.org/>`_ scheme.
 
 .. toctree::
 
+    v252
     v251
     v250
     v241
